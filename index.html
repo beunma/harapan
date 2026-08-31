@@ -1699,27 +1699,83 @@ atau:
     }
 
 
-    /* =========================================================
-       AKSI TOMBOL BIDIK
-       ========================================================= */
+/* =========================================================
+   AKSI TOMBOL BIDIK (AUTO-FILL SEBELUM POP-UP MUNCUL)
+   ========================================================= */
+function aksiBidik(jenis, web) {
+    if (web !== 'web1') return;
 
-    function aksiBidik(jenis, web) {
+    const textarea = document.getElementById('input-bidik-' + web);
+    const inputBox = document.getElementById('nilai-input-' + web);
+    
+    const areaText = textarea.value.trim();
+    const nilaiInput = inputBox.value;
 
-        /*
-         * Sementara belum ada aksi.
-         * Tombol sengaja dibuat aktif/nonaktif
-         * berdasarkan jenis digit.
-         */
-
-        console.log(
-            "Tombol " +
-            jenis +
-            " ditekan untuk " +
-            web
-        );
+    if (!areaText || !nilaiInput) {
+        alert("Harap isi teks bidik dan nilainya!");
+        return;
     }
 
+    // Format data gabungan: 01*02#500
+    const finalData = areaText + "#" + nilaiInput;
 
+    // 1. Tetap jalankan auto-copy sebagai cadangan pengaman
+    navigator.clipboard.writeText(finalData).catch(() => {});
+
+    // 2. Validasi URL Pasaran
+    const labelUrl = document.getElementById('label-url').innerText;
+    if (!labelUrl || labelUrl.includes("muncul di sini")) {
+        alert("Silakan pilih pasaran di bagian Pengujian Spinner terlebih dahulu!");
+        return;
+    }
+
+    // 3. Tentukan URL Target halaman form betting
+    const baseUrl = "https://engine2s2.engine4d.com/wapsecure/";
+    let targetUrl = "";
+    
+    if (jenis === '2D') targetUrl = baseUrl + "depan2d.html";
+    else if (jenis === '2T') targetUrl = baseUrl + "tengah2d.html";
+    else if (jenis === '2B') targetUrl = baseUrl + "purchase/1.html";
+    else if (jenis === '3D') targetUrl = baseUrl + "depan3d.html";
+    else if (jenis === '3B') targetUrl = baseUrl + "purchase/1.html";
+
+    // 4. Buka pop-up kosong dengan nama jendela unik terlebih dahulu 
+    // (Ini berfungsi mengunci sesi pasaran/cookie di tab tersebut)
+    const windowName = "TargetBidikPopup";
+    let popupWin = window.open(labelUrl, windowName, "width=600,height=750,scrollbars=yes,resizable=yes");
+
+    if (!popupWin) {
+        alert("Pop-up diblokir browser! Harap izinkan pop-up.");
+        return;
+    }
+
+    // 5. Berikan jeda sejenak agar sesi pasaran terkunci di server, 
+    // lalu arahkan ke halaman form sambil menyuntikkan nilai sebelum ditampilkan penuh.
+    setTimeout(() => {
+        popupWin.location.href = targetUrl;
+
+        // Begitu halaman mulai dimuat, langsung isi nilai textarea-nya sebelum user sempat klik apa-apa
+        let isiOtomatis = setInterval(() => {
+            try {
+                if (popupWin.document) {
+                    let targetArea = popupWin.document.querySelector('textarea.purchaser');
+                    if (targetArea) {
+                        targetArea.value = finalData;
+                        clearInterval(isiOtomatis);
+                        console.log("Berhasil mengisi form sebelum digunakan!");
+                    }
+                }
+            } catch (err) {
+                // Berhenti jika cross-origin benar-benar menutup akses
+                clearInterval(isiOtomatis);
+            }
+        }, 200);
+
+        // Hentikan interval otomatis setelah 4 detik jika gagal total
+        setTimeout(() => clearInterval(isiOtomatis), 4000);
+
+    }, 2000);
+}
     /* =========================================================
        CEK SALDO
        ========================================================= */
