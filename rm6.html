@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rumus AI — 14 Result</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#f2f2f2;
+    font-family:Arial,sans-serif;
+    color:#222;
+}
+
+.app{
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    min-height:100vh;
+    padding:10px;
+}
+
+.title{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    margin:2px 0 10px;
+}
+
+label{
+    display:block;
+    font-size:12px;
+    font-weight:bold;
+    margin:7px 0 4px;
+}
+
+textarea,select{
+    width:100%;
+    border:1px solid #aaa;
+    border-radius:4px;
+    background:#fff;
+    font:14px Arial;
+}
+
+textarea{
+    padding:8px;
+    resize:vertical;
+}
+
+#inputResult{
+    height:85px;
+}
+
+.info{
+    font-size:11px;
+    color:#666;
+    margin-top:4px;
+}
+
+select{
+    height:35px;
+    padding:5px;
+}
+
+button{
+    width:100%;
+    height:40px;
+    margin-top:10px;
+    border:0;
+    border-radius:4px;
+    background:#0d6efd;
+    color:#fff;
+    font-weight:bold;
+}
+
+#hasil{
+    margin-top:12px;
+    border-top:1px solid #ddd;
+    padding-top:8px;
+    font-family:monospace;
+    font-size:14px;
+    line-height:1.65;
+    white-space:pre-wrap;
+}
+
+.error{
+    color:#d00;
+    font-weight:bold;
+}
+
+.ok{
+    color:#087f23;
+    font-weight:bold;
+}
+
+/* =====================================================
+   KESIMPULAN
+===================================================== */
+
+.kesimpulanBox{
+    margin-top:18px;
+    border-top:2px solid #222;
+    padding-top:10px;
+}
+
+.kesimpulanTitle{
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+#kesimpulan{
+    width:100%;
+    height:145px;
+    min-height:145px;
+    max-height:300px;
+    resize:vertical;
+    overflow-y:auto;
+    padding:8px;
+    font:14px monospace;
+    line-height:1.55;
+    border:1px solid #888;
+    border-radius:4px;
+    background:#fff;
+}
+
+#copyKesimpulan{
+    background:#198754;
+}
+
+#copyKesimpulan.copied{
+    background:#555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="title">RUMUS AI — 14 RESULT</div>
+
+<label>RESULT — 14 HASIL</label>
+
+<textarea id="inputResult"
+placeholder="3396,5964,3052,9120,0715,7907,5102,7137,3525,2375,3200,6714,6149,8754"></textarea>
+
+<div class="info">
+Urutan kiri → kanan: paling lama → paling baru.
+</div>
+
+<label>RUMUS</label>
+
+<select id="rumus">
+<option value="belakang">AI 2D belakang — Puluhan + Satuan</option>
+<option value="tengah">AI 2D tengah — Ratusan + Puluhan</option>
+<option value="depan">AI 2D depan — Ribuan + Ratusan</option>
+<option value="ai3d">AI 3D — Ratusan + Puluhan + Satuan</option>
+</select>
+
+<button id="proses">PROSES</button>
+
+<div id="hasil"></div>
+
+
+<!-- =====================================================
+     KESIMPULAN
+===================================================== -->
+
+<div class="kesimpulanBox">
+
+    <div class="kesimpulanTitle">
+        KESIMPULAN / BAGAN AI
+    </div>
+
+    <textarea
+        id="kesimpulan"
+        placeholder="234&#10;671&#10;025&#10;483&#10;917"></textarea>
+
+    <button id="copyKesimpulan">
+        COPY
+    </button>
+
+</div>
+
+</div>
+
+
+<script>
+"use strict";
+
+
+/* =========================================================
+   DASAR
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const WINDOW = 7;
+const MAX_ANALISA = 5;
+
+
+/* =========================================================
+   MATEMATIKA
+========================================================= */
+
+function mod10(v){
+
+    if(!Number.isFinite(v))
+        return 0;
+
+    return ((Math.trunc(v)%10)+10)%10;
+}
+
+
+function safeDiv(a,b){
+
+    if(!Number.isFinite(a))
+        a=0;
+
+    if(!Number.isFinite(b) || b===0)
+        return 0;
+
+    return a/b;
+}
+
+
+function safeMod(a,b){
+
+    if(!Number.isFinite(a))
+        a=0;
+
+    if(!Number.isFinite(b) || b===0)
+        return 0;
+
+    return a%b;
+}
+
+
+function M(op,a,b){
+
+    switch(op){
+
+        case "+":
+            return a+b;
+
+        case "-":
+            return a-b;
+
+        case "*":
+            return a*b;
+
+        case "/":
+            return safeDiv(a,b);
+
+        case "MOD":
+            return safeMod(a,b);
+
+        case "ABS":
+            return Math.abs(a-b);
+
+        case "FLOOR":
+            return Math.floor(
+                safeDiv(a,b)
+            );
+
+        case "CEILING":
+            return Math.ceil(
+                safeDiv(a,b)
+            );
+
+        case "ROUND":
+            return Math.round(
+                safeDiv(a,b)
+            );
+    }
+
+    return 0;
+}
+
+
+/* =========================================================
+   BACA RESULT
+========================================================= */
+
+function bacaResult(){
+
+    const arr=
+        $("inputResult")
+        .value
+        .split(/[\s,]+/)
+        .map(x=>x.trim())
+        .filter(Boolean);
+
+    if(arr.length!==14){
+
+        $("hasil").innerHTML=
+            '<span class="error">'+
+            'Harus tepat 14 result. Terbaca: '+
+            arr.length+
+            '</span>';
+
+        return null;
+    }
+
+    for(let i=0;i<14;i++){
+
+        if(!/^\d{4}$/.test(arr[i])){
+
+            $("hasil").innerHTML=
+                '<span class="error">'+
+                'Result ke-'+
+                (i+1)+
+                ' harus 4 digit: '+
+                arr[i]+
+                '</span>';
+
+            return null;
+        }
+    }
+
+    return arr;
+}
+
+
+/* =========================================================
+   POSISI SPINNER
+========================================================= */
+
+function posisiRumus(r){
+
+    if(r==="belakang")
+        return [2,3];
+
+    if(r==="tengah")
+        return [1,2];
+
+    if(r==="depan")
+        return [0,1];
+
+    return [1,2,3];
+}
+
+
+/* =========================================================
+   DIGIT RESULT
+========================================================= */
+
+function digitResult(s){
+
+    return [
+        +s[0],
+        +s[1],
+        +s[2],
+        +s[3]
+    ];
+}
+
+
+/* =========================================================
+   FITUR 7 RESULT
+========================================================= */
+
+function buatFitur(window){
+
+    const d=
+        window.map(digitResult);
+
+    const f=[];
+
+    for(let p=0;p<4;p++){
+
+        const a=d[0][p];
+        const b=d[1][p];
+        const c=d[2][p];
+        const e=d[3][p];
+        const g=d[4][p];
+        const h=d[5][p];
+        const i=d[6][p];
+
+        f.push(
+            a,b,c,e,g,h,i
+        );
+
+        f.push(
+            a-b,
+            b-c,
+            c-e,
+            e-g,
+            g-h,
+            h-i
+        );
+
+        f.push(
+            Math.abs(a-b),
+            Math.abs(b-c),
+            Math.abs(c-e),
+            Math.abs(e-g),
+            Math.abs(g-h),
+            Math.abs(h-i)
+        );
+
+        f.push(
+            a+b,
+            b+c,
+            c+e,
+            e+g,
+            g+h,
+            h+i
+        );
+
+        f.push(
+            a*b,
+            b*c,
+            c*e,
+            e*g,
+            g*h,
+            h*i
+        );
+
+        f.push(
+            mod10(a+b),
+            mod10(b+c),
+            mod10(c+e),
+            mod10(e+g),
+            mod10(g+h),
+            mod10(h+i),
+
+            mod10(a-b),
+            mod10(b-c),
+            mod10(c-e),
+            mod10(e-g),
+            mod10(g-h),
+            mod10(h-i)
+        );
+
+        f.push(
+            a-i,
+            i-a,
+            Math.abs(a-i),
+            a+i,
+            a*i,
+            mod10(a+i),
+            mod10(a-i)
+        );
+
+        f.push(
+            e,
+            e*2,
+            e*e,
+            Math.abs(e-a),
+            Math.abs(e-i),
+            mod10(e-a),
+            mod10(e+i)
+        );
+    }
+
+
+    for(let r=0;r<7;r++){
+
+        const x=d[r];
+
+        f.push(
+            x[0]+x[1],
+            x[1]+x[2],
+            x[2]+x[3],
+
+            x[0]-x[1],
+            x[1]-x[2],
+            x[2]-x[3],
+
+            Math.abs(x[0]-x[1]),
+            Math.abs(x[1]-x[2]),
+            Math.abs(x[2]-x[3]),
+
+            x[0]*x[1],
+            x[1]*x[2],
+            x[2]*x[3],
+
+            mod10(x[0]+x[1]),
+            mod10(x[1]+x[2]),
+            mod10(x[2]+x[3])
+        );
+    }
+
+    return f;
+}
+
+
+/* =========================================================
+   OPERASI
+========================================================= */
+
+const OPS=[
+    "+",
+    "-",
+    "*",
+    "/",
+    "MOD",
+    "ABS",
+    "FLOOR",
+    "CEILING",
+    "ROUND"
+];
+
+
+/* =========================================================
+   FORMULA
+========================================================= */
+
+function buatFormula(id){
+
+    const len=5000;
+
+    const a=(id*7)%len;
+    const b=(id*13+17)%len;
+    const c=(id*19+31)%len;
+    const d=(id*23+47)%len;
+    const e=(id*29+61)%len;
+    const g=(id*31+79)%len;
+
+    return {
+
+        id:id,
+
+        ia:a%100,
+        ib:b%100,
+        ic:c%100,
+
+        idd:d%100,
+        ie:e%100,
+        ig:g%100,
+
+        op1:OPS[
+            Math.floor(id/1)%OPS.length
+        ],
+
+        op2:OPS[
+            Math.floor(id/9)%OPS.length
+        ],
+
+        op3:OPS[
+            Math.floor(id/17)%OPS.length
+        ],
+
+        op4:OPS[
+            Math.floor(id/31)%OPS.length
+        ],
+
+        op5:OPS[
+            Math.floor(id/47)%OPS.length
+        ],
+
+        op6:OPS[
+            Math.floor(id/67)%OPS.length
+        ],
+
+        k1:((id%5)-2)||1,
+        k2:((Math.floor(id/5)%5)-2)||1,
+        k3:((Math.floor(id/25)%5)-2)||1
+    };
+}
+
+
+/* =========================================================
+   JALUR
+========================================================= */
+
+function hitungJalur(
+    f,
+    p,
+    offset
+){
+
+    const x1=
+        f[
+            (p.ia+offset)%
+            f.length
+        ];
+
+    const x2=
+        f[
+            (p.ib+offset)%
+            f.length
+        ];
+
+    const x3=
+        f[
+            (p.ic+offset)%
+            f.length
+        ];
+
+    const y1=
+        M(
+            p.op1,
+            x1,
+            x2
+        );
+
+    const y2=
+        M(
+            p.op2,
+            y1,
+            x3
+        );
+
+    return mod10(
+        y2*p.k1
+    );
+}
+
+
+/* =========================================================
+   PREDIKSI 3 DIGIT
+========================================================= */
+
+function hitungFormula(
+    features,
+    p
+){
+
+    return [
+
+        hitungJalur(
+            features,
+            p,
+            0
+        ),
+
+        hitungJalur(
+            features,
+            p,
+            37
+        ),
+
+        hitungJalur(
+            features,
+            p,
+            83
+        )
+
+    ];
+}
+
+
+/* =========================================================
+   TARGET SPINNER
+========================================================= */
+
+function targetDigit(
+    result,
+    posisi
+){
+
+    const d=
+        digitResult(result);
+
+    return posisi.map(
+        p=>d[p]
+    );
+}
+
+
+/* =========================================================
+   CEK
+========================================================= */
+
+function prediksiMasuk(
+    ai,
+    target
+){
+
+    for(const x of ai){
+
+        if(target.includes(x))
+            return true;
+    }
+
+    return false;
+}
+
+
+/* =========================================================
+   BACKTEST
+========================================================= */
+
+function backtestFormula(
+    result,
+    posisi,
+    formula
+){
+
+    const history=[];
+
+    for(
+        let targetIndex=7;
+        targetIndex<14;
+        targetIndex++
+    ){
+
+        const window=
+            result.slice(
+                targetIndex-7,
+                targetIndex
+            );
+
+        if(window.length!==7)
+            return null;
+
+        const features=
+            buatFitur(window);
+
+        const ai=
+            hitungFormula(
+                features,
+                formula
+            );
+
+        const target=
+            targetDigit(
+                result[targetIndex],
+                posisi
+            );
+
+        const ok=
+            prediksiMasuk(
+                ai,
+                target
+            );
+
+        if(!ok)
+            return null;
+
+        history.push({
+
+            sourceIndex:
+                targetIndex-1,
+
+            source:
+                result[targetIndex-1],
+
+            target:
+                result[targetIndex],
+
+            ai:ai
+        });
+    }
+
+    return history;
+}
+
+
+/* =========================================================
+   PREDIKSI TERAKHIR
+========================================================= */
+
+function prediksiTerakhir(
+    result,
+    formula
+){
+
+    const window=
+        result.slice(7,14);
+
+    if(window.length!==7)
+        return [0,0,0];
+
+    const features=
+        buatFitur(window);
+
+    return hitungFormula(
+        features,
+        formula
+    );
+}
+
+
+/* =========================================================
+   CARI FORMULA
+========================================================= */
+
+function cariFormula(
+    result,
+    posisi,
+    startId,
+    forbidden,
+    prediksiTerpakai
+){
+
+    const MAX=120000;
+
+    for(
+        let id=startId;
+        id<startId+MAX;
+        id++
+    ){
+
+        if(forbidden.has(id))
+            continue;
+
+        const formula=
+            buatFormula(id);
+
+        const history=
+            backtestFormula(
+                result,
+                posisi,
+                formula
+            );
+
+        if(!history)
+            continue;
+
+
+        /*
+           =================================================
+           ATURAN BARU:
+
+           Prediksi akhir harus berbeda dari semua
+           analisa yang sudah dipilih.
+
+           Jadi formula boleh lolos history,
+           tetapi tetap ditolak kalau hasil akhirnya
+           sama persis dengan analisa sebelumnya.
+           =================================================
+        */
+
+        const prediksi=
+            prediksiTerakhir(
+                result,
+                formula
+            );
+
+        const key=
+            prediksi.join("");
+
+        if(prediksiTerpakai.has(key))
+            continue;
+
+
+        return {
+
+            formula:formula,
+
+            history:history,
+
+            prediksiAkhir:prediksi
+
+        };
+    }
+
+    return null;
+}
+
+
+/* =========================================================
+   TAMPIL ANALISA
+========================================================= */
+
+function tampilAnalisa(
+    nomor,
+    result,
+    engine
+){
+
+    const p=
+        engine.formula;
+
+    let out=
+        "ANALISA "+
+        nomor+
+        "\n";
+
+    out+=
+        "FORMULA ID : "+
+        p.id+
+        "\n";
+
+    out+=
+        "HISTORY BACKTEST : 100% SUKSES\n\n";
+
+
+    for(const h of engine.history){
+
+        out+=
+            result[h.sourceIndex]+
+            " : "+
+            h.ai.join("")+
+            " ai\n";
+    }
+
+
+    out+="\n";
+
+    out+=
+        result[13]+
+        " : "+
+        engine.prediksiAkhir.join("")+
+        " ???\n";
+
+    return out;
+}
+
+
+/* =========================================================
+   KESIMPULAN
+========================================================= */
+
+function buatKesimpulan(
+    engines
+){
+
+    let teks="";
+
+    for(
+        let i=0;
+        i<engines.length;
+        i++
+    ){
+
+        teks+=
+            engines[i]
+            .prediksiAkhir
+            .join("")+
+            "\n";
+    }
+
+    return teks.trim();
+}
+
+
+/* =========================================================
+   PROSES
+========================================================= */
+
+function proses(){
+
+    const result=
+        bacaResult();
+
+    if(!result)
+        return;
+
+
+    const rumus=
+        $("rumus").value;
+
+    const posisi=
+        posisiRumus(rumus);
+
+
+    let output="";
+
+    const engines=[];
+
+    const forbidden=
+        new Set();
+
+    /*
+       Menyimpan prediksi akhir yang sudah dipakai.
+
+       Contoh:
+
+       234 sudah dipakai Analisa 1
+
+       Formula berikutnya yang menghasilkan 234
+       DITOLAK dan mesin mencari formula lain.
+    */
+
+    const prediksiTerpakai=
+        new Set();
+
+
+    let startId=0;
+
+
+    for(
+        let nomor=1;
+        nomor<=MAX_ANALISA;
+        nomor++
+    ){
+
+        const engine=
+            cariFormula(
+                result,
+                posisi,
+                startId,
+                forbidden,
+                prediksiTerpakai
+            );
+
+        if(!engine)
+            break;
+
+
+        engines.push(engine);
+
+
+        forbidden.add(
+            engine.formula.id
+        );
+
+
+        prediksiTerpakai.add(
+            engine.prediksiAkhir.join("")
+        );
+
+
+        startId=
+            engine.formula.id+1;
+    }
+
+
+    if(!engines.length){
+
+        $("hasil").innerHTML=
+            '<span class="error">'+
+            'Belum ditemukan formula yang mampu '+
+            'lolos seluruh pengujian.'+
+            '</span>';
+
+        $("kesimpulan").value="";
+
+        return;
+    }
+
+
+    output+=
+        "WINDOW TETAP : 7 RESULT\n"+
+        "BACKTEST : R1-R7 → R8 sampai R7-R13 → R14\n"+
+        "PREDIKSI : R8-R14 → R15 ???\n"+
+        "SPINNER : "+
+        rumus+
+        "\n\n";
+
+
+    for(
+        let i=0;
+        i<engines.length;
+        i++
+    ){
+
+        output+=
+            tampilAnalisa(
+                i+1,
+                result,
+                engines[i]
+            );
+
+        output+="\n";
+    }
+
+
+    output+=
+        "JUMLAH ANALISA BERHASIL : "+
+        engines.length;
+
+
+    $("hasil").textContent=
+        output;
+
+
+    /*
+       Isi textarea hanya angka 3 digit.
+       Tanpa label.
+    */
+
+    $("kesimpulan").value=
+        buatKesimpulan(
+            engines
+        );
+}
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+$("copyKesimpulan").onclick=
+async function(){
+
+    const box=
+        $("kesimpulan");
+
+    try{
+
+        await navigator.clipboard.writeText(
+            box.value
+        );
+
+        this.textContent=
+            "COPIED ✓";
+
+        this.classList.add(
+            "copied"
+        );
+
+        const tombol=this;
+
+        setTimeout(
+            function(){
+
+                tombol.textContent=
+                    "COPY";
+
+                tombol.classList.remove(
+                    "copied"
+                );
+
+            },
+            1200
+        );
+
+    }catch(e){
+
+        box.focus();
+
+        box.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        this.textContent=
+            "COPIED ✓";
+
+        const tombol=this;
+
+        setTimeout(
+            function(){
+
+                tombol.textContent=
+                    "COPY";
+
+            },
+            1200
+        );
+    }
+};
+
+
+/* =========================================================
+   EVENT
+========================================================= */
+
+$("proses").onclick=
+    proses;
+
+
+$("rumus").onchange=
+function(){
+
+    if(
+        $("inputResult")
+        .value
+        .trim()
+    ){
+
+        proses();
+    }
+};
+
+</script>
+
+</body>
+</html>

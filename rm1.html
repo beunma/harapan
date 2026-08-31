@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analisis Lanjutan - 3 Kolom & Wadah Reset</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #2c3e50; }
+        h3 { color: #2980b9; font-size: 16px; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-top: 30px; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; }
+        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 14px; box-sizing: border-box; margin-bottom: 10px; height: 100px; resize: vertical; }
+        button { background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #219653; }
+        .col-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 300px; }
+        .result-box { background: #ecf0f1; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; line-height: 1.6; font-size: 13px; max-height: 200px; overflow-y: auto; }
+        .panel-engine { border: 1px solid #bdc3c7; border-radius: 6px; padding: 15px; background: #fafbfc; margin-top: 15px; }
+        .level-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #dcdde1; padding: 6px 10px; border-radius: 4px; margin-top: 6px; }
+        .level-title { font-weight: bold; font-size: 12px; color: #2c3e50; }
+        .btn-group { display: flex; gap: 5px; }
+        .btn-copy { background-color: #2980b9; color: white; border: none; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-copy:hover { background-color: #1f618d; }
+        .btn-reset { background-color: #c0392b; color: white; border: none; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-reset:hover { background-color: #962d22; }
+        #btnProsesKedua { background-color: #2980b9; display: none; width: 100%; margin-top: 20px; }
+        .note { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Dashboard Analisis Lanjutan (3 Kolom Acuan & Wadah Salinan Reset)</h2>
+    
+    <label for="inputData">Masukkan Data (Pemisah Koma atau Baris Baru / Campuran):</label>
+    <textarea id="inputData" placeholder="Contoh: 1234, 5678 atau paste ke bawah..."></textarea>
+    <div id="infoInput" class="note">Jumlah Input: 0</div>
+    
+    <button onclick="prosesPertama()">Proses Data & Brute Force</button>
+
+    <h3>1. Hasil Brute Force Angka Main (Bisa Diedit Manual)</h3>
+    <div class="col-group">
+        <div class="col">
+            <label>Kolom 1 (Ribuan - Ratusan):</label>
+            <textarea id="bfCol1" class="result-box" style="height: 130px;"></textarea>
+        </div>
+        <div class="col">
+            <label>Kolom 2 (Ratusan - Puluhan):</label>
+            <textarea id="bfCol2" class="result-box" style="height: 130px;"></textarea>
+        </div>
+        <div class="col">
+            <label>Kolom 3 (Puluhan - Satuan):</label>
+            <textarea id="bfCol3" class="result-box" style="height: 130px;"></textarea>
+        </div>
+    </div>
+
+    <button id="btnProsesKedua" onclick="prosesKedua()">Jalankan Engine Level (Proses Kedua)</button>
+
+    <!-- BAGIAN 2: 3 KOLOM ENGINE LEVEL -->
+    <div id="areaLevel" style="display:none;">
+        <h3>2. Engine Level (Berbasis Skor Frekuensi & Bobot)</h3>
+        <div class="col-group">
+            <!-- Kolom Engine 1 -->
+            <div class="col panel-engine">
+                <h4 style="margin-top:0; color:#2980b9;">Engine Kolom 1</h4>
+                <div class="level-row"><span id="lblC1L0" class="level-title">Level 0 (Super Top) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC1L0', 'DD', this)">Copy</button></div>
+                <div id="boxC1L0" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC1L1" class="level-title">Level 1 (Top) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC1L1', 'DD', this)">Copy</button></div>
+                <div id="boxC1L1" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC1L2" class="level-title">Level 2 (Sedang) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC1L2', 'DD', this)">Copy</button></div>
+                <div id="boxC1L2" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC1L3" class="level-title">Level 3 (1-Digit Dominan) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC1L3', 'DD', this)">Copy</button></div>
+                <div id="boxC1L3" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC1L4" class="level-title">Level 4 (1-Digit Lemah) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC1L4', 'DD', this)">Copy</button></div>
+                <div id="boxC1L4" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC1L5" class="level-title">Level 5 (Angka Mati/Off) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC1L5', 'DD', this)">Copy</button></div>
+                <div id="boxC1L5" class="result-box" style="max-height: 60px;">-</div>
+            </div>
+
+            <!-- Kolom Engine 2 -->
+            <div class="col panel-engine">
+                <h4 style="margin-top:0; color:#2980b9;">Engine Kolom 2</h4>
+                <div class="level-row"><span id="lblC2L0" class="level-title">Level 0 (Super Top) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC2L0', 'DT', this)">Copy</button></div>
+                <div id="boxC2L0" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC2L1" class="level-title">Level 1 (Top) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC2L1', 'DT', this)">Copy</button></div>
+                <div id="boxC2L1" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC2L2" class="level-title">Level 2 (Sedang) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC2L2', 'DT', this)">Copy</button></div>
+                <div id="boxC2L2" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC2L3" class="level-title">Level 3 (1-Digit Dominan) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC2L3', 'DT', this)">Copy</button></div>
+                <div id="boxC2L3" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC2L4" class="level-title">Level 4 (1-Digit Lemah) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC2L4', 'DT', this)">Copy</button></div>
+                <div id="boxC2L4" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC2L5" class="level-title">Level 5 (Angka Mati/Off) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC2L5', 'DT', this)">Copy</button></div>
+                <div id="boxC2L5" class="result-box" style="max-height: 60px;">-</div>
+            </div>
+
+            <!-- Kolom Engine 3 -->
+            <div class="col panel-engine">
+                <h4 style="margin-top:0; color:#2980b9;">Engine Kolom 3</h4>
+                <div class="level-row"><span id="lblC3L0" class="level-title">Level 0 (Super Top) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC3L0', 'DB', this)">Copy</button></div>
+                <div id="boxC3L0" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC3L1" class="level-title">Level 1 (Top) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC3L1', 'DB', this)">Copy</button></div>
+                <div id="boxC3L1" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC3L2" class="level-title">Level 2 (Sedang) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC3L2', 'DB', this)">Copy</button></div>
+                <div id="boxC3L2" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC3L3" class="level-title">Level 3 (1-Digit Dominan) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC3L3', 'DB', this)">Copy</button></div>
+                <div id="boxC3L3" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC3L4" class="level-title">Level 4 (1-Digit Lemah) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC3L4', 'DB', this)">Copy</button></div>
+                <div id="boxC3L4" class="result-box" style="max-height: 60px;">-</div>
+                <div class="level-row"><span id="lblC3L5" class="level-title">Level 5 (Angka Mati/Off) = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxC3L5', 'DB', this)">Copy</button></div>
+                <div id="boxC3L5" class="result-box" style="max-height: 60px;">-</div>
+            </div>
+        </div>
+
+        <!-- 3. WADAH SALINAN DENGAN TOMBOL RESET -->
+        <h3>3. Wadah Salinan & Hasil 3 Digit</h3>
+        <div class="panel-engine">
+            <div class="level-row">
+                <span id="lblWadahDD" class="level-title">Wadah Salinan Kolom 1 (0 LN)</span>
+                <div class="btn-group">
+                    <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
+                    <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
+                </div>
+            </div>
+            <div id="wadahBoxDD" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
+
+            <div class="level-row" style="margin-top:10px;">
+                <span id="lblWadahDT" class="level-title">Wadah Salinan Kolom 2 (0 LN)</span>
+                <div class="btn-group">
+                    <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
+                    <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
+                </div>
+            </div>
+            <div id="wadahBoxDT" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
+
+            <div class="level-row" style="margin-top:10px;">
+                <span id="lblWadahDB" class="level-title">Wadah Salinan Kolom 3 (0 LN)</span>
+                <div class="btn-group">
+                    <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
+                    <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
+                </div>
+            </div>
+            <div id="wadahBoxDB" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
+
+            <div class="level-row" style="margin-top:15px;">
+                <span id="lbl3DD" class="level-title">3DD = 0 LN</span>
+                <button class="btn-copy" onclick="copyWadah('box3DD', this)">Copy</button>
+            </div>
+            <div id="box3DD" class="result-box" style="max-height: 90px; margin-top:4px;">-</div>
+
+            <div class="level-row" style="margin-top:15px;">
+                <span id="lbl3DB" class="level-title">3DB = 0 LN</span>
+                <button class="btn-copy" onclick="copyWadah('box3DB', this)">Copy</button>
+            </div>
+            <div id="box3DB" class="result-box" style="max-height: 90px; margin-top:4px;">-</div>
+        </div>
+    </div>
+</div>
+
+<script>
+let globalProcessedData = [];
+let wadahData = {
+    DD: new Set(),
+    DT: new Set(),
+    DB: new Set()
+};
+
+function getCombinations(arr, k) {
+    if (k === 0) return [[]];
+    if (arr.length === 0) return [];
+    let head = arr[0];
+    let tail = arr.slice(1);
+    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
+}
+
+function getMultipleAdaptiveAM(rowsData, extractorFunc) {
+    let candidateSet = new Set();
+    for (let i = 0; i < rowsData.length - 1; i++) {
+        let val = extractorFunc(rowsData[i + 1]);
+        if (val) { for (let char of val) candidateSet.add(char); }
+    }
+    let candidateArray = Array.from(candidateSet).sort();
+    if (candidateArray.length === 0) return ["0123456789"];
+
+    let validResults = [];
+    for (let len = 3; len <= Math.min(6, candidateArray.length); len++) {
+        let combos = getCombinations(candidateArray, len);
+        for (let combo of combos) {
+            let comboSet = new Set(combo);
+            let isValid = true;
+            for (let i = 0; i < rowsData.length - 1; i++) {
+                let targetVal = extractorFunc(rowsData[i + 1]);
+                let matchCount = 0;
+                if (targetVal) {
+                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
+                }
+                if (matchCount === 0) { isValid = false; break; }
+            }
+            if (isValid) {
+                validResults.push(combo.join(''));
+            }
+        }
+    }
+    return validResults.length > 0 ? validResults : [candidateArray.join('')];
+}
+
+function prosesPertama() {
+    let raw = document.getElementById('inputData').value;
+    let dataArray = raw.split(/[\n,]+/).map(i => i.trim()).filter(i => i.length > 0);
+    
+    if (dataArray.length < 2) {
+        alert("Masukkan minimal 2 data angka untuk dianalisis!");
+        return;
+    }
+
+    document.getElementById('inputData').value = dataArray.join(',');
+    document.getElementById('infoInput').textContent = "Jumlah Input: " + dataArray.length;
+
+    globalProcessedData = dataArray.map(item => {
+        if (item.length < 4) item = item.padStart(4, '0');
+        return {
+            original: item,
+            digits: [item.charAt(0), item.charAt(1), item.charAt(2), item.charAt(3)]
+        };
+    });
+
+    let amCol1 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[0] + row.digits[1]);
+    let amCol2 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[1] + row.digits[2]);
+    let amCol3 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[2] + row.digits[3]);
+
+    document.getElementById('bfCol1').value = amCol1.join('\n');
+    document.getElementById('bfCol2').value = amCol2.join('\n');
+    document.getElementById('bfCol3').value = amCol3.join('\n');
+
+    document.getElementById('btnProsesKedua').style.display = 'block';
+}
+
+function prosesEngineCol(colTextareaId, prefixKey) {
+    let rawLines = document.getElementById(colTextareaId).value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+    
+    // 1. Hitung Frekuensi Muncul Setiap Digit (0-9) di dalam Kolom Brute Force
+    let freq = {};
+    for (let d = 0; d <= 9; d++) freq[d.toString()] = 0;
+    
+    rawLines.forEach(line => {
+        for (let char of line) {
+            if (freq[char] !== undefined) freq[char]++;
+        }
+    });
+
+    // Cari Frekuensi Maksimal untuk Skala Relatif
+    let maxFreq = Math.max(...Object.values(freq));
+    if (maxFreq === 0) maxFreq = 1;
+
+    let levels = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [] };
+
+    // 2. Evaluasi Setiap Pasangan 2-Digit (00 - 99)
+    for (let i = 0; i <= 99; i++) {
+        let pair = i.toString().padStart(2, '0');
+        let d1 = pair.charAt(0);
+        let d2 = pair.charAt(1);
+
+        let f1 = freq[d1] || 0;
+        let f2 = freq[d2] || 0;
+
+        let hasD1 = f1 > 0;
+        let hasD2 = f2 > 0;
+
+        let targetLevel = 5;
+
+        if (hasD1 && hasD2) {
+            // Kedua Digit Ada di Brute Force
+            let score = (f1 + f2) / (maxFreq * 2); // Nilai rasio 0.0 sampai 1.0
+            if (score >= 0.75) targetLevel = 0;      // Level 0: Frekuensi Sangat Tinggi
+            else if (score >= 0.40) targetLevel = 1; // Level 1: Frekuensi Sedang
+            else targetLevel = 2;                     // Level 2: Frekuensi Rendah
+        } else if (hasD1 || hasD2) {
+            // Hanya 1 Digit Ada di Brute Force
+            let singleFreq = hasD1 ? f1 : f2;
+            let score = singleFreq / maxFreq;
+            if (score >= 0.50) targetLevel = 3;      // Level 3: 1-Digit Kuat
+            else targetLevel = 4;                     // Level 4: 1-Digit Lemah
+        } else {
+            // Tidak Ada Digit Sama Sekali
+            targetLevel = 5;                           // Level 5: Angka Mati
+        }
+
+        levels[targetLevel].push(pair);
+    }
+
+    // 3. Render ke Tampilan HTML
+    for (let l = 0; l <= 5; l++) {
+        let arr = levels[l];
+        let box = document.getElementById(`box${prefixKey}L${l}`);
+        let lbl = document.getElementById(`lbl${prefixKey}L${l}`);
+        if (box && lbl) {
+            box.textContent = arr.length ? arr.join('*') : "-";
+            let names = ["Super Top", "Top", "Sedang", "1-Digit Dominan", "1-Digit Lemah", "Angka Mati/Off"];
+            lbl.textContent = `Level ${l} (${names[l]}) = ${arr.length} LN`;
+        }
+    }
+}
+
+function prosesKedua() {
+    document.getElementById('areaLevel').style.display = 'block';
+    prosesEngineCol('bfCol1', 'C1');
+    prosesEngineCol('bfCol2', 'C2');
+    prosesEngineCol('bfCol3', 'C3');
+}
+
+function copyLevelBox(boxId, type, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "-") return;
+    
+    let textItems = box.textContent.split('*').filter(i => i.length > 0);
+    textItems.forEach(item => wadahData[type].add(item));
+
+    updateWadahUI();
+
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
+    });
+}
+
+function updateWadahUI() {
+    let arrDD = Array.from(wadahData.DD);
+    document.getElementById('wadahBoxDD').textContent = arrDD.length ? arrDD.join('*') : "-";
+    document.getElementById('lblWadahDD').textContent = `Wadah Salinan Kolom 1 (${arrDD.length} LN)`;
+
+    let arrDT = Array.from(wadahData.DT);
+    document.getElementById('wadahBoxDT').textContent = arrDT.length ? arrDT.join('*') : "-";
+    document.getElementById('lblWadahDT').textContent = `Wadah Salinan Kolom 2 (${arrDT.length} LN)`;
+
+    let arrDB = Array.from(wadahData.DB);
+    document.getElementById('wadahBoxDB').textContent = arrDB.length ? arrDB.join('*') : "-";
+    document.getElementById('lblWadahDB').textContent = `Wadah Salinan Kolom 3 (${arrDB.length} LN)`;
+
+    let set3DD = new Set();
+    if (arrDD.length > 0 && arrDT.length > 0) {
+        for (let a of arrDD) {
+            for (let b of arrDT) {
+                if (a.charAt(1) === b.charAt(0)) set3DD.add(a + b.charAt(1));
+            }
+        }
+    }
+    let res3DD = Array.from(set3DD);
+    document.getElementById('box3DD').textContent = res3DD.length ? res3DD.join('*') : "-";
+    document.getElementById('lbl3DD').textContent = `3DD = ${res3DD.length} LN`;
+
+    let set3DB = new Set();
+    if (arrDT.length > 0 && arrDB.length > 0) {
+        for (let b of arrDT) {
+            for (let c of arrDB) {
+                if (b.charAt(1) === c.charAt(0)) set3DB.add(b + c.charAt(1));
+            }
+        }
+    }
+    let res3DB = Array.from(set3DB);
+    document.getElementById('box3DB').textContent = res3DB.length ? res3DB.join('*') : "-";
+    document.getElementById('lbl3DB').textContent = `3DB = ${res3DB.length} LN`;
+}
+
+function resetWadah(type) {
+    wadahData[type].clear();
+    updateWadahUI();
+}
+
+function copyWadah(boxId, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "-") return;
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
+    });
+}
+</script>
+
+</body>
+</html>

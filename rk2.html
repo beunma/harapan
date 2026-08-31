@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekap 2D Engine - Dynamic Patah & Terpilih Area</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 15px;
+      margin: 0;
+    }
+
+    .col-md-12,
+    .col-md-6 {
+      box-sizing: border-box;
+    }
+
+    .row.clearfix {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .col-md-6 {
+      flex: 1;
+      min-width: 320px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      background-color: #1e1e1e;
+      color: #00ffcc;
+      border: 1px solid #444;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 13px;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #00ffcc;
+    }
+
+    .panel {
+      border: 1px solid #333;
+      border-radius: 4px;
+      margin-top: 10px;
+      background: #181818;
+    }
+
+    .panel-heading {
+      padding: 8px 12px;
+      font-weight: bold;
+      background: #252525;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+
+    .panel-danger {
+      border-color: #d32f2f;
+    }
+
+    .panel-danger .panel-heading {
+      background: #b71c1c;
+      color: white;
+    }
+
+    .panel-success {
+      border-color: #388e3c;
+    }
+
+    .panel-success .panel-heading {
+      background: #1b5e20;
+      color: white;
+    }
+
+    .panel-primary {
+      border-color: #1976d2;
+    }
+
+    .panel-primary .panel-heading {
+      background: #0d47a1;
+      color: white;
+    }
+
+    .panel-info {
+      border-color: #00838f;
+    }
+
+    .panel-info .panel-heading {
+      background: #006064;
+      color: white;
+    }
+
+    .panel-warning {
+      border-color: #f57f17;
+    }
+
+    .panel-warning .panel-heading {
+      background: #f57f17;
+      color: white;
+    }
+
+    table#ln {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #000;
+    }
+
+    table#ln td {
+      border: 1px solid #333;
+      text-align: center;
+      padding: 6px 2px;
+      font-weight: bold;
+      font-family: monospace;
+      color: #555;
+      transition: all 0.2s ease;
+    }
+
+    table#ln td.patah-0 {
+      background-color: #2e7d32 !important;
+      color: #fff !important;
+    }
+
+    table#ln td.patah-1 {
+      background-color: #f57f17 !important;
+      color: #fff !important;
+      opacity: 0.95;
+    }
+
+    table#ln td.patah-2 {
+      background-color: #e65100 !important;
+      color: #fff !important;
+      opacity: 0.85;
+    }
+
+    table#ln td.patah-3 {
+      background-color: #c62828 !important;
+      color: #ccc !important;
+      opacity: 0.70;
+    }
+
+    table#ln td.patah-4 {
+      background-color: #4e342e !important;
+      color: #aaa !important;
+      opacity: 0.55;
+    }
+
+    table#ln td.patah-high {
+      background-color: #212121 !important;
+      color: #555 !important;
+      opacity: 0.35;
+    }
+
+    .btn-custom {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .btn-copy-header {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .btn-clean-header {
+      background: #ff5252;
+      color: #fff;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .btn-process-header {
+      background: #ffeb3b;
+      color: #000;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    textarea.ln {
+      width: 100%;
+      color: #00ff00;
+      font-family: monospace;
+      background: #0a0a0a;
+      border: none;
+      resize: vertical;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    textarea.info-helper {
+      width: 100%;
+      color: #ffeb3b;
+      font-family: monospace;
+      background: #111;
+      border: 1px solid #333;
+      resize: none;
+      padding: 6px 8px;
+      box-sizing: border-box;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    /* Wadah Analisa Score - Auto Height Non-Scrollable */
+    textarea.score-helper {
+      width: 100%;
+      color: #00e676;
+      font-family: monospace;
+      background: #051408;
+      border: 1px solid #1b5e20;
+      resize: none;
+      overflow: hidden;
+      padding: 8px;
+      box-sizing: border-box;
+      font-size: 12px;
+      margin-top: 6px;
+      white-space: pre;
+    }
+
+    textarea.off-multi {
+      width: 49%;
+      box-sizing: border-box;
+      resize: vertical;
+      min-height: 180px;
+      vertical-align: top;
+    }
+  </style>
+</head>
+
+<body>
+
+<form id="rekap2d_form" onsubmit="return false;">
+
+  <div class="col-md-12 column">
+
+    <div class="row clearfix">
+
+      <!-- ==========================================
+           KOLOM KIRI
+           ========================================== -->
+      <div class="col-md-6 column">
+
+        <textarea
+          placeholder="Kepala Off&#10;1 baris = 1 acuan patahan&#10;Contoh:&#10;1&#10;35&#10;7&#10;067&#10;814"
+          name="kepala"
+          class="form-control off-multi"
+          rows="10"
+        ></textarea>
+
+        <textarea
+          placeholder="Ekor Off&#10;1 baris = 1 acuan patahan&#10;Contoh:&#10;2&#10;46&#10;8&#10;19&#10;067"
+          name="ekor"
+          class="form-control off-multi"
+          rows="10"
+        ></textarea>
+
+        <input
+          onkeyup="this.value = this.value.replace(/[^0-9]/g, '')"
+          style="width:49%;"
+          placeholder="Jarak Lemah Dari"
+          type="text"
+          name="jalem1"
+        >
+
+        <input
+          onkeyup="this.value = this.value.replace(/[^0-9]/g, '')"
+          style="width:49%;"
+          placeholder="Jarak Lemah Sampai"
+          type="text"
+          name="jalem2"
+        >
+
+        <input
+          type="text"
+          style="width:99%;"
+          name="shio"
+          placeholder="Shio Off (misal: 11,12 atau 1 2 5)"
+        >
+
+        <input
+          onkeyup="this.value = this.value.replace(/[^0-9]/g, '')"
+          style="width:99%;"
+          placeholder="Jumlah Off (0-9)"
+          type="text"
+          name="jml"
+        >
+
+        <input
+          onkeyup="this.value = this.value.replace(/[^0-9]/g, '')"
+          style="width:99%;"
+          placeholder="Selisih Off (0-9)"
+          type="text"
+          name="sls"
+        >
+
+        <br>
+
+        <select name="kbk" style="width:49%;">
+          <option value="Normal">K Besar/Kecil</option>
+          <option value="Besar">Besar (5-9)</option>
+          <option value="Kecil">Kecil (0-4)</option>
+        </select>
+
+        <select name="ebk" style="width:49%;">
+          <option value="Normal">E Besar/Kecil</option>
+          <option value="Besar">Besar (5-9)</option>
+          <option value="Kecil">Kecil (0-4)</option>
+        </select>
+
+        <select name="kgj" style="width:49%;">
+          <option value="Normal">K Ganjil/Genap</option>
+          <option value="Ganjil">Ganjil</option>
+          <option value="Genap">Genap</option>
+        </select>
+
+        <select name="egj" style="width:49%;">
+          <option value="Normal">E Ganjil/Genap</option>
+          <option value="Ganjil">Ganjil</option>
+          <option value="Genap">Genap</option>
+        </select>
+
+        <select name="homsil" style="width:49%;">
+          <option value="Normal">Homo/Silang</option>
+          <option value="Homo">Homo</option>
+          <option value="Silang">Silang</option>
+        </select>
+
+        <select name="ttepi" style="width:49%;">
+          <option value="Normal">Tengah/Tepi</option>
+          <option value="Tengah">Tengah (25-74)</option>
+          <option value="Tepi">Tepi (00-24, 75-99)</option>
+        </select>
+
+        <select name="jbs" style="width:49%;">
+          <option value="Normal">Jumlah Besar/Kecil</option>
+          <option value="Jbesar">Jbesar (5-9)</option>
+          <option value="Jkecil">Jkecil (0-4)</option>
+        </select>
+
+        <select name="jgj" style="width:49%;">
+          <option value="Normal">Jumlah Ganjil/Genap</option>
+          <option value="Jganjil">Jganjil</option>
+          <option value="Jgenap">Jgenap</option>
+        </select>
+
+        <select name="bangpis" style="width:49%;">
+          <option value="Normal">Kembang/Kempis</option>
+          <option value="Kembang">Kembang (K &lt; E)</option>
+          <option value="Kempis">Kempis (K &gt; E)</option>
+        </select>
+
+        <select
+          name="koma"
+          id="spinner_pemisah"
+          style="width:49%;"
+          onchange="updateTerpilihSeparator()"
+        >
+          <option value="*">Pemisah (*)</option>
+          <option value="#">Pemisah (#)</option>
+          <option value=",">Pemisah (,)</option>
+          <option value=".">Pemisah (.)</option>
+          <option value=" ">Pemisah Spasi</option>
+        </select>
+
+        <!-- LN OFF -->
+        <div class="panel panel-danger">
+          <div class="panel-heading">
+            LN OFF
+          </div>
+          <div class="panel-body">
+            <textarea
+              placeholder="LN off bebas (contoh: 01*02*03 atau 01 02 03)"
+              name="idoff"
+              class="form-control"
+              rows="2"
+              style="width:100%; box-sizing:border-box;"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- AI / AK / CT -->
+        <div class="panel panel-success">
+          <div class="panel-heading">
+            AI/AK/CT (1 Line per AI)
+          </div>
+          <div class="panel-body">
+            <textarea
+              placeholder="Masukkan AI per baris&#10;Contoh:&#10;1234&#10;5678"
+              name="ids"
+              class="form-control"
+              rows="10"
+              style="width:100%; box-sizing:border-box;"
+            ></textarea>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onclick="prosesRekap()"
+          class="btn btn-custom"
+          style="background:#d81b60; color:#fff;"
+        >
+          Generate
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-custom"
+          style="background:#f44336; color:#fff;"
+          onclick="resetRekapForm()"
+        >
+          Reset
+        </button>
+
+      </div>
+
+
+      <!-- ==========================================
+           KOLOM KANAN
+           ========================================== -->
+      <div class="col-md-6 column">
+
+        <div
+          class="panel-heading"
+          style="padding:5px; margin-bottom:5px;"
+        >
+          LN DASAR
+        </div>
+
+        <textarea
+          placeholder="Kosongkan jika 100 LN (00-99)"
+          name="ids2"
+          class="form-control dasar"
+          rows="2"
+          style="width:100%; box-sizing:border-box;"
+        ></textarea>
+
+        <table class="table table-bordered" id="ln">
+          <tbody>
+            <tr>
+              <td class="x00">00</td>
+              <td class="x01">01</td>
+              <td class="x02">02</td>
+              <td class="x03">03</td>
+              <td class="x04">04</td>
+              <td class="x05">05</td>
+              <td class="x06">06</td>
+              <td class="x07">07</td>
+              <td class="x08">08</td>
+              <td class="x09">09</td>
+            </tr>
+            <tr>
+              <td class="x10">10</td>
+              <td class="x11">11</td>
+              <td class="x12">12</td>
+              <td class="x13">13</td>
+              <td class="x14">14</td>
+              <td class="x15">15</td>
+              <td class="x16">16</td>
+              <td class="x17">17</td>
+              <td class="x18">18</td>
+              <td class="x19">19</td>
+            </tr>
+            <tr>
+              <td class="x20">20</td>
+              <td class="x21">21</td>
+              <td class="x22">22</td>
+              <td class="x23">23</td>
+              <td class="x24">24</td>
+              <td class="x25">25</td>
+              <td class="x26">26</td>
+              <td class="x27">27</td>
+              <td class="x28">28</td>
+              <td class="x29">29</td>
+            </tr>
+            <tr>
+              <td class="x30">30</td>
+              <td class="x31">31</td>
+              <td class="x32">32</td>
+              <td class="x33">33</td>
+              <td class="x34">34</td>
+              <td class="x35">35</td>
+              <td class="x36">36</td>
+              <td class="x37">37</td>
+              <td class="x38">38</td>
+              <td class="x39">39</td>
+            </tr>
+            <tr>
+              <td class="x40">40</td>
+              <td class="x41">41</td>
+              <td class="x42">42</td>
+              <td class="x43">43</td>
+              <td class="x44">44</td>
+              <td class="x45">45</td>
+              <td class="x46">46</td>
+              <td class="x47">47</td>
+              <td class="x48">48</td>
+              <td class="x49">49</td>
+            </tr>
+            <tr>
+              <td class="x50">50</td>
+              <td class="x51">51</td>
+              <td class="x52">52</td>
+              <td class="x53">53</td>
+              <td class="x54">54</td>
+              <td class="x55">55</td>
+              <td class="x56">56</td>
+              <td class="x57">57</td>
+              <td class="x58">58</td>
+              <td class="x59">59</td>
+            </tr>
+            <tr>
+              <td class="x60">60</td>
+              <td class="x61">61</td>
+              <td class="x62">62</td>
+              <td class="x63">63</td>
+              <td class="x64">64</td>
+              <td class="x65">65</td>
+              <td class="x66">66</td>
+              <td class="x67">67</td>
+              <td class="x68">68</td>
+              <td class="x69">69</td>
+            </tr>
+            <tr>
+              <td class="x70">70</td>
+              <td class="x71">71</td>
+              <td class="x72">72</td>
+              <td class="x73">73</td>
+              <td class="x74">74</td>
+              <td class="x75">75</td>
+              <td class="x76">76</td>
+              <td class="x77">77</td>
+              <td class="x78">78</td>
+              <td class="x79">79</td>
+            </tr>
+            <tr>
+              <td class="x80">80</td>
+              <td class="x81">81</td>
+              <td class="x82">82</td>
+              <td class="x83">83</td>
+              <td class="x84">84</td>
+              <td class="x85">85</td>
+              <td class="x86">86</td>
+              <td class="x87">87</td>
+              <td class="x88">88</td>
+              <td class="x89">89</td>
+            </tr>
+            <tr>
+              <td class="x90">90</td>
+              <td class="x91">91</td>
+              <td class="x92">92</td>
+              <td class="x93">93</td>
+              <td class="x94">94</td>
+              <td class="x95">95</td>
+              <td class="x96">96</td>
+              <td class="x97">97</td>
+              <td class="x98">98</td>
+              <td class="x99">99</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+
+    <!-- ==========================================
+         HASIL BUCKET PATAH DINAMIS
+         ========================================== -->
+    <div style="margin-top:15px;" id="patah_container"></div>
+
+
+    <!-- ==========================================
+         TERPILIH
+         ========================================== -->
+    <div style="margin-top:15px;">
+      <div class="panel panel-info" id="panel_terpilih">
+        <div class="panel-heading">
+          <span id="label_terpilih">
+            Terpilih = 0 LN
+          </span>
+          <div>
+            <button
+              type="button"
+              class="btn-copy-header"
+              onclick="copyTerpilihDirect(this)"
+            >
+              Copy
+            </button>
+            <button
+              type="button"
+              class="btn-clean-header"
+              onclick="cleanTerpilih()"
+            >
+              Clean
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <textarea
+            id="result_terpilih"
+            class="ln"
+            rows="3"
+            readonly
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==========================================
+         HELPER 1 AREA
+         ========================================== -->
+    <div style="margin-top:15px;">
+      <div class="panel panel-warning" id="panel_helper1">
+        <div class="panel-heading">
+          <span id="label_helper1">
+            Helper 1 = 0 LN
+          </span>
+          <div>
+            <button
+              type="button"
+              class="btn-process-header"
+              onclick="prosesHelper1()"
+            >
+              Proses
+            </button>
+            <button
+              type="button"
+              class="btn-copy-header"
+              onclick="copyHelper1Direct(this)"
+            >
+              Copy
+            </button>
+            <button
+              type="button"
+              class="btn-clean-header"
+              onclick="cleanHelper1()"
+            >
+              Clean
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <textarea
+            id="info_helper1"
+            class="info-helper"
+            rows="2"
+            readonly
+            placeholder="Info proses patahan digit (0-9) akan muncul di sini"
+          ></textarea>
+          
+          <textarea
+            id="result_helper1"
+            class="ln"
+            rows="3"
+            readonly
+          ></textarea>
+
+          <!-- Wadah Analisa Score Patahan (Auto Height & Non-Scrollable) -->
+          <textarea
+            id="score_helper1"
+            class="score-helper"
+            readonly
+            style="display:none;"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</form>
+
+
+<script>
+
+  const SHIO_MAP = {
+    1: ["01","13","25","37","49","61","73","85","97"],
+    2: ["02","14","26","38","50","62","74","86","98"],
+    3: ["03","15","27","39","51","63","75","87","99"],
+    4: ["04","16","28","40","52","64","76","88","00"],
+    5: ["05","17","29","41","53","65","77","89"],
+    6: ["06","18","30","42","54","66","78","90"],
+    7: ["07","19","31","43","55","67","79","91"],
+    8: ["08","20","32","44","56","68","80","92"],
+    9: ["09","21","33","45","57","69","81","93"],
+    10: ["10","22","34","46","58","70","82","94"],
+    11: ["11","23","35","47","59","71","83","95"],
+    12: ["12","24","36","48","60","72","84","96"]
+  };
+
+
+  /* ==========================================
+     LIST TERPILIH & HELPER 1
+     ========================================== */
+  let terpilihLNList = [];
+  let helper1LNList = [];
+
+
+  /* ==========================================
+     PARSE LINE OFF
+     ========================================== */
+  function parseOffLines(raw) {
+    return raw
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+  }
+
+
+  /* ==========================================
+     SEPARATOR
+     ========================================== */
+  function getSelectedSeparator() {
+    const form = document.getElementById('rekap2d_form');
+    return form.elements['koma'].value || ' ';
+  }
+
+
+  /* ==========================================
+     DIGITAL ROOT
+     ========================================== */
+  function getJumlah1D(val) {
+    while (val >= 10) {
+      val = Math.floor(val / 10) + (val % 10);
+    }
+    return val;
+  }
+
+
+  /* ==========================================
+     PROSES REKAP
+     ========================================== */
+  function prosesRekap() {
+    const form = document.getElementById('rekap2d_form');
+
+    let rawDasar = form.elements['ids2'].value.trim();
+    let baseLN = [];
+
+    if (rawDasar.length > 0) {
+      baseLN = rawDasar.match(/\b\d{2}\b/g) || [];
+    } else {
+      for (let i = 0; i < 100; i++) {
+        baseLN.push(i.toString().padStart(2, '0'));
+      }
+    }
+
+    baseLN = [...new Set(baseLN)];
+
+    const kepalaOff = parseOffLines(form.elements['kepala'].value);
+    const ekorOff = parseOffLines(form.elements['ekor'].value);
+
+    const jalem1 = parseInt(form.elements['jalem1'].value, 10);
+    const jalem2 = parseInt(form.elements['jalem2'].value, 10);
+
+    const shioOff = (form.elements['shio'].value.match(/\d+/g) || []).map(Number);
+    const jmlOff = (form.elements['jml'].value.match(/\d/g) || []).map(Number);
+    const slsOff = (form.elements['sls'].value.match(/\d/g) || []).map(Number);
+
+    const kbk = form.elements['kbk'].value;
+    const ebk = form.elements['ebk'].value;
+    const kgj = form.elements['kgj'].value;
+    const egj = form.elements['egj'].value;
+    const homsil = form.elements['homsil'].value;
+    const ttepi = form.elements['ttepi'].value;
+    const jbs = form.elements['jbs'].value;
+    const jgj = form.elements['jgj'].value;
+    const bangpis = form.elements['bangpis'].value;
+    const koma = getSelectedSeparator();
+
+    let lnOffRaw = form.elements['idoff'].value.trim();
+    let listLnOff = lnOffRaw ? (lnOffRaw.match(/\b\d{2}\b/g) || []) : [];
+
+    let aiRaw = form.elements['ids'].value.trim();
+    let listAI = aiRaw
+      ? aiRaw.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 0)
+      : [];
+
+    document.querySelectorAll('#ln td').forEach(td => {
+      td.className = td.className.replace(/\bpatah-\S+\b/g, '').trim();
+    });
+
+    let resultBuckets = {};
+
+    baseLN.forEach(numStr => {
+      let num = parseInt(numStr, 10);
+      let k = parseInt(numStr.charAt(0), 10);
+      let e = parseInt(numStr.charAt(1), 10);
+
+      let jumlah = getJumlah1D(k + e);
+      let selisih = Math.abs(k - e);
+
+      let patahCount = 0;
+
+      kepalaOff.forEach(rule => {
+        if (rule.includes(numStr.charAt(0))) patahCount++;
+      });
+
+      ekorOff.forEach(rule => {
+        if (rule.includes(numStr.charAt(1))) patahCount++;
+      });
+
+      if (!isNaN(jalem1) && !isNaN(jalem2)) {
+        if (jalem1 <= jalem2) {
+          if (num >= jalem1 && num <= jalem2) patahCount++;
+        } else {
+          if (num >= jalem1 || num <= jalem2) patahCount++;
+        }
+      }
+
+      shioOff.forEach(s => {
+        if (SHIO_MAP[s] && SHIO_MAP[s].includes(numStr)) patahCount++;
+      });
+
+      if (jmlOff.includes(jumlah)) patahCount++;
+      if (slsOff.includes(selisih)) patahCount++;
+
+      if (kbk === 'Besar' && k < 5) patahCount++;
+      if (kbk === 'Kecil' && k >= 5) patahCount++;
+
+      if (ebk === 'Besar' && e < 5) patahCount++;
+      if (ebk === 'Kecil' && e >= 5) patahCount++;
+
+      if (kgj === 'Ganjil' && k % 2 === 0) patahCount++;
+      if (kgj === 'Genap' && k % 2 !== 0) patahCount++;
+
+      if (egj === 'Ganjil' && e % 2 === 0) patahCount++;
+      if (egj === 'Genap' && e % 2 !== 0) patahCount++;
+
+      if (homsil === 'Homo' && (k % 2 !== e % 2)) patahCount++;
+      if (homsil === 'Silang' && (k % 2 === e % 2)) patahCount++;
+
+      if (ttepi === 'Tengah' && (num < 25 || num > 74)) patahCount++;
+      if (ttepi === 'Tepi' && (num >= 25 && num <= 74)) patahCount++;
+
+      if (jbs === 'Jbesar' && jumlah < 5) patahCount++;
+      if (jbs === 'Jkecil' && jumlah >= 5) patahCount++;
+
+      if (jgj === 'Jganjil' && jumlah % 2 === 0) patahCount++;
+      if (jgj === 'Jgenap' && jumlah % 2 !== 0) patahCount++;
+
+      if (bangpis === 'Kembang' && k >= e) patahCount++;
+      if (bangpis === 'Kempis' && k <= e) patahCount++;
+
+      if (listLnOff.includes(numStr)) patahCount++;
+
+      listAI.forEach(aiStr => {
+        let digits = aiStr.replace(/\D/g, '').split('');
+        if (digits.length > 0) {
+          if (!digits.includes(numStr.charAt(0)) && !digits.includes(numStr.charAt(1))) {
+            patahCount++;
+          }
+        }
+      });
+
+      if (!resultBuckets[patahCount]) {
+        resultBuckets[patahCount] = [];
+      }
+      resultBuckets[patahCount].push(numStr);
+
+      let cell = document.querySelector(`#ln .x${numStr}`);
+      if (cell) {
+        let classColor = patahCount <= 4 ? `patah-${patahCount}` : 'patah-high';
+        cell.classList.add(classColor);
+      }
+    });
+
+    renderDynamicPanels(resultBuckets, koma);
+  }
+
+
+  /* ==========================================
+     RENDER PANEL PATAH DINAMIS
+     ========================================== */
+  function renderDynamicPanels(resultBuckets, separator) {
+    const container = document.getElementById('patah_container');
+    container.innerHTML = '';
+
+    const sortedKeys = Object.keys(resultBuckets).map(Number).sort((a, b) => a - b);
+
+    sortedKeys.forEach(patahVal => {
+      const dataArray = resultBuckets[patahVal];
+      if (!dataArray || dataArray.length === 0) return;
+
+      let title = patahVal === 0 ? "LN TOP" : `Patah ${patahVal}`;
+      let panelClass = "panel-danger";
+
+      if (patahVal === 0) {
+        panelClass = "panel-primary";
+      } else if (patahVal === 1 || patahVal === 2) {
+        panelClass = "panel-success";
+      }
+
+      const panelDiv = document.createElement('div');
+      panelDiv.className = `panel ${panelClass} result-panel`;
+      const textareaId = `patah_box_${patahVal}`;
+
+      panelDiv.innerHTML = `
+        <div class="panel-heading">
+          <span>${title} = ${dataArray.length} LN</span>
+          <button
+            type="button"
+            class="btn-copy-header"
+            onclick="copyAndAppendTerpilih('${textareaId}', this)"
+          >
+            Copy
+          </button>
+        </div>
+        <div class="panel-body">
+          <textarea
+            id="${textareaId}"
+            class="ln"
+            rows="2"
+            readonly
+          >${dataArray.join(separator)}</textarea>
+        </div>
+      `;
+
+      container.appendChild(panelDiv);
+    });
+  }
+
+
+  /* ==========================================
+     COPY PATAH -> TERPILIH
+     ========================================== */
+  function copyAndAppendTerpilih(textareaId, btn) {
+    const textarea = document.getElementById(textareaId);
+    if (!textarea || !textarea.value) return;
+
+    let newItems = textarea.value.match(/\b\d{2}\b/g) || [];
+
+    if (newItems.length > 0) {
+      newItems.forEach(item => {
+        if (!terpilihLNList.includes(item)) {
+          terpilihLNList.push(item);
+        }
+      });
+      renderTerpilihArea();
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textarea.value).then(() => showCopySuccess(btn));
+    } else {
+      textarea.select();
+      document.execCommand('copy');
+      showCopySuccess(btn);
+    }
+  }
+
+
+  /* ==========================================
+     UPDATE TERPILIH
+     ========================================== */
+  function renderTerpilihArea() {
+    const label = document.getElementById('label_terpilih');
+    const textarea = document.getElementById('result_terpilih');
+    const sep = getSelectedSeparator();
+
+    label.textContent = `Terpilih = ${terpilihLNList.length} LN`;
+    textarea.value = terpilihLNList.join(sep);
+  }
+
+
+  /* ==========================================
+     UPDATE HELPER 1
+     ========================================== */
+  function renderHelper1Area() {
+    const label = document.getElementById('label_helper1');
+    const textarea = document.getElementById('result_helper1');
+    const sep = getSelectedSeparator();
+
+    label.textContent = `Helper 1 = ${helper1LNList.length} LN`;
+    textarea.value = helper1LNList.join(sep);
+  }
+
+
+  /* ==========================================
+     UPDATE SEPARATOR
+     ========================================== */
+  function updateTerpilihSeparator() {
+    renderTerpilihArea();
+    renderHelper1Area();
+  }
+
+
+  /* ==========================================
+     COPY TERPILIH
+     ========================================== */
+  function copyTerpilihDirect(btn) {
+    const textarea = document.getElementById('result_terpilih');
+    if (!textarea || !textarea.value) return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textarea.value).then(() => showCopySuccess(btn));
+    } else {
+      textarea.select();
+      document.execCommand('copy');
+      showCopySuccess(btn);
+    }
+  }
+
+
+  /* ==========================================
+     CLEAN TERPILIH
+     ========================================== */
+  function cleanTerpilih() {
+    terpilihLNList = [];
+    renderTerpilihArea();
+  }
+
+
+  /* ==========================================
+     PROSES HELPER 1 & SCORE ANALYSIS
+     ========================================== */
+  function prosesHelper1() {
+    const form = document.getElementById('rekap2d_form');
+    let aiRaw = form.elements['ids'].value.trim();
+
+    if (!aiRaw) return;
+
+    let lines = aiRaw.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 0);
+    if (lines.length === 0) return;
+
+    const container = document.getElementById('patah_container');
+    const generatedPanels = container.querySelectorAll('.result-panel');
+    if (generatedPanels.length === 0) return;
+
+    let totalBaris = lines.length;
+    let patahPerDigit = Array(10).fill(0);
+
+    lines.forEach(lineStr => {
+      let digits = lineStr.replace(/\D/g, '').split('');
+      for (let d = 0; d <= 9; d++) {
+        if (!digits.includes(d.toString())) {
+          patahPerDigit[d]++;
+        }
+      }
+    });
+
+    let infoHeader = `** Jumlah Baris Yang di Proses = ${totalBaris} Baris **\n`;
+    let infoData = `** ${patahPerDigit.join(' - ')} **`;
+    document.getElementById('info_helper1').value = infoHeader + infoData;
+
+    let sequencePatah = [];
+    patahPerDigit.forEach(pVal => {
+      if (!sequencePatah.includes(pVal)) {
+        sequencePatah.push(pVal);
+      }
+    });
+
+    helper1LNList = [];
+
+    sequencePatah.forEach(pVal => {
+      let targetTextarea = document.getElementById(`patah_box_${pVal}`);
+      if (targetTextarea && targetTextarea.value) {
+        let items = targetTextarea.value.match(/\b\d{2}\b/g) || [];
+        items.forEach(item => {
+          if (!helper1LNList.includes(item)) {
+            helper1LNList.push(item);
+          }
+        });
+      }
+    });
+
+    renderHelper1Area();
+
+    // ==========================================
+    // HITUNG & KALKULASI ANALISA SCORE PATAHAN
+    // ==========================================
+    let multiplierMap = {};
+    patahPerDigit.forEach(pVal => {
+      multiplierMap[pVal] = (multiplierMap[pVal] || 0) + 1;
+    });
+
+    let scoreDataList = [];
+
+    Object.keys(multiplierMap).forEach(pKey => {
+      let pVal = parseInt(pKey, 10);
+      let multiplier = multiplierMap[pVal];
+      let targetTextarea = document.getElementById(`patah_box_${pVal}`);
+
+      if (targetTextarea && targetTextarea.value) {
+        let items = targetTextarea.value.match(/\b\d{2}\b/g) || [];
+        let lnCount = items.length;
+        if (lnCount > 0) {
+          let score = lnCount * multiplier;
+          scoreDataList.push({
+            patah: pVal,
+            lnCount: lnCount,
+            multiplier: multiplier,
+            score: score
+          });
+        }
+      }
+    });
+
+    // Urutkan berdasarkan SCORE tertinggi ke terendah
+    scoreDataList.sort((a, b) => b.score - a.score);
+
+    if (scoreDataList.length > 0) {
+      let maxLnLen = Math.max(...scoreDataList.map(item => item.lnCount.toString().length));
+      let maxScoreLen = Math.max(...scoreDataList.map(item => item.score.toString().length));
+
+      let linesScore = scoreDataList.map(item => {
+        let labelPatah = item.patah === 0 ? "Patah 0" : `Patah ${item.patah}`;
+        let lnStr = item.lnCount.toString().padStart(maxLnLen, ' ');
+        let scoreStr = item.score.toString().padStart(maxScoreLen, ' ');
+
+        return `${labelPatah} = ${lnStr} LN x ${item.multiplier}   SCORE = ${scoreStr}`;
+      });
+
+      const scoreBox = document.getElementById('score_helper1');
+      scoreBox.style.display = 'block';
+      scoreBox.value = linesScore.join('\n');
+
+      // Set tinggi textarea mengikuti jumlah baris (non-scrollable auto height)
+      scoreBox.style.height = 'auto';
+      scoreBox.style.height = (scoreBox.scrollHeight + 4) + 'px';
+    } else {
+      const scoreBox = document.getElementById('score_helper1');
+      scoreBox.value = '';
+      scoreBox.style.display = 'none';
+    }
+  }
+
+
+  /* ==========================================
+     COPY HELPER 1
+     ========================================== */
+  function copyHelper1Direct(btn) {
+    const textarea = document.getElementById('result_helper1');
+    if (!textarea || !textarea.value) return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textarea.value).then(() => showCopySuccess(btn));
+    } else {
+      textarea.select();
+      document.execCommand('copy');
+      showCopySuccess(btn);
+    }
+  }
+
+
+  /* ==========================================
+     CLEAN HELPER 1
+     ========================================== */
+  function cleanHelper1() {
+    helper1LNList = [];
+    document.getElementById('info_helper1').value = '';
+
+    const scoreBox = document.getElementById('score_helper1');
+    scoreBox.value = '';
+    scoreBox.style.display = 'none';
+    scoreBox.style.height = 'auto';
+
+    renderHelper1Area();
+  }
+
+
+  /* ==========================================
+     COPY SUCCESS
+     ========================================== */
+  function showCopySuccess(btn) {
+    const oldText = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = '#4caf50';
+    btn.style.color = '#fff';
+
+    setTimeout(() => {
+      btn.textContent = oldText;
+      btn.style.background = '#fff';
+      btn.style.color = '#000';
+    }, 1200);
+  }
+
+
+  /* ==========================================
+     RESET
+     ========================================== */
+  function resetRekapForm() {
+    const form = document.getElementById('rekap2d_form');
+    if (form) form.reset();
+
+    document.getElementById('patah_container').innerHTML = '';
+
+    document.querySelectorAll('#ln td').forEach(td => {
+      td.className = td.className.replace(/\bpatah-\S+\b/g, '').trim();
+    });
+
+    cleanTerpilih();
+    cleanHelper1();
+  }
+
+</script>
+
+</body>
+</html>

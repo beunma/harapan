@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penggabung Teks Offline (Merge Text)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 750px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f4f6f9;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 { margin-top: 0; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #218838; }
+        .btn-main {
+            background-color: #007bff;
+            font-size: 16px;
+            padding: 12px 20px;
+            width: 100%;
+        }
+        .btn-main:hover { background-color: #0056b3; }
+        .file-list-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background: #fafafa;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .file-name {
+            font-weight: bold;
+            color: #333;
+            word-break: break-all;
+        }
+        .btn-group button {
+            padding: 4px 8px;
+            margin-left: 4px;
+            background-color: #6c757d;
+        }
+        .btn-group button.btn-del { background-color: #dc3545; }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .download-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+        }
+        .download-btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Penggabung Teks Offline (Merge)</h2>
+    
+    <div class="form-group">
+        <label for="fileInput">Pilih Beberapa File Teks Sekaligus:</label>
+        <input type="file" id="fileInput" multiple accept=".txt,.html,.js,.css,.json,.csv" onchange="handleFileSelect(event)">
+    </div>
+
+    <div class="form-group">
+        <label>Urutan File yang Akan Digabung (Bisa Diatur Naik/Turun):</label>
+        <div id="fileListBox" class="file-list-box">
+            <div style="color: #888; text-align: center; padding: 10px;">Belum ada file yang dipilih.</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="outputFileName">Nama File Hasil Penggabungan:</label>
+        <input type="text" id="outputFileName" value="hasil_merger.txt">
+    </div>
+
+    <button class="btn-main" onclick="mergeFiles()">Gabungkan Semua File</button>
+
+    <div id="output" class="result-box" style="display:none;">
+        <h3>Penggabungan Selesai!</h3>
+        <p id="resultInfo"></p>
+        <button id="downloadBtn" class="download-btn" onclick="sendMergedToAppInventor()">Download Hasil Merger</button>
+    </div>
+</div>
+
+<script>
+let selectedFiles = [];
+let mergedResultData = { fileName: '', content: '' };
+
+function handleFileSelect(event) {
+    const files = Array.from(event.target.files);
+    files.forEach(file => {
+        selectedFiles.push(file);
+    });
+    renderFileList();
+    event.target.value = '';
+}
+
+function renderFileList() {
+    const box = document.getElementById('fileListBox');
+    if (selectedFiles.length === 0) {
+        box.innerHTML = '<div style="color: #888; text-align: center; padding: 10px;">Belum ada file yang dipilih.</div>';
+        return;
+    }
+
+    box.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `
+            <span class="file-name">${index + 1}. ${file.name}</span>
+            <div class="btn-group">
+                <button onclick="moveUp(${index})" ${index === 0 ? 'disabled' : ''}>▲ Naik</button>
+                <button onclick="moveDown(${index})" ${index === selectedFiles.length - 1 ? 'disabled' : ''}>▼ Turun</button>
+                <button class="btn-del" onclick="removeFile(${index})">Hapus</button>
+            </div>
+        `;
+        box.appendChild(item);
+    });
+}
+
+function moveUp(index) {
+    if (index > 0) {
+        const temp = selectedFiles[index];
+        selectedFiles[index] = selectedFiles[index - 1];
+        selectedFiles[index - 1] = temp;
+        renderFileList();
+    }
+}
+
+function moveDown(index) {
+    if (index < selectedFiles.length - 1) {
+        const temp = selectedFiles[index];
+        selectedFiles[index] = selectedFiles[index + 1];
+        selectedFiles[index + 1] = temp;
+        renderFileList();
+    }
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderFileList();
+}
+
+async function mergeFiles() {
+    if (selectedFiles.length === 0) {
+        alert('Pilih minimal satu file untuk digabungkan, boss!');
+        return;
+    }
+
+    let outName = document.getElementById('outputFileName').value.trim();
+    if (!outName) outName = 'hasil_merger.txt';
+
+    let mergedText = '';
+    
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const fileContent = await selectedFiles[i].text();
+        mergedText += fileContent;
+        
+        if (i < selectedFiles.length - 1 && !fileContent.endsWith('\n')) {
+            mergedText += '\n';
+        }
+    }
+
+    // Simpan hasil ke memori JS
+    mergedResultData.fileName = outName;
+    mergedResultData.content = mergedText;
+
+    document.getElementById('resultInfo').innerText = 
+        `Berhasil menggabungkan ${selectedFiles.length} file (Total: ${mergedText.length.toLocaleString()} karakter).`;
+    
+    document.getElementById('output').style.display = 'block';
+}
+
+// Kirim data ke App Inventor via WebViewString
+function sendMergedToAppInventor() {
+    if (mergedResultData.content) {
+        const payload = mergedResultData.fileName + "|" + mergedResultData.content;
+        
+        if (window.AppInventor) {
+            window.AppInventor.setWebViewString(payload);
+        } else if (window.makeroid) {
+            window.makeroid.setWebViewString(payload);
+        }
+    }
+}
+</script>
+
+</body>
+</html>

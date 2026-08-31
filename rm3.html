@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rumus 14 Result</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f2f2f2;font-family:Arial,sans-serif;color:#222}
+.app{max-width:850px;margin:auto;background:#fff;min-height:100vh;padding:10px}
+.title{text-align:center;font-size:18px;font-weight:bold;margin:2px 0 10px}
+label{display:block;font-size:12px;font-weight:bold;margin:0 0 4px}
+textarea,select{width:100%;border:1px solid #aaa;border-radius:4px;background:#fff;font:14px Arial}
+textarea{padding:8px;resize:vertical}
+#inputResult{height:85px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+select{height:35px;padding:5px}
+button{width:100%;height:38px;margin-top:8px;border:0;border-radius:4px;background:#0d6efd;color:#fff;font-weight:bold}
+.info{font-size:11px;color:#666;margin-top:4px}
+#hasil{margin-top:10px;border-top:1px solid #ddd;padding-top:8px;font-family:monospace;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.error{color:#d00;font-weight:bold}
+@media(max-width:600px){.app{padding:7px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="title">RUMUS OTOMATIS</div>
+
+<label>RESULT — 14 HASIL</label>
+<textarea id="inputResult" placeholder="1234,5678,9012,3456,7890,1122,3344,5566,7788,9900,1235,6781,2345,6789"></textarea>
+<div class="info">Urutan kiri → kanan: paling lama → paling baru.</div>
+
+<div class="grid">
+<div>
+<label>RUMUS</label>
+<select id="rumus">
+<option value="ai">AI 2D belakang</option>
+<option value="ait">AI 2D tengah</option>
+<option value="aid">AI 2D depan</option>
+<option value="ai3d">AI 3D</option>
+<option value="cb">Colok Bebas</option>
+<option value="a">As</option>
+<option value="c">Cop</option>
+<option value="k">Kepala</option>
+<option value="e">Ekor</option>
+<option value="ke">Kepala Ekor</option>
+<option value="j">Jumlah 2D</option>
+<option value="jt">Jumlah Tengah</option>
+<option value="jd">Jumlah Depan</option>
+<option value="s">Shio</option>
+<option value="st">Shio Tengah</option>
+<option value="sd">Shio Depan</option>
+</select>
+</div>
+<div>
+<label>PATAH</label>
+<select id="patah">
+<option value="0">0 ZONK</option>
+<option value="1">1 ZONK</option>
+<option value="2">2 ZONK</option>
+<option value="3">3 ZONK</option>
+<option value="4">4 ZONK</option>
+</select>
+</div>
+</div>
+
+<button id="proses">PROSES</button>
+<div id="hasil"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+function ambil14(){
+ const arr=$("inputResult").value.split(/[\s,]+/).map(x=>x.trim()).filter(Boolean);
+ if(arr.length!==14){
+   $("hasil").innerHTML='<span class="error">Harus tepat 14 result. Terbaca: '+arr.length+'</span>';
+   return null;
+ }
+ for(let i=0;i<14;i++){
+   if(!/^\d{4}$/.test(arr[i])){
+     $("hasil").innerHTML='<span class="error">Result ke-'+(i+1)+' harus 4 digit: '+arr[i]+'</span>';
+     return null;
+   }
+ }
+ return arr;
+}
+function digit(n,p){return Number(n[p])}
+function mod10(n){return ((n%10)+10)%10}
+function jumlah(n){return [...n].reduce((s,x)=>s+Number(x),0)%10}
+
+function proses(){
+ const r=ambil14(); if(!r)return;
+ const rumus=$("rumus").value, patah=Number($("patah").value);
+
+ const A=r.map(x=>digit(x,0)),C=r.map(x=>digit(x,1)),K=r.map(x=>digit(x,2)),E=r.map(x=>digit(x,3)),J=r.map(jumlah);
+ const da=mod10(A[13]-A[12]),dc=mod10(C[13]-C[12]),dk=mod10(K[13]-K[12]),de=mod10(E[13]-E[12]);
+ let pred=[];
+
+ switch(rumus){
+  case"a":pred=[mod10(A[13]+da)];break;
+  case"c":pred=[mod10(C[13]+dc)];break;
+  case"k":pred=[mod10(K[13]+dk)];break;
+  case"e":pred=[mod10(E[13]+de)];break;
+  case"ke":pred=[mod10(K[13]+dk),mod10(E[13]+de)];break;
+  case"j":pred=[mod10(J[13]+mod10(J[13]-J[12]))];break;
+  case"jt":pred=[mod10(C[13]+K[13])];break;
+  case"jd":pred=[mod10(A[13]+C[13])];break;
+  case"ait":pred=[mod10(C[13]+dc),mod10(K[13]+dk)];break;
+  case"aid":pred=[mod10(A[13]+da),mod10(C[13]+dc)];break;
+  case"ai3d":pred=[mod10(C[13]+dc),mod10(K[13]+dk),mod10(E[13]+de)];break;
+  case"cb":pred=[mod10(A[13]+da),mod10(C[13]+dc),mod10(K[13]+dk),mod10(E[13]+de)];break;
+  case"s":case"st":case"sd":pred=[(J[13]+J[12])%12+1];break;
+  default:pred=[mod10(K[13]+dk),mod10(E[13]+de)];
+ }
+ let kandidat=Array.from({length:10},(_,i)=>i).filter(x=>!pred.includes(x));
+ if(patah)kandidat=kandidat.slice(patah);
+
+ $("hasil").textContent=
+ '14 RESULT (LAMA → BARU)\n'+r.join(' , ')+'\n\n'+
+ 'RESULT TERAKHIR : '+r[13]+'\n'+
+ 'RESULT SEBELUMNYA: '+r[12]+'\n\n'+
+ 'RUMUS : '+$("rumus").selectedOptions[0].text+'\n'+
+ 'PATAH : '+patah+' ZONK\n\n'+
+ 'PREDIKSI : '+pred.join(' , ')+'\n'+
+ 'KANDIDAT : '+kandidat.join('');
+}
+$("proses").onclick=proses;
+$("rumus").onchange=()=>{if($("inputResult").value.trim())proses()};
+$("patah").onchange=()=>{if($("inputResult").value.trim())proses()};
+</script>
+</body>
+</html>

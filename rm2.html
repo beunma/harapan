@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Analisa 14 Result 4D</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+        margin: 0;
+        padding: 15px;
+    }
+
+    .container {
+        max-width: 720px;
+        margin: auto;
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    h2 {
+        text-align: center;
+        color: #38bdf8;
+        margin: 0 0 8px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        color: #cbd5e1;
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    textarea,
+    select {
+        width: 100%;
+        background: #0f172a;
+        color: #f8fafc;
+        border: 2px solid #475569;
+        border-radius: 8px;
+        padding: 12px;
+        font-family: monospace;
+        font-size: 15px;
+        outline: none;
+    }
+
+    textarea {
+        min-height: 130px;
+        resize: vertical;
+    }
+
+    textarea:focus,
+    select:focus {
+        border-color: #38bdf8;
+    }
+
+    select {
+        margin-bottom: 12px;
+    }
+
+    .hint {
+        color: #94a3b8;
+        font-size: 12px;
+        margin: 6px 0 14px;
+        line-height: 1.5;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin: 14px 0;
+    }
+
+    button {
+        flex: 1;
+        border: 0;
+        border-radius: 8px;
+        padding: 13px;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn-analisa {
+        background: #0284c7;
+    }
+
+    .btn-analisa:hover {
+        background: #0369a1;
+    }
+
+    .btn-copy {
+        background: #10b981;
+    }
+
+    .btn-copy:hover {
+        background: #059669;
+    }
+
+    .panel {
+        background: #0f172a;
+        border-left: 4px solid #38bdf8;
+        padding: 13px;
+        border-radius: 7px;
+        line-height: 1.65;
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .position-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin: 12px 0;
+    }
+
+    .position {
+        background: #1e293b;
+        border: 1px solid #475569;
+        border-radius: 7px;
+        padding: 9px 5px;
+        text-align: center;
+    }
+
+    .position.active {
+        border: 2px solid #22c55e;
+        background: #14532d;
+    }
+
+    .position-name {
+        display: block;
+        color: #38bdf8;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .position-score {
+        display: block;
+        color: #facc15;
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .top-list {
+        background: #111827;
+        padding: 10px;
+        border-radius: 7px;
+        color: #facc15;
+        font-family: monospace;
+        margin-top: 8px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 7px;
+        border-radius: 5px;
+        background: #334155;
+        color: #e2e8f0;
+        margin: 2px;
+        font-family: monospace;
+    }
+
+    .warning {
+        margin-top: 12px;
+        color: #fbbf24;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .error {
+        color: #f87171;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>MESIN ANALISA 14 RESULT 4D</h2>
+
+    <div class="subtitle">
+        7 Result Lama + 7 Result Terbaru • Ranking 00–99
+    </div>
+
+    <label for="dataInput">
+        Masukkan 14 Result 4D
+    </label>
+
+    <textarea
+        id="dataInput"
+        placeholder="1234,5678,9012,3456,7890,1357,2468,9753,8642,3145,7281,4506,1938,6274"></textarea>
+
+    <div class="hint">
+        Gunakan koma sebagai pemisah.<br>
+        Data pertama = PALING LAMA.<br>
+        Data ke-14 = PALING BARU.
+    </div>
+
+    <label for="jumlahOutput">
+        Jumlah Kandidat
+    </label>
+
+    <select id="jumlahOutput">
+        <option value="36">36 Kandidat — Fokus</option>
+        <option value="45">45 Kandidat — Diperluas</option>
+        <option value="59">59 Kandidat — Maksimal</option>
+    </select>
+
+    <div class="btn-group">
+        <button class="btn-analisa" onclick="jalankanAnalisa()">
+            MULAI ANALISA
+        </button>
+    </div>
+
+    <div id="panelInfo" class="panel" style="display:none;"></div>
+
+    <label for="dataOutput">
+        Hasil 2D — Terkuat ke Terlemah
+    </label>
+
+    <textarea
+        id="dataOutput"
+        placeholder="Hasil akan muncul di sini..."
+        readonly></textarea>
+
+    <div class="btn-group">
+        <button class="btn-copy" onclick="copyKeClipboard()">
+            COPY HASIL
+        </button>
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   MAP ANGKA
+========================================================= */
+
+const indexMap = {
+    '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
+    '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
+};
+
+const mistikLamaMap = {
+    '0':'1', '1':'0',
+    '2':'5', '5':'2',
+    '3':'8', '8':'3',
+    '4':'7', '7':'4',
+    '6':'9', '9':'6'
+};
+
+const mistikBaruMap = {
+    '0':'8', '8':'0',
+    '1':'7', '7':'1',
+    '2':'6', '6':'2',
+    '3':'9', '9':'3',
+    '4':'5', '5':'4'
+};
+
+
+/* =========================================================
+   00 - 99
+========================================================= */
+
+function buatObjek100() {
+
+    const obj = {};
+
+    for (let i = 0; i < 100; i++) {
+        obj[String(i).padStart(2, '0')] = 0;
+    }
+
+    return obj;
+}
+
+
+/* =========================================================
+   BOBOT RECENCY
+   7 data terbaru lebih berat.
+========================================================= */
+
+function bobot(index, total) {
+
+    if (total <= 1) return 1;
+
+    /*
+     * index 0 = paling lama
+     * index terakhir = paling baru
+     */
+
+    return 0.5 +
+           (index / (total - 1)) * 2.5;
+}
+
+
+/* =========================================================
+   ANALISA POSISI
+========================================================= */
+
+function analisaPosisi(data, posA, posB) {
+
+    const lama = data.slice(0, 7);
+    const baru = data.slice(7, 14);
+
+    const freqTotal = buatObjek100();
+    const freqLama = buatObjek100();
+    const freqBaru = buatObjek100();
+
+    const recency = buatObjek100();
+
+    const digitTotal = Array(10).fill(0);
+    const digitLama = Array(10).fill(0);
+    const digitBaru = Array(10).fill(0);
+
+
+    /* -----------------------------------------------------
+       14 DATA
+    ----------------------------------------------------- */
+
+    data.forEach((result, index) => {
+
+        const a = result[posA];
+        const b = result[posB];
+
+        const pair = a + b;
+
+        freqTotal[pair]++;
+
+        recency[pair] +=
+            bobot(index, data.length);
+
+        digitTotal[parseInt(a)]++;
+        digitTotal[parseInt(b)]++;
+    });
+
+
+    /* -----------------------------------------------------
+       7 DATA LAMA
+    ----------------------------------------------------- */
+
+    lama.forEach(result => {
+
+        const pair =
+            result[posA] + result[posB];
+
+        freqLama[pair]++;
+
+        digitLama[
+            parseInt(result[posA])
+        ]++;
+
+        digitLama[
+            parseInt(result[posB])
+        ]++;
+    });
+
+
+    /* -----------------------------------------------------
+       7 DATA TERBARU
+    ----------------------------------------------------- */
+
+    baru.forEach(result => {
+
+        const pair =
+            result[posA] + result[posB];
+
+        freqBaru[pair]++;
+
+        digitBaru[
+            parseInt(result[posA])
+        ]++;
+
+        digitBaru[
+            parseInt(result[posB])
+        ]++;
+    });
+
+
+    const maxFreq =
+        Math.max(...Object.values(freqTotal), 1);
+
+    const maxRecent =
+        Math.max(...Object.values(recency), 1);
+
+    const maxDigit =
+        Math.max(...digitTotal, 1);
+
+    const maxBaru =
+        Math.max(...Object.values(freqBaru), 1);
+
+
+    const pasangan = [];
+
+
+    /* =====================================================
+       HITUNG SKOR 00-99
+    ===================================================== */
+
+    for (let i = 0; i <= 9; i++) {
+
+        for (let j = 0; j <= 9; j++) {
+
+            const angka =
+                `${i}${j}`;
+
+            const total =
+                freqTotal[angka];
+
+            const old =
+                freqLama[angka];
+
+            const recent =
+                freqBaru[angka];
+
+            const rec =
+                recency[angka];
+
+
+            /* ---------------------------------------------
+               FREKUENSI
+            --------------------------------------------- */
+
+            const scoreFrequency =
+                (total / maxFreq) * 15;
+
+
+            /* ---------------------------------------------
+               RECENCY
+            --------------------------------------------- */
+
+            const scoreRecent =
+                (rec / maxRecent) * 25;
+
+
+            /* ---------------------------------------------
+               7 TERBARU
+            --------------------------------------------- */
+
+            const scoreRecent7 =
+                (recent / maxBaru) * 20;
+
+
+            /* ---------------------------------------------
+               PERUBAHAN LAMA → BARU
+
+               Kalau angka naik dari lama ke baru,
+               berarti sedang menguat.
+
+               Kalau turun drastis,
+               berarti sedang melemah.
+            --------------------------------------------- */
+
+            let scoreChange = 0;
+
+            if (recent > old) {
+
+                scoreChange =
+                    10 +
+                    ((recent - old) * 2);
+
+            } else if (recent === old && recent > 0) {
+
+                scoreChange = 4;
+
+            } else if (recent < old && old > 0) {
+
+                scoreChange = -4;
+            }
+
+
+            scoreChange =
+                Math.max(
+                    -8,
+                    Math.min(
+                        12,
+                        scoreChange
+                    )
+                );
+
+
+            /* ---------------------------------------------
+               KEKUATAN DIGIT
+            --------------------------------------------- */
+
+            const digitA =
+                digitTotal[i] / maxDigit;
+
+            const digitB =
+                digitTotal[j] / maxDigit;
+
+            const scoreDigit =
+                ((digitA + digitB) / 2) * 12;
+
+
+            /* ---------------------------------------------
+               KONTRA POLA
+            ---------------------------------------------
+
+               Kita tidak otomatis menganggap angka dingin
+               sebagai angka bagus.
+
+               Kontra hanya mendapat bonus kecil jika:
+               - tidak dominan di 7 terbaru
+               - tetapi digitnya masih aktif
+               - dan tidak benar-benar mati
+            --------------------------------------------- */
+
+            let scoreKontra = 0;
+
+            const aktifDigit =
+                digitBaru[i] +
+                digitBaru[j];
+
+            if (
+                recent === 0 &&
+                aktifDigit > 0 &&
+                total > 0
+            ) {
+                scoreKontra += 7;
+            }
+
+            /*
+             * Jika pasangan sangat dominan di 7 terbaru,
+             * jangan terlalu mengangkatnya hanya karena panas.
+             */
+
+            if (
+                recent >= 2 &&
+                recent > old
+            ) {
+                scoreKontra -= 3;
+            }
+
+
+            /* ---------------------------------------------
+               BALIKAN
+            --------------------------------------------- */
+
+            const balik =
+                `${j}${i}`;
+
+            let scoreBalik = 0;
+
+            if (
+                balik !== angka &&
+                freqTotal[balik] > 0
+            ) {
+                scoreBalik = 3;
+            }
+
+
+            /* ---------------------------------------------
+               TOTAL
+            --------------------------------------------- */
+
+            const skor =
+                scoreFrequency +
+                scoreRecent +
+                scoreRecent7 +
+                scoreChange +
+                scoreDigit +
+                scoreKontra +
+                scoreBalik;
+
+
+            pasangan.push({
+
+                angka,
+
+                skor,
+
+                frequency: total,
+
+                old,
+
+                recent,
+
+                recency: rec,
+
+                kontra: scoreKontra,
+
+                change: scoreChange
+            });
+        }
+    }
+
+
+    /* =====================================================
+       SORT
+    ===================================================== */
+
+    pasangan.sort((a, b) => {
+
+        if (
+            Math.abs(b.skor - a.skor) > 0.000001
+        ) {
+            return b.skor - a.skor;
+        }
+
+        /*
+         * Tie breaker berdasarkan perubahan
+         */
+
+        if (b.change !== a.change) {
+            return b.change - a.change;
+        }
+
+        return a.angka.localeCompare(b.angka);
+    });
+
+
+    /* =====================================================
+       KEKUATAN POSISI
+
+       Tidak menjumlahkan semua 100 angka.
+
+       Fokus pada Top 1, Top 5 dan Top 10.
+    ===================================================== */
+
+    const top1 =
+        pasangan[0].skor;
+
+    const top5 =
+        pasangan
+            .slice(0, 5)
+            .reduce(
+                (sum, x) => sum + x.skor,
+                0
+            ) / 5;
+
+    const top10 =
+        pasangan
+            .slice(0, 10)
+            .reduce(
+                (sum, x) => sum + x.skor,
+                0
+            ) / 10;
+
+
+    /*
+     * Konsentrasi pola.
+     */
+
+    const kekuatan =
+        (top1 * 0.45) +
+        (top5 * 0.35) +
+        (top10 * 0.20);
+
+
+    return {
+
+        pasangan,
+
+        freqTotal,
+
+        freqLama,
+
+        freqBaru,
+
+        digitTotal,
+
+        digitLama,
+
+        digitBaru,
+
+        top1,
+
+        top5,
+
+        top10,
+
+        kekuatan
+    };
+}
+
+
+/* =========================================================
+   ANALISA 3 POSISI
+========================================================= */
+
+function analisaSemuaPosisi(data) {
+
+    const depan =
+        analisaPosisi(data, 0, 1);
+
+    const tengah =
+        analisaPosisi(data, 1, 2);
+
+    const belakang =
+        analisaPosisi(data, 2, 3);
+
+
+    return {
+
+        depan,
+        tengah,
+        belakang
+    };
+}
+
+
+/* =========================================================
+   PILIH POSISI
+
+   Ada toleransi supaya perbedaan kecil tidak dianggap
+   sebagai kemenangan mutlak.
+========================================================= */
+
+function pilihPosisi(hasil) {
+
+    const list = [
+
+        {
+            nama: "Depan",
+            data: hasil.depan
+        },
+
+        {
+            nama: "Tengah",
+            data: hasil.tengah
+        },
+
+        {
+            nama: "Belakang",
+            data: hasil.belakang
+        }
+    ];
+
+
+    list.sort(
+        (a, b) =>
+            b.data.kekuatan -
+            a.data.kekuatan
+    );
+
+
+    return list;
+}
+
+
+/* =========================================================
+   PENGUAT DARI RESULT TERBARU
+========================================================= */
+
+function buatPenguat(result, posisi) {
+
+    let a;
+    let b;
+
+
+    if (posisi === "Depan") {
+
+        a = result[0];
+        b = result[1];
+
+    } else if (posisi === "Tengah") {
+
+        a = result[1];
+        b = result[2];
+
+    } else {
+
+        a = result[2];
+        b = result[3];
+    }
+
+
+    const akarA = [
+
+        a,
+
+        indexMap[a],
+
+        mistikLamaMap[a],
+
+        mistikBaruMap[a]
+    ];
+
+
+    const akarB = [
+
+        b,
+
+        indexMap[b],
+
+        mistikLamaMap[b],
+
+        mistikBaruMap[b]
+    ];
+
+
+    const jumlah =
+        result
+            .split("")
+            .reduce(
+                (sum, x) =>
+                    sum + parseInt(x),
+                0
+            );
+
+
+    let biji =
+        jumlah;
+
+
+    while (biji > 9) {
+
+        biji =
+            biji
+                .toString()
+                .split("")
+                .reduce(
+                    (sum, x) =>
+                        sum + parseInt(x),
+                    0
+                );
+    }
+
+
+    const akarBiji = [
+
+        biji.toString(),
+
+        indexMap[biji],
+
+        mistikLamaMap[biji],
+
+        mistikBaruMap[biji]
+    ];
+
+
+    return [
+        ...new Set([
+            ...akarA,
+            ...akarB,
+            ...akarBiji
+        ])
+    ];
+}
+
+
+/* =========================================================
+   FINAL RANKING
+
+   Posisi terkuat digunakan sebagai posisi utama.
+========================================================= */
+
+function buatFinalRanking(
+    data,
+    posisiNama,
+    posisiData
+) {
+
+    const resultTerakhir =
+        data[data.length - 1];
+
+
+    const penguat =
+        buatPenguat(
+            resultTerakhir,
+            posisiNama
+        );
+
+
+    const ranking =
+        posisiData.pasangan.map(x => {
+
+            let skor = x.skor;
+
+
+            /* -----------------------------------------
+               PENGUAT DIGIT
+            ----------------------------------------- */
+
+            const a = x.angka[0];
+            const b = x.angka[1];
+
+
+            if (penguat.includes(a)) {
+                skor += 5;
+            }
+
+            if (penguat.includes(b)) {
+                skor += 5;
+            }
+
+
+            /* -----------------------------------------
+               BONUS KONTRA TERKONTROL
+            ----------------------------------------- */
+
+            /*
+             * Angka yang tidak muncul di 7 terbaru tetapi
+             * masih punya jejak di 14 data diberi bonus kecil.
+             */
+
+            if (
+                x.recent === 0 &&
+                x.frequency > 0
+            ) {
+                skor += 5;
+            }
+
+
+            /* -----------------------------------------
+               PASANGAN BALIK
+            ----------------------------------------- */
+
+            const balik =
+                x.angka[1] +
+                x.angka[0];
+
+
+            if (
+                balik !== x.angka &&
+                posisiData.freqTotal[balik] > 0
+            ) {
+                skor += 2;
+            }
+
+
+            return {
+
+                angka: x.angka,
+
+                skor: skor,
+
+                recent: x.recent,
+
+                old: x.old,
+
+                kontra: x.kontra,
+
+                change: x.change
+            };
+        });
+
+
+    ranking.sort((a, b) => {
+
+        if (
+            Math.abs(b.skor - a.skor) > 0.000001
+        ) {
+            return b.skor - a.skor;
+        }
+
+        if (b.kontra !== a.kontra) {
+            return b.kontra - a.kontra;
+        }
+
+        if (b.change !== a.change) {
+            return b.change - a.change;
+        }
+
+        return a.angka.localeCompare(b.angka);
+    });
+
+
+    return ranking;
+}
+
+
+/* =========================================================
+   ANALISA UTAMA
+========================================================= */
+
+function jalankanAnalisa() {
+
+    const teks =
+        document.getElementById(
+            "dataInput"
+        ).value.trim();
+
+
+    const jumlah =
+        parseInt(
+            document.getElementById(
+                "jumlahOutput"
+            ).value
+        );
+
+
+    /*
+     * WAJIB 14 DATA.
+     */
+
+    const data =
+        teks
+            .split(",")
+            .map(x => x.trim())
+            .filter(x => x !== "");
+
+
+    if (data.length !== 14) {
+
+        alert(
+            "Harus memasukkan tepat 14 result 4D."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Validasi setiap result.
+     */
+
+    const invalid =
+        data.findIndex(
+            x => !/^\d{4}$/.test(x)
+        );
+
+
+    if (invalid !== -1) {
+
+        alert(
+            "Data ke-" +
+            (invalid + 1) +
+            " tidak valid: " +
+            data[invalid] +
+            ". Semua harus 4 digit."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Data TIDAK dibalik.
+     *
+     * index 0  = paling lama
+     * index 13 = paling baru
+     */
+
+
+    const hasil =
+        analisaSemuaPosisi(data);
+
+
+    const posisi =
+        pilihPosisi(hasil);
+
+
+    const terkuat =
+        posisi[0];
+
+
+    const ranking =
+        buatFinalRanking(
+            data,
+            terkuat.nama,
+            terkuat.data
+        );
+
+
+    const kandidat =
+        ranking.slice(
+            0,
+            Math.min(jumlah, 59)
+        );
+
+
+    /*
+     * OUTPUT
+     */
+
+    document.getElementById(
+        "dataOutput"
+    ).value =
+        kandidat
+            .map(x => x.angka)
+            .join("*");
+
+
+    /* =====================================================
+       PANEL
+    ===================================================== */
+
+    const panel =
+        document.getElementById(
+            "panelInfo"
+        );
+
+
+    const top10 =
+        kandidat
+            .slice(0, 10)
+            .map(
+                (x, i) =>
+                    `${String(i + 1).padStart(2, "0")}. ` +
+                    `${x.angka}  ` +
+                    `SKOR=${x.skor.toFixed(2)}`
+            )
+            .join("<br>");
+
+
+    const topPasangan =
+        terkuat.data.pasangan
+            .slice(0, 5)
+            .map(
+                x =>
+                    `<span class="badge">
+                        ${x.angka}
+                    </span>`
+            )
+            .join("");
+
+
+    function posisiBox(
+        nama,
+        obj,
+        aktif
+    ) {
+
+        return `
+            <div class="position
+                ${aktif ? "active" : ""}">
+
+                <span class="position-name">
+                    ${nama}
+                </span>
+
+                <span class="position-score">
+                    ${obj.kekuatan.toFixed(2)}
+                </span>
+
+            </div>
+        `;
+    }
+
+
+    panel.style.display = "block";
+
+
+    panel.innerHTML = `
+
+        <b>ANALISA 14 RESULT SELESAI</b>
+
+        <br>
+
+        Urutan input:
+        <b>data pertama lama → data terakhir baru</b>
+
+        <br>
+
+        7 lama:
+        <b>${data.slice(0,7).join(", ")}</b>
+
+        <br>
+
+        7 terbaru:
+        <b>${data.slice(7,14).join(", ")}</b>
+
+        <br>
+
+        Result terbaru:
+        <b>${data[13]}</b>
+
+
+        <div class="position-grid">
+
+            ${posisiBox(
+                "DEPAN",
+                hasil.depan,
+                terkuat.nama === "Depan"
+            )}
+
+            ${posisiBox(
+                "TENGAH",
+                hasil.tengah,
+                terkuat.nama === "Tengah"
+            )}
+
+            ${posisiBox(
+                "BELAKANG",
+                hasil.belakang,
+                terkuat.nama === "Belakang"
+            )}
+
+        </div>
+
+
+        <b>
+            POSISI UTAMA:
+            <span style="color:#22c55e">
+                ${terkuat.nama}
+            </span>
+        </b>
+
+        <br>
+
+        Skor posisi:
+        <b>${terkuat.data.kekuatan.toFixed(2)}</b>
+
+        <br><br>
+
+        <b>
+            TOP PASANGAN POSISI TERPILIH:
+        </b>
+
+        <div>
+            ${topPasangan}
+        </div>
+
+        <br>
+
+        <b>
+            10 RANKING TERATAS:
+        </b>
+
+        <div class="top-list">
+            ${top10}
+        </div>
+
+
+        <div class="warning">
+            Catatan: metode ini hanya melakukan pemeringkatan
+            berdasarkan pola 14 data, perbandingan 7 lama
+            dan 7 terbaru, recency, perubahan pola,
+            serta kontra-pola terkontrol. Tidak ada jaminan
+            bahwa hasil berikutnya mengikuti pola histori.
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+function copyKeClipboard() {
+
+    const output =
+        document.getElementById(
+            "dataOutput"
+        );
+
+
+    if (!output.value) {
+
+        alert(
+            "Belum ada hasil untuk disalin."
+        );
+
+        return;
+    }
+
+
+    navigator.clipboard
+        .writeText(output.value)
+        .then(() => {
+
+            alert(
+                "Berhasil disalin ke Clipboard!"
+            );
+
+        })
+        .catch(() => {
+
+            output.select();
+
+            document.execCommand("copy");
+
+            alert(
+                "Hasil berhasil disalin."
+            );
+        });
+}
+
+</script>
+
+</body>
+</html>
+```

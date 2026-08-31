@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Multi-Web Aman</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        .container { max-width: 480px; margin: 0 auto; background: #1e1e1e; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #ffffff; font-size: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; color: #b0b0b0; }
+        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; background: #2d2d2d; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; }
+        .btn { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:hover:not(:disabled) { background: #0056b3; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover:not(:disabled) { background: #218838; }
+        .btn:disabled { background: #555555; color: #999; cursor: not-allowed; opacity: 0.7; }
+        .card-target { background: #252525; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+        .saldo-text { color: #4cd137; font-weight: bold; font-size: 16px; }
+        .saldo-error { color: #ff6b6b; font-weight: bold; font-size: 16px; }
+        .error-msg { color: #ff6b6b; font-size: 13px; text-align: center; margin-top: 10px; }
+        .loader { text-align: center; color: #ffc107; font-style: italic; margin-top: 10px; display: none; }
+        .spinner-box { background: #2a2a2a; border: 1px solid #ff9f1a; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .url-label { background: #111; padding: 10px; border: 1px dashed #666; border-radius: 4px; color: #ffdd59; font-size: 12px; word-break: break-all; margin-top: 8px; min-height: 20px; }
+        #dashboard-area { display: none; }
+        
+        /* CSS KHUSUS TOMBOL FRAME */
+        .row-buttons { display: flex; gap: 5px; margin-bottom: 8px; }
+        .btn-frame { flex: 1; padding: 10px 0; font-size: 12px; font-weight: bold; background: #6c5ce7; color: white; border: none; border-radius: 4px; cursor: pointer; text-align: center; }
+        .btn-frame:hover { background: #5b4bc4; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-area">
+        <h2>Login Dashboard</h2>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="input-user" placeholder="Masukkan username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="input-pass" placeholder="Masukkan password">
+        </div>
+        <button class="btn" onclick="prosesLoginHtml()">Masuk</button>
+        <div id="login-error" class="error-msg"></div>
+    </div>
+
+    <div id="dashboard-area">
+        <h2>Dashboard Utama</h2>
+        <div id="welcome-msg" style="font-size: 14px; color: #888; margin-bottom: 20px; text-align: center;"></div>
+
+        <div class="card-target" id="box-web1">
+            <div style="font-weight: bold; margin-bottom: 8px; color: #fff;">Web Target 1</div>
+            <div>Saldo: <span id="saldo-web1" class="saldo-text">Belum dicek</span></div>
+            <button id="btn-cek-web1" class="btn btn-success" style="padding: 8px; font-size: 13px; margin-top: 12px;" onclick="cekSaldoTarget('web1')">Cek Saldo Web 1</button>
+        </div>
+
+        <div class="card-target" id="box-web2">
+            <div style="font-weight: bold; margin-bottom: 8px; color: #fff;">Web Target 2</div>
+            <div>Saldo: <span id="saldo-web2" class="saldo-text">Belum dicek</span></div>
+            <button id="btn-cek-web2" class="btn btn-success" style="padding: 8px; font-size: 13px; margin-top: 12px;" onclick="cekSaldoTarget('web2')">Cek Saldo Web 2</button>
+        </div>
+
+        <!-- BOX PENGUJIAN SPINNER -->
+        <div class="spinner-box" id="box-spinner">
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">Pengujian Spinner</div>
+            <button class="btn" style="background: #17a2b8; font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 12px;" onclick="loadPasaranEngine()">Ambil Data</button>
+            
+            <div id="spinner-pasaran-container" style="margin-bottom: 10px;">
+                <label for="spinner-pasaran">Pilih Pasaran (Spinner Utama):</label>
+                <select id="spinner-pasaran" onchange="onSpinnerUtamaChange()">
+                    <option value="">-- Klik 'Ambil Data' dulu --</option>
+                </select>
+            </div>
+
+            <div id="spinner-user-container">
+                <label for="spinner-user">Pilih Jam (Spinner User):</label>
+                <select id="spinner-user" onchange="onSpinnerUserChange()">
+                    <option value="">-- Klik 'Ambil Data' dulu --</option>
+                </select>
+            </div>
+
+            <!-- BAGIAN URL DI-HIDE (display: none) TAPI TETAP BERFUNGSI -->
+            <div style="margin-top: 12px; display: none;">
+                <label>Alamat URL Terpilih (List Picker Selection):</label>
+                <div id="label-url" class="url-label">Alamat URL akan muncul di sini...</div>
+            </div>
+
+            <div style="margin-top: 15px; background: #222; padding: 10px; border-radius: 6px; border: 1px solid #444;">
+                <button class="btn btn-success" style="font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 10px;" onclick="loadResultPasaran()">Tarik Urutan Hasil Result</button>
+                
+                <label style="color: #4cd137;">Urutan Hasil Terlama ke Terbaru:</label>
+                <div style="display: flex; gap: 8px; align-items: stretch; margin-top: 5px;">
+                    <textarea id="input-hasil-result" rows="2" style="flex: 1; resize: vertical; font-family: monospace;" placeholder="Hasil akan muncul di sini..."></textarea>
+                    <button class="btn" style="width: auto; background: #6c5ce7; margin-top: 0; padding: 0 15px;" onclick="copyResultText()">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOX BARU: PERALATAN DAN FRAME -->
+        <div class="spinner-box" id="box-iframe">
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">Peralatan dan Frame</div>
+            
+            <!-- Layout Horizontal 1 -->
+            <div class="row-buttons">
+                <button class="btn-frame" onclick="loadIframe('rm1.html')">RM1</button>
+                <button class="btn-frame" onclick="loadIframe('rm2.html')">RM2</button>
+                <button class="btn-frame" onclick="loadIframe('rm3.html')">RM3</button>
+                <button class="btn-frame" onclick="loadIframe('rm4.html')">RM4</button>
+                <button class="btn-frame" onclick="loadIframe('rm5.html')">RM5</button>
+            </div>
+            
+            <!-- Layout Horizontal 2 -->
+            <div class="row-buttons">
+                <button class="btn-frame" onclick="loadIframe('rm6.html')">RM6</button>
+                <button class="btn-frame" onclick="loadIframe('rk2.html')">RK2</button>
+                <button class="btn-frame" onclick="loadIframe('rk3.html')">RK3</button>
+                <button class="btn-frame" onclick="loadIframe('tl1.html')">TL1</button>
+                <button class="btn-frame" onclick="loadIframe('tl2.html')">TL2</button>
+            </div>
+
+            <!-- Iframe (Warna background putih biar kalau html-nya gak ada warna jadi jelas) -->
+            <iframe id="content-iframe" src="about:blank" style="width: 100%; height: 350px; border: none; border-radius: 6px; margin-top: 10px; background: #ffffff;"></iframe>
+        </div>
+
+        <div id="loader" class="loader">Sedang memproses request...</div>
+        <button class="btn" style="background: #dc3545; margin-top: 20px;" onclick="logoutHtml()">Keluar / Logout</button>
+    </div>
+</div>
+
+<script>
+    // PASTIKAN PROXY URL INI BENAR (Sesuai dengan yang Boss gunakan sebelumnya)
+    const SUPABASE_URL = 'https://qhlutwgdpspukgjelzjw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG';
+    const GAS_PROXY_URL = 'https://script.google.com/macros/s/AKfycbwtZ8k3nfRitPOoJD_0UoEvtg6ScD0dfn51XGkE0UusrKVW_oDrp0A7FitoD_3ZuPcszQ/exec';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let sesiAktif = null;
+    let listPickerData = []; 
+
+    async function prosesLoginHtml() {
+        const uInput = document.getElementById('input-user').value.trim();
+        const pInput = document.getElementById('input-pass').value.trim();
+        const errBox = document.getElementById('login-error');
+
+        if (!uInput || !pInput) {
+            errBox.innerText = "Username dan Password tidak boleh kosong!";
+            return;
+        }
+
+        errBox.innerText = "Memeriksa kredensial...";
+
+        try {
+            let { data, error } = await supabaseClient
+                .from('users_config') 
+                .select('*')
+                .eq('user_html', uInput)
+                .eq('pass_html', pInput)
+                .limit(1);
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                sesiAktif = data[0];
+
+                if (!sesiAktif.urlweb1 || !sesiAktif.urlweb2 || !sesiAktif.urlweb3) {
+                    let { data: masterData } = await supabaseClient.from('users_config').select('*').limit(1);
+                    if (masterData && masterData.length > 0) {
+                        if (!sesiAktif.urlweb1) sesiAktif.urlweb1 = masterData[0].urlweb1;
+                        if (!sesiAktif.urlweb2) sesiAktif.urlweb2 = masterData[0].urlweb2;
+                        if (!sesiAktif.urlweb3) sesiAktif.urlweb3 = masterData[0].urlweb3;
+                    }
+                }
+                tampilkanDashboard();
+            } else {
+                errBox.innerText = "Username atau Password salah!";
+            }
+        } catch (err) {
+            errBox.innerText = "Error koneksi: " + err.message;
+        }
+    }
+
+    function tampilkanDashboard() {
+        document.getElementById('login-area').style.display = 'none';
+        document.getElementById('dashboard-area').style.display = 'block';
+        document.getElementById('welcome-msg').innerHTML = `Login sebagai: <b>${sesiAktif.user_html}</b> | Role: <b>${sesiAktif.role || 'Tidak ada'}</b>`;
+
+        document.getElementById('box-web1').style.display = 'block';
+        document.getElementById('box-web2').style.display = 'block';
+
+        const spanSaldo1 = document.getElementById('saldo-web1');
+        const spanSaldo2 = document.getElementById('saldo-web2');
+        const btnCek1 = document.getElementById('btn-cek-web1');
+        const btnCek2 = document.getElementById('btn-cek-web2');
+
+        spanSaldo1.innerText = "Belum dicek"; spanSaldo1.className = "saldo-text";
+        spanSaldo2.innerText = "Belum dicek"; spanSaldo2.className = "saldo-text";
+        btnCek1.disabled = false; btnCek2.disabled = false;
+
+        if (!sesiAktif.userweb1 || !sesiAktif.passweb1) {
+            spanSaldo1.innerText = "Tidak Terdata"; spanSaldo1.className = "saldo-error"; btnCek1.disabled = true; 
+        }
+        if (!sesiAktif.userweb2 || !sesiAktif.passweb2) {
+            spanSaldo2.innerText = "Tidak Terdata"; spanSaldo2.className = "saldo-error"; btnCek2.disabled = true; 
+        }
+
+        const userRole = (sesiAktif.role || "").toLowerCase();
+        
+        const boxSpinner = document.getElementById('box-spinner');
+        const boxIframe = document.getElementById('box-iframe'); // Target Box Baru
+        const spinnerUtama = document.getElementById('spinner-pasaran-container');
+        const spinnerUser = document.getElementById('spinner-user-container');
+
+        // LOGIKA ROLE: Viewer tidak bisa lihat Box Spinner maupun Box Frame
+        if (userRole === 'viewer') {
+            boxSpinner.style.display = 'none'; 
+            boxIframe.style.display = 'none'; 
+        } else {
+            boxSpinner.style.display = 'block';
+            boxIframe.style.display = 'block'; 
+            if (userRole === 'admin') {
+                spinnerUtama.style.display = 'block'; spinnerUser.style.display = 'none';
+            } else {
+                spinnerUtama.style.display = 'none'; spinnerUser.style.display = 'block';
+            }
+        }
+    }
+
+    async function cekSaldoTarget(tipe) {
+        let targetUrl = (tipe === 'web1') ? sesiAktif.urlweb1 : sesiAktif.urlweb3;
+        let targetUser = (tipe === 'web1') ? sesiAktif.userweb1 : sesiAktif.userweb2;
+        let targetPass = (tipe === 'web1') ? sesiAktif.passweb1 : sesiAktif.passweb2;
+        let spanId = (tipe === 'web1') ? 'saldo-web1' : 'saldo-web2';
+        
+        const spanSaldo = document.getElementById(spanId);
+        const loader = document.getElementById('loader');
+
+        spanSaldo.innerText = "Memproses...";
+        spanSaldo.className = "saldo-text";
+        loader.style.display = 'block';
+
+        const urlRequest = `${GAS_PROXY_URL}?action=cekSaldo&url=${encodeURIComponent(targetUrl)}&user=${encodeURIComponent(targetUser)}&pass=${encodeURIComponent(targetPass)}`;
+
+        try {
+            let response = await fetch(urlRequest);
+            let result = await response.json();
+            loader.style.display = 'none';
+
+            if (result.status === 'success') {
+                spanSaldo.innerText = result.saldo;
+            } else {
+                spanSaldo.innerText = "Gagal: " + (result.message || "Kesalahan sistem");
+                spanSaldo.className = "saldo-error";
+            }
+        } catch (err) {
+            loader.style.display = 'none';
+            spanSaldo.innerText = "Error Jaringan";
+            spanSaldo.className = "saldo-error";
+        }
+    }
+
+    function extractTime(label) {
+        let match = label.match(/(\d{2}:\d{2})\s*WIB/i);
+        if (match) return match[1];
+        let allTimes = label.match(/\d{2}:\d{2}/g);
+        if (allTimes && allTimes.length > 0) return allTimes[allTimes.length - 1]; 
+        return "Jam Tidak Diketahui";
+    }
+
+    async function loadPasaranEngine() {
+        const loader = document.getElementById('loader');
+        const selUtama = document.getElementById('spinner-pasaran');
+        const selUser = document.getElementById('spinner-user');
+        const labelUrl = document.getElementById('label-url');
+
+        loader.innerText = "Melakukan SSO Auto-login & membaca Pasaran...";
+        loader.style.display = 'block';
+        
+        selUtama.innerHTML = '<option value="">Sedang memuat data...</option>';
+        selUser.innerHTML = '<option value="">Sedang memuat data...</option>';
+        labelUrl.innerText = "Memuat...";
+
+        const urlReq = `${GAS_PROXY_URL}?action=getPasaran&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+
+        try {
+            let response = await fetch(urlReq);
+            let result = await response.json();
+            loader.style.display = 'none';
+
+            if (result.status === 'success' && result.data && result.data.length > 0) {
+                const rawKeywords = "SINGAPORE,GERMANY,INDIANA,TENNESSE,TEXAS,KENTUCKY,FLORIDA,ILLINOIS,MISSOURI,WASHINGTON,CONNECTICUT,VIRGINIA,NRE YORK,NEW YORK,NORTH CAROLINA,OREGON,GEORGIA,MARYLAND,NEW JERSEY,BULLSEYE,PCSO";
+                const allowedKeywords = rawKeywords.split(',').map(k => k.trim().toUpperCase());
+
+                listPickerData = result.data.filter(item => {
+                    let labelUpper = item.label.toUpperCase();
+                    return allowedKeywords.some(keyword => labelUpper.includes(keyword));
+                });
+                
+                selUtama.innerHTML = ''; selUser.innerHTML = '';
+
+                if (listPickerData.length === 0) {
+                    selUtama.innerHTML = '<option value="">Tidak ada pasaran yang cocok</option>';
+                    selUser.innerHTML = '<option value="">Tidak ada pasaran</option>';
+                    labelUrl.innerText = "Data kosong.";
+                    return;
+                }
+
+                listPickerData.forEach((item, index) => {
+                    let optUtama = document.createElement('option');
+                    optUtama.value = index; optUtama.innerText = `[${index + 1}] ${item.label}`;
+                    selUtama.appendChild(optUtama);
+
+                    let optUser = document.createElement('option');
+                    optUser.value = index; optUser.innerText = extractTime(item.label);
+                    selUser.appendChild(optUser);
+                });
+
+                updateLabelUrlDariUtama();
+            } else {
+                selUtama.innerHTML = '<option value="">Gagal memuat pasaran</option>';
+                selUser.innerHTML = '<option value="">Gagal memuat pasaran</option>';
+                labelUrl.innerText = "Error: " + (result.message || "Tidak ada data.");
+            }
+        } catch (err) {
+            loader.style.display = 'none';
+            selUtama.innerHTML = '<option value="">Error Jaringan</option>';
+            selUser.innerHTML = '<option value="">Error Jaringan</option>';
+            labelUrl.innerText = "Gagal terhubung ke GAS Proxy.";
+        }
+    }
+
+    function onSpinnerUtamaChange() {
+        const selUtama = document.getElementById('spinner-pasaran');
+        const selUser = document.getElementById('spinner-user');
+        selUser.value = selUtama.value;
+        updateLabelUrlDariUtama();
+    }
+
+    function onSpinnerUserChange() {
+        const selUtama = document.getElementById('spinner-pasaran');
+        const selUser = document.getElementById('spinner-user');
+        selUtama.value = selUser.value;
+        updateLabelUrlDariUtama();
+    }
+
+    function updateLabelUrlDariUtama() {
+        const selUtama = document.getElementById('spinner-pasaran');
+        const labelUrl = document.getElementById('label-url');
+        const selectedIndex = selUtama.value;
+
+        if (selectedIndex !== "" && listPickerData[selectedIndex]) {
+            labelUrl.innerText = listPickerData[selectedIndex].url;
+        } else {
+            labelUrl.innerText = "Tidak ada URL terpilih";
+        }
+    }
+
+    async function loadResultPasaran() {
+        const urlText = document.getElementById('label-url').innerText;
+        const loader = document.getElementById('loader');
+        const inputHasil = document.getElementById('input-hasil-result');
+
+        const locMatch = urlText.match(/loc=(\d+)/);
+        
+        if (!locMatch || !locMatch[1]) {
+            alert("Harap ambil data pasaran dan pilih pasaran yang valid.");
+            return;
+        }
+
+        const locID = locMatch[1]; 
+        
+        loader.innerText = `Menarik data result...`;
+        loader.style.display = 'block';
+        inputHasil.value = "Memuat...";
+
+        const urlReq = `${GAS_PROXY_URL}?action=getResult&loc=${locID}&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+
+        try {
+            let response = await fetch(urlReq);
+            let result = await response.json();
+            loader.style.display = 'none';
+
+            if (result.status === 'success') {
+                inputHasil.value = result.data; 
+            } else {
+                inputHasil.value = "Error: " + result.message;
+            }
+        } catch (err) {
+            loader.style.display = 'none';
+            inputHasil.value = "Gagal terhubung ke server.";
+        }
+    }
+
+    function copyResultText() {
+        const copyText = document.getElementById("input-hasil-result");
+        if (!copyText.value || copyText.value.includes("Memuat...") || copyText.value.includes("Error")) {
+            alert("Tidak ada hasil valid untuk di-copy.");
+            return;
+        }
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            alert("Hasil berhasil dicopy!");
+        }).catch(err => {
+            alert("Gagal mengcopy teks: " + err);
+        });
+    }
+
+    // FUNGSI BARU UNTUK LOAD IFRAME
+    function loadIframe(fileHtml) {
+        document.getElementById('content-iframe').src = fileHtml;
+    }
+
+    function logoutHtml() {
+        sesiAktif = null; listPickerData = [];
+        document.getElementById('dashboard-area').style.display = 'none';
+        document.getElementById('login-area').style.display = 'block';
+        document.getElementById('input-user').value = ''; document.getElementById('input-pass').value = '';
+        document.getElementById('login-error').innerText = '';
+        document.getElementById('spinner-pasaran').innerHTML = '<option value="">-- Klik \'Ambil Data\' dulu --</option>';
+        document.getElementById('spinner-user').innerHTML = '<option value="">-- Klik \'Ambil Data\' dulu --</option>';
+        document.getElementById('label-url').innerText = 'Alamat URL akan muncul di sini...';
+        document.getElementById('input-hasil-result').value = '';
+        document.getElementById('content-iframe').src = 'about:blank'; // Bersihkan Iframe saat logout
+    }
+</script>
+
+</body>
+</html>

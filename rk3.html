@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekap 3D Engine - Dynamic Patah & Terpilih Area</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 15px;
+      margin: 0;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 15px; }
+    .col-6 { flex: 1; min-width: 320px; }
+    
+    input[type="text"], textarea, select {
+      background-color: #1e1e1e;
+      color: #00ffcc;
+      border: 1px solid #444;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      width: 100%;
+      font-size: 13px;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus { outline: none; border-color: #00ffcc; }
+    
+    .panel {
+      border: 1px solid #333;
+      border-radius: 4px;
+      margin-top: 10px;
+      background: #181818;
+    }
+    .panel-heading {
+      padding: 8px 12px;
+      font-weight: bold;
+      background: #252525;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+    .panel-danger { border-color: #d32f2f; }
+    .panel-danger .panel-heading { background: #b71c1c; color: white; }
+    .panel-success { border-color: #388e3c; }
+    .panel-success .panel-heading { background: #1b5e20; color: white; }
+    .panel-primary { border-color: #1976d2; }
+    .panel-primary .panel-heading { background: #0d47a1; color: white; }
+    .panel-info { border-color: #00838f; }
+    .panel-info .panel-heading { background: #006064; color: white; }
+    
+    .btn-custom {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    .btn-copy {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+    .btn-clean {
+      background: #ff5252;
+      color: #fff;
+      border: none;
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+    textarea.ln { width: 100%; color: #00ff00; font-family: monospace; background: #0a0a0a; border: none; resize: vertical; padding: 8px; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+<form id="rekap3d_form" onsubmit="return false;">
+  <div class="row">
+    <!-- KOLOM KIRI: INPUT FILTER 3D -->
+    <div class="col-6">
+      <h3 style="margin-top:0;">FILTER REKAP 3D</h3>
+      
+      <!-- Digits Off Single -->
+      <div style="display:flex; gap:5px;">
+        <input style="width:33%;" placeholder="Ratusan Off" type="text" name="ratusan">
+        <input style="width:33%;" placeholder="Kepala Off" type="text" name="kepala">
+        <input style="width:33%;" placeholder="Ekor Off" type="text" name="ekor">
+      </div>
+      
+      <!-- Pasangan Ratusan - Kepala -->
+      <label style="font-size:11px; color:#aaa;">Ratusan-Kepala (Bisa dipisah * / , / spasi):</label>
+      <textarea rows="2" placeholder="RK Off (ex: 12*34*56)" name="rk_off"></textarea>
+      <textarea rows="2" placeholder="RK Dasar (ex: 78*89*90)" name="rk_dasar"></textarea>
+
+      <!-- Pasangan Kepala - Ekor -->
+      <label style="font-size:11px; color:#aaa;">Kepala-Ekor (Bisa dipisah * / , / spasi):</label>
+      <textarea rows="2" placeholder="KE Off (ex: 01*02*03)" name="ke_off"></textarea>
+      <textarea rows="2" placeholder="KE Dasar (ex: 12*23*34)" name="ke_dasar"></textarea>
+
+      <input placeholder="Jumlah Digital 3D Off (contoh: 1,3,9 atau 1*3*9)" type="text" name="jml3d">
+      
+      <br>
+      <label style="font-size: 12px; color: #aaa;">Pemisah Hasil Output (Separator):</label>
+      <select name="koma" id="spinner_pemisah" style="width:30%;" onchange="updateTerpilihSeparator()">
+        <option value="*">*</option>
+        <option value="#">#</option>
+        <option value=",">,</option>
+        <option value=".">.</option>
+        <option value=" ">Spasi</option>
+      </select>
+
+      <div class="panel panel-danger">
+        <div class="panel-heading">3D OFF (LN MATI 3D)</div>
+        <div class="panel-body">
+          <textarea placeholder="3D Off dipisah bintang/spasi/koma (ex: 123*456*789)" name="idoff" class="form-control" rows="2" style="width:100%; box-sizing:border-box;"></textarea>
+        </div>
+      </div>
+
+      <!-- AI 3D UTAMA -->
+      <div class="panel panel-success">
+        <div class="panel-heading">AI / AK / CT 3D</div>
+        <div class="panel-body">
+          <textarea name="ids" placeholder="Contoh: 1234 (per baris atau dipisah bintang)" class="form-control" rows="2" style="width:100%; box-sizing:border-box;"></textarea>
+        </div>
+      </div>
+
+      <!-- AI 2D RK (BARU) -->
+      <div class="panel panel-success">
+        <div class="panel-heading">AI / AK / CT 2D RK</div>
+        <div class="panel-body">
+          <textarea name="ids_rk" placeholder="Cek posisi Ratusan & Kepala (ex: 1234 per baris/*)" class="form-control" rows="2" style="width:100%; box-sizing:border-box;"></textarea>
+        </div>
+      </div>
+
+      <!-- AI 2D KE (BARU) -->
+      <div class="panel panel-success">
+        <div class="panel-heading">AI / AK / CT 2D KE</div>
+        <div class="panel-body">
+          <textarea name="ids_ke" placeholder="Cek posisi Kepala & Ekor (ex: 1234 per baris/*)" class="form-control" rows="2" style="width:100%; box-sizing:border-box;"></textarea>
+        </div>
+      </div>
+
+      <button type="button" onclick="prosesRekap3D()" class="btn-custom" style="background:#d81b60; color:#fff;">Generate 3D</button>
+      <button type="button" class="btn-custom" style="background:#f44336; color:#fff;" onclick="resetForm3D()">Reset</button>
+    </div>
+
+    <!-- KOLOM KANAN: DASAR INPUT 3D -->
+    <div class="col-6">
+      <h3 style="margin-top:0;">LN DASAR 3D</h3>
+      <textarea placeholder="Kosongkan untuk otomatis 1000 LN (000 - 999). Bisa dipisah * / koma / spasi (ex: 001*002*003)" name="ids2" class="form-control" rows="15" style="height: 600px; width:100%; box-sizing:border-box;"></textarea>
+    </div>
+  </div>
+
+  <!-- PANEL HASIL BUCKET PATAH DINAMIS 3D -->
+  <div style="margin-top:20px;" id="patah_container">
+    <!-- Panel patahan dinamis di-inject otomatis lewat JS -->
+  </div>
+
+  <!-- PANEL TERPILIH DI PALING BAWAH -->
+  <div style="margin-top: 15px;">
+    <div class="panel panel-info" id="panel_terpilih">
+      <div class="panel-heading">
+        <span id="label_terpilih">Terpilih = 0 LN</span>
+        <div>
+          <button type="button" class="btn-copy" onclick="copyTerpilihDirect(this)">Copy</button>
+          <button type="button" class="btn-clean" onclick="cleanTerpilih()">Clean</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <textarea id="result_terpilih" class="ln" rows="4" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<!-- JAVASCRIPT ENGINE 3D -->
+<script>
+  let terpilih3DList = [];
+
+  function parseDigits(text, digitLength) {
+    if (!text) return [];
+    const regex = new RegExp(`\\b\\d{${digitLength}}\\b`, 'g');
+    return text.match(regex) || [];
+  }
+
+  // Menghitung Akar Digital (Digital Root) 3D sampai 1 digit
+  function getDigitalRoot(numStr) {
+    let sum = numStr.split('').reduce((acc, curr) => acc + parseInt(curr, 10), 0);
+    while (sum >= 10) {
+      sum = sum.toString().split('').reduce((acc, curr) => acc + parseInt(curr, 10), 0);
+    }
+    return sum;
+  }
+
+  function getSelectedSeparator() {
+    const form = document.getElementById('rekap3d_form');
+    return form.elements['koma'].value || ' ';
+  }
+
+  function prosesRekap3D() {
+    const form = document.getElementById('rekap3d_form');
+
+    // 1. Inisialisasi Base 3D
+    let rawDasar = form.elements['ids2'].value.trim();
+    let baseLN = [];
+    if (rawDasar.length > 0) {
+      baseLN = parseDigits(rawDasar, 3);
+    } else {
+      for (let i = 0; i < 1000; i++) {
+        baseLN.push(i.toString().padStart(3, '0'));
+      }
+    }
+    baseLN = [...new Set(baseLN)];
+
+    // 2. Filter Single Digit & Pasangan 2D
+    const ratusanOff = (form.elements['ratusan'].value.match(/\d/g) || []);
+    const kepalaOff = (form.elements['kepala'].value.match(/\d/g) || []);
+    const ekorOff = (form.elements['ekor'].value.match(/\d/g) || []);
+    
+    const rkOffList = parseDigits(form.elements['rk_off'].value, 2);
+    const rkDasarList = parseDigits(form.elements['rk_dasar'].value, 2);
+    const keOffList = parseDigits(form.elements['ke_off'].value, 2);
+    const keDasarList = parseDigits(form.elements['ke_dasar'].value, 2);
+
+    // 3. Filter Jumlah & LN Off
+    const jml3dOff = (form.elements['jml3d'].value.match(/\d/g) || []).map(Number);
+    const listLnOff = parseDigits(form.elements['idoff'].value, 3);
+
+    const koma = getSelectedSeparator();
+
+    // 4. AI Lists
+    let aiRaw = form.elements['ids'].value.trim();
+    let listAI = aiRaw ? aiRaw.split(/[\n*#, ]+/).filter(s => s.length > 0) : [];
+
+    let aiRkRaw = form.elements['ids_rk'].value.trim();
+    let listAIRK = aiRkRaw ? aiRkRaw.split(/[\n*#, ]+/).filter(s => s.length > 0) : [];
+
+    let aiKeRaw = form.elements['ids_ke'].value.trim();
+    let listAIKE = aiKeRaw ? aiKeRaw.split(/[\n*#, ]+/).filter(s => s.length > 0) : [];
+
+    let resultBuckets = {};
+
+    // 5. Loop Kalkulasi Patah
+    baseLN.forEach(numStr => {
+      let rkPairs = numStr.substring(0, 2);
+      let kePairs = numStr.substring(1, 3);
+
+      let jumlahDigital3D = getDigitalRoot(numStr);
+      let patahCount = 0;
+
+      // Filter Digit Single
+      if (ratusanOff.includes(numStr.charAt(0))) patahCount++;
+      if (kepalaOff.includes(numStr.charAt(1))) patahCount++;
+      if (ekorOff.includes(numStr.charAt(2))) patahCount++;
+
+      // Filter Pasangan 2D
+      if (rkOffList.includes(rkPairs)) patahCount++;
+      if (rkDasarList.length > 0 && !rkDasarList.includes(rkPairs)) patahCount++;
+
+      if (keOffList.includes(kePairs)) patahCount++;
+      if (keDasarList.length > 0 && !keDasarList.includes(kePairs)) patahCount++;
+
+      // Filter Jumlah Digital 3D
+      if (jml3dOff.includes(jumlahDigital3D)) patahCount++;
+
+      // Direct 3D OFF
+      if (listLnOff.includes(numStr)) patahCount++;
+
+      // Filter AI 3D (Ratusan, Kepala, Ekor)
+      listAI.forEach(aiStr => {
+        let digits = aiStr.replace(/\D/g, '').split('');
+        if (digits.length > 0) {
+          if (!digits.includes(numStr.charAt(0)) && 
+              !digits.includes(numStr.charAt(1)) && 
+              !digits.includes(numStr.charAt(2))) {
+            patahCount++;
+          }
+        }
+      });
+
+      // Filter AI 2D RK (Hanya Ratusan & Kepala)
+      listAIRK.forEach(aiStr => {
+        let digits = aiStr.replace(/\D/g, '').split('');
+        if (digits.length > 0) {
+          if (!digits.includes(numStr.charAt(0)) && 
+              !digits.includes(numStr.charAt(1))) {
+            patahCount++;
+          }
+        }
+      });
+
+      // Filter AI 2D KE (Hanya Kepala & Ekor)
+      listAIKE.forEach(aiStr => {
+        let digits = aiStr.replace(/\D/g, '').split('');
+        if (digits.length > 0) {
+          if (!digits.includes(numStr.charAt(1)) && 
+              !digits.includes(numStr.charAt(2))) {
+            patahCount++;
+          }
+        }
+      });
+
+      if (!resultBuckets[patahCount]) {
+        resultBuckets[patahCount] = [];
+      }
+      resultBuckets[patahCount].push(numStr);
+    });
+
+    // 6. Render Panel Dinamis
+    renderDynamicPanels3D(resultBuckets, koma);
+  }
+
+  function renderDynamicPanels3D(resultBuckets, separator) {
+    const container = document.getElementById('patah_container');
+    container.innerHTML = '';
+
+    const sortedKeys = Object.keys(resultBuckets).map(Number).sort((a, b) => a - b);
+
+    sortedKeys.forEach(patahVal => {
+      const dataArray = resultBuckets[patahVal];
+      if (!dataArray || dataArray.length === 0) return;
+
+      let title = patahVal === 0 ? "3D TOP" : `Patah ${patahVal}`;
+      let panelClass = "panel-danger";
+      if (patahVal === 0) panelClass = "panel-primary";
+      else if (patahVal === 1 || patahVal === 2) panelClass = "panel-success";
+
+      const panelDiv = document.createElement('div');
+      panelDiv.className = `panel ${panelClass} result-panel`;
+      
+      const textareaId = `patah_box_3d_${patahVal}`;
+
+      panelDiv.innerHTML = `
+        <div class="panel-heading">
+          <span>${title} = ${dataArray.length} LN</span>
+          <button type="button" class="btn-copy" onclick="copyAndAppendTerpilih3D('${textareaId}', this)">Copy</button>
+        </div>
+        <div class="panel-body">
+          <textarea id="${textareaId}" class="ln" rows="3" readonly>${dataArray.join(separator)}</textarea>
+        </div>
+      `;
+
+      container.appendChild(panelDiv);
+    });
+  }
+
+  // Menyalin data dari panel patahan & menempelkan ke area Terpilih
+  function copyAndAppendTerpilih3D(textareaId, btn) {
+    const textarea = document.getElementById(textareaId);
+    if (!textarea || !textarea.value) return;
+
+    let newItems = parseDigits(textarea.value, 3);
+    if (newItems.length > 0) {
+      newItems.forEach(item => {
+        if (!terpilih3DList.includes(item)) {
+          terpilih3DList.push(item);
+        }
+      });
+      renderTerpilihArea3D();
+    }
+
+    // Copy ke Clipboard
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        showCopySuccess(btn);
+      });
+    } else {
+      textarea.select();
+      document.execCommand('copy');
+      showCopySuccess(btn);
+    }
+  }
+
+  function renderTerpilihArea3D() {
+    const label = document.getElementById('label_terpilih');
+    const textarea = document.getElementById('result_terpilih');
+    const sep = getSelectedSeparator();
+
+    label.textContent = `Terpilih = ${terpilih3DList.length} LN`;
+    textarea.value = terpilih3DList.join(sep);
+  }
+
+  function updateTerpilihSeparator() {
+    renderTerpilihArea3D();
+  }
+
+  function copyTerpilihDirect(btn) {
+    const textarea = document.getElementById('result_terpilih');
+    if (!textarea || !textarea.value) return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        showCopySuccess(btn);
+      });
+    } else {
+      textarea.select();
+      document.execCommand('copy');
+      showCopySuccess(btn);
+    }
+  }
+
+  function cleanTerpilih() {
+    terpilih3DList = [];
+    renderTerpilihArea3D();
+  }
+
+  function showCopySuccess(btn) {
+    const oldText = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = '#4caf50';
+    btn.style.color = '#fff';
+    setTimeout(() => { 
+      btn.textContent = oldText; 
+      btn.style.background = '#fff';
+      btn.style.color = '#000';
+    }, 1200);
+  }
+
+  function resetForm3D() {
+    const form = document.getElementById('rekap3d_form');
+    if (form) form.reset();
+
+    document.getElementById('patah_container').innerHTML = '';
+    cleanTerpilih();
+  }
+</script>
+
+</body>
+</html>
