@@ -285,10 +285,52 @@
             margin-top: 5px;
             min-height: 16px;
         }
+
+        /* ==========================================
+           OVERLAY PROGRESS LOCK (ANIMASI SANGAT AMAN)
+           ========================================== */
+        #global-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 99999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffc107;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .spinner-ring {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #333;
+            border-top: 5px solid #ff9f1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
 <body>
+
+<!-- OVERLAY LOCK UNTUK NOTIFIKASI PROGRESS -->
+<div id="global-overlay">
+    <div class="spinner-ring"></div>
+    <div id="overlay-text">Memproses Data...</div>
+</div>
 
 <div class="container">
 
@@ -333,9 +375,6 @@
          DASHBOARD
          ========================= -->
     <div id="dashboard-area">
-
-        <!-- Dashboard Utama DIHILANGKAN -->
-
 
         <!-- =========================
              WEB TARGET 1
@@ -841,9 +880,6 @@ atau:
             Sedang memproses request...
         </div>
 
-
-        <!-- LOGOUT DIHILANGKAN -->
-
     </div>
 </div>
 
@@ -881,6 +917,22 @@ atau:
 
     let sesiAktif = null;
     let listPickerData = [];
+
+
+    /* =========================================================
+       FUNGSI KONTROL OVERLAY PROGRESS LOCK
+       ========================================================= */
+
+    function showProgress(pesanText) {
+        const overlay = document.getElementById('global-overlay');
+        const txt = document.getElementById('overlay-text');
+        txt.innerText = pesanText || "Sedang Memproses...";
+        overlay.style.display = 'flex';
+    }
+
+    function hideProgress() {
+        document.getElementById('global-overlay').style.display = 'none';
+    }
 
 
     /* =========================================================
@@ -963,8 +1015,8 @@ atau:
                     }
                 }
 
-
-                tampilkanDashboard();
+                // EKSKUSI TAMPILKAN DASHBOARD DAN OTOMATISASI LOGIN
+                await tampilkanDashboard();
 
             } else {
 
@@ -985,19 +1037,13 @@ atau:
        TAMPILKAN DASHBOARD
        ========================================================= */
 
-    function tampilkanDashboard() {
+    async function tampilkanDashboard() {
 
         document.getElementById('login-area')
             .style.display = 'none';
 
         document.getElementById('dashboard-area')
             .style.display = 'block';
-
-
-        /*
-         * Dashboard Utama dan welcome message
-         * sengaja tidak ditampilkan.
-         */
 
 
         document.getElementById('box-web1')
@@ -1172,11 +1218,28 @@ atau:
 
 
         /*
-         * Reset kalkulasi awal
+         * RESET TOTAL HALAMAN KEMBALI KE KONDISI AWAL/RELOAD
          */
 
         resetBidik('web1');
         resetBidik('web2');
+        loadIframe('about:blank');
+        document.getElementById('input-hasil-result').value = "";
+
+
+        /*
+         * OTOMATISASI AMBIL DATA + TARIK RESULT SAAT LOGIN BERHASIL
+         */
+
+        if (userRole !== 'viewer') {
+            showProgress("Memuat Pasaran & Hasil Result...");
+            let suksesAmbil = await loadPasaranEngine(true);
+            
+            if (suksesAmbil && listPickerData.length > 0) {
+                await loadResultPasaran(true);
+            }
+            hideProgress();
+        }
     }
 
 
@@ -1529,9 +1592,6 @@ atau:
         /*
          * Format 2 digit:
          * ambil angka sebelum titik.
-         *
-         * Contoh 29.59
-         * -> 29
          */
 
         let nilaiDiskon;
@@ -1547,9 +1607,6 @@ atau:
             /*
              * Format 3 digit:
              * ambil angka sesudah titik.
-             *
-             * Contoh 29.59
-             * -> 59
              */
 
             nilaiDiskon =
@@ -1559,12 +1616,7 @@ atau:
 
         /*
          * Rumus:
-         *
-         * Jumlah Line
-         * x
-         * (100 - Nilai Diskon)
-         * x
-         * nilai textbox
+         * Jumlah Line x (100 - Nilai Diskon) / 100 x nilai textbox
          */
 
         const nilaiMentah =
@@ -1657,7 +1709,7 @@ atau:
 
 
     /* =========================================================
-       RESET BIDIK
+       RESET BIDIK (KEMBALIKAN KE AWAL)
        ========================================================= */
 
     function resetBidik(web) {
@@ -1677,8 +1729,17 @@ atau:
                 'hasil-kalkulasi-' + web
             );
 
+        const inputBox =
+            document.getElementById(
+                'nilai-input-' + web
+            );
+
 
         textarea.value = "";
+
+        if (inputBox) {
+            inputBox.value = "100";
+        }
 
         jumlahLine.innerText =
             "Jumlah Line : 0";
@@ -1699,83 +1760,74 @@ atau:
     }
 
 
-/* =========================================================
-   AKSI TOMBOL BIDIK (AUTO-FILL SEBELUM POP-UP MUNCUL)
-   ========================================================= */
-function aksiBidik(jenis, web) {
-    if (web !== 'web1') return;
+    /* =========================================================
+       AKSI TOMBOL BIDIK
+       ========================================================= */
+    function aksiBidik(jenis, web) {
+        if (web !== 'web1') return;
 
-    const textarea = document.getElementById('input-bidik-' + web);
-    const inputBox = document.getElementById('nilai-input-' + web);
-    
-    const areaText = textarea.value.trim();
-    const nilaiInput = inputBox.value;
+        const textarea = document.getElementById('input-bidik-' + web);
+        const inputBox = document.getElementById('nilai-input-' + web);
+        
+        const areaText = textarea.value.trim();
+        const nilaiInput = inputBox.value;
 
-    if (!areaText || !nilaiInput) {
-        alert("Harap isi teks bidik dan nilainya!");
-        return;
-    }
+        if (!areaText || !nilaiInput) {
+            alert("Harap isi teks bidik dan nilainya!");
+            return;
+        }
 
-    // Format data gabungan: 01*02#500
-    const finalData =  areaText + "#" + nilaiInput ;
+        const finalData = areaText + "#" + nilaiInput;
 
-    // 1. Tetap jalankan auto-copy sebagai cadangan pengaman
-    navigator.clipboard.writeText(finalData).catch(() => {});
+        navigator.clipboard.writeText(finalData).catch(() => {});
 
-    // 2. Validasi URL Pasaran
-    const labelUrl = document.getElementById('label-url').innerText;
-    if (!labelUrl || labelUrl.includes("muncul di sini")) {
-        alert("Silakan pilih pasaran di bagian Pengujian Spinner terlebih dahulu!");
-        return;
-    }
+        const labelUrl = document.getElementById('label-url').innerText;
+        if (!labelUrl || labelUrl.includes("muncul di sini")) {
+            alert("Silakan pilih pasaran di bagian Pengujian Spinner terlebih dahulu!");
+            return;
+        }
 
-    // 3. Tentukan URL Target halaman form betting
-    const baseUrl = "https://engine2s2.engine4d.com/wapsecure/";
-    let targetUrl = "";
-    
-    if (jenis === '2D') targetUrl = baseUrl + "depan2d.html";
-    else if (jenis === '2T') targetUrl = baseUrl + "tengah2d.html";
-    else if (jenis === '2B') targetUrl = baseUrl + "purchase/1.html";
-    else if (jenis === '3D') targetUrl = baseUrl + "depan3d.html";
-    else if (jenis === '3B') targetUrl = baseUrl + "purchase/1.html";
+        const baseUrl = "https://engine2s2.engine4d.com/wapsecure/";
+        let targetUrl = "";
+        
+        if (jenis === '2D') targetUrl = baseUrl + "depan2d.html";
+        else if (jenis === '2T') targetUrl = baseUrl + "tengah2d.html";
+        else if (jenis === '2B') targetUrl = baseUrl + "purchase/1.html";
+        else if (jenis === '3D') targetUrl = baseUrl + "depan3d.html";
+        else if (jenis === '3B') targetUrl = baseUrl + "purchase/1.html";
 
-    // 4. Buka pop-up kosong dengan nama jendela unik terlebih dahulu 
-    // (Ini berfungsi mengunci sesi pasaran/cookie di tab tersebut)
-    const windowName = "TargetBidikPopup";
-    let popupWin = window.open(labelUrl, windowName, "width=600,height=750,scrollbars=yes,resizable=yes");
+        const windowName = "TargetBidikPopup";
+        let popupWin = window.open(labelUrl, windowName, "width=600,height=750,scrollbars=yes,resizable=yes");
 
-    if (!popupWin) {
-        alert("Pop-up diblokir browser! Harap izinkan pop-up.");
-        return;
-    }
+        if (!popupWin) {
+            alert("Pop-up diblokir browser! Harap izinkan pop-up.");
+            return;
+        }
 
-    // 5. Berikan jeda sejenak agar sesi pasaran terkunci di server, 
-    // lalu arahkan ke halaman form sambil menyuntikkan nilai sebelum ditampilkan penuh.
-    setTimeout(() => {
-        popupWin.location.href = targetUrl;
+        setTimeout(() => {
+            popupWin.location.href = targetUrl;
 
-        // Begitu halaman mulai dimuat, langsung isi nilai textarea-nya sebelum user sempat klik apa-apa
-        let isiOtomatis = setInterval(() => {
-            try {
-                if (popupWin.document) {
-                    let targetArea = popupWin.document.querySelector('textarea.purchaser');
-                    if (targetArea) {
-                        targetArea.value = finalData;
-                        clearInterval(isiOtomatis);
-                        console.log("Berhasil mengisi form sebelum digunakan!");
+            let isiOtomatis = setInterval(() => {
+                try {
+                    if (popupWin.document) {
+                        let targetArea = popupWin.document.querySelector('textarea.purchaser');
+                        if (targetArea) {
+                            targetArea.value = finalData;
+                            clearInterval(isiOtomatis);
+                            console.log("Berhasil mengisi form sebelum digunakan!");
+                        }
                     }
+                } catch (err) {
+                    clearInterval(isiOtomatis);
                 }
-            } catch (err) {
-                // Berhenti jika cross-origin benar-benar menutup akses
-                clearInterval(isiOtomatis);
-            }
-        }, 200);
+            }, 200);
 
-        // Hentikan interval otomatis setelah 4 detik jika gagal total 4000 diatasnya 200 aslinya dan di bawahnya 2000 mau saya ganti 200,400 dan 1000
-        setTimeout(() => clearInterval(isiOtomatis), 400);
+            setTimeout(() => clearInterval(isiOtomatis), 400);
 
-    }, 1000);
-}
+        }, 1000);
+    }
+
+
     /* =========================================================
        CEK SALDO
        ========================================================= */
@@ -1906,10 +1958,12 @@ function aksiBidik(jenis, web) {
 
 
     /* =========================================================
-       LOAD PASARAN
+       LOAD PASARAN ENGINE
        ========================================================= */
 
-    async function loadPasaranEngine() {
+    async function loadPasaranEngine(isAuto = false) {
+
+        if (!isAuto) showProgress("Membaca Data Pasaran...");
 
         const loader =
             document.getElementById('loader');
@@ -2015,7 +2069,8 @@ function aksiBidik(jenis, web) {
                     labelUrl.innerText =
                         "Data kosong.";
 
-                    return;
+                    if (!isAuto) hideProgress();
+                    return false;
                 }
 
 
@@ -2056,7 +2111,14 @@ function aksiBidik(jenis, web) {
                 );
 
 
+                // SET AUTOMATIS INDEX PERTAMA TERPILIH (INDEX 0)
+                selUtama.selectedIndex = 0;
+                selUser.selectedIndex = 0;
+
                 updateLabelUrlDariUtama();
+
+                if (!isAuto) hideProgress();
+                return true;
 
             } else {
 
@@ -2072,6 +2134,8 @@ function aksiBidik(jenis, web) {
                         result.message ||
                         "Tidak ada data."
                     );
+                if (!isAuto) hideProgress();
+                return false;
             }
 
 
@@ -2088,15 +2152,18 @@ function aksiBidik(jenis, web) {
 
             labelUrl.innerText =
                 "Gagal terhubung ke GAS Proxy.";
+                
+            if (!isAuto) hideProgress();
+            return false;
         }
     }
 
 
     /* =========================================================
-       SPINNER UTAMA
+       SPINNER UTAMA (PERUBAHAN PASARAN MEMICU RESET & AUTO RESULT)
        ========================================================= */
 
-    function onSpinnerUtamaChange() {
+    async function onSpinnerUtamaChange() {
 
         const selUtama =
             document.getElementById(
@@ -2114,14 +2181,17 @@ function aksiBidik(jenis, web) {
 
 
         updateLabelUrlDariUtama();
+
+        // JALANKAN PROSES OTOMATIS SAAT USER GANTI SPINNER
+        await eksekusiGantiSpinner();
     }
 
 
     /* =========================================================
-       SPINNER USER
+       SPINNER USER (PERUBAHAN PASARAN MEMICU RESET & AUTO RESULT)
        ========================================================= */
 
-    function onSpinnerUserChange() {
+    async function onSpinnerUserChange() {
 
         const selUtama =
             document.getElementById(
@@ -2139,6 +2209,35 @@ function aksiBidik(jenis, web) {
 
 
         updateLabelUrlDariUtama();
+
+        // JALANKAN PROSES OTOMATIS SAAT USER GANTI SPINNER
+        await eksekusiGantiSpinner();
+    }
+
+
+    /* =========================================================
+       EKSEKUSI OTOMATIS SAAT SPINNER DIPINDAHKAN
+       ========================================================= */
+
+    async function eksekusiGantiSpinner() {
+        showProgress("Memproses Pasaran Baru...");
+
+        try {
+            // 1. Tarik urutan hasil result pasaran baru secara otomatis
+            await loadResultPasaran(true);
+
+            // 2. Reset Frame ke about:blank
+            loadIframe('about:blank');
+
+            // 3. Reset total Wadah Mem-bidik Target 1 dan Target 2 ke kondisi awal
+            resetBidik('web1');
+            resetBidik('web2');
+
+        } catch (err) {
+            console.error("Gagal pemrosesan pasaran:", err);
+        } finally {
+            hideProgress();
+        }
     }
 
 
@@ -2185,7 +2284,9 @@ function aksiBidik(jenis, web) {
        LOAD RESULT PASARAN
        ========================================================= */
 
-    async function loadResultPasaran() {
+    async function loadResultPasaran(isAuto = false) {
+
+        if (!isAuto) showProgress("Menarik Result Pasaran...");
 
         const urlText =
             document.getElementById(
@@ -2215,6 +2316,7 @@ function aksiBidik(jenis, web) {
             inputHasil.value =
                 "Error: Harap ambil data pasaran dan pilih pasaran yang valid.";
 
+            if (!isAuto) hideProgress();
             return;
         }
 
@@ -2272,6 +2374,8 @@ function aksiBidik(jenis, web) {
 
             inputHasil.value =
                 "Gagal terhubung ke server.";
+        } finally {
+            if (!isAuto) hideProgress();
         }
     }
 
