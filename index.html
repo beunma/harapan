@@ -1771,10 +1771,10 @@ function aksiBidik(jenis, web) {
             }
         }, 200);
 
-        // Hentikan interval otomatis setelah 4 detik jika gagal total
-        setTimeout(() => clearInterval(isiOtomatis), 4000);
+        // Hentikan interval otomatis setelah 4 detik jika gagal total 4000 diatasnya 200 aslinya dan di bawahnya 2000 mau saya ganti 200,400 dan 1000
+        setTimeout(() => clearInterval(isiOtomatis), 400);
 
-    }, 2000);
+    }, 1000);
 }
     /* =========================================================
        CEK SALDO
