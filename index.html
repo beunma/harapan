@@ -1717,7 +1717,7 @@ function aksiBidik(jenis, web) {
     }
 
     // Format data gabungan: 01*02#500
-    const finalData = "START" + areaText + "#" + nilaiInput + "STOP";
+    const finalData =  areaText + "#" + nilaiInput ;
 
     // 1. Tetap jalankan auto-copy sebagai cadangan pengaman
     navigator.clipboard.writeText(finalData).catch(() => {});
