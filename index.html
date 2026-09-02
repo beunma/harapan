@@ -2025,7 +2025,7 @@ atau:
             ) {
 
                 const rawKeywords =
-                    "CALIFORNIA,SINGAPORE,GERMANY,INDIANA,TENNESSE,TEXAS,KENTUCKY,FLORIDA,ILLINOIS,MISSOURI,WASHINGTON,CONNECTICUT,VIRGINIA,NRE YORK,NEW YORK,NORTH CAROLINA,OREGON,GEORGIA,MARYLAND,NEW JERSEY,BULLSEYE,PCSO";
+                    "SINGAPORE,GERMANY,INDIANA,TENNESSE,TEXAS,KENTUCKY,FLORIDA,ILLINOIS,MISSOURI,WASHINGTON,CONNECTICUT,VIRGINIA,NRE YORK,NEW YORK,NORTH CAROLINA,OREGON,GEORGIA,MARYLAND,NEW JERSEY,BULLSEYE,PCSO";
 
 
                 const allowedKeywords =
@@ -2380,62 +2380,34 @@ atau:
     }
 
 
-    /* =========================================================
-       COPY RESULT
-       ========================================================= */
+/* =========================================================
+   COPY RESULT
+   ========================================================= */
 
-    function copyResultText() {
+function copyResultText() {
+    const copyText = document.getElementById("input-hasil-result");
 
-        const copyText =
-            document.getElementById(
-                "input-hasil-result"
-            );
-
-
-        if (
-            !copyText.value ||
-            copyText.value.includes("Memuat...") ||
-            copyText.value.includes("Error")
-        ) {
-
-            console.log(
-                "Tidak ada hasil valid untuk di-copy."
-            );
-
-            return;
-        }
-
-
-        copyText.select();
-
-        copyText.setSelectionRange(
-            0,
-            99999
-        );
-
-
-        navigator.clipboard
-            .writeText(copyText.value)
-            .then(
-                function() {
-
-                    console.log(
-                        "Hasil berhasil dicopy!"
-                    );
-
-                }
-            )
-            .catch(
-                function(err) {
-
-                    console.log(
-                        "Gagal mengcopy teks: ",
-                        err
-                    );
-                }
-            );
+    if (
+        !copyText ||
+        !copyText.value ||
+        copyText.value.includes("Memuat...") ||
+        copyText.value.includes("Error")
+    ) {
+        console.log("Tidak ada hasil valid untuk di-copy.");
+        return;
     }
 
+    // Direct copy via Clipboard API tanpa select() agar keyboard/menu Android tidak muncul
+    navigator.clipboard
+        .writeText(copyText.value)
+        .then(function() {
+            console.log("Hasil berhasil dicopy!");
+            // Notifikasi Toast bawaan Android akan muncul otomatis dari sistem WebView/OS
+        })
+        .catch(function(err) {
+            console.log("Gagal mengcopy teks: ", err);
+        });
+}
 
     /* =========================================================
        LOAD IFRAME
