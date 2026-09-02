@@ -1232,7 +1232,7 @@ atau:
          */
 
         if (userRole !== 'viewer') {
-            showProgress("Memuat Pasaran & Hasil Result...");
+            showProgress("Memuat Data...");
             let suksesAmbil = await loadPasaranEngine(true);
             
             if (suksesAmbil && listPickerData.length > 0) {
@@ -1783,7 +1783,7 @@ atau:
 
         const labelUrl = document.getElementById('label-url').innerText;
         if (!labelUrl || labelUrl.includes("muncul di sini")) {
-            alert("Silakan pilih pasaran di bagian Pengujian Spinner terlebih dahulu!");
+            alert("Silakan pilih Data di bagian Pengujian Spinner terlebih dahulu!");
             return;
         }
 
@@ -1963,7 +1963,7 @@ atau:
 
     async function loadPasaranEngine(isAuto = false) {
 
-        if (!isAuto) showProgress("Membaca Data Pasaran...");
+        if (!isAuto) showProgress("Membaca Data...");
 
         const loader =
             document.getElementById('loader');
@@ -1985,7 +1985,7 @@ atau:
 
 
         loader.innerText =
-            "Melakukan SSO Auto-login & membaca Pasaran...";
+            "Melakukan SSO Auto-login & membaca Data...";
 
         loader.style.display =
             'block';
@@ -2061,10 +2061,10 @@ atau:
                 ) {
 
                     selUtama.innerHTML =
-                        '<option value="">Tidak ada pasaran yang cocok</option>';
+                        '<option value="">Tidak ada data yang cocok</option>';
 
                     selUser.innerHTML =
-                        '<option value="">Tidak ada pasaran</option>';
+                        '<option value="">Tidak ada data</option>';
 
                     labelUrl.innerText =
                         "Data kosong.";
@@ -2123,10 +2123,10 @@ atau:
             } else {
 
                 selUtama.innerHTML =
-                    '<option value="">Gagal memuat pasaran</option>';
+                    '<option value="">Gagal memuat data</option>';
 
                 selUser.innerHTML =
-                    '<option value="">Gagal memuat pasaran</option>';
+                    '<option value="">Gagal memuat data</option>';
 
                 labelUrl.innerText =
                     "Error: " +
@@ -2160,7 +2160,7 @@ atau:
 
 
     /* =========================================================
-       SPINNER UTAMA (PERUBAHAN PASARAN MEMICU RESET & AUTO RESULT)
+       SPINNER UTAMA (PERUBAHAN  MEMICU RESET & AUTO RESULT)
        ========================================================= */
 
     async function onSpinnerUtamaChange() {
@@ -2220,7 +2220,7 @@ atau:
        ========================================================= */
 
     async function eksekusiGantiSpinner() {
-        showProgress("Memproses Pasaran Baru...");
+        showProgress("Memproses Data Baru...");
 
         try {
             // 1. Tarik urutan hasil result pasaran baru secara otomatis
@@ -2234,7 +2234,7 @@ atau:
             resetBidik('web2');
 
         } catch (err) {
-            console.error("Gagal pemrosesan pasaran:", err);
+            console.error("Gagal pemrosesan data:", err);
         } finally {
             hideProgress();
         }
@@ -2286,7 +2286,7 @@ atau:
 
     async function loadResultPasaran(isAuto = false) {
 
-        if (!isAuto) showProgress("Menarik Result Pasaran...");
+        if (!isAuto) showProgress("Menarik Data...");
 
         const urlText =
             document.getElementById(
@@ -2314,7 +2314,7 @@ atau:
         ) {
 
             inputHasil.value =
-                "Error: Harap ambil data pasaran dan pilih pasaran yang valid.";
+                "Error: Harap ambil data dan pilih yang valid.";
 
             if (!isAuto) hideProgress();
             return;
