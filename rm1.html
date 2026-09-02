@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analisis Lanjutan - 3 Kolom & Wadah Reset</title>
+    <title>Dashboard Analisis</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
         .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -31,35 +31,35 @@
 <body>
 
 <div class="container">
-    <h2>Dashboard Analisis Lanjutan (3 Kolom Acuan & Wadah Salinan Reset)</h2>
+    <!-- <h2>Dashboard Analisis Lanjutan (3 Kolom Acuan & Wadah Salinan Reset)</h2> -->
     
     <label for="inputData">Masukkan Data (Pemisah Koma atau Baris Baru / Campuran):</label>
     <textarea id="inputData" placeholder="Contoh: 1234, 5678 atau paste ke bawah..."></textarea>
     <div id="infoInput" class="note">Jumlah Input: 0</div>
     
-    <button onclick="prosesPertama()">Proses Data & Brute Force</button>
+    <button onclick="prosesPertama()">Proses 1</button>
 
-    <h3>1. Hasil Brute Force Angka Main (Bisa Diedit Manual)</h3>
+    <h3>1. Hasil Brute Force (Bisa Diedit Manual)</h3>
     <div class="col-group">
         <div class="col">
-            <label>Kolom 1 (Ribuan - Ratusan):</label>
+            <label>Kolom 1 :</label>
             <textarea id="bfCol1" class="result-box" style="height: 130px;"></textarea>
         </div>
         <div class="col">
-            <label>Kolom 2 (Ratusan - Puluhan):</label>
+            <label>Kolom 2 :</label>
             <textarea id="bfCol2" class="result-box" style="height: 130px;"></textarea>
         </div>
         <div class="col">
-            <label>Kolom 3 (Puluhan - Satuan):</label>
+            <label>Kolom 3 :</label>
             <textarea id="bfCol3" class="result-box" style="height: 130px;"></textarea>
         </div>
     </div>
 
-    <button id="btnProsesKedua" onclick="prosesKedua()">Jalankan Engine Level (Proses Kedua)</button>
+    <button id="btnProsesKedua" onclick="prosesKedua()">Proses 2</button>
 
     <!-- BAGIAN 2: 3 KOLOM ENGINE LEVEL -->
     <div id="areaLevel" style="display:none;">
-        <h3>2. Engine Level (Berbasis Skor Frekuensi & Bobot)</h3>
+        <h3>2. Engine Level</h3>
         <div class="col-group">
             <!-- Kolom Engine 1 -->
             <div class="col panel-engine">
@@ -114,7 +114,7 @@
         </div>
 
         <!-- 3. WADAH SALINAN DENGAN TOMBOL RESET -->
-        <h3>3. Wadah Salinan & Hasil 3 Digit</h3>
+        <h3>3. Wadah Salinan</h3>
         <div class="panel-engine">
             <div class="level-row">
                 <span id="lblWadahDD" class="level-title">Wadah Salinan Kolom 1 (0 LN)</span>
