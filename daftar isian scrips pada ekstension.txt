@@ -1,0 +1,120 @@
+1. login wla 1
+
+javascript:(function(){document.getElementsByClassName('required form-control')[0].value="dandindun";document.getElementsByClassName('required form-control')[1].value="iel007";document.getElementsByTagName("button")[6].setAttribute('id',"pencet");document.getElementById("pencet").click()})()
+
+2. login wla 2
+
+javascript:(function(){document.getElementsByClassName('required form-control')[0].value="dandindun";document.getElementsByClassName('required form-control')[1].value="iel007";document.getElementsByTagName("button")[6].setAttribute('id',"pencet");document.getElementById("pencet").click()})()
+
+3. masuk ke engine
+
+javascript:(function(){window.location.replace('sixd/play?GameID=6d2&iswap=1');})();
+
+4. engine setelah logout
+
+javascript:location.href='https://www.saatwlatogel88.net/wap'
+
+5. sukses transaksi
+
+javascript:(function(){if(window.location.href.includes('success=1')){if(window.__greenMask)return;window.__greenMask=true;const m=document.createElement('div');m.id='__greenMaskOverlay';Object.assign(m.style,{position:'fixed',top:'0',left:'0',width:'100vw',height:'100vh',backgroundColor:'rgb(34, 139, 34)',zIndex:'2147483647',pointerEvents:'auto',cursor:'not-allowed'});const s=e=>{e.stopPropagation();e.preventDefault();};['click','mousedown','mouseup','contextmenu'].forEach(evt=>m.addEventListener(evt,s,true));(document.body||document.documentElement).appendChild(m);const cleanup=setInterval(()=>{const p=document.getElementById('__purpleMaskOverlay');if(p)p.remove();document.documentElement.appendChild(m);m.style.zIndex='2147483647';},50);setTimeout(()=>{clearInterval(cleanup);window.close();},2000);}})();
+
+6. injury time atau tutup atau libur
+
+javascript:(function(){if(document.body.innerText.toLowerCase().includes('dalam masa injury')){window.close();}})();
+
+7. saldo kurang
+
+javascript:(function(){
+  var keyword = 'saldo anda tidak cukup';
+  
+  var checkInterval = setInterval(function() {
+    var bodyText = document.body ? document.body.innerText.toLowerCase() : '';
+    if (bodyText.includes(keyword)) {
+      clearInterval(checkInterval);
+      // Mencoba menutup window, jika diblokir browser maka redirect sebagai fallback
+      window.close();
+      setTimeout(function(){
+        alert('Teks ditemukan! (Tab tidak dapat ditutup otomatis oleh browser)');
+      }, 300);
+    }
+  }, 500); // Cek setiap 0.5 detik
+})();
+
+8. dicurigai duplikat
+
+javascript:(function(){
+  var keyword = 'dicurigai duplikat';
+  
+  var checkInterval = setInterval(function() {
+    var bodyText = document.body ? document.body.innerText.toLowerCase() : '';
+    if (bodyText.includes(keyword)) {
+      clearInterval(checkInterval);
+      // Mencoba menutup window, jika diblokir browser maka redirect sebagai fallback
+      window.close();
+      setTimeout(function(){
+        alert('Teks ditemukan! (Tab tidak dapat ditutup otomatis oleh browser)');
+      }, 300);
+    }
+  }, 500); // Cek setiap 0.5 detik
+})();
+
+
+9. masker ungu wla
+
+javascript:(()=>{if(window.__purpleMask)return;window.__purpleMask=1;const m=document.createElement('div');m.id='__purpleMaskOverlay';Object.assign(m.style,{position:'fixed',top:'0',left:'0',width:'100vw',height:'100vh',backgroundColor:'rgb(48, 25, 52)',zIndex:'2147483647',pointerEvents:'auto',cursor:'not-allowed'});const s=e=>{e.stopPropagation();e.preventDefault();};['click','mousedown','mouseup','contextmenu'].forEach(evt=>m.addEventListener(evt,s,true));document.documentElement.appendChild(m);})();
+
+
+10. masker ungu engine
+
+javascript:(()=>{if(window.__purpleMask)return;window.__purpleMask=1;const m=document.createElement('div');m.id='__purpleMaskOverlay';Object.assign(m.style,{position:'fixed',top:'0',left:'0',width:'100vw',height:'100vh',backgroundColor:'rgb(48, 25, 52)',zIndex:'2147483647',pointerEvents:'auto',cursor:'not-allowed'});const s=e=>{e.stopPropagation();e.preventDefault();};['click','mousedown','mouseup','contextmenu'].forEach(evt=>m.addEventListener(evt,s,true));document.documentElement.appendChild(m);})();
+
+11. isi depan
+
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+
+12. isi tengah
+
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+
+13. isi belakang
+
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+
+14. isi 3d depan
+
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+
+
+15. js confirm OK
+
+javascript:(function(){window.confirm=function(){return true;};})();
+
+16. saat berhenti di engine wapsecure.html
+
+javascript:(async function(){if(window.location.href.includes('wapsecure.html')){if(window.__greenMask)return;window.__greenMask=true;try{let t=await navigator.clipboard.readText();t=t.trim();if(t.length>=3&&t.toUpperCase().startsWith('2Z')){await navigator.clipboard.writeText(t.charAt(2).toUpperCase());}}catch(e){}const m=document.createElement('div');m.id='__greenMaskOverlay';Object.assign(m.style,{position:'fixed',top:'0',left:'0',width:'100vw',height:'100vh',backgroundColor:'rgb(255, 0, 0)',zIndex:'2147483647',pointerEvents:'auto',cursor:'not-allowed'});const s=e=>{e.stopPropagation();e.preventDefault();};['click','mousedown','mouseup','contextmenu'].forEach(evt=>m.addEventListener(evt,s,true));(document.body||document.documentElement).appendChild(m);const cleanup=setInterval(()=>{const p=document.getElementById('__purpleMaskOverlay');if(p)p.remove();document.documentElement.appendChild(m);m.style.zIndex='2147483647';},50);setTimeout(()=>{clearInterval(cleanup);window.close();},2000);}})();
+
+17. saat rutin cek di beunma
+
+javascript:(()=>{if(window.__bidikMonitor)return;const toast=s=>{let p=document.getElementById('__bidikToast');if(!p){p=document.createElement('div');p.id='__bidikToast';Object.assign(p.style,{position:'fixed',top:'20px',left:'50%',transform:'translateX(-50%)',zIndex:2147483647,background:'#fff',color:'#000',padding:'12px 22px',border:'2px solid #000',borderRadius:'8px',fontSize:'20px',fontWeight:'bold',boxShadow:'0 4px 15px rgba(0,0,0,.3)'});document.body.appendChild(p)}p.textContent=s;clearTimeout(p.t);p.t=setTimeout(()=>p.remove(),1200)};const eksekusiKlik=(b,kode)=>{try{b.removeAttribute('disabled');b.disabled=false;if(typeof window.aksiBidik==='function'){window.aksiBidik(kode,'web1')}else{b.click()}}catch(e){b.click()}};const cek=async()=>{try{const okURL=location.href.toLowerCase().includes('beunma')&&location.href.toLowerCase().includes('harapan');let c='';try{c=await navigator.clipboard.readText()}catch(e){}c=c.trim().toUpperCase();const okCLP=c.length===1;const m={D:'btn-2d-web1',T:'btn-2t-web1',B:'btn-2b-web1',X:'btn-3d-web1',Y:'btn-3b-web1'};const kMap={D:'2D',T:'2T',B:'2B',X:'3D',Y:'3B'};const b=okCLP?document.getElementById(m[c]):null;const okBTT=!!b&&!b.disabled;let s='';if(okURL)s+='URL ';if(okCLP)s+=c+' ';else s+='CLP ';if(okBTT)s+=b.textContent.trim();toast(s.trim()||'-');if(okURL&&okCLP&&okBTT){try{await navigator.clipboard.writeText('')}catch(err){}eksekusiKlik(b,kMap[c]);setTimeout(()=>toast('✓ '+b.textContent.trim()),150)}}catch(e){}};window.__bidikMonitor=setInterval(cek,5000);cek()})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
