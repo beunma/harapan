@@ -1777,7 +1777,10 @@ atau:
             return;
         }
 
-        const finalData = areaText + "#" + nilaiInput;
+      //  const finalData = areaText + "#" + nilaiInput;
+        let finalData = areaText + "#" + nilaiInput;
+		let sekolah="";
+		let sekolah2="";
 
         navigator.clipboard.writeText(finalData).catch(() => {});
 
@@ -1795,6 +1798,20 @@ atau:
         else if (jenis === '2B') targetUrl = baseUrl + "purchase/1.html";
         else if (jenis === '3D') targetUrl = baseUrl + "depan3d.html";
         else if (jenis === '3B') targetUrl = baseUrl + "purchase/1.html";
+		
+		
+		//YEBI
+        if (jenis === '2D') sekolah="2ZD";
+        else if (jenis === '2T') sekolah="2ZT";
+        else if (jenis === '2B') sekolah="2ZB";
+        else if (jenis === '3D') sekolah="2ZX";
+        else if (jenis === '3B') sekolah="2ZY";	
+
+		
+		// YEBI
+		//sekolah2 =  sekolah + "*";
+		//finalData =  sekolah2 + finalData;
+		finalData =  sekolah + finalData;
 
         const windowName = "TargetBidikPopup";
         let popupWin = window.open(labelUrl, windowName, "width=600,height=750,scrollbars=yes,resizable=yes");
