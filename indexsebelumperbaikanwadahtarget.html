@@ -212,28 +212,6 @@
             box-sizing: border-box;
         }
 
-        /* BARIS TOMBOL RESET POJOK KANAN */
-        .bidik-action-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 6px;
-        }
-
-        .btn-reset-bidik {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 14px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn-reset-bidik:hover {
-            background: #bd2130;
-        }
-
         .bidik-calc-row {
             display: flex;
             gap: 8px;
@@ -689,7 +667,7 @@
             </div>
 
 
-            <!-- TEXT AREA & TOMBOL RESET TARGET 1 -->
+            <!-- TEXT AREA -->
             <textarea
                 id="input-bidik-web1"
                 class="bidik-textarea"
@@ -701,15 +679,6 @@ atau:
 102*111*009"
                 spellcheck="false"
                 oninput="validasiBidik('web1')"></textarea>
-
-            <div class="bidik-action-row">
-                <button
-                    type="button"
-                    class="btn-reset-bidik"
-                    onclick="resetBidik('web1')">
-                    Reset
-                </button>
-            </div>
 
 
             <div
@@ -733,7 +702,7 @@ atau:
                         type="number"
                         id="nilai-input-web1"
                         value="100"
-                        min="100"
+                        min="1"
                         step="1"
                         inputmode="numeric"
                         oninput="hitungBidik('web1')">
@@ -811,7 +780,7 @@ atau:
             </div>
 
 
-            <!-- TEXT AREA & TOMBOL RESET TARGET 2 -->
+            <!-- TEXT AREA -->
             <textarea
                 id="input-bidik-web2"
                 class="bidik-textarea"
@@ -823,15 +792,6 @@ atau:
 102*111*009"
                 spellcheck="false"
                 oninput="validasiBidik('web2')"></textarea>
-
-            <div class="bidik-action-row">
-                <button
-                    type="button"
-                    class="btn-reset-bidik"
-                    onclick="resetBidik('web2')">
-                    Reset
-                </button>
-            </div>
 
 
             <div
@@ -855,7 +815,7 @@ atau:
                         type="number"
                         id="nilai-input-web2"
                         value="100"
-                        min="100"
+                        min="1"
                         step="1"
                         inputmode="numeric"
                         oninput="hitungBidik('web2')">
@@ -1284,7 +1244,7 @@ atau:
 
 
     /* =========================================================
-       1. VALIDASI BIDIK
+       VALIDASI BIDIK
        ========================================================= */
 
     function validasiBidik(web) {
@@ -1446,7 +1406,7 @@ atau:
 
 
         /*
-         * VALIDASI LINE BERHASIL
+         * VALID
          */
 
         const jumlah =
@@ -1459,17 +1419,22 @@ atau:
         jumlahLine.classList.remove('error');
 
 
-        /*
-         * Hitung Nilai Bidik (Termasuk cek input >= 100).
-         * Pengaktifan tombol dikontrol langsung dari fungsi hitungBidik
-         */
+        const digitType =
+            semua2Digit ? 2 : 3;
+
+
+        setTombolBidik(
+            web,
+            digitType
+        );
+
 
         hitungBidik(web);
     }
 
 
     /* =========================================================
-       2. TAMPILKAN ERROR BIDIK
+       TAMPILKAN ERROR BIDIK
        ========================================================= */
 
     function tampilkanErrorBidik(web, pesan) {
@@ -1497,10 +1462,6 @@ atau:
         hasil.classList.add('error');
 
 
-        /*
-         * Jika error, semua tombol di wadah tsb di-disable
-         */
-
         setTombolBidik(
             web,
             null
@@ -1509,7 +1470,7 @@ atau:
 
 
     /* =========================================================
-       3. HITUNG NILAI BIDIK
+       HITUNG NILAI BIDIK
        ========================================================= */
 
     function hitungBidik(web) {
@@ -1537,14 +1498,12 @@ atau:
             hasil.innerText = "0";
             hasil.classList.remove('error');
 
-            setTombolBidik(web, null);
-
             return;
         }
 
 
         /*
-         * Cek validasi digit
+         * Cek validasi lagi
          */
 
         const groups =
@@ -1574,8 +1533,6 @@ atau:
             hasil.innerText = "Error";
             hasil.classList.add('error');
 
-            setTombolBidik(web, null);
-
             return;
         }
 
@@ -1603,19 +1560,16 @@ atau:
 
 
         /*
-         * PERBAIKAN: Nilai input Wajib Angka dan MINIMAL 100 (>= 100)
+         * Nilai tidak boleh 0 atau minus.
          */
 
         if (
             !Number.isFinite(nilaiInput) ||
-            nilaiInput < 100
+            nilaiInput <= 0
         ) {
 
             hasil.innerText = "Error";
             hasil.classList.add('error');
-
-            // Nonaktifkan semua tombol jika kalkulasi error
-            setTombolBidik(web, null);
 
             return;
         }
@@ -1636,8 +1590,8 @@ atau:
 
 
         /*
-         * Format 2 digit: ambil angka sebelum titik.
-         * Format 3 digit: ambil angka sesudah titik.
+         * Format 2 digit:
+         * ambil angka sebelum titik.
          */
 
         let nilaiDiskon;
@@ -1649,6 +1603,11 @@ atau:
                 Number(bagianDiskon[0]);
 
         } else {
+
+            /*
+             * Format 3 digit:
+             * ambil angka sesudah titik.
+             */
 
             nilaiDiskon =
                 Number(bagianDiskon[1]);
@@ -1662,7 +1621,7 @@ atau:
 
         const nilaiMentah =
             jumlah *
-            (100 - nilaiDiskon) / 100 *
+            (100 - nilaiDiskon) /100 *
             nilaiInput;
 
 
@@ -1678,24 +1637,11 @@ atau:
             nilaiAkhir.toLocaleString('id-ID');
 
         hasil.classList.remove('error');
-
-
-        /*
-         * Aktifkan tombol jika Jumlah Line DAN Hasil Kalkulasi valid
-         */
-
-        const digitType =
-            semua2Digit ? 2 : 3;
-
-        setTombolBidik(
-            web,
-            digitType
-        );
     }
 
 
     /* =========================================================
-       4. SET TOMBOL BIDIK
+       SET TOMBOL BIDIK
        ========================================================= */
 
     function setTombolBidik(web, digitType) {
@@ -1727,7 +1673,7 @@ atau:
 
 
         /*
-         * Default semua disable (Berlaku juga saat digitType === null)
+         * Default semua disable
          */
 
         btn2D.disabled = true;
@@ -1739,7 +1685,7 @@ atau:
 
 
         /*
-         * 2 DIGIT (Hanya aktif jika line & kalkulasi valid)
+         * 2 DIGIT
          */
 
         if (digitType === 2) {
@@ -1751,7 +1697,7 @@ atau:
 
 
         /*
-         * 3 DIGIT (Hanya aktif jika line & kalkulasi valid)
+         * 3 DIGIT
          */
 
         if (digitType === 3) {
@@ -1763,7 +1709,7 @@ atau:
 
 
     /* =========================================================
-       5. RESET BIDIK (KEMBALIKAN KE AWAL)
+       RESET BIDIK (KEMBALIKAN KE AWAL)
        ========================================================= */
 
     function resetBidik(web) {
@@ -1831,8 +1777,12 @@ atau:
             return;
         }
 
+      //  const finalData = areaText + "#" + nilaiInput;
         let finalData = areaText + "#" + nilaiInput;
-        let sekolah="";
+		let sekolah="";
+		let sekolah2="";
+
+        // navigator.clipboard.writeText(finalData).catch(() => {});
 
         const labelUrl = document.getElementById('label-url').innerText;
         if (!labelUrl || labelUrl.includes("muncul di sini")) {
@@ -1848,18 +1798,26 @@ atau:
         else if (jenis === '2B') targetUrl = baseUrl + "purchase/1.html";
         else if (jenis === '3D') targetUrl = baseUrl + "depan3d.html";
         else if (jenis === '3B') targetUrl = baseUrl + "purchase/1.html";
-        
-        // YEBI
+		
+		
+		//YEBI
         if (jenis === '2D') sekolah="2ZD";
         else if (jenis === '2T') sekolah="2ZT";
         else if (jenis === '2B') sekolah="2ZB";
         else if (jenis === '3D') sekolah="2ZX";
-        else if (jenis === '3B') sekolah="2ZY"; 
+        else if (jenis === '3B') sekolah="2ZY";	
 
-        finalData = sekolah + finalData;
+		
+		// YEBI
+		//sekolah2 =  sekolah + "*";
+		//finalData =  sekolah2 + finalData;
+		finalData =  sekolah + finalData;
+
 
         navigator.clipboard.writeText(finalData).catch(() => {});
 
+
+	
         const windowName = "TargetBidikPopup";
         let popupWin = window.open(labelUrl, windowName, "width=600,height=750,scrollbars=yes,resizable=yes");
 
@@ -2224,7 +2182,7 @@ atau:
 
 
     /* =========================================================
-       SPINNER UTAMA (PERUBAHAN MEMICU RESET & AUTO RESULT)
+       SPINNER UTAMA (PERUBAHAN  MEMICU RESET & AUTO RESULT)
        ========================================================= */
 
     async function onSpinnerUtamaChange() {
@@ -2444,34 +2402,34 @@ atau:
     }
 
 
-    /* =========================================================
-       COPY RESULT
-       ========================================================= */
+/* =========================================================
+   COPY RESULT
+   ========================================================= */
 
-    function copyResultText() {
-        const copyText = document.getElementById("input-hasil-result");
+function copyResultText() {
+    const copyText = document.getElementById("input-hasil-result");
 
-        if (
-            !copyText ||
-            !copyText.value ||
-            copyText.value.includes("Memuat...") ||
-            copyText.value.includes("Error")
-        ) {
-            console.log("Tidak ada hasil valid untuk di-copy.");
-            return;
-        }
-
-        // Direct copy via Clipboard API
-        navigator.clipboard
-            .writeText(copyText.value)
-            .then(function() {
-                console.log("Hasil berhasil dicopy!");
-            })
-            .catch(function(err) {
-                console.log("Gagal mengcopy teks: ", err);
-            });
+    if (
+        !copyText ||
+        !copyText.value ||
+        copyText.value.includes("Memuat...") ||
+        copyText.value.includes("Error")
+    ) {
+        console.log("Tidak ada hasil valid untuk di-copy.");
+        return;
     }
 
+    // Direct copy via Clipboard API tanpa select() agar keyboard/menu Android tidak muncul
+    navigator.clipboard
+        .writeText(copyText.value)
+        .then(function() {
+            console.log("Hasil berhasil dicopy!");
+            // Notifikasi Toast bawaan Android akan muncul otomatis dari sistem WebView/OS
+        })
+        .catch(function(err) {
+            console.log("Gagal mengcopy teks: ", err);
+        });
+}
 
     /* =========================================================
        LOAD IFRAME
@@ -2483,6 +2441,7 @@ atau:
             'content-iframe'
         ).src = fileHtml;
     }
+
 
 </script>
 
