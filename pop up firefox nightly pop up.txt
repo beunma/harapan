@@ -1,0 +1,8 @@
+Cara Selalu Mengizinkan Pop-up di Firefox Nightly Android
+
+1. Buka aplikasi Firefox Nightly di HP Android Anda.
+2. Ketik about:config pada kolom pencarian alamat URL di bagian atas, lalu tekan Enter atau tombol Cari.
+3. Di dalam halaman config tersebut, cari kolom pencarian yang disediakan dan ketik kata kunci berikut: dom.disable_open_during_load
+4. Opsi tersebut secara bawaan bernilai true (pop-up diblokir).
+5. Ketuk tombol Toggle di sebelah kanannya agar nilainya berubah menjadi false.
+6. Selesai. Firefox Nightly sekarang akan selalu mengizinkan semua jendela pop-up.

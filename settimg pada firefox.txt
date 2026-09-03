@@ -1,0 +1,24 @@
+====================================================
+PANDUAN AKTIFKAN CLIPBOARD ANTAAR TAB FIREFOX NIGHTLY
+====================================================
+
+Langkah-langkah:
+1. Buka aplikasi Firefox Nightly di HP Android.
+2. Di kolom alamat (address bar), ketik:
+   about:config
+   lalu tekan Enter/Go.
+3. Gunakan kolom pencarian di bagian atas untuk mencari opsi di bawah ini.
+4. Ubah status setiap opsi menjadi "true" (ketuk tombol di samping opsi atau ketuk dua kali untuk mengubahnya).
+5. Setelah semua diubah, tutup aplikasi Firefox Nightly dan buka kembali (restart).
+
+----------------------------------------------------
+DAFTAR PREFERENCE (Ubah semuanya menjadi: true)
+----------------------------------------------------
+
+dom.events.asyncClipboard.readText=true
+dom.events.asyncClipboard.clipboardItem=true
+dom.events.testing.asyncClipboard=true
+dom.events.asyncClipboard.dataTransfer=true
+dom.allow_cut_copy=true
+
+====================================================
