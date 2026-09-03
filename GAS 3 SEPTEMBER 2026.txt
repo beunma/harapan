@@ -1,0 +1,433 @@
+function doGet(e) {
+  try {
+    var action = e.parameter.action;
+    var targetUrl = e.parameter.url || "";
+    var username = e.parameter.user || ""; 
+    var password = e.parameter.pass || ""; 
+
+    if (action === "cekSaldo") {
+      if (targetUrl.indexOf("suntogel.site") !== -1) {
+        var saldoWeb2 = getSaldoWeb2(username, password);
+        if (saldoWeb2.indexOf("Error") === 0 || saldoWeb2.indexOf("Gagal") === 0) {
+          return responseJSON({ status: "failed", message: saldoWeb2 });
+        }
+        return responseJSON({ status: "success", saldo: saldoWeb2 });
+      } else {
+        return handleWeb1Saldo(username, password);
+      }
+    }
+
+    if (action === "getPasaran") {
+      return handleGetPasaran(username, password);
+    }
+
+    if (action === "getResult") {
+      var loc = e.parameter.loc || "";
+      if (!loc) return responseJSON({ status: "error", message: "Parameter loc kosong." });
+      return handleGetResult(username, password, loc);
+    }
+
+    // ACTION: EKSEKUSI BIDIK FULL AUTO
+    if (action === "bidik") {
+      var bidikData = e.parameter.data || ""; // Contoh: 01*02#500
+      var jenisBidik = e.parameter.jenis || "2B"; // 2B, 2D, 2T, 3D, 3B
+      var urlPasaran = e.parameter.urlPasaran || ""; // URL setloc untuk mengunci pasaran
+      
+      return handleBidikAuto(username, password, bidikData, jenisBidik, urlPasaran);
+    }
+
+    return responseJSON({ status: "active", message: "GAS Ready!" });
+
+  } catch (err) {
+    return responseJSON({ status: "error", message: err.toString() });
+  }
+}
+
+/**
+ * HANDLE BIDIK FULL AUTO (TANPA POP-UP)
+ */
+function handleBidikAuto(username, password, bidikData, jenisBidik, urlPasaran) {
+  var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+  try {
+    // 1. LOGIN KE WEB
+    var loginUrlWeb1 = "https://www.saatwlatogel88.net/user/login.html";
+    var res1 = fetchWithRedirects(loginUrlWeb1, { "method": "get", "headers": { "User-Agent": userAgent } }, []);
+    var html1 = res1.response.getContentText();
+    var csrfMatch = html1.match(/name="csrf"\s+value="([^"]+)"/i);
+    var csrfToken = csrfMatch ? csrfMatch[1] : "";
+
+    if (!csrfToken) return responseJSON({ status: "error", message: "Gagal mengekstrak CSRF." });
+
+    var res2 = fetchWithRedirects(loginUrlWeb1, {
+      "method": "post",
+      "payload": { "csrf": csrfToken, "Email": username, "Password": password, "wap": "1" },
+      "headers": { "Referer": loginUrlWeb1, "User-Agent": userAgent }
+    }, res1.cookies);
+
+    // 2. MASUK KE ENGINE GAME
+    var playUrl = "https://www.saatwlatogel88.net/sixd/play?GameID=6d2&iswap=1";
+    var res3 = fetchWithRedirects(playUrl, {
+      "method": "get",
+      "headers": { "Referer": "https://www.saatwlatogel88.net/wapsecure.html", "User-Agent": userAgent }
+    }, res2.cookies);
+
+    // 3. KUNCI SESI PASARAN (Wajib agar server tahu kita mau pasang di pasaran apa)
+    if (urlPasaran) {
+      var resPasaran = fetchWithRedirects(urlPasaran, {
+        "method": "get",
+        "headers": { "Referer": res3.finalUrl, "User-Agent": userAgent }
+      }, res3.cookies);
+    }
+
+    // 4. TEMBAK DATA KE SERVER BUKAN KE HALAMAN HTML LAGI
+    // Sesuaikan URL Eksekusi (Action Form) berdasarkan jenis bidikan
+    var baseUrlAction = "https://engine2s2.engine4d.com/purchase/product";
+    var submitUrl = "";
+    
+    // Asumsi: URL Action bergantung pada menu. Dari kode HTML boss, 4D/3D/2D mengarah ke /product/1.html
+    if (jenisBidik === "2D" || jenisBidik === "3D") submitUrl = baseUrlAction + "/5.html"; // Ini perkiraan, boss bisa sesuaikan jika tahu url POST aslinya
+    else if (jenisBidik === "2T") submitUrl = baseUrlAction + "/6.html"; // Perkiraan
+    else submitUrl = baseUrlAction + "/1.html"; // Default (2B/3B/4D)
+
+    var payloadBet = {
+      "PurchaserContainer[]": bidikData,
+      "PCProductID[]": "1", // Nilai ini biasanya statis 1 dari form HTML
+      "wap": "1",
+      "button": "1"
+    };
+
+    var resSubmit = fetchWithRedirects(submitUrl, {
+      "method": "post",
+      "payload": payloadBet,
+      "headers": { 
+        "Referer": resPasaran ? resPasaran.finalUrl : res3.finalUrl, 
+        "User-Agent": userAgent,
+        "X-Requested-With": "XMLHttpRequest" // Penting untuk bypass ajax detection
+      }
+    }, res3.cookies);
+
+    var finalHtml = resSubmit.response.getContentText();
+    
+    // Deteksi keberhasilan (Biasanya server merespon dengan JSON jika sukses)
+    if(finalHtml.indexOf("error\":0") !== -1 || finalHtml.indexOf("success") !== -1) {
+       return responseJSON({ status: "success", message: "Bidikan " + bidikData + " BERHASIL DIEKSEKUSI!" });
+    } else {
+       // Mengambil pesan error dari server mereka jika ada
+       return responseJSON({ status: "failed", message: "Gagal eksekusi. Respon Server: " + finalHtml });
+    }
+
+  } catch (err) {
+    return responseJSON({ status: "error", message: err.toString() });
+  }
+}
+
+// === MASUKKAN FUNGSI BANTUAN DI BAWAH INI (TIDAK ADA YANG BERUBAH) ===
+// handleGetPasaran, handleGetResult, handleWeb1Saldo, getSaldoWeb2, fetchWithRedirects, updateCookies, responseJSON
+// Gunakan fungsi-fungsi tersebut yang sama persis seperti kode sebelumnya.
+
+/**
+ * LOGIKA SSO AUTOMATIC REDIRECT & SCRAPING PASARAN
+ */
+function handleGetPasaran(username, password) {
+  var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+  var loginUrlWeb1 = "https://www.saatwlatogel88.net/user/login.html";
+  var res1 = fetchWithRedirects(loginUrlWeb1, { "method": "get", "headers": { "User-Agent": userAgent } }, []);
+  var html1 = res1.response.getContentText();
+  var csrfMatch = html1.match(/name="csrf"\s+value="([^"]+)"/i);
+  var csrfToken = csrfMatch ? csrfMatch[1] : "";
+
+  if (!csrfToken) return responseJSON({ status: "error", message: "Gagal mengekstrak CSRF Web 1" });
+
+  var res2 = fetchWithRedirects(loginUrlWeb1, {
+    "method": "post",
+    "payload": { "csrf": csrfToken, "Email": username, "Password": password, "wap": "1" },
+    "headers": { "Referer": loginUrlWeb1, "User-Agent": userAgent }
+  }, res1.cookies);
+
+  var html2 = res2.response.getContentText();
+  if (html2.indexOf("Saldo") === -1 && html2.indexOf("logout") === -1 && html2.indexOf("wapsecure") === -1) {
+    return responseJSON({ status: "failed", message: "Login Web 1 Gagal. Periksa Username/Password." });
+  }
+
+  var playUrl = "https://www.saatwlatogel88.net/sixd/play?GameID=6d2&iswap=1";
+  var res3 = fetchWithRedirects(playUrl, {
+    "method": "get",
+    "headers": { "Referer": "https://www.saatwlatogel88.net/wapsecure.html", "User-Agent": userAgent }
+  }, res2.cookies);
+
+  var locationUrl = "https://engine2s2.engine4d.com/wapsecure/gamelocation.html";
+  var res4 = fetchWithRedirects(locationUrl, {
+    "method": "get",
+    "headers": { "Referer": res3.finalUrl, "User-Agent": userAgent }
+  }, res3.cookies);
+
+  var htmlLocation = res4.response.getContentText();
+  var listPasaran = [];
+  var ulMatch = htmlLocation.match(/<ul[^>]*class=["']?menulocation["']?[^>]*>([\s\S]*?)<\/ul>/i);
+  var sourceText = ulMatch ? ulMatch[1] : htmlLocation;
+  var aRegex = /<a\s+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  var match;
+
+  while ((match = aRegex.exec(sourceText)) !== null) {
+    var hrefUrl = match[1];
+    var rawText = match[2];
+
+    if (ulMatch || hrefUrl.indexOf("setloc.html") !== -1 || hrefUrl.indexOf("selectgame.html") !== -1) {
+      var cleanLabel = rawText.replace(/<span[^>]*>[\s\S]*?<\/span>/gi, '')
+                              .replace(/<[^>]+>/g, '')
+                              .replace(/\s+/g, ' ')
+                              .trim();
+
+      if (hrefUrl.indexOf("http://") !== 0 && hrefUrl.indexOf("https://") !== 0) {
+        if (hrefUrl.indexOf("/") === 0) {
+          hrefUrl = "https://engine2s2.engine4d.com" + hrefUrl;
+        } else {
+          hrefUrl = "https://engine2s2.engine4d.com/wapsecure/" + hrefUrl;
+        }
+      }
+
+      if (cleanLabel && hrefUrl) {
+        listPasaran.push({ label: cleanLabel, url: hrefUrl });
+      }
+    }
+  }
+
+  if (listPasaran.length > 0) {
+    return responseJSON({ status: "success", data: listPasaran });
+  } else {
+    return responseJSON({ status: "failed", message: "Gagal menemukan data pasaran." });
+  }
+}
+
+/**
+ * LOGIKA SCRAPING RESULT (LAST NUMBER)
+ */
+function handleGetResult(username, password, loc) {
+  var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+  var loginUrlWeb1 = "https://www.saatwlatogel88.net/user/login.html";
+  var res1 = fetchWithRedirects(loginUrlWeb1, { "method": "get", "headers": { "User-Agent": userAgent } }, []);
+  var html1 = res1.response.getContentText();
+  var csrfMatch = html1.match(/name="csrf"\s+value="([^"]+)"/i);
+  var csrfToken = csrfMatch ? csrfMatch[1] : "";
+  if (!csrfToken) return responseJSON({ status: "error", message: "Gagal mengekstrak CSRF Web 1" });
+
+  var res2 = fetchWithRedirects(loginUrlWeb1, {
+    "method": "post",
+    "payload": { "csrf": csrfToken, "Email": username, "Password": password, "wap": "1" },
+    "headers": { "Referer": loginUrlWeb1, "User-Agent": userAgent }
+  }, res1.cookies);
+
+  var playUrl = "https://www.saatwlatogel88.net/sixd/play?GameID=6d2&iswap=1";
+  var res3 = fetchWithRedirects(playUrl, {
+    "method": "get",
+    "headers": { "Referer": "https://www.saatwlatogel88.net/wapsecure.html", "User-Agent": userAgent }
+  }, res2.cookies);
+
+  var targetUrl = "https://engine2s2.engine4d.com/wapsecure/lastnumber/" + loc + ".html";
+  var res4 = fetchWithRedirects(targetUrl, {
+    "method": "get",
+    "headers": { "Referer": res3.finalUrl, "User-Agent": userAgent }
+  }, res3.cookies);
+
+  var htmlTarget = res4.response.getContentText();
+  var regex = /<td>(\d{4})<\/td>/gi;
+  var match;
+  var results = [];
+
+  while ((match = regex.exec(htmlTarget)) !== null) {
+    results.push(match[1]); 
+  }
+
+  if (results.length > 0) {
+    results.reverse(); 
+    var hasilAkhir = results.join(","); 
+    return responseJSON({ status: "success", data: hasilAkhir });
+  } else {
+    return responseJSON({ status: "error", message: "Gagal mengambil data result (Kosong/Format beda)." });
+  }
+}
+
+/**
+ * HELPER: PENELUSUR REDIRECT & COOKIE DUA DOMAIN
+ */
+function fetchWithRedirects(initialUrl, options, initialCookies) {
+  var url = initialUrl;
+  var cookies = initialCookies || [];
+  var maxRedirects = 10;
+  var redirectCount = 0;
+  var lastResponse = null;
+
+  while (redirectCount < maxRedirects) {
+    var headers = options.headers || {};
+    if (cookies.length > 0) headers["Cookie"] = cookies.join("; ");
+    
+    var fetchOptions = {
+      "method": options.method || "get",
+      "headers": headers,
+      "followRedirects": false,
+      "muteHttpExceptions": true
+    };
+    if (options.payload) fetchOptions.payload = options.payload;
+
+    lastResponse = UrlFetchApp.fetch(url, fetchOptions);
+    cookies = updateCookies(cookies, lastResponse.getAllHeaders());
+    var responseCode = lastResponse.getResponseCode();
+
+    if (responseCode >= 300 && responseCode < 400) {
+      var resHeaders = lastResponse.getAllHeaders();
+      var location = null;
+      for (var k in resHeaders) {
+        if (k.toLowerCase() === 'location') {
+          location = resHeaders[k];
+          break;
+        }
+      }
+
+      if (Array.isArray(location)) location = location[0];
+      if (!location) break;
+
+      if (location.indexOf("http://") !== 0 && location.indexOf("https://") !== 0) {
+        var domainMatch = url.match(/^(https?:\/\/[^\/]+)/i);
+        var domain = domainMatch ? domainMatch[1] : "";
+        if (location.indexOf("/") === 0) location = domain + location;
+        else {
+          var path = url.substring(0, url.lastIndexOf("/") + 1);
+          location = path + location;
+        }
+      }
+
+      url = location;
+      options.method = "get";
+      delete options.payload;
+      redirectCount++;
+    } else {
+      break;
+    }
+  }
+
+  return { response: lastResponse, finalUrl: url, cookies: cookies };
+}
+
+/**
+ * LOGIKA SALDO WEB 1
+ */
+function handleWeb1Saldo(username, password) {
+  var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+  var loginUrl = "https://www.saatwlatogel88.net/user/login.html";
+  
+  var res1 = fetchWithRedirects(loginUrl, { "method": "get", "headers": { "User-Agent": userAgent } }, []);
+  var html1 = res1.response.getContentText();
+  var csrfMatch = html1.match(/name="csrf"\s+value="([^"]+)"/i);
+  var csrfToken = csrfMatch ? csrfMatch[1] : "";
+
+  if (!csrfToken) return responseJSON({ status: "error", message: "Gagal CSRF Web 1" });
+
+  var res2 = fetchWithRedirects(loginUrl, {
+    "method": "post",
+    "payload": { "csrf": csrfToken, "Email": username, "Password": password, "wap": "1" },
+    "headers": { "Referer": loginUrl, "User-Agent": userAgent }
+  }, res1.cookies);
+
+  var dashboardHtml = res2.response.getContentText();
+  if (dashboardHtml.indexOf('Saldo') !== -1) {
+    var indexSaldo = dashboardHtml.substring(dashboardHtml.indexOf('Saldo'));
+    var saldoValue = indexSaldo.split('|')[0].replace(/saldo/gi, '').replace(/[:]/g, '').replace(/[,]/g, '').trim();
+    return responseJSON({ status: "success", saldo: saldoValue });
+  } else {
+    return responseJSON({ status: "failed", message: "Login Web 1 Gagal" });
+  }
+}
+
+/**
+ * LOGIKA SALDO WEB 2 (Suntogel)
+ */
+function getSaldoWeb2(username, password) {
+  var baseUrl = 'https://suntogel.site';
+  var userAgent = 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+  var currentCookies = [];
+
+  try {
+    var initRes = UrlFetchApp.fetch(baseUrl + '/wap', { 'method': 'get', 'headers': { 'User-Agent': userAgent }, 'muteHttpExceptions': true });
+    currentCookies = updateCookies(currentCookies, initRes.getAllHeaders());
+
+    var loginRes = UrlFetchApp.fetch(baseUrl + '/mobile/masuk-submit', {
+      'method': 'post',
+      'headers': { 'User-Agent': userAgent, 'Cookie': currentCookies.join('; '), 'Content-Type': 'application/x-www-form-urlencoded' },
+      'payload': { 'username': username, 'password': password },
+      'followRedirects': false,
+      'muteHttpExceptions': true
+    });
+    currentCookies = updateCookies(currentCookies, loginRes.getAllHeaders());
+
+    var notifRes = UrlFetchApp.fetch(baseUrl + '/tutup-notifikasi?is_agree=1', {
+      'method': 'get', 'headers': { 'User-Agent': userAgent, 'Cookie': currentCookies.join('; ') }, 'muteHttpExceptions': true
+    });
+    currentCookies = updateCookies(currentCookies, notifRes.getAllHeaders());
+
+    var wapRes = UrlFetchApp.fetch(baseUrl + '/wap', {
+      'method': 'get', 'headers': { 'User-Agent': userAgent, 'Cookie': currentCookies.join('; ') }, 'muteHttpExceptions': true
+    });
+    var htmlContent = wapRes.getContentText();
+
+    if (htmlContent.indexOf("IDR") !== -1) {
+      var mentah = htmlContent.split("IDR")[1].split("|")[0].trim();
+      return mentah.split(",")[0].replace(/\./g, "").trim();
+    } else {
+      return "Gagal: Saldo IDR tidak ditemukan";
+    }
+  } catch (error) {
+    return "Error: " + error.toString();
+  }
+}
+
+function updateCookies(existingCookies, headers) {
+  if (!headers) return existingCookies;
+  var setCookieHeader = null;
+  for (var k in headers) {
+    if (k.toLowerCase() === 'set-cookie') {
+      setCookieHeader = headers[k];
+      break;
+    }
+  }
+  if (!setCookieHeader) return existingCookies;
+  var rawHeaders = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
+  var cookieMap = {};
+
+  existingCookies.forEach(function(c) {
+    var firstPair = c.split(';')[0];
+    var parts = firstPair.split('=');
+    if (parts.length >= 2) {
+      var key = parts[0].trim();
+      var val = parts.slice(1).join('=').trim();
+      if (key) cookieMap[key] = val;
+    }
+  });
+
+  rawHeaders.forEach(function(headerStr) {
+    var items = headerStr.split(/,(?=\s*[A-Za-z0-9_\-]+=)/);
+    items.forEach(function(item) {
+      var firstPair = item.split(';')[0];
+      var parts = firstPair.split('=');
+      if (parts.length >= 2) {
+        var key = parts[0].trim();
+        var val = parts.slice(1).join('=').trim();
+        if (key && key.toLowerCase() !== 'path' && key.toLowerCase() !== 'domain' && key.toLowerCase() !== 'expires') {
+          cookieMap[key] = val;
+        }
+      }
+    });
+  });
+
+  var updated = [];
+  for (var key in cookieMap) {
+    updated.push(key + '=' + cookieMap[key]);
+  }
+  return updated;
+}
+
+function responseJSON(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
