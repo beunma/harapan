@@ -205,16 +205,14 @@ function prosesPertama() {
 function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagClass) {
     let rawLines = document.getElementById(colTextareaId).value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
     
-    let leftFreq = {};  // Digit Kiri (As/Kop/Kepala)
-    let rightFreq = {}; // Digit Kanan (Kop/Kepala/Ekor)
-    let pairFreq = {};  // Pasangan Utuh
+    let leftFreq = {};  
+    let rightFreq = {}; 
     
     for (let d = 0; d <= 9; d++) {
         leftFreq[d.toString()] = 0;
         rightFreq[d.toString()] = 0;
     }
 
-    // Hitung Frekuensi Posisi dari Data Brute Force
     rawLines.forEach(line => {
         for (let i = 0; i < line.length; i++) {
             let char = line.charAt(i);
@@ -223,47 +221,43 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
         }
     });
 
-    // Hitung Skor Bobot tiap Digit Kiri & Kanan
-    let leftScores = [], rightScores = [];
+    // Hitung Rata-Rata Frekuensi Kemunculan Digit Kiri & Kanan
+    let totalLeft = Object.values(leftFreq).reduce((a, b) => a + b, 0);
+    let totalRight = Object.values(rightFreq).reduce((a, b) => a + b, 0);
+    let avgLeft = totalLeft / 10;
+    let avgRight = totalRight / 10;
+
+    let leftT = new Set(), leftL = new Set();
+    let rightT = new Set(), rightL = new Set();
+
+    // Klasifikasi DINAMIS berdasarkan Rata-Rata Kemunculan Real
     for (let d = 0; d <= 9; d++) {
         let key = d.toString();
-        leftScores.push({ digit: key, freq: leftFreq[key] });
-        rightScores.push({ digit: key, freq: rightFreq[key] });
+        
+        // Digit Kiri
+        if (leftFreq[key] > avgLeft) leftT.add(key);      // Di atas rata-rata = Terkuat (T)
+        else if (leftFreq[key] <= avgLeft) leftL.add(key); // Di bawah / sama rata-rata = Terlemah (L)
+
+        // Digit Kanan
+        if (rightFreq[key] > avgRight) rightT.add(key);    // Di atas rata-rata = Terkuat (T)
+        else if (rightFreq[key] <= avgRight) rightL.add(key);// Di bawah / sama rata-rata = Terlemah (L)
     }
 
-    // Urutkan Digit berdasarkan kekuatan (Terkuat -> Terlemah)
-    leftScores.sort((a, b) => b.freq - a.freq);
-    rightScores.sort((a, b) => b.freq - a.freq);
-
-    // Klasifikasi Digit Posisi: Terkuat (T) & Terlemah (L)
-    let leftT = new Set(leftScores.slice(0, 3).map(x => x.digit));
-    let leftL = new Set(leftScores.slice(6, 10).map(x => x.digit));
-
-    let rightT = new Set(rightScores.slice(0, 3).map(x => x.digit));
-    let rightL = new Set(rightScores.slice(6, 10).map(x => x.digit));
-
-    // Kategorisasi Pasangan 2D (00-99) Ke Matriks (LxT, LxL, TxT)
-    let catLxT = [], catLxL = [], catTxT = [], catLainnya = [];
+    let catLxT = [], catLxL = [], catTxT = [];
 
     for (let i = 0; i <= 99; i++) {
         let pair = i.toString().padStart(2, '0');
         let dLeft = pair.charAt(0);
         let dRight = pair.charAt(1);
 
-        // Pola 1: Terlemah x Terkuat (37%) -> Kombinasi L-T atau T-L
         if ((leftL.has(dLeft) && rightT.has(dRight)) || (leftT.has(dLeft) && rightL.has(dRight))) {
             catLxT.push(pair);
         }
-        // Pola 2: Terlemah x Terlemah (33%) -> Kombinasi L-L
         else if (leftL.has(dLeft) && rightL.has(dRight)) {
             catLxL.push(pair);
         }
-        // Pola 3: Terkuat x Terkuat (30%) -> Kombinasi T-T
         else if (leftT.has(dLeft) && rightT.has(dRight)) {
             catTxT.push(pair);
-        }
-        else {
-            catLainnya.push(pair);
         }
     }
 
@@ -272,8 +266,8 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
     if (catLxT.length > 0) {
         levelResults.push({
             prioRank: 1,
-            ratioLabel: "",
-            levelName: "",
+            ratioLabel: "37% Dominan",
+            levelName: "Terlemah × Terkuat (Cross Asimetris)",
             rankClass: "rank-p1",
             colName: colName,
             targetType: targetType,
@@ -286,8 +280,8 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
     if (catLxL.length > 0) {
         levelResults.push({
             prioRank: 2,
-            ratioLabel: "",
-            levelName: "",
+            ratioLabel: "33% Dominan Kedua",
+            levelName: "Terlemah × Terlemah (Kombinasi Dingin)",
             rankClass: "rank-p2",
             colName: colName,
             targetType: targetType,
@@ -300,8 +294,8 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
     if (catTxT.length > 0) {
         levelResults.push({
             prioRank: 3,
-            ratioLabel: "",
-            levelName: "",
+            ratioLabel: "30% Peluang Terkecil",
+            levelName: "Terkuat × Terkuat (Kombinasi Panas)",
             rankClass: "rank-p3",
             colName: colName,
             targetType: targetType,
@@ -313,7 +307,6 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
 
     return levelResults;
 }
-
 function prosesKedua() {
     document.getElementById('areaLevel').style.display = 'block';
 
