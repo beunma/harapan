@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analisis - Asimetris Cross Engine</title>
+    <title>Analisis</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
         .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -43,36 +43,36 @@
 <body>
 
 <div class="container">
-    <h2>Dashboard Analisis Lanjutan (Asimetris Cross Engine 37%-33%-30%)</h2>
+    <!-- <h2>Dashboard Analisis Lanjutan (Asimetris Cross Engine 37%-33%-30%)</h2> -->
     
-    <label for="inputData">Masukkan Data (Pemisah Koma atau Baris Baru / Campuran):</label>
+    <label for="inputData">Masukkan Data :</label>
     <textarea id="inputData" placeholder="Contoh: 3256, 4578, 3283, 0545"></textarea>
     <div id="infoInput" class="note">Jumlah Input: 0</div>
     
-    <button onclick="prosesPertama()">Proses 1 (Brute Force Maks 5 Digit)</button>
+    <button onclick="prosesPertama()">Proses 1</button>
 
     <h3>1. Hasil Brute Force (Bisa Diedit Manual)</h3>
     <div class="col-group">
         <div class="col">
-            <label>Kolom 1 (AS-KOP) :</label>
+            <label>Kolom 1 :</label>
             <textarea id="bfCol1" class="result-box" style="height: 130px;"></textarea>
         </div>
         <div class="col">
-            <label>Kolom 2 (KOP-KEPALA) :</label>
+            <label>Kolom 2 :</label>
             <textarea id="bfCol2" class="result-box" style="height: 130px;"></textarea>
         </div>
         <div class="col">
-            <label>Kolom 3 (KEPALA-EKOR) :</label>
+            <label>Kolom 3 :</label>
             <textarea id="bfCol3" class="result-box" style="height: 130px;"></textarea>
         </div>
     </div>
 
-    <button id="btnProsesKedua" onclick="prosesKedua()">Proses 2 (Adu Bobot Asimetris)</button>
+    <button id="btnProsesKedua" onclick="prosesKedua()">Proses 2</button>
 
     <!-- BAGIAN 2: ADU ENGINE LEVEL GLOBAL -->
     <div id="areaLevel" style="display:none;">
-        <h3>2. Engine Level (Pola Asimetris: 37% LxT | 33% LxL | 30% TxT)</h3>
-        <div class="note" style="margin-bottom:10px;">* Diurutkan berdasarkan statistik dominasi: Silang Terlemah x Terkuat (37%), Terlemah x Terlemah (33%), dan Terkuat x Terkuat (30%).</div>
+        <h3>2. Engine Level</h3>
+        <!-- <div class="note" style="margin-bottom:10px;">* Diurutkan berdasarkan statistik dominasi: Silang Terlemah x Terkuat (37%), Terlemah x Terlemah (33%), dan Terkuat x Terkuat (30%).</div> -->
         
         <div id="globalEngineContainer"></div>
 
@@ -80,7 +80,7 @@
         <h3>3. Wadah Salinan</h3>
         <div class="panel-engine">
             <div class="level-header">
-                <span id="lblWadahDD" class="level-title">Wadah Salinan Kolom 1 / DD (0 LN)</span>
+                <span id="lblWadahDD" class="level-title">Wadah Kolom 1 (0 LN)</span>
                 <div class="btn-group">
                     <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
                     <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
@@ -89,7 +89,7 @@
             <div id="wadahBoxDD" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
 
             <div class="level-header" style="margin-top:10px;">
-                <span id="lblWadahDT" class="level-title">Wadah Salinan Kolom 2 / DT (0 LN)</span>
+                <span id="lblWadahDT" class="level-title">Wadah Kolom 2 (0 LN)</span>
                 <div class="btn-group">
                     <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
                     <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
@@ -98,7 +98,7 @@
             <div id="wadahBoxDT" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
 
             <div class="level-header" style="margin-top:10px;">
-                <span id="lblWadahDB" class="level-title">Wadah Salinan Kolom 3 / DB (0 LN)</span>
+                <span id="lblWadahDB" class="level-title">Wadah Kolom 3 (0 LN)</span>
                 <div class="btn-group">
                     <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
                     <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
@@ -272,8 +272,8 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
     if (catLxT.length > 0) {
         levelResults.push({
             prioRank: 1,
-            ratioLabel: "37% Dominan",
-            levelName: "Terlemah × Terkuat (Cross Asimetris)",
+            ratioLabel: "",
+            levelName: "",
             rankClass: "rank-p1",
             colName: colName,
             targetType: targetType,
@@ -286,8 +286,8 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
     if (catLxL.length > 0) {
         levelResults.push({
             prioRank: 2,
-            ratioLabel: "33% Dominan Kedua",
-            levelName: "Terlemah × Terlemah (Kombinasi Dingin)",
+            ratioLabel: "",
+            levelName: "",
             rankClass: "rank-p2",
             colName: colName,
             targetType: targetType,
@@ -300,8 +300,8 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
     if (catTxT.length > 0) {
         levelResults.push({
             prioRank: 3,
-            ratioLabel: "30% Peluang Terkecil",
-            levelName: "Terkuat × Terkuat (Kombinasi Panas)",
+            ratioLabel: "",
+            levelName: "",
             rankClass: "rank-p3",
             colName: colName,
             targetType: targetType,
@@ -317,9 +317,9 @@ function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagCl
 function prosesKedua() {
     document.getElementById('areaLevel').style.display = 'block';
 
-    let r1 = analyzeColumnWeightAsymmetric('bfCol1', 'Kolom 1 (AS-KOP)', 'DD', 'tag-c1');
-    let r2 = analyzeColumnWeightAsymmetric('bfCol2', 'Kolom 2 (KOP-KEPALA)', 'DT', 'tag-c2');
-    let r3 = analyzeColumnWeightAsymmetric('bfCol3', 'Kolom 3 (KEPALA-EKOR)', 'DB', 'tag-c3');
+    let r1 = analyzeColumnWeightAsymmetric('bfCol1', 'Kolom 1', 'DD', 'tag-c1');
+    let r2 = analyzeColumnWeightAsymmetric('bfCol2', 'Kolom 2', 'DT', 'tag-c2');
+    let r3 = analyzeColumnWeightAsymmetric('bfCol3', 'Kolom 3', 'DB', 'tag-c3');
 
     let allLevels = [...r1, ...r2, ...r3];
 
@@ -368,7 +368,7 @@ function copyArrayToWadah(arr, type, btnElement, rawText) {
         navigator.clipboard.writeText(rawText);
     }
 
-    let originalText = `Copy ke ${type}`;
+    let originalText = `Copy ${type}`;
     btnElement.textContent = 'Copied!';
     btnElement.style.backgroundColor = '#27ae60';
     btnElement.disabled = true; 
@@ -383,15 +383,15 @@ function copyArrayToWadah(arr, type, btnElement, rawText) {
 function updateWadahUI() {
     let arrDD = Array.from(wadahData.DD);
     document.getElementById('wadahBoxDD').textContent = arrDD.length ? arrDD.join('*') : "-";
-    document.getElementById('lblWadahDD').textContent = `Wadah Salinan Kolom 1 / DD (${arrDD.length} LN)`;
+    document.getElementById('lblWadahDD').textContent = `Wadah Kolom 1 (${arrDD.length} LN)`;
 
     let arrDT = Array.from(wadahData.DT);
     document.getElementById('wadahBoxDT').textContent = arrDT.length ? arrDT.join('*') : "-";
-    document.getElementById('lblWadahDT').textContent = `Wadah Salinan Kolom 2 / DT (${arrDT.length} LN)`;
+    document.getElementById('lblWadahDT').textContent = `Wadah Kolom 2 (${arrDT.length} LN)`;
 
     let arrDB = Array.from(wadahData.DB);
     document.getElementById('wadahBoxDB').textContent = arrDB.length ? arrDB.join('*') : "-";
-    document.getElementById('lblWadahDB').textContent = `Wadah Salinan Kolom 3 / DB (${arrDB.length} LN)`;
+    document.getElementById('lblWadahDB').textContent = `Wadah Kolom 3 (${arrDB.length} LN)`;
 
     let set3DD = new Set();
     if (arrDD.length > 0 && arrDT.length > 0) {
