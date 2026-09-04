@@ -3,593 +3,660 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisa</title>
+    <title>Self-Learning Engine Enterprise</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
             background-color: #f4f6f9;
-            color: #333;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
         .container {
-            max-width: 1300px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 800px;
             background: #ffffff;
             padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
         }
-        h2 { margin-top: 0; color: #2c3e50; }
-        h3 { color: #2980b9; font-size: 16px; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-top: 30px; }
-        label { font-weight: bold; display: block; margin-bottom: 8px; }
-        textarea, input[type="text"], select {
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 20px;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 10px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 14px;
+        }
+        textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
             font-family: monospace;
             font-size: 14px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            resize: vertical;
         }
-        textarea { height: 90px; resize: vertical; }
+        .input-area {
+            height: 100px;
+        }
+        .output-area {
+            height: 120px;
+            background-color: #eaedd0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
         button {
-            background-color: #27ae60;
-            color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
+            transition: background 0.2s;
         }
-        button:hover { background-color: #219653; }
-        .result-box {
-            margin-top: 10px;
-            background: #ecf0f1;
-            padding: 15px;
-            border-radius: 4px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            line-height: 1.6;
-            font-size: 13px;
-            max-height: 400px;
-            overflow-y: auto;
-            overflow-x: auto;
+        button.btn-process {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
         }
-        .highlight { color: #e74c3c; font-weight: bold; }
-        .hl-first { color: #2980b9; font-weight: bold; }
-        .hl-second { color: #e74c3c; font-weight: bold; }
-        .note { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
-        .panel-engine {
-            border: 1px solid #bdc3c7;
-            border-radius: 6px;
-            padding: 15px;
-            background: #fafbfc;
-            margin-top: 15px;
+        button.btn-process:hover {
+            background-color: #219653;
         }
-        .level-row {
+        button.btn-learning {
+            flex: 2;
+            background-color: #e67e22;
+            color: white;
+        }
+        button.btn-learning:hover {
+            background-color: #d35400;
+        }
+        .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fff;
-            border: 1px solid #dcdde1;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 8px;
+            margin-bottom: 8px;
         }
-        .level-title { font-weight: bold; font-size: 13px; color: #2c3e50; }
-        .btn-group { display: flex; gap: 5px; }
+        .result-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2980b9;
+        }
         .btn-copy {
             background-color: #2980b9;
             color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 3px;
-            cursor: pointer;
+            padding: 6px 14px;
             font-size: 12px;
-            font-weight: bold;
         }
-        .btn-copy:hover { background-color: #1f618d; }
-        .btn-reset {
-            background-color: #c0392b;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 3px;
-            cursor: pointer;
+        .btn-copy:hover {
+            background-color: #1f618d;
+        }
+        .audit-box {
+            background-color: #1e272e;
+            color: #00d8d6;
+            font-family: monospace;
             font-size: 12px;
-            font-weight: bold;
+            padding: 15px;
+            border-radius: 6px;
+            height: 250px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-left: 4px solid #e67e22;
         }
-        .btn-reset:hover { background-color: #962d22; }
+        .audit-title {
+            color: #ffdd59;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+        
+        /* OVERLAY LOADING ANIMATION */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #e67e22;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- <h2>Dashboard Analisis Pola Angka Terstruktur</h2> -->
+    <!-- Overlay Spinner Loading -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingText" class="loading-text">Memproses Self-Learning</div>
+    </div>
+
+    <!-- <h2>SISTEM ANALISA & SELF-LEARNING ENGINE ENTERPRISE</h2> -->
     
     <label for="inputData">Masukkan Data RM6 :</label>
-    <textarea id="inputData"></textarea>
-    <div class="note">Klik tombol di bawah untuk memproses.</div>
+    <textarea id="inputData" class="input-area" placeholder=""></textarea>
     
-    <button onclick="prosesSemuaLayout()">Proses Semua Analisis</button>
-
-    <!-- Layout 1: Digit Utama -->
-    <h3>1. Layout Analisis Digit Utama</h3>
-    <div id="resultDigit" class="result-box">Menunggu data...</div>
-
-    <!-- Layout 2: Selisih -->
-    <h3>2. Layout Analisis Selisih</h3>
-    <div id="resultSelisih" class="result-box">Menunggu data...</div>
-
-    <!-- Layout 3: Jumlah -->
-    <h3>3. Layout Analisis Jumlah</h3>
-    <div id="resultJumlah" class="result-box">Menunggu data...</div>
-
-    <!-- Layout 4: AM Adaptif -->
-    <h3>4. Layout Multi-Kolom Angka Main (AM) Adaptif</h3>
-    <div id="resultAM" class="result-box">Menunggu data...</div>
-
-    <!-- ENGINE 2DD -->
-    <h3>5. Engine 2DD</h3>
-    <div class="panel-engine">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1;"><label>Digit Pertama:</label><input type="text" id="DDDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Digit Kedua:</label><input type="text" id="DDDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Pemisah:</label>
-                <select id="DDSeparator" onchange="jalankanEngine2DD()">
-                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
-                </select>
-            </div>
-        </div>
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
-            <div style="flex: 1;"><label>Sortir Selisih:</label><input type="text" id="DDSls" readonly style="background:#ecf0f1;"></div>
-            <div style="flex: 1;"><label>Sortir Jumlah:</label><input type="text" id="DDJml" readonly style="background:#ecf0f1;"></div>
-            <div style="flex: 1;"><label>Sortir AM:</label><input type="text" id="DDAM" readonly style="background:#ecf0f1;"></div>
-        </div>
-        <div style="margin-top: 15px;">
-            <div class="level-row"><span id="lblDD0" class="level-title">Level 0 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD0', 'DD', this)">Copy</button></div>
-            <div id="boxDD0" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDD1" class="level-title">Level 1 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD1', 'DD', this)">Copy</button></div>
-            <div id="boxDD1" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDD2" class="level-title">Level 2 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD2', 'DD', this)">Copy</button></div>
-            <div id="boxDD2" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDD3" class="level-title">Level 3 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD3', 'DD', this)">Copy</button></div>
-            <div id="boxDD3" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-        </div>
+    <div class="btn-group">
+        <button class="btn-process" onclick="prosesEngineProUtuh()">PREDIKSI SINGLE</button>
+        <button class="btn-learning" onclick="runSelfLearningEngine(5)">RUN (BACKTEST)</button>
     </div>
 
-    <!-- ENGINE 2DT -->
-    <h3>6. Engine 2DT</h3>
-    <div class="panel-engine">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1;"><label>Digit Pertama:</label><input type="text" id="DTDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Digit Kedua:</label><input type="text" id="DTDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Pemisah:</label>
-                <select id="DTSeparator" onchange="jalankanEngine2DT()">
-                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
-                </select>
-            </div>
-        </div>
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
-            <div style="flex: 1;"><label>Sortir Selisih:</label><input type="text" id="DTSls" readonly style="background:#ecf0f1;"></div>
-            <div style="flex: 1;"><label>Sortir Jumlah:</label><input type="text" id="DTJml" readonly style="background:#ecf0f1;"></div>
-            <div style="flex: 1;"><label>Sortir AM:</label><input type="text" id="DTAM" readonly style="background:#ecf0f1;"></div>
-        </div>
-        <div style="margin-top: 15px;">
-            <div class="level-row"><span id="lblDT0" class="level-title">Level 0 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT0', 'DT', this)">Copy</button></div>
-            <div id="boxDT0" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDT1" class="level-title">Level 1 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT1', 'DT', this)">Copy</button></div>
-            <div id="boxDT1" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDT2" class="level-title">Level 2 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT2', 'DT', this)">Copy</button></div>
-            <div id="boxDT2" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDT3" class="level-title">Level 3 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT3', 'DT', this)">Copy</button></div>
-            <div id="boxDT3" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-        </div>
+    <div class="result-header">
+        <span id="outputTitle" class="result-title">TOP RESULT ENGINE (0 LN)</span>
+        <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy</button>
     </div>
 
-    <!-- ENGINE 2DB -->
-    <h3>7. Engine 2DB</h3>
-    <div class="panel-engine">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1;"><label>Digit Pertama:</label><input type="text" id="DBDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Digit Kedua:</label><input type="text" id="DBDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Pemisah:</label>
-                <select id="DBSeparator" onchange="jalankanEngine2DB()">
-                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
-                </select>
-            </div>
-        </div>
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
-            <div style="flex: 1;"><label>Sortir Selisih:</label><input type="text" id="DBSls" readonly style="background:#ecf0f1;"></div>
-            <div style="flex: 1;"><label>Sortir Jumlah:</label><input type="text" id="DBJml" readonly style="background:#ecf0f1;"></div>
-            <div style="flex: 1;"><label>Sortir AM:</label><input type="text" id="DBAM" readonly style="background:#ecf0f1;"></div>
-        </div>
-        <div style="margin-top: 15px;">
-            <div class="level-row"><span id="lblDB0" class="level-title">Level 0 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB0', 'DB', this)">Copy</button></div>
-            <div id="boxDB0" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDB1" class="level-title">Level 1 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB1', 'DB', this)">Copy</button></div>
-            <div id="boxDB1" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDB2" class="level-title">Level 2 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB2', 'DB', this)">Copy</button></div>
-            <div id="boxDB2" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-            <div class="level-row"><span id="lblDB3" class="level-title">Level 3 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB3', 'DB', this)">Copy</button></div>
-            <div id="boxDB3" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
-        </div>
-    </div>
+    <textarea id="outputResult" class="output-area" readonly placeholder=""></textarea>
 
-    <!-- ITEM 8: WADAH SALINAN -->
-    <h3>8. Wadah Salinan</h3>
-    <div class="panel-engine">
-        <div class="level-row">
-            <span id="lblWadahDD" class="level-title">Salinan 2DD (0 LN)</span>
-            <div class="btn-group">
-                <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
-                <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
-            </div>
-        </div>
-        <div id="wadahBoxDD" class="result-box" style="margin-top: 4px; max-height: 100px;">-</div>
-
-        <div class="level-row" style="margin-top: 15px;">
-            <span id="lblWadahDT" class="level-title">Salinan 2DT (0 LN)</span>
-            <div class="btn-group">
-                <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
-                <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
-            </div>
-        </div>
-        <div id="wadahBoxDT" class="result-box" style="margin-top: 4px; max-height: 100px;">-</div>
-
-        <div class="level-row" style="margin-top: 15px;">
-            <span id="lblWadahDB" class="level-title">Salinan 2DB (0 LN)</span>
-            <div class="btn-group">
-                <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
-                <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
-            </div>
-        </div>
-        <div id="wadahBoxDB" class="result-box" style="margin-top: 4px; max-height: 100px;">-</div>
-    </div>
-
-    <!-- ITEM 9: HASIL OLAHAN 3 DIGIT -->
-    <h3>9. Hasil Olahan 3 Digit</h3>
-    <div class="panel-engine">
-        <div class="level-row">
-            <span id="lbl3DD" class="level-title">3DD = 0 LN</span>
-            <button class="btn-copy" onclick="copyWadah('box3DD', this)">Copy</button>
-        </div>
-        <div id="box3DD" class="result-box" style="margin-top: 4px; max-height: 120px;">-</div>
-
-        <div class="level-row" style="margin-top: 15px;">
-            <span id="lbl3DB" class="level-title">3DB = 0 LN</span>
-            <button class="btn-copy" onclick="copyWadah('box3DB', this)">Copy</button>
-        </div>
-        <div id="box3DB" class="result-box" style="margin-top: 4px; max-height: 120px;">-</div>
-    </div>
-
+    <!-- Console Log & Audit Trail Box -->
+    <div class="audit-title">LOG AUDIT EXECUTION:</div>
+    <div id="auditLog" class="audit-box">Ready..</div>
 </div>
 
 <script>
-let globalDataEngine = {
-    dig0: ['0','1','2','3','4','5','6','7','8','9'], 
-    dig1: ['0','1','2','3','4','5','6','7','8','9'], 
-    dig2: ['0','1','2','3','4','5','6','7','8','9'], 
-    dig3: ['0','1','2','3','4','5','6','7','8','9'],
-    diff1: [], diff2: [], diff3: [],
-    sum1: [], sum2: [], sum3: [],
-    am1: [], am2: [], am3: []
+/**
+ * ====================================================================
+ * CORE ENTERPRISE ENGINE ARCHITECTURE (RM4 FULL-SCALE MATRIX ANALYSIS)
+ * ====================================================================
+ */
+
+// CONFIGURATION STATE (DAPAT DI-ADAPTASI SECARA DYNAMIS OLEH LEARNING ENGINE)
+let ENGINE_SYS_CONFIG = {
+    MAX_OUTPUT_LIMIT: 50,
+    SIMULATION_MATRIX_DEPTH: 1000,
+    WEIGHT_LEVEL_0: 100, 
+    WEIGHT_LEVEL_1: 80,  
+    WEIGHT_LEVEL_2: 60,  
+    WEIGHT_LEVEL_3: 40,  
+    WEIGHT_LEVEL_4: 20,  
+    WEIGHT_LEVEL_5: 0,
+    AM_MIN_LENGTH: 3,     // Param Adaptif 1: Panjang Min Coverage AM
+    STRATEGY_MODE: "STANDARD_ENTERPRISE" // Mode Algoritma Aktif
 };
 
-// Penyimpanan wadah salinan unik per tipe
-let wadahData = {
-    DD: new Set(),
-    DT: new Set(),
-    DB: new Set()
-};
-
-function getCombinations(arr, k) {
-    if (k === 0) return [[]];
-    if (arr.length === 0) return [];
-    let head = arr[0];
-    let tail = arr.slice(1);
-    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
+// AUDIT LOGGER UTILITY
+function writeAuditLog(message) {
+    let logBox = document.getElementById('auditLog');
+    let timeStamp = new Date().toLocaleTimeString();
+    logBox.innerHTML += `[${timeStamp}] ${message}<br/>`;
+    logBox.scrollTop = logBox.scrollHeight;
 }
 
-function getAdaptiveAM(rowsData, extractorFunc) {
-    let candidateSet = new Set();
-    for (let i = 0; i < rowsData.length - 1; i++) {
-        let val = extractorFunc(rowsData[i + 1]);
-        if (val) { for (let char of val) candidateSet.add(char); }
-    }
-    let candidateArray = Array.from(candidateSet).sort();
-    if (candidateArray.length === 0) return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+function clearAuditLog() {
+    document.getElementById('auditLog').innerHTML = '';
+}
+
+// 1. DIGITAL ROOT CALCULATOR
+function calculateSingleDigitSum(digitValA, digitValB) {
+    let parseA = parseInt(digitValA, 10);
+    let parseB = parseInt(digitValB, 10);
+    let totalSum = parseA + parseB;
     
-    let bestAM = null;
-    for (let len = 3; len <= candidateArray.length; len++) {
-        let combos = getCombinations(candidateArray, len);
-        for (let combo of combos) {
-            let comboSet = new Set(combo);
-            let isValid = true;
-            for (let i = 0; i < rowsData.length - 1; i++) {
-                let targetVal = extractorFunc(rowsData[i + 1]);
-                let matchCount = 0;
-                if (targetVal) {
-                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
-                }
-                if (matchCount === 0) { isValid = false; break; }
+    while (totalSum >= 10) {
+        let stringConverted = totalSum.toString();
+        let charFirst = parseInt(stringConverted.charAt(0), 10);
+        let charSecond = parseInt(stringConverted.charAt(1), 10);
+        totalSum = charFirst + charSecond;
+    }
+    return totalSum.toString();
+}
+
+// 2. ABSOLUTE DIFFERENCE CALCULATOR
+function calculateAbsoluteDifference(digitValA, digitValB) {
+    let parseA = parseInt(digitValA, 10);
+    let parseB = parseInt(digitValB, 10);
+    let diffResult = Math.abs(parseA - parseB);
+    return diffResult.toString();
+}
+
+// 3. COMBINATORIAL SUBSET GENERATOR[cite: 2]
+function generateCombinatorialSubsets(sourceArray, subsetLength) {
+    if (subsetLength === 0) return [[]];
+    if (sourceArray.length === 0) return [];
+    
+    let headElement = sourceArray[0];
+    let tailElements = sourceArray.slice(1);
+    
+    let subsetsWithHead = generateCombinatorialSubsets(tailElements, subsetLength - 1).map(function(subset) {
+        return [headElement].concat(subset);
+    });
+    
+    let subsetsWithoutHead = generateCombinatorialSubsets(tailElements, subsetLength);
+    return subsetsWithHead.concat(subsetsWithoutHead);
+}
+
+// 4. ADAPTIVE AM EXTRACTOR (DYNAMICALLY ADAPTIVE)[cite: 2]
+function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
+    let uniqueCharacterSet = new Set();
+    
+    for (let rowIndex = 0; rowIndex < processedRowsData.length - 1; rowIndex++) {
+        let targetRow = processedRowsData[rowIndex + 1];
+        let extractedString = extractionTargetFunction(targetRow);
+        
+        if (extractedString && typeof extractedString === 'string') {
+            for (let charIndex = 0; charIndex < extractedString.length; charIndex++) {
+                uniqueCharacterSet.add(extractedString.charAt(charIndex));
             }
-            if (isValid) { bestAM = combo; break; }
         }
-        if (bestAM) break;
     }
-    return bestAM || candidateArray;
+    
+    let sortedCharacterSet = Array.from(uniqueCharacterSet).sort();
+    if (sortedCharacterSet.length === 0) {
+        return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    }
+
+    let optimalSubSetAM = null;
+    let minLen = ENGINE_SYS_CONFIG.AM_MIN_LENGTH;
+    
+    for (let currentLength = minLen; currentLength <= sortedCharacterSet.length; currentLength++) {
+        let generatedSubsets = generateCombinatorialSubsets(sortedCharacterSet, currentLength);
+        
+        for (let comboIndex = 0; comboIndex < generatedSubsets.length; comboIndex++) {
+            let currentCombination = generatedSubsets[comboIndex];
+            let comboComparisonSet = new Set(currentCombination);
+            let isValidFullCoverage = true;
+            
+            for (let verifyIndex = 0; verifyIndex < processedRowsData.length - 1; verifyIndex++) {
+                let verificationRow = processedRowsData[verifyIndex + 1];
+                let verifyValue = extractionTargetFunction(verificationRow);
+                let hitMatchCount = 0;
+                
+                if (verifyValue) {
+                    for (let verifyCharIdx = 0; verifyCharIdx < verifyValue.length; verifyCharIdx++) {
+                        if (comboComparisonSet.has(verifyValue.charAt(verifyCharIdx))) {
+                            hitMatchCount++;
+                        }
+                    }
+                }
+                
+                if (hitMatchCount === 0) {
+                    isValidFullCoverage = false;
+                    break;
+                }
+            }
+            
+            if (isValidFullCoverage) {
+                optimalSubSetAM = currentCombination;
+                break;
+            }
+        }
+        if (optimalSubSetAM) break;
+    }
+    
+    return optimalSubSetAM || sortedCharacterSet;
 }
 
-function getSingleDigitSum(a, b) {
-    let sum = a + b;
-    while (sum >= 10) {
-        let sumStr = sum.toString();
-        sum = parseInt(sumStr.charAt(0)) + parseInt(sumStr.charAt(1));
+// 5. MATRIXEXPANDED 1000 LINES GENERATOR[cite: 2]
+function build1000PermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
+    let baseHistoricalPairs = [];
+    
+    for (let dataIdx = 0; dataIdx < processedDataRows.length; dataIdx++) {
+        let selectedRow = processedDataRows[dataIdx];
+        baseHistoricalPairs.push(selectedRow.digits[primaryPositionIdx] + selectedRow.digits[secondaryPositionIdx]);
     }
-    return sum.toString();
+
+    let expandedPermutationSpace = [];
+    let baseDataLength = baseHistoricalPairs.length;
+
+    for (let simulationIdx = 0; simulationIdx < ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH; simulationIdx++) {
+        let basePairString = baseHistoricalPairs[simulationIdx % baseDataLength];
+        let baseDigitA = parseInt(basePairString.charAt(0), 10);
+        let baseDigitB = parseInt(basePairString.charAt(1), 10);
+        
+        let shiftOffsetA = Math.floor(simulationIdx / 100);
+        let shiftOffsetB = simulationIdx % 10;
+        
+        let calculatedDigitA = (baseDigitA + shiftOffsetA) % 10;
+        let calculatedDigitB = (baseDigitB + shiftOffsetB) % 10;
+        
+        expandedPermutationSpace.push(calculatedDigitA.toString() + calculatedDigitB.toString());
+    }
+    
+    return expandedPermutationSpace;
 }
 
-function prosesSemuaLayout() {
-    let rawInput = document.getElementById('inputData').value.trim();
-    if (!rawInput) return;
-
-    let dataArray = rawInput.split(',').map(item => item.trim()).filter(item => item.length > 0);
-    if (dataArray.length < 2) return;
-
-    let processedData = dataArray.map(item => {
-        if (item.length < 4) item = item.padStart(4, '0');
-        let r = parseInt(item.charAt(0));
-        let ra = parseInt(item.charAt(1));
-        let p = parseInt(item.charAt(2));
-        let s = parseInt(item.charAt(3));
-
-        return {
-            original: item,
-            digits: [r.toString(), ra.toString(), p.toString(), s.toString()],
-            diffs: [Math.abs(r - ra).toString(), Math.abs(ra - p).toString(), Math.abs(p - s).toString()],
-            sums: [getSingleDigitSum(r, ra), getSingleDigitSum(ra, p), getSingleDigitSum(p, s)]
+// 6. EVALUATOR SEKTOR GENERIC (TERINTEGRASI DENGAN WEIGHT SYSTEM CONTEXT)[cite: 2]
+function evaluateSectorGeneric(matrixData, listA, listB, listDiff, listSum, listAM, sectorName) {
+    let scoreBoard = {};
+    for (let pairVal = 0; pairVal <= 99; pairVal++) {
+        let pairKey = pairVal.toString().padStart(2, '0');
+        scoreBoard[pairKey] = {
+            pair: pairKey, totalPowerScore: 0, level0Count: 0, level1Count: 0
         };
-    });
+    }
 
-    globalDataEngine.dig0 = getAdaptiveAM(processedData, row => row.digits[0]);
-    globalDataEngine.dig1 = getAdaptiveAM(processedData, row => row.digits[1]);
-    globalDataEngine.dig2 = getAdaptiveAM(processedData, row => row.digits[2]);
-    globalDataEngine.dig3 = getAdaptiveAM(processedData, row => row.digits[3]);
+    let validDiffNumbers = (listDiff || []).map(Number);
+    let validSumNumbers = (listSum || []).map(Number);
 
-    globalDataEngine.diff1 = getAdaptiveAM(processedData, row => row.diffs[0]);
-    globalDataEngine.diff2 = getAdaptiveAM(processedData, row => row.diffs[1]);
-    globalDataEngine.diff3 = getAdaptiveAM(processedData, row => row.diffs[2]);
+    for (let i = 0; i < matrixData.length; i++) {
+        let pairStr = matrixData[i];
+        let charA = pairStr.charAt(0);
+        let charB = pairStr.charAt(1);
+        let numA = parseInt(charA, 10);
+        let numB = parseInt(charB, 10);
 
-    globalDataEngine.sum1 = getAdaptiveAM(processedData, row => row.sums[0]);
-    globalDataEngine.sum2 = getAdaptiveAM(processedData, row => row.sums[1]);
-    globalDataEngine.sum3 = getAdaptiveAM(processedData, row => row.sums[2]);
+        let calcDiff = Math.abs(numA - numB);
+        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
 
-    globalDataEngine.am1 = getAdaptiveAM(processedData, row => row.digits[0] + row.digits[1]);
-    globalDataEngine.am2 = getAdaptiveAM(processedData, row => row.digits[1] + row.digits[2]);
-    globalDataEngine.am3 = getAdaptiveAM(processedData, row => row.digits[2] + row.digits[3]);
+        let penaltyFails = 0;
 
-    let renderRows = (extractor) => {
-        let out = "";
-        for (let i = 0; i < processedData.length; i++) {
-            let curr = processedData[i];
-            let next = (i < processedData.length - 1) ? processedData[i + 1] : null;
-            out += `${curr.original}  |  ` + extractor(curr, next) + `\n`;
-        }
-        return out;
-    };
+        if (!listA.includes(charA)) penaltyFails++;
+        if (!listB.includes(charB)) penaltyFails++;
+        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
+        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
+        if (listAM.length > 0 && !listAM.includes(charA) && !listAM.includes(charB)) penaltyFails++;
 
-    document.getElementById('resultDigit').innerHTML = renderRows((curr, next) => {
-        let t = next ? next.digits : ["","","",""];
-        return `[Rib: ${globalDataEngine.dig0.map(d=>d===t[0]?`<span class="highlight">${d}</span>`:d.toString()).join('')}] ` +
-               `[Rat: ${globalDataEngine.dig1.map(d=>d===t[1]?`<span class="highlight">${d}</span>`:d.toString()).join('')}] ` +
-               `[Pul: ${globalDataEngine.dig2.map(d=>d===t[2]?`<span class="highlight">${d}</span>`:d.toString()).join('')}] ` +
-               `[Sat: ${globalDataEngine.dig3.map(d=>d===t[3]?`<span class="highlight">${d}</span>`:d.toString()).join('')}]`;
-    });
-
-    document.getElementById('resultSelisih').innerHTML = renderRows((curr, next) => {
-        let t = next ? next.diffs : ["","",""];
-        return `[Col 1: ${globalDataEngine.diff1.map(d=>d===t[0]?`<span class="highlight">${d}</span>`:d).join('')}] ` +
-               `[Col 2: ${globalDataEngine.diff2.map(d=>d===t[1]?`<span class="highlight">${d}</span>`:d).join('')}] ` +
-               `[Col 3: ${globalDataEngine.diff3.map(d=>d===t[2]?`<span class="highlight">${d}</span>`:d).join('')}]`;
-    });
-
-    document.getElementById('resultJumlah').innerHTML = renderRows((curr, next) => {
-        let t = next ? next.sums : ["","",""];
-        return `[Col 1: ${globalDataEngine.sum1.map(s=>s===t[0]?`<span class="highlight">${s}</span>`:s).join('')}] ` +
-               `[Col 2: ${globalDataEngine.sum2.map(s=>s===t[1]?`<span class="highlight">${s}</span>`:s).join('')}] ` +
-               `[Col 3: ${globalDataEngine.sum3.map(s=>s===t[2]?`<span class="highlight">${s}</span>`:s).join('')}]`;
-    });
-
-    document.getElementById('resultAM').innerHTML = renderRows((curr, next) => {
-        let t = next ? next.digits : ["","","",""];
-        let fmt = (arr, a, b) => arr.map(d => d===a?`<span class="hl-first">${d}</span>`:d===b?`<span class="hl-second">${d}</span>`:d).join('');
-        return `[AM Rib-Rat: ${fmt(globalDataEngine.am1, t[0], t[1])}] ` +
-               `[AM Rat-Pul: ${fmt(globalDataEngine.am2, t[1], t[2])}] ` +
-               `[AM Pul-Sat: ${fmt(globalDataEngine.am3, t[2], t[3])}]`;
-    });
-
-    jalankanEngine2DD();
-    jalankanEngine2DT();
-    jalankanEngine2DB();
-}
-
-function prosesEngineGeneric(d1List, d2List, slsList, jmlList, amList, sepId, prefix) {
-    if (!d1List.length) d1List = ['0','1','2','3','4','5','6','7','8','9'];
-    if (!d2List.length) d2List = ['0','1','2','3','4','5','6','7','8','9'];
-
-    let d1Str = d1List.join('');
-    let d2Str = d2List.join('');
-    
-    document.getElementById(prefix + 'Digit1').value = d1Str;
-    document.getElementById(prefix + 'Digit2').value = d2Str;
-    document.getElementById(prefix + 'Sls').value = (slsList || []).join('');
-    document.getElementById(prefix + 'Jml').value = (jmlList || []).join('');
-    document.getElementById(prefix + 'AM').value = (amList || []).join('');
-
-    let sep = document.getElementById(sepId).value;
-    let slsValid = (slsList || []).map(Number);
-    let jmlValid = (jmlList || []).map(Number);
-    let amValid = (amList || []);
-
-    let crossSet = new Set();
-    d1Str.split('').forEach(a => d2Str.split('').forEach(b => crossSet.add(a + b)));
-
-    let levels = { 0: [], 1: [], 2: [], 3: [] };
-
-    for (let i = 0; i <= 99; i++) {
-        let pair = i.toString().padStart(2, '0');
-        if (!crossSet.has(pair)) {
-            levels[3].push(pair);
+        let scoreAdd = 0;
+        if (penaltyFails === 0) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+            scoreBoard[pairStr].level0Count++;
+        } else if (penaltyFails === 1) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+            scoreBoard[pairStr].level1Count++;
+        } else if (penaltyFails === 2) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+        } else if (penaltyFails === 3) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+        } else if (penaltyFails === 4) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
         } else {
-            let d1 = parseInt(pair.charAt(0));
-            let d2 = parseInt(pair.charAt(1));
-            let sls = Math.abs(d1 - d2);
-            let jml = parseInt(getSingleDigitSum(d1, d2));
-
-            let fails = 0;
-            if (slsValid.length && !slsValid.includes(sls)) fails++;
-            if (jmlValid.length && !jmlValid.includes(jml)) fails++;
-            if (amValid.length && !amValid.includes(pair.charAt(0)) && !amValid.includes(pair.charAt(1))) fails++;
-
-            if (fails > 2) fails = 2;
-            levels[fails].push(pair);
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
         }
+
+        scoreBoard[pairStr].totalPowerScore += scoreAdd;
     }
 
-    for (let l = 0; l <= 3; l++) {
-        let arr = levels[l];
-        let box = document.getElementById(`box${prefix}${l}`);
-        let lbl = document.getElementById(`lbl${prefix}${l}`);
-        let sepVal = document.getElementById(sepId).value;
-        if (box && lbl) {
-            box.textContent = arr.length ? arr.join(sepVal) : "(Tidak ada angka)";
-            lbl.textContent = `Level ${l} = ${arr.length} LN`;
-        }
-    }
-}
-
-function jalankanEngine2DD() { prosesEngineGeneric(globalDataEngine.dig0, globalDataEngine.dig1, globalDataEngine.diff1, globalDataEngine.sum1, globalDataEngine.am1, 'DDSeparator', 'DD'); }
-function jalankanEngine2DT() { prosesEngineGeneric(globalDataEngine.dig1, globalDataEngine.dig2, globalDataEngine.diff2, globalDataEngine.sum2, globalDataEngine.am2, 'DTSeparator', 'DT'); }
-function jalankanEngine2DB() { prosesEngineGeneric(globalDataEngine.dig2, globalDataEngine.dig3, globalDataEngine.diff3, globalDataEngine.sum3, globalDataEngine.am3, 'DBSeparator', 'DB'); }
-
-function copyLevelBox(boxId, type, btn) {
-    let box = document.getElementById(boxId);
-    if (!box || !box.textContent || box.textContent === "(Tidak ada angka)") return;
-    
-    // Ambil data item, split berdasarkan karakter pemisah yang ada di box (atau default *)
-    let textItems = box.textContent.split(/[\s*#,]/).filter(item => item.length > 0);
-    textItems.forEach(item => wadahData[type].add(item));
-    
-    updateWadahUI(type);
-
-    // Salin ke clipboard juga
-    navigator.clipboard.writeText(box.textContent).then(() => {
-        let old = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.style.backgroundColor = '#27ae60';
-        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
+    let sortedList = Object.values(scoreBoard);
+    sortedList.sort(function(a, b) {
+        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
+        return b.level0Count - a.level0Count;
     });
+
+    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
+    let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
+
+    return {
+        sectorName: sectorName,
+        topLN: top50.map(item => item.pair),
+        powerScore: aggregatePower
+    };
 }
 
-function updateWadahUI(type) {
-    let arr = Array.from(wadahData[type]);
-    let boxEl = document.getElementById('wadahBox' + type);
-    let lblEl = document.getElementById('lblWadahDD');
-    if (type === 'DT') lblEl = document.getElementById('lblWadahDT');
-    if (type === 'DB') lblEl = document.getElementById('lblWadahDB');
+// EXECUTION ENGINE UNTUK DATASET TERTENTU[cite: 2]
+function executeEngineForDataset(dataTokens) {
+    let processedDataRows = [];
+    for (let idx = 0; idx < dataTokens.length; idx++) {
+        let token = dataTokens[idx];
+        if (token.length < 4) token = token.padStart(4, '0');
+        
+        let digit0 = parseInt(token.charAt(0), 10);
+        let digit1 = parseInt(token.charAt(1), 10);
+        let digit2 = parseInt(token.charAt(2), 10);
+        let digit3 = parseInt(token.charAt(3), 10);
 
-    if (arr.length > 0) {
-        boxEl.textContent = arr.join('*');
-        lblEl.textContent = `Salinan 2${type} (${arr.length} LN)`;
+        processedDataRows.push({
+            rawToken: token,
+            digits: [digit0.toString(), digit1.toString(), digit2.toString(), digit3.toString()],
+            diffs: [
+                calculateAbsoluteDifference(digit0, digit1),
+                calculateAbsoluteDifference(digit1, digit2),
+                calculateAbsoluteDifference(digit2, digit3)
+            ],
+            sums: [
+                calculateSingleDigitSum(digit0, digit1),
+                calculateSingleDigitSum(digit1, digit2),
+                calculateSingleDigitSum(digit2, digit3)
+            ]
+        });
+    }
+
+    let listD0 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0]);
+    let listD1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1]);
+    let listD2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2]);
+    let listD3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[3]);
+
+    let listDiff1 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[0]);
+    let listDiff2 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[1]);
+    let listDiff3 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[2]);
+
+    let listSum1 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[0]);
+    let listSum2 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[1]);
+    let listSum3 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[2]);
+
+    let listAM1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0] + row.digits[1]);
+    let listAM2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1] + row.digits[2]);
+    let listAM3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2] + row.digits[3]);
+
+    let matrix2DD = build1000PermutationSpace(processedDataRows, 0, 1);
+    let matrix2DT = build1000PermutationSpace(processedDataRows, 1, 2);
+    let matrix2DB = build1000PermutationSpace(processedDataRows, 2, 3);
+
+    let result2DD = evaluateSectorGeneric(matrix2DD, listD0, listD1, listDiff1, listSum1, listAM1, "2DD");
+    let result2DT = evaluateSectorGeneric(matrix2DT, listD1, listD2, listDiff2, listSum2, listAM2, "2DT");
+    let result2DB = evaluateSectorGeneric(matrix2DB, listD2, listD3, listDiff3, listSum3, listAM3, "2DB");
+
+    let engineContenders = [result2DD, result2DT, result2DB];
+    engineContenders.sort((a, b) => b.powerScore - a.powerScore);
+
+    return engineContenders[0];
+}
+
+// SINGLE PREDICTION CONTROLLER[cite: 2]
+function prosesEngineProUtuh() {
+    clearAuditLog();
+    writeAuditLog("Initialising Single Prediction Engine Execution...");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        alert("Silakan masukkan data masukan RM4 terlebih dahulu!");
+        return;
+    }
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < 2) {
+        alert("Data masukan minimal harus 2 baris!");
+        return;
+    }
+
+    let winningEngine = executeEngineForDataset(dataTokens);
+
+    document.getElementById('outputTitle').textContent = `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
+    document.getElementById('outputResult').value = winningEngine.topLN.join('*');
+    writeAuditLog(`Prediction Completed. Winning Sector: ${winningEngine.sectorName} (Power Score: ${winningEngine.powerScore})`);
+}
+
+/**
+ * ====================================================================
+ * AUTO SELF-LEARNING ENGINE (MUTATION & AUTO-LOGIC LOOPER)
+ * ====================================================================
+ */
+
+// ALGORITMA AUTO-MUTASI LOGIKA JIKA MISS > 1
+function mutateAlgorithmStrategy(attemptLevel) {
+    if (attemptLevel === 1) {
+        // Generasi 2: Bobot Toleransi Pasangan Diperketat, Depth Permutasi Ditingkatkan
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_2_STRICT_WEIGHTS";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1500;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 120;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 60;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 30;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 2;
+    } else if (attemptLevel === 2) {
+        // Generasi 3: Mode Ultra-Coverage, Permutasi Matrix 2000 Lines
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_3_ULTRA_MATRIX";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2000;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 150;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 90;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 40;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 1;
     } else {
-        boxEl.textContent = '-';
-        lblEl.textContent = `Salinan 2${type} (0 LN)`;
+        // Generasi 4: Dynamic Shift Hybrid Mode
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_4_HYBRID_SHIFT";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2500;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 200;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 100;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 50;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
+    }
+}
+
+// MAIN SELF-LEARNING LOOPER CONTROLLER
+function runSelfLearningEngine(iterationsCount) {
+    clearAuditLog();
+    writeAuditLog("====================================================");
+    writeAuditLog(`STARTING AUTOMATED SELF-LEARNING ENGINE PROCESS`);
+    writeAuditLog("====================================================");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        alert("Silakan masukkan data masukan RM4 terlebih dahulu!");
+        return;
     }
 
-    // Perbarui Hasil Olahan 3 Digit setelah wadah berubah
-    prosesHasil3Digit();
-}
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < iterationsCount + 2) {
+        alert(`Data tidak cukup untuk ${iterationsCount}x backtest! Diperlukan minimal ${iterationsCount + 2} pasang data.`);
+        return;
+    }
 
-function resetWadah(type) {
-    wadahData[type].clear();
-    updateWadahUI(type);
-}
+    let loadingOverlay = document.getElementById('loadingOverlay');
+    let loadingText = document.getElementById('loadingText');
+    loadingOverlay.style.display = 'flex';
 
-function copyWadah(boxId, btn) {
-    let box = document.getElementById(boxId);
-    if (!box || !box.textContent || box.textContent === "-") return;
-    navigator.clipboard.writeText(box.textContent).then(() => {
-        let old = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.style.backgroundColor = '#27ae60';
-        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
-    });
-}
+    let generationAttempt = 0;
+    let maxGenerations = 4;
 
-// Logika Penggabungan 2 Digit Menjadi 3 Digit (3DD & 3DB)
-function prosesHasil3Digit() {
-    let arrDD = Array.from(wadahData.DD);
-    let arrDT = Array.from(wadahData.DT);
-    let arrDB = Array.from(wadahData.DB);
+    function executeFullLearningCycle() {
+        generationAttempt++;
+        writeAuditLog(`<br/><b>--- ENGINE GENERATION LEARNING STEP #${generationAttempt} ---</b>`);
+        writeAuditLog(`Active Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b> (Matrix Depth: ${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH})`);
 
-    // 3DD: Perkawinan antara wadah 2DD dan 2DT (Irisan digit belakang 2DD == digit depan 2DT)
-    let set3DD = new Set();
-    if (arrDD.length > 0 && arrDT.length > 0) {
-        for (let a of arrDD) {
-            for (let b of arrDT) {
-                // a format "XY", b format "YZ" -> gabung jadi "XYZ" di mana Y adalah digit akhir a dan digit awal b
-                if (a.charAt(1) === b.charAt(0)) {
-                    set3DD.add(a + b.charAt(1));
+        let successCount = 0;
+        let failCount = 0;
+        let testIndex = 0;
+
+        let totalAvailable = dataTokens.length;
+        let startIndex = totalAvailable - iterationsCount;
+
+        function runTestStep() {
+            if (testIndex < iterationsCount) {
+                let currentCutLength = startIndex + testIndex;
+                let trainingData = dataTokens.slice(0, currentCutLength);
+                let targetActual = dataTokens[currentCutLength];
+
+                loadingText.innerHTML = `Gen #${generationAttempt} (${ENGINE_SYS_CONFIG.STRATEGY_MODE})<br/>Backtesting Iterasi ${testIndex + 1}/${iterationsCount}...`;
+
+                setTimeout(() => {
+                    let prediction = executeEngineForDataset(trainingData);
+                    let secName = prediction.sectorName;
+                    let topLN = prediction.topLN;
+
+                    let actualPair = "";
+                    if (secName === "2DD") actualPair = targetActual.substring(0, 2);
+                    else if (secName === "2DT") actualPair = targetActual.substring(1, 3);
+                    else if (secName === "2DB") actualPair = targetActual.substring(2, 4);
+
+                    let isHit = topLN.includes(actualPair);
+
+                    if (isHit) {
+                        successCount++;
+                        writeAuditLog(`[TEST ${testIndex + 1}] Target: ${targetActual} (${secName}:${actualPair}) => <span style='color:#2ecc71; font-weight:bold;'>OK (HIT)</span>`);
+                    } else {
+                        failCount++;
+                        writeAuditLog(`[TEST ${testIndex + 1}] Target: ${targetActual} (${secName}:${actualPair}) => <span style='color:#e74c3c; font-weight:bold;'>NG (MISS)</span>`);
+                    }
+
+                    testIndex++;
+                    runTestStep();
+                }, 200);
+            } else {
+                // EVALUASI APAPUN HASIL BACKTEST DARI GENERASI INI
+                writeAuditLog(`Evaluation Result Gen #${generationAttempt} -> HIT: ${successCount} | MISS (NG): ${failCount}`);
+
+                // PERINTAH UTAMA: BILA MISS > 1 MAKA HARUS BUAT LOGIKA/ALGORITMA BARU DENGAN LOOPING
+                if (failCount > 1 && generationAttempt < maxGenerations) {
+                    writeAuditLog(`<span style='color:#e67e22; font-weight:bold;'>[CRITICAL TRIGGER]: MISS Terjadi > 1 Kali (${failCount} MISS). Memicu Reformulasi Algoritma Engine Baru...</span>`);
+                    mutateAlgorithmStrategy(generationAttempt);
+                    
+                    setTimeout(() => {
+                        executeFullLearningCycle(); // RE-LOOP BACKTEST ENGINE BARU
+                    }, 500);
+                } else {
+                    // SELESAI (SUDAH MEMENUHI SYARAT MISS <= 1 ATAU MEMENUHI MAKSIMAL GENERASI)
+                    loadingOverlay.style.display = 'none';
+                    writeAuditLog("----------------------------------------------------");
+                    if (failCount <= 1) {
+                        writeAuditLog(`<span style='color:#2ecc71; font-weight:bold;'>[LEARNING SUCCESS]: Logika Engine Berhasil Ditemukan! Total MISS = ${failCount} (<= 1).</span>`);
+                    } else {
+                        writeAuditLog(`<span style='color:#f1c40f; font-weight:bold;'>[MAX GENERATION REACHED]: Iterasi Algoritma Maksimal Tercapai. Optimasi Terbaik Terpasang.</span>`);
+                    }
+                    writeAuditLog(`STRATEGI ENGINE FINAL DIPAKAI: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
                 }
             }
         }
+
+        runTestStep();
     }
 
-    // 3DB: Perkawinan antara wadah 2DT dan 2DB (Irisan digit belakang 2DT == digit depan 2DB)
-    let set3DB = new Set();
-    if (arrDT.length > 0 && arrDB.length > 0) {
-        for (let b of arrDT) {
-            for (let c of arrDB) {
-                if (b.charAt(1) === c.charAt(0)) {
-                    set3DB.add(b + c.charAt(1));
-                }
-            }
-        }
-    }
-
-    // Render 3DD
-    let res3DD = Array.from(set3DD);
-    let box3DD = document.getElementById('box3DD');
-    let lbl3DD = document.getElementById('lbl3DD');
-    if (res3DD.length > 0) {
-        box3DD.textContent = res3DD.join('*');
-        lbl3DD.textContent = `3DD = ${res3DD.length} LN`;
-    } else {
-        box3DD.textContent = '-';
-        lbl3DD.textContent = `3DD = 0 LN`;
-    }
-
-    // Render 3DB
-    let res3DB = Array.from(set3DB);
-    let box3DB = document.getElementById('box3DB');
-    let lbl3DB = document.getElementById('lbl3DB');
-    if (res3DB.length > 0) {
-        box3DB.textContent = res3DB.join('*');
-        lbl3DB.textContent = `3DB = ${res3DB.length} LN`;
-    } else {
-        box3DB.textContent = '-';
-        lbl3DB.textContent = `3DB = 0 LN`;
-    }
+    executeFullLearningCycle();
 }
 
-window.onload = function() {
-    prosesSemuaLayout();
-};
+// COPY UTILITY[cite: 2]
+function copyHasil() {
+    let outputText = document.getElementById('outputResult').value;
+    if (!outputText) return;
+
+    navigator.clipboard.writeText(outputText).then(() => {
+        let btn = document.getElementById('btnCopy');
+        let oldText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+        setTimeout(() => {
+            btn.textContent = oldText;
+            btn.style.backgroundColor = '#2980b9';
+        }, 1200);
+    });
+}
 </script>
 
 </body>

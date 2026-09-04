@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisa</title>
+    <title>Sistem Analisa</title>
     <style>
         * {
             box-sizing: border-box;
@@ -18,7 +18,7 @@
         }
         .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 750px;
             background: #ffffff;
             padding: 25px;
             border-radius: 10px;
@@ -29,7 +29,7 @@
             color: #2c3e50;
             text-align: center;
             font-size: 20px;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 2px solid #27ae60;
             padding-bottom: 10px;
         }
         label {
@@ -44,13 +44,13 @@
             padding: 12px;
             border: 1px solid #cccccc;
             border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: monospace;
             font-size: 14px;
             margin-bottom: 15px;
             resize: vertical;
         }
         .input-area {
-            height: 90px;
+            height: 110px;
         }
         .output-area {
             height: 140px;
@@ -63,7 +63,7 @@
             background-color: #27ae60;
             color: white;
             border: none;
-            padding: 12px;
+            padding: 14px;
             font-size: 16px;
             border-radius: 6px;
             cursor: pointer;
@@ -94,207 +94,560 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: bold;
-            transition: background 0.2s;
         }
         .btn-copy:hover {
             background-color: #1f618d;
+        }
+        .audit-box {
+            background-color: #1e272e;
+            color: #00d8d6;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 6px;
+            height: 180px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .audit-title {
+            color: #ffdd59;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- <h2>SISTEM ANALISA & PREDIKSI</h2> -->
+    <h2>ENGINE PRO ENTERPRISE</h2>
     
-    <!-- Input Data RM4 -->
     <label for="inputData">Masukkan Data RM5 :</label>
     <textarea id="inputData" class="input-area" placeholder=""></textarea>
     
-    <!-- Tombol Proses -->
-    <button class="btn-process" onclick="prosesPrediksi()">PROSES</button>
+    <button class="btn-process" onclick="prosesEngineProUtuh()">ANALISA</button>
 
-    <!-- Header Textarea Keluaran -->
     <div class="result-header">
-        <span id="outputTitle" class="result-title">TOP HASIL ENGINE (0 LN)</span>
+        <span id="outputTitle" class="result-title">TOP RESULT (0 LN)</span>
         <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy to Clipboard</button>
     </div>
 
-    <!-- Textarea Output Readonly -->
-    <textarea id="outputResult" class="output-area" readonly placeholder="Hasil analisa akan tampil di sini..."></textarea>
+    <textarea id="outputResult" class="output-area" readonly placeholder=""></textarea>
+
+    <!-- Console Log & Audit Trail Box -->
+    <div class="audit-title">LOG AUDIT EXECUTION:</div>
+    <div id="auditLog" class="audit-box">Ready...</div>
 </div>
 
 <script>
-// Helper: Penjumlahan Single Digit
-function getSingleDigitSum(a, b) {
-    let sum = a + b;
-    while (sum >= 10) {
-        let str = sum.toString();
-        sum = parseInt(str.charAt(0)) + parseInt(str.charAt(1));
-    }
-    return sum.toString();
+/**
+ * ====================================================================
+ * CORE ENTERPRISE ENGINE ARCHITECTURE (RM4 FULL-SCALE MATRIX ANALYSIS)
+ * ====================================================================
+ */
+
+// REGISTRY UTAMA CONFIGURATION
+const ENGINE_SYS_CONFIG = {
+    MAX_OUTPUT_LIMIT: 50,
+    SIMULATION_MATRIX_DEPTH: 1000,
+    WEIGHT_LEVEL_0: 100, // Pass Sempurna (0 Fail)
+    WEIGHT_LEVEL_1: 80,  // Pass 1 Fail
+    WEIGHT_LEVEL_2: 60,  // Pass 2 Fail
+    WEIGHT_LEVEL_3: 40,  // Pass 3 Fail
+    WEIGHT_LEVEL_4: 20,  // Pass 4 Fail
+    WEIGHT_LEVEL_5: 0    // Gagal Total
+};
+
+// AUDIT LOGGER UTILITY
+function writeAuditLog(message) {
+    let logBox = document.getElementById('auditLog');
+    let timeStamp = new Date().toLocaleTimeString();
+    logBox.innerHTML += `[${timeStamp}] ${message}<br/>`;
+    logBox.scrollTop = logBox.scrollHeight;
 }
 
-// Helper: Kombinasi
-function getCombinations(arr, k) {
-    if (k === 0) return [[]];
-    if (arr.length === 0) return [];
-    let head = arr[0];
-    let tail = arr.slice(1);
-    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
+function clearAuditLog() {
+    document.getElementById('auditLog').innerHTML = '';
 }
 
-// AM Adaptif Generator
-function getAdaptiveAM(rowsData, extractorFunc) {
-    let candidateSet = new Set();
-    for (let i = 0; i < rowsData.length - 1; i++) {
-        let val = extractorFunc(rowsData[i + 1]);
-        if (val) { for (let char of val) candidateSet.add(char); }
-    }
-    let candidateArray = Array.from(candidateSet).sort();
-    if (candidateArray.length === 0) return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+// 1. DIGITAL ROOT CALCULATOR
+function calculateSingleDigitSum(digitValA, digitValB) {
+    let parseA = parseInt(digitValA, 10);
+    let parseB = parseInt(digitValB, 10);
+    let totalSum = parseA + parseB;
     
-    let bestAM = null;
-    for (let len = 3; len <= candidateArray.length; len++) {
-        let combos = getCombinations(candidateArray, len);
-        for (let combo of combos) {
-            let comboSet = new Set(combo);
-            let isValid = true;
-            for (let i = 0; i < rowsData.length - 1; i++) {
-                let targetVal = extractorFunc(rowsData[i + 1]);
-                let matchCount = 0;
-                if (targetVal) {
-                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
-                }
-                if (matchCount === 0) { isValid = false; break; }
-            }
-            if (isValid) { bestAM = combo; break; }
-        }
-        if (bestAM) break;
+    while (totalSum >= 10) {
+        let stringConverted = totalSum.toString();
+        let charFirst = parseInt(stringConverted.charAt(0), 10);
+        let charSecond = parseInt(stringConverted.charAt(1), 10);
+        totalSum = charFirst + charSecond;
     }
-    return bestAM || candidateArray;
+    return totalSum.toString();
 }
 
-// Engine Evaluator Generik per Tipe (2DD, 2DT, 2DB)
-function evaluasiEngine(d1List, d2List, slsList, jmlList, amList) {
-    if (!d1List.length) d1List = ['0','1','2','3','4','5','6','7','8','9'];
-    if (!d2List.length) d2List = ['0','1','2','3','4','5','6','7','8','9'];
+// 2. ABSOLUTE DIFFERENCE CALCULATOR
+function calculateAbsoluteDifference(digitValA, digitValB) {
+    let parseA = parseInt(digitValA, 10);
+    let parseB = parseInt(digitValB, 10);
+    let diffResult = Math.abs(parseA - parseB);
+    return diffResult.toString();
+}
 
-    let slsValid = (slsList || []).map(Number);
-    let jmlValid = (jmlList || []).map(Number);
-    let amValid = (amList || []);
+// 3. COMBINATORIAL SUBSET GENERATOR
+function generateCombinatorialSubsets(sourceArray, subsetLength) {
+    if (subsetLength === 0) {
+        return [[]];
+    }
+    if (sourceArray.length === 0) {
+        return [];
+    }
+    
+    let headElement = sourceArray[0];
+    let tailElements = sourceArray.slice(1);
+    
+    let subsetsWithHead = generateCombinatorialSubsets(tailElements, subsetLength - 1).map(function(subset) {
+        return [headElement].concat(subset);
+    });
+    
+    let subsetsWithoutHead = generateCombinatorialSubsets(tailElements, subsetLength);
+    
+    return subsetsWithHead.concat(subsetsWithoutHead);
+}
 
-    let rankedList = [];
-
-    for (let i = 0; i <= 99; i++) {
-        let pair = i.toString().padStart(2, '0');
-        let d1Char = pair.charAt(0);
-        let d2Char = pair.charAt(1);
-        let d1Num = parseInt(d1Char);
-        let d2Num = parseInt(d2Char);
-        let sls = Math.abs(d1Num - d2Num);
-        let jml = parseInt(getSingleDigitSum(d1Num, d2Num));
-
-        let failScore = 0;
-        if (!d1List.includes(d1Char)) failScore += 1;
-        if (!d2List.includes(d2Char)) failScore += 1;
-        if (slsValid.length && !slsValid.includes(sls)) failScore += 1;
-        if (jmlValid.length && !jmlValid.includes(jml)) failScore += 1;
-        if (amValid.length && !amValid.includes(d1Char) && !amValid.includes(d2Char)) failScore += 1;
-
-        rankedList.push({ pair: pair, score: failScore });
+// 4. ADAPTIVE AM EXTRACTOR
+function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
+    let uniqueCharacterSet = new Set();
+    
+    for (let rowIndex = 0; rowIndex < processedRowsData.length - 1; rowIndex++) {
+        let targetRow = processedRowsData[rowIndex + 1];
+        let extractedString = extractionTargetFunction(targetRow);
+        
+        if (extractedString && typeof extractedString === 'string') {
+            for (let charIndex = 0; charIndex < extractedString.length; charIndex++) {
+                let singleChar = extractedString.charAt(charIndex);
+                uniqueCharacterSet.add(singleChar);
+            }
+        }
+    }
+    
+    let sortedCharacterSet = Array.from(uniqueCharacterSet).sort();
+    
+    if (sortedCharacterSet.length === 0) {
+        return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     }
 
-    // Urutkan dari failScore terkecil (terkuat) ke terbesar
-    rankedList.sort((a, b) => a.score - b.score);
+    let optimalSubSetAM = null;
+    
+    for (let currentLength = 3; currentLength <= sortedCharacterSet.length; currentLength++) {
+        let generatedSubsets = generateCombinatorialSubsets(sortedCharacterSet, currentLength);
+        
+        for (let comboIndex = 0; comboIndex < generatedSubsets.length; comboIndex++) {
+            let currentCombination = generatedSubsets[comboIndex];
+            let comboComparisonSet = new Set(currentCombination);
+            let isValidFullCoverage = true;
+            
+            for (let verifyIndex = 0; verifyIndex < processedRowsData.length - 1; verifyIndex++) {
+                let verificationRow = processedRowsData[verifyIndex + 1];
+                let verifyValue = extractionTargetFunction(verificationRow);
+                let hitMatchCount = 0;
+                
+                if (verifyValue) {
+                    for (let verifyCharIdx = 0; verifyCharIdx < verifyValue.length; verifyCharIdx++) {
+                        let verifyChar = verifyValue.charAt(verifyCharIdx);
+                        if (comboComparisonSet.has(verifyChar)) {
+                            hitMatchCount++;
+                        }
+                    }
+                }
+                
+                if (hitMatchCount === 0) {
+                    isValidFullCoverage = false;
+                    break;
+                }
+            }
+            
+            if (isValidFullCoverage) {
+                optimalSubSetAM = currentCombination;
+                break;
+            }
+        }
+        
+        if (optimalSubSetAM) {
+            break;
+        }
+    }
+    
+    return optimalSubSetAM || sortedCharacterSet;
+}
 
-    // Hitung Bobot Efisiensi Engine (Weight Score)
-    // Engine dianggap kuat jika jumlah skor kegagalan kumulatif di top 50 minimal
-    let totalScoreTop50 = rankedList.slice(0, 50).reduce((acc, curr) => acc + curr.score, 0);
+// 5. MATRIXEXPANDED 1000 LINES GENERATOR
+function build1000PermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
+    let baseHistoricalPairs = [];
+    
+    for (let dataIdx = 0; dataIdx < processedDataRows.length; dataIdx++) {
+        let selectedRow = processedDataRows[dataIdx];
+        let digitValA = selectedRow.digits[primaryPositionIdx];
+        let digitValB = selectedRow.digits[secondaryPositionIdx];
+        baseHistoricalPairs.push(digitValA + digitValB);
+    }
+
+    let expandedPermutationSpace = [];
+    let baseDataLength = baseHistoricalPairs.length;
+
+    for (let simulationIdx = 0; simulationIdx < ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH; simulationIdx++) {
+        let basePairString = baseHistoricalPairs[simulationIdx % baseDataLength];
+        let baseDigitA = parseInt(basePairString.charAt(0), 10);
+        let baseDigitB = parseInt(basePairString.charAt(1), 10);
+        
+        let shiftOffsetA = Math.floor(simulationIdx / 100);
+        let shiftOffsetB = simulationIdx % 10;
+        
+        let calculatedDigitA = (baseDigitA + shiftOffsetA) % 10;
+        let calculatedDigitB = (baseDigitB + shiftOffsetB) % 10;
+        
+        expandedPermutationSpace.push(calculatedDigitA.toString() + calculatedDigitB.toString());
+    }
+    
+    return expandedPermutationSpace;
+}
+
+// 6. EVALUATOR SEKTOR 2DD
+function evaluateSector2DD(matrixData, listD0, listD1, listDiff1, listSum1, listAM1) {
+    let scoreBoard = {};
+    
+    for (let pairVal = 0; pairVal <= 99; pairVal++) {
+        let pairKey = pairVal.toString().padStart(2, '0');
+        scoreBoard[pairKey] = {
+            pair: pairKey,
+            totalPowerScore: 0,
+            level0Count: 0,
+            level1Count: 0,
+            level2Count: 0,
+            level3Count: 0,
+            level4Count: 0,
+            level5Count: 0
+        };
+    }
+
+    let validDiffNumbers = (listDiff1 || []).map(Number);
+    let validSumNumbers = (listSum1 || []).map(Number);
+
+    for (let i = 0; i < matrixData.length; i++) {
+        let pairStr = matrixData[i];
+        let charA = pairStr.charAt(0);
+        let charB = pairStr.charAt(1);
+        let numA = parseInt(charA, 10);
+        let numB = parseInt(charB, 10);
+
+        let calcDiff = Math.abs(numA - numB);
+        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
+
+        let penaltyFails = 0;
+
+        if (!listD0.includes(charA)) penaltyFails++;
+        if (!listD1.includes(charB)) penaltyFails++;
+        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
+        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
+        if (listAM1.length > 0 && !listAM1.includes(charA) && !listAM1.includes(charB)) penaltyFails++;
+
+        let scoreAdd = 0;
+        if (penaltyFails === 0) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+            scoreBoard[pairStr].level0Count++;
+        } else if (penaltyFails === 1) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+            scoreBoard[pairStr].level1Count++;
+        } else if (penaltyFails === 2) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+            scoreBoard[pairStr].level2Count++;
+        } else if (penaltyFails === 3) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+            scoreBoard[pairStr].level3Count++;
+        } else if (penaltyFails === 4) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
+            scoreBoard[pairStr].level4Count++;
+        } else {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
+            scoreBoard[pairStr].level5Count++;
+        }
+
+        scoreBoard[pairStr].totalPowerScore += scoreAdd;
+    }
+
+    let sortedList = Object.values(scoreBoard);
+    sortedList.sort(function(a, b) {
+        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
+        if (b.level0Count !== a.level0Count) return b.level0Count - a.level0Count;
+        return b.level1Count - a.level1Count;
+    });
+
+    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
+    let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
 
     return {
-        top50: rankedList.slice(0, 50).map(item => item.pair),
-        weightScore: totalScoreTop50 // Semakin kecil semakin akurat
+        sectorName: "2DD",
+        topLN: top50.map(item => item.pair),
+        powerScore: aggregatePower
     };
 }
 
-// Fungsi Utama Proses Prediksi
-function prosesPrediksi() {
-    let rawInput = document.getElementById('inputData').value.trim();
-    if (!rawInput) {
-        alert("Silakan masukkan data RM4 terlebih dahulu!");
-        return;
-    }
-
-    let dataArray = rawInput.split(',').map(item => item.trim()).filter(item => item.length > 0);
-    if (dataArray.length < 2) {
-        alert("Masukkan minimal 2 baris data RM4!");
-        return;
-    }
-
-    let processedData = dataArray.map(item => {
-        if (item.length < 4) item = item.padStart(4, '0');
-        let r = parseInt(item.charAt(0));
-        let ra = parseInt(item.charAt(1));
-        let p = parseInt(item.charAt(2));
-        let s = parseInt(item.charAt(3));
-
-        return {
-            digits: [r.toString(), ra.toString(), p.toString(), s.toString()],
-            diffs: [Math.abs(r - ra).toString(), Math.abs(ra - p).toString(), Math.abs(p - s).toString()],
-            sums: [getSingleDigitSum(r, ra), getSingleDigitSum(ra, p), getSingleDigitSum(p, s)]
+// 7. EVALUATOR SEKTOR 2DT
+function evaluateSector2DT(matrixData, listD1, listD2, listDiff2, listSum2, listAM2) {
+    let scoreBoard = {};
+    
+    for (let pairVal = 0; pairVal <= 99; pairVal++) {
+        let pairKey = pairVal.toString().padStart(2, '0');
+        scoreBoard[pairKey] = {
+            pair: pairKey,
+            totalPowerScore: 0,
+            level0Count: 0,
+            level1Count: 0,
+            level2Count: 0,
+            level3Count: 0,
+            level4Count: 0,
+            level5Count: 0
         };
+    }
+
+    let validDiffNumbers = (listDiff2 || []).map(Number);
+    let validSumNumbers = (listSum2 || []).map(Number);
+
+    for (let i = 0; i < matrixData.length; i++) {
+        let pairStr = matrixData[i];
+        let charA = pairStr.charAt(0);
+        let charB = pairStr.charAt(1);
+        let numA = parseInt(charA, 10);
+        let numB = parseInt(charB, 10);
+
+        let calcDiff = Math.abs(numA - numB);
+        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
+
+        let penaltyFails = 0;
+
+        if (!listD1.includes(charA)) penaltyFails++;
+        if (!listD2.includes(charB)) penaltyFails++;
+        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
+        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
+        if (listAM2.length > 0 && !listAM2.includes(charA) && !listAM2.includes(charB)) penaltyFails++;
+
+        let scoreAdd = 0;
+        if (penaltyFails === 0) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+            scoreBoard[pairStr].level0Count++;
+        } else if (penaltyFails === 1) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+            scoreBoard[pairStr].level1Count++;
+        } else if (penaltyFails === 2) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+            scoreBoard[pairStr].level2Count++;
+        } else if (penaltyFails === 3) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+            scoreBoard[pairStr].level3Count++;
+        } else if (penaltyFails === 4) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
+            scoreBoard[pairStr].level4Count++;
+        } else {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
+            scoreBoard[pairStr].level5Count++;
+        }
+
+        scoreBoard[pairStr].totalPowerScore += scoreAdd;
+    }
+
+    let sortedList = Object.values(scoreBoard);
+    sortedList.sort(function(a, b) {
+        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
+        if (b.level0Count !== a.level0Count) return b.level0Count - a.level0Count;
+        return b.level1Count - a.level1Count;
     });
 
-    // Extract Parameter
-    let dig0 = getAdaptiveAM(processedData, row => row.digits[0]);
-    let dig1 = getAdaptiveAM(processedData, row => row.digits[1]);
-    let dig2 = getAdaptiveAM(processedData, row => row.digits[2]);
-    let dig3 = getAdaptiveAM(processedData, row => row.digits[3]);
+    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
+    let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
 
-    let diff1 = getAdaptiveAM(processedData, row => row.diffs[0]);
-    let diff2 = getAdaptiveAM(processedData, row => row.diffs[1]);
-    let diff3 = getAdaptiveAM(processedData, row => row.diffs[2]);
-
-    let sum1 = getAdaptiveAM(processedData, row => row.sums[0]);
-    let sum2 = getAdaptiveAM(processedData, row => row.sums[1]);
-    let sum3 = getAdaptiveAM(processedData, row => row.sums[2]);
-
-    let am1 = getAdaptiveAM(processedData, row => row.digits[0] + row.digits[1]);
-    let am2 = getAdaptiveAM(processedData, row => row.digits[1] + row.digits[2]);
-    let am3 = getAdaptiveAM(processedData, row => row.digits[2] + row.digits[3]);
-
-    // Jalankan 3 Engine
-    let res2DD = evaluasiEngine(dig0, dig1, diff1, sum1, am1);
-    let res2DT = evaluasiEngine(dig1, dig2, diff2, sum2, am2);
-    let res2DB = evaluasiEngine(dig2, dig3, diff3, sum3, am3);
-
-    // Adu Bobot Antar Engine (Pilih Weight Score Terrendah)
-    let engineCandidates = [
-        { type: "2DD", result: res2DD },
-        { type: "2DT", result: res2DT },
-        { type: "2DB", result: res2DB }
-    ];
-
-    engineCandidates.sort((a, b) => a.result.weightScore - b.result.weightScore);
-
-    // Pemenang Terkuat
-    let winner = engineCandidates[0];
-    let topLN = winner.result.top50;
-
-    // Pastikan konstan tidak melebihi 50 LN
-    if (topLN.length > 50) {
-        topLN = topLN.slice(0, 50);
-    }
-
-    // Format Output Teks (Misal dipisah tanda bintang '*')
-    let formattedResult = topLN.join('*');
-
-    // Tampilkan pada UI
-    document.getElementById('outputTitle').textContent = `TOP ${topLN.length} ${winner.type}`;
-    document.getElementById('outputResult').value = formattedResult;
+    return {
+        sectorName: "2DT",
+        topLN: top50.map(item => item.pair),
+        powerScore: aggregatePower
+    };
 }
 
-// Fungsi Copy to Clipboard
+// 8. EVALUATOR SEKTOR 2DB
+function evaluateSector2DB(matrixData, listD2, listD3, listDiff3, listSum3, listAM3) {
+    let scoreBoard = {};
+    
+    for (let pairVal = 0; pairVal <= 99; pairVal++) {
+        let pairKey = pairVal.toString().padStart(2, '0');
+        scoreBoard[pairKey] = {
+            pair: pairKey,
+            totalPowerScore: 0,
+            level0Count: 0,
+            level1Count: 0,
+            level2Count: 0,
+            level3Count: 0,
+            level4Count: 0,
+            level5Count: 0
+        };
+    }
+
+    let validDiffNumbers = (listDiff3 || []).map(Number);
+    let validSumNumbers = (listSum3 || []).map(Number);
+
+    for (let i = 0; i < matrixData.length; i++) {
+        let pairStr = matrixData[i];
+        let charA = pairStr.charAt(0);
+        let charB = pairStr.charAt(1);
+        let numA = parseInt(charA, 10);
+        let numB = parseInt(charB, 10);
+
+        let calcDiff = Math.abs(numA - numB);
+        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
+
+        let penaltyFails = 0;
+
+        if (!listD2.includes(charA)) penaltyFails++;
+        if (!listD3.includes(charB)) penaltyFails++;
+        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
+        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
+        if (listAM3.length > 0 && !listAM3.includes(charA) && !listAM3.includes(charB)) penaltyFails++;
+
+        let scoreAdd = 0;
+        if (penaltyFails === 0) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+            scoreBoard[pairStr].level0Count++;
+        } else if (penaltyFails === 1) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+            scoreBoard[pairStr].level1Count++;
+        } else if (penaltyFails === 2) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+            scoreBoard[pairStr].level2Count++;
+        } else if (penaltyFails === 3) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+            scoreBoard[pairStr].level3Count++;
+        } else if (penaltyFails === 4) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
+            scoreBoard[pairStr].level4Count++;
+        } else {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
+            scoreBoard[pairStr].level5Count++;
+        }
+
+        scoreBoard[pairStr].totalPowerScore += scoreAdd;
+    }
+
+    let sortedList = Object.values(scoreBoard);
+    sortedList.sort(function(a, b) {
+        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
+        if (b.level0Count !== a.level0Count) return b.level0Count - a.level0Count;
+        return b.level1Count - a.level1Count;
+    });
+
+    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
+    let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
+
+    return {
+        sectorName: "2DB",
+        topLN: top50.map(item => item.pair),
+        powerScore: aggregatePower
+    };
+}
+
+// 9. MAIN EXECUTION CONTROLLER
+function prosesEngineProUtuh() {
+    clearAuditLog();
+    writeAuditLog("Initializing Enterprise Engine Analysis...");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        alert("Silakan masukkan data masukan RM4 terlebih dahulu!");
+        writeAuditLog("ERROR: Input data empty.");
+        return;
+    }
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < 2) {
+        alert("Data masukan minimal harus 2 baris!");
+        writeAuditLog("ERROR: Insufficient data rows.");
+        return;
+    }
+
+    writeAuditLog(`Data Ingestion Success. Total rows: ${dataTokens.length}`);
+
+    let processedDataRows = [];
+    for (let idx = 0; idx < dataTokens.length; idx++) {
+        let token = dataTokens[idx];
+        if (token.length < 4) token = token.padStart(4, '0');
+        
+        let digit0 = parseInt(token.charAt(0), 10);
+        let digit1 = parseInt(token.charAt(1), 10);
+        let digit2 = parseInt(token.charAt(2), 10);
+        let digit3 = parseInt(token.charAt(3), 10);
+
+        processedDataRows.push({
+            rawToken: token,
+            digits: [digit0.toString(), digit1.toString(), digit2.toString(), digit3.toString()],
+            diffs: [
+                calculateAbsoluteDifference(digit0, digit1),
+                calculateAbsoluteDifference(digit1, digit2),
+                calculateAbsoluteDifference(digit2, digit3)
+            ],
+            sums: [
+                calculateSingleDigitSum(digit0, digit1),
+                calculateSingleDigitSum(digit1, digit2),
+                calculateSingleDigitSum(digit2, digit3)
+            ]
+        });
+    }
+
+    writeAuditLog("Extracting Adaptive Saringan (Digit, Diff, Sum, AM)...");
+
+    let listD0 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0]);
+    let listD1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1]);
+    let listD2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2]);
+    let listD3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[3]);
+
+    let listDiff1 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[0]);
+    let listDiff2 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[1]);
+    let listDiff3 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[2]);
+
+    let listSum1 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[0]);
+    let listSum2 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[2]);
+    let listSum3 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[2]);
+
+    let listAM1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0] + row.digits[1]);
+    let listAM2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1] + row.digits[2]);
+    let listAM3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2] + row.digits[3]);
+
+    writeAuditLog(`AM 2DD: [${listAM1.join(',')}] | AM 2DT: [${listAM2.join(',')}] | AM 2DB: [${listAM3.join(',')}]`);
+
+    writeAuditLog("Generating 1,000 Expanded Permutation Matrices per Sector...");
+    let matrix2DD = build1000PermutationSpace(processedDataRows, 0, 1);
+    let matrix2DT = build1000PermutationSpace(processedDataRows, 1, 2);
+    let matrix2DB = build1000PermutationSpace(processedDataRows, 2, 3);
+
+    writeAuditLog("Running Multi-Pass Penalization Engine Evaluators...");
+    let result2DD = evaluateSector2DD(matrix2DD, listD0, listD1, listDiff1, listSum1, listAM1);
+    let result2DT = evaluateSector2DT(matrix2DT, listD1, listD2, listDiff2, listSum2, listAM2);
+    let result2DB = evaluateSector2DB(matrix2DB, listD2, listD3, listDiff3, listSum3, listAM3);
+
+    writeAuditLog(`Power Score -> 2DD: ${result2DD.powerScore} | 2DT: ${result2DT.powerScore} | 2DB: ${result2DB.powerScore}`);
+
+    let engineContenders = [result2DD, result2DT, result2DB];
+    engineContenders.sort((a, b) => b.powerScore - a.powerScore);
+
+    let winningEngine = engineContenders[0];
+    writeAuditLog(`WINNING ENGINE SECTOR: ${winningEngine.sectorName} with Power Score: ${winningEngine.powerScore}`);
+
+    let finalTop50 = winningEngine.topLN;
+    if (finalTop50.length > ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT) {
+        finalTop50 = finalTop50.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
+    }
+
+    document.getElementById('outputTitle').textContent = `TOP ${finalTop50.length} ${winningEngine.sectorName}`;
+    document.getElementById('outputResult').value = finalTop50.join('*');
+    writeAuditLog("Execution Completed Successfully. Results rendered.");
+}
+
+// 10. COPY UTILITY
 function copyHasil() {
     let outputText = document.getElementById('outputResult').value;
     if (!outputText) return;
