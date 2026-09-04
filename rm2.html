@@ -342,9 +342,9 @@ function prosesKedua() {
             <div class="level-header">
                 <div>
                     <span class="tag-col ${item.tagClass}">${item.colName}</span>
-                    <span class="level-title">Peringkat #${index + 1} : [${item.ratioLabel}] ${item.levelName} = ${item.items.length} LN</span>
+                    <span class="level-title">#${index + 1} : [${item.ratioLabel}] ${item.levelName} = ${item.items.length} LN</span>
                 </div>
-                <button class="btn-copy">Copy ke ${item.targetType}</button>
+                <button class="btn-copy">Copy ${item.targetType}</button>
             </div>
             <div class="result-box" style="max-height: 60px;">${rawItemsString}</div>
         `;
