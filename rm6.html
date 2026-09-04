@@ -1,1168 +1,503 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Analisa</title>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    background:#f2f2f2;
-    font-family:Arial,sans-serif;
-    color:#222;
-}
-
-.app{
-    max-width:900px;
-    margin:auto;
-    background:#fff;
-    min-height:100vh;
-    padding:10px;
-}
-
-.title{
-    text-align:center;
-    font-size:18px;
-    font-weight:bold;
-    margin:2px 0 10px;
-}
-
-label{
-    display:block;
-    font-size:12px;
-    font-weight:bold;
-    margin:7px 0 4px;
-}
-
-textarea,select{
-    width:100%;
-    border:1px solid #aaa;
-    border-radius:4px;
-    background:#fff;
-    font:14px Arial;
-}
-
-textarea{
-    padding:8px;
-    resize:vertical;
-}
-
-#inputResult{
-    height:85px;
-}
-
-.info{
-    font-size:11px;
-    color:#666;
-    margin-top:4px;
-}
-
-select{
-    height:35px;
-    padding:5px;
-}
-
-button{
-    width:100%;
-    height:40px;
-    margin-top:10px;
-    border:0;
-    border-radius:4px;
-    background:#0d6efd;
-    color:#fff;
-    font-weight:bold;
-}
-
-#hasil{
-    margin-top:12px;
-    border-top:1px solid #ddd;
-    padding-top:8px;
-    font-family:monospace;
-    font-size:14px;
-    line-height:1.65;
-    white-space:pre-wrap;
-}
-
-.error{
-    color:#d00;
-    font-weight:bold;
-}
-
-.ok{
-    color:#087f23;
-    font-weight:bold;
-}
-
-/* =====================================================
-   KESIMPULAN
-===================================================== */
-
-.kesimpulanBox{
-    margin-top:18px;
-    border-top:2px solid #222;
-    padding-top:10px;
-}
-
-.kesimpulanTitle{
-    font-size:13px;
-    font-weight:bold;
-    margin-bottom:5px;
-}
-
-#kesimpulan{
-    width:100%;
-    height:145px;
-    min-height:145px;
-    max-height:300px;
-    resize:vertical;
-    overflow-y:auto;
-    padding:8px;
-    font:14px monospace;
-    line-height:1.55;
-    border:1px solid #888;
-    border-radius:4px;
-    background:#fff;
-}
-
-#copyKesimpulan{
-    background:#198754;
-}
-
-#copyKesimpulan.copied{
-    background:#555;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisa</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 15px; }
+        .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #2c3e50; font-size: 20px; }
+        h3 { color: #2980b9; font-size: 15px; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-top: 20px; }
+        label { font-weight: bold; display: block; margin-bottom: 6px; font-size: 13px; }
+        textarea, input[type="text"], select {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 14px; box-sizing: border-box; margin-bottom: 10px;
+        }
+        textarea { height: 80px; resize: vertical; }
+        
+        /* Button Utama */
+        button.btn-main { background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        button.btn-main:hover { background-color: #219653; }
+        
+        .result-box {
+            margin-top: 6px; background: #ecf0f1; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; line-height: 1.5; font-size: 13px; max-height: 150px; overflow-y: auto; overflow-x: auto;
+        }
+        .panel-engine { border: 1px solid #bdc3c7; border-radius: 6px; padding: 12px; background: #fafbfc; margin-top: 10px; }
+        
+        /* Baris Header Level / Wadah */
+        .level-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #dcdde1; padding: 6px 10px; border-radius: 4px; margin-top: 8px; }
+        .level-title { font-weight: bold; font-size: 12px; color: #2c3e50; }
+        
+        /* Wrapper Tombol Agar Selalu Rapi di Kanan */
+        .btn-group { display: flex; gap: 5px; align-items: center; }
+        
+        /* Styling Tombol Ringkas & Imut */
+        .btn-copy { background-color: #2980b9; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; width: auto !important; }
+        .btn-copy:hover { background-color: #1f618d; }
+        .btn-reset { background-color: #c0392b; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; width: auto !important; }
+        .btn-reset:hover { background-color: #962d22; }
+    </style>
 </head>
-
 <body>
 
-<div class="app">
+<div class="container">
+    <!-- <h2>Dashboard Analisis Lanjutan Engine Berbobot</h2> -->
+    
+    <label for="inputData">Masukkan Data:</label>
+    <textarea id="inputData"></textarea>
+    <button class="btn-main" onclick="prosesSemuaLayout()">Proses</button>
 
-<!-- <div class="title">RUMUS AI — 14 RESULT</div> -->
-
-<label>14 DATA</label>
-
-<textarea id="inputResult"
-placeholder="1234,4567,dst"></textarea>
-
-<div class="info">
-Urutan kiri → kanan: paling lama → paling baru.
-</div>
-
-<label>FORMULA</label>
-
-<select id="rumus">
-<option value="belakang">AI2DB</option>
-<option value="tengah">AI2DT</option>
-<option value="depan">AI2DD</option>
-<option value="ai3d">AI3D</option>
-</select>
-
-<button id="proses">PROSES</button>
-
-<div id="hasil"></div>
-
-
-<!-- =====================================================
-     KESIMPULAN
-===================================================== -->
-
-<div class="kesimpulanBox">
-
-    <div class="kesimpulanTitle">
-        KESIMPULAN / BAGAN AI
+    <!-- AREA LAYOUT 1 - 4 DI-HIDE TOTAL SUPAYA MOBILE RAMPING -->
+    <div style="display: none;">
+        <div id="resultDigit"></div>
+        <div id="resultSelisih"></div>
+        <div id="resultJumlah"></div>
+        <div id="resultAM"></div>
     </div>
 
-    <textarea
-        id="kesimpulan"
-        placeholder="234&#10;671&#10;025&#10;483&#10;917"></textarea>
+    <!-- ENGINE 2DD -->
+    <h3>1. Engine 2DD</h3>
+    <div class="panel-engine">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;"><label>Digit 1:</label><input type="text" id="DDDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 120px;"><label>Digit 2:</label><input type="text" id="DDDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 100px;"><label>Pemisah:</label>
+                <select id="DDSeparator" onchange="jalankanEngine2DD()">
+                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 90px;"><label>Selisih:</label><input type="text" id="DDSls" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>Jumlah:</label><input type="text" id="DDJml" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>AM:</label><input type="text" id="DDAM" readonly style="background:#ecf0f1;"></div>
+        </div>
+        <div style="margin-top: 10px;">
+            <div class="level-row">
+                <span id="lblDD0" class="level-title">Level 0 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD0', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxDD0" class="result-box">-</div>
 
-    <button id="copyKesimpulan">
-        COPY
-    </button>
+            <div class="level-row">
+                <span id="lblDD1" class="level-title">Level 1 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD1', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxDD1" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDD2" class="level-title">Level 2 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD2', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxDD2" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDD3" class="level-title">Level 3 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD3', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxDD3" class="result-box">-</div>
+        </div>
+    </div>
+
+    <!-- ENGINE 2DT -->
+    <h3>2. Engine 2DT</h3>
+    <div class="panel-engine">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;"><label>Digit 1:</label><input type="text" id="DTDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 120px;"><label>Digit 2:</label><input type="text" id="DTDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 100px;"><label>Pemisah:</label>
+                <select id="DTSeparator" onchange="jalankanEngine2DT()">
+                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 90px;"><label>Selisih:</label><input type="text" id="DTSls" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>Jumlah:</label><input type="text" id="DTJml" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>AM:</label><input type="text" id="DTAM" readonly style="background:#ecf0f1;"></div>
+        </div>
+        <div style="margin-top: 10px;">
+            <div class="level-row">
+                <span id="lblDT0" class="level-title">Level 0 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT0', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxDT0" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDT1" class="level-title">Level 1 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT1', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxDT1" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDT2" class="level-title">Level 2 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT2', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxDT2" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDT3" class="level-title">Level 3 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT3', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxDT3" class="result-box">-</div>
+        </div>
+    </div>
+
+    <!-- ENGINE 2DB -->
+    <h3>3. Engine 2DB</h3>
+    <div class="panel-engine">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;"><label>Digit 1:</label><input type="text" id="DBDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 120px;"><label>Digit 2:</label><input type="text" id="DBDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 100px;"><label>Pemisah:</label>
+                <select id="DBSeparator" onchange="jalankanEngine2DB()">
+                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 90px;"><label>Selisih:</label><input type="text" id="DBSls" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>Jumlah:</label><input type="text" id="DBJml" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>AM:</label><input type="text" id="DBAM" readonly style="background:#ecf0f1;"></div>
+        </div>
+        <div style="margin-top: 10px;">
+            <div class="level-row">
+                <span id="lblDB0" class="level-title">Level 0 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB0', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxDB0" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDB1" class="level-title">Level 1 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB1', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxDB1" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDB2" class="level-title">Level 2 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB2', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxDB2" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDB3" class="level-title">Level 3 () = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB3', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxDB3" class="result-box">-</div>
+        </div>
+    </div>
+
+    <!-- WADAH SALINAN -->
+    <h3>4. Wadah Salinan</h3>
+    <div class="panel-engine">
+        <div class="level-row">
+            <span id="lblWadahDD" class="level-title">Salinan 2DD (0 LN)</span>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
+                <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
+            </div>
+        </div>
+        <div id="wadahBoxDD" class="result-box">-</div>
+
+        <div class="level-row">
+            <span id="lblWadahDT" class="level-title">Salinan 2DT (0 LN)</span>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
+                <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
+            </div>
+        </div>
+        <div id="wadahBoxDT" class="result-box">-</div>
+
+        <div class="level-row">
+            <span id="lblWadahDB" class="level-title">Salinan 2DB (0 LN)</span>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
+                <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
+            </div>
+        </div>
+        <div id="wadahBoxDB" class="result-box">-</div>
+    </div>
+
+    <!-- HASIL OLAHAN 3 DIGIT -->
+    <h3>5. Hasil Olahan 3 Digit</h3>
+    <div class="panel-engine">
+        <div class="level-row">
+            <span id="lbl3DD" class="level-title">3DD = 0 LN</span>
+            <div class="btn-group"><button class="btn-copy" onclick="copyWadah('box3DD', this)">Copy</button></div>
+        </div>
+        <div id="box3DD" class="result-box">-</div>
+
+        <div class="level-row">
+            <span id="lbl3DB" class="level-title">3DB = 0 LN</span>
+            <div class="btn-group"><button class="btn-copy" onclick="copyWadah('box3DB', this)">Copy</button></div>
+        </div>
+        <div id="box3DB" class="result-box">-</div>
+    </div>
 
 </div>
-
-</div>
-
 
 <script>
-"use strict";
+let globalDataEngine = {
+    dig0: ['0','1','2','3','4','5','6','7','8','9'], 
+    dig1: ['0','1','2','3','4','5','6','7','8','9'], 
+    dig2: ['0','1','2','3','4','5','6','7','8','9'], 
+    dig3: ['0','1','2','3','4','5','6','7','8','9'],
+    diff1: [], diff2: [], diff3: [],
+    sum1: [], sum2: [], sum3: [],
+    am1: [], am2: [], am3: []
+};
 
+let wadahData = { DD: new Set(), DT: new Set(), DB: new Set() };
 
-/* =========================================================
-   DASAR
-========================================================= */
-
-const $ = id => document.getElementById(id);
-
-const WINDOW = 7;
-const MAX_ANALISA = 5;
-
-
-/* =========================================================
-   MATEMATIKA
-========================================================= */
-
-function mod10(v){
-
-    if(!Number.isFinite(v))
-        return 0;
-
-    return ((Math.trunc(v)%10)+10)%10;
+function getCombinations(arr, k) {
+    if (k === 0) return [[]];
+    if (arr.length === 0) return [];
+    let head = arr[0], tail = arr.slice(1);
+    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
 }
 
-
-function safeDiv(a,b){
-
-    if(!Number.isFinite(a))
-        a=0;
-
-    if(!Number.isFinite(b) || b===0)
-        return 0;
-
-    return a/b;
+function getAdaptiveAM(rowsData, extractorFunc) {
+    let candidateSet = new Set();
+    for (let i = 0; i < rowsData.length - 1; i++) {
+        let val = extractorFunc(rowsData[i + 1]);
+        if (val) { for (let char of val) candidateSet.add(char); }
+    }
+    let candidateArray = Array.from(candidateSet).sort();
+    if (candidateArray.length === 0) return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    
+    let bestAM = null;
+    for (let len = 3; len <= candidateArray.length; len++) {
+        let combos = getCombinations(candidateArray, len);
+        for (let combo of combos) {
+            let comboSet = new Set(combo);
+            let isValid = true;
+            for (let i = 0; i < rowsData.length - 1; i++) {
+                let targetVal = extractorFunc(rowsData[i + 1]);
+                let matchCount = 0;
+                if (targetVal) {
+                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
+                }
+                if (matchCount === 0) { isValid = false; break; }
+            }
+            if (isValid) { bestAM = combo; break; }
+        }
+        if (bestAM) break;
+    }
+    return bestAM || candidateArray;
 }
 
-
-function safeMod(a,b){
-
-    if(!Number.isFinite(a))
-        a=0;
-
-    if(!Number.isFinite(b) || b===0)
-        return 0;
-
-    return a%b;
+function getSingleDigitSum(a, b) {
+    let sum = a + b;
+    while (sum >= 10) {
+        let sumStr = sum.toString();
+        sum = parseInt(sumStr.charAt(0)) + parseInt(sumStr.charAt(1));
+    }
+    return sum.toString();
 }
 
+function prosesSemuaLayout() {
+    let rawInput = document.getElementById('inputData').value.trim();
+    if (!rawInput) return;
 
-function M(op,a,b){
+    let dataArray = rawInput.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataArray.length < 2) return;
 
-    switch(op){
+    let processedData = dataArray.map(item => {
+        if (item.length < 4) item = item.padStart(4, '0');
+        let r = parseInt(item.charAt(0)), ra = parseInt(item.charAt(1)), p = parseInt(item.charAt(2)), s = parseInt(item.charAt(3));
+        return {
+            original: item,
+            digits: [r.toString(), ra.toString(), p.toString(), s.toString()],
+            diffs: [Math.abs(r - ra).toString(), Math.abs(ra - p).toString(), Math.abs(p - s).toString()],
+            sums: [getSingleDigitSum(r, ra), getSingleDigitSum(ra, p), getSingleDigitSum(p, s)]
+        };
+    });
 
-        case "+":
-            return a+b;
+    globalDataEngine.dig0 = getAdaptiveAM(processedData, row => row.digits[0]);
+    globalDataEngine.dig1 = getAdaptiveAM(processedData, row => row.digits[1]);
+    globalDataEngine.dig2 = getAdaptiveAM(processedData, row => row.digits[2]);
+    globalDataEngine.dig3 = getAdaptiveAM(processedData, row => row.digits[3]);
 
-        case "-":
-            return a-b;
+    globalDataEngine.diff1 = getAdaptiveAM(processedData, row => row.diffs[0]);
+    globalDataEngine.diff2 = getAdaptiveAM(processedData, row => row.diffs[1]);
+    globalDataEngine.diff3 = getAdaptiveAM(processedData, row => row.diffs[2]);
 
-        case "*":
-            return a*b;
+    globalDataEngine.sum1 = getAdaptiveAM(processedData, row => row.sums[0]);
+    globalDataEngine.sum2 = getAdaptiveAM(processedData, row => row.sums[1]);
+    globalDataEngine.sum3 = getAdaptiveAM(processedData, row => row.sums[2]);
 
-        case "/":
-            return safeDiv(a,b);
+    globalDataEngine.am1 = getAdaptiveAM(processedData, row => row.digits[0] + row.digits[1]);
+    globalDataEngine.am2 = getAdaptiveAM(processedData, row => row.digits[1] + row.digits[2]);
+    globalDataEngine.am3 = getAdaptiveAM(processedData, row => row.digits[2] + row.digits[3]);
 
-        case "MOD":
-            return safeMod(a,b);
+    jalankanEngine2DD();
+    jalankanEngine2DT();
+    jalankanEngine2DB();
+}
 
-        case "ABS":
-            return Math.abs(a-b);
+function prosesEngineGeneric(d1List, d2List, slsList, jmlList, amList, sepId, prefix) {
+    if (!d1List.length) d1List = ['0','1','2','3','4','5','6','7','8','9'];
+    if (!d2List.length) d2List = ['0','1','2','3','4','5','6','7','8','9'];
 
-        case "FLOOR":
-            return Math.floor(
-                safeDiv(a,b)
-            );
+    let d1Str = d1List.join('');
+    let d2Str = d2List.join('');
+    
+    document.getElementById(prefix + 'Digit1').value = d1Str;
+    document.getElementById(prefix + 'Digit2').value = d2Str;
+    document.getElementById(prefix + 'Sls').value = (slsList || []).join('');
+    document.getElementById(prefix + 'Jml').value = (jmlList || []).join('');
+    document.getElementById(prefix + 'AM').value = (amList || []).join('');
 
-        case "CEILING":
-            return Math.ceil(
-                safeDiv(a,b)
-            );
+    let slsValid = (slsList || []).map(Number);
+    let jmlValid = (jmlList || []).map(Number);
+    let amValid = (amList || []);
 
-        case "ROUND":
-            return Math.round(
-                safeDiv(a,b)
-            );
+    let d1Set = new Set(d1List);
+    let d2Set = new Set(d2List);
+
+    let levels = { 0: [], 1: [], 2: [], 3: [] };
+
+    for (let i = 0; i <= 99; i++) {
+        let pair = i.toString().padStart(2, '0');
+        let c1 = pair.charAt(0);
+        let c2 = pair.charAt(1);
+        let d1 = parseInt(c1);
+        let d2 = parseInt(c2);
+
+        let score = 0;
+
+        if (d1Set.has(c1) && d2Set.has(c2)) score += 40;
+        else if (d1Set.has(c1) || d2Set.has(c2)) score += 20;
+
+        let sls = Math.abs(d1 - d2);
+        if (slsValid.length === 0 || slsValid.includes(sls)) score += 20;
+
+        let jml = parseInt(getSingleDigitSum(d1, d2));
+        if (jmlValid.length === 0 || jmlValid.includes(jml)) score += 20;
+
+        if (amValid.length === 0 || amValid.includes(c1) || amValid.includes(c2)) score += 20;
+
+        if (score >= 80) levels[0].push(pair);
+        else if (score >= 60) levels[1].push(pair);
+        else if (score >= 40) levels[2].push(pair);
+        else levels[3].push(pair);
     }
 
-    return 0;
+    for (let l = 0; l <= 3; l++) {
+        let arr = levels[l];
+        let box = document.getElementById(`box${prefix}${l}`);
+        let lbl = document.getElementById(`lbl${prefix}${l}`);
+        let sepVal = document.getElementById(sepId).value;
+        if (box && lbl) {
+            box.textContent = arr.length ? arr.join(sepVal) : "(Tidak ada angka)";
+            let gName = l === 0 ? "" : l === 1 ? "" : l === 2 ? "" : "";
+            lbl.textContent = `Level ${l} (${gName}) = ${arr.length} LN`;
+        }
+    }
 }
 
+function jalankanEngine2DD() { prosesEngineGeneric(globalDataEngine.dig0, globalDataEngine.dig1, globalDataEngine.diff1, globalDataEngine.sum1, globalDataEngine.am1, 'DDSeparator', 'DD'); }
+function jalankanEngine2DT() { prosesEngineGeneric(globalDataEngine.dig1, globalDataEngine.dig2, globalDataEngine.diff2, globalDataEngine.sum2, globalDataEngine.am2, 'DTSeparator', 'DT'); }
+function jalankanEngine2DB() { prosesEngineGeneric(globalDataEngine.dig2, globalDataEngine.dig3, globalDataEngine.diff3, globalDataEngine.sum3, globalDataEngine.am3, 'DBSeparator', 'DB'); }
 
-/* =========================================================
-   BACA RESULT
-========================================================= */
+function copyLevelBox(boxId, type, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "(Tidak ada angka)") return;
+    
+    let textItems = box.textContent.split(/[\s*#,]/).filter(item => item.length > 0);
+    textItems.forEach(item => wadahData[type].add(item));
+    
+    updateWadahUI(type);
 
-function bacaResult(){
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
+    });
+}
 
-    const arr=
-        $("inputResult")
-        .value
-        .split(/[\s,]+/)
-        .map(x=>x.trim())
-        .filter(Boolean);
+function updateWadahUI(type) {
+    let arr = Array.from(wadahData[type]);
+    let boxEl = document.getElementById('wadahBox' + type);
+    let lblEl = document.getElementById('lblWadah' + type);
 
-    if(arr.length!==14){
-
-        $("hasil").innerHTML=
-            '<span class="error">'+
-            'Harus tepat 14 result. Terbaca: '+
-            arr.length+
-            '</span>';
-
-        return null;
+    if (arr.length > 0) {
+        boxEl.textContent = arr.join('*');
+        lblEl.textContent = `Salinan 2${type} (${arr.length} LN)`;
+    } else {
+        boxEl.textContent = '-';
+        lblEl.textContent = `Salinan 2${type} (0 LN)`;
     }
 
-    for(let i=0;i<14;i++){
+    prosesHasil3Digit();
+}
 
-        if(!/^\d{4}$/.test(arr[i])){
+function resetWadah(type) {
+    wadahData[type].clear();
+    updateWadahUI(type);
+}
 
-            $("hasil").innerHTML=
-                '<span class="error">'+
-                'Result ke-'+
-                (i+1)+
-                ' harus 4 digit: '+
-                arr[i]+
-                '</span>';
+function copyWadah(boxId, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "-") return;
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
+    });
+}
 
-            return null;
+function prosesHasil3Digit() {
+    let arrDD = Array.from(wadahData.DD);
+    let arrDT = Array.from(wadahData.DT);
+    let arrDB = Array.from(wadahData.DB);
+
+    let set3DD = new Set();
+    if (arrDD.length > 0 && arrDT.length > 0) {
+        for (let a of arrDD) {
+            for (let b of arrDT) {
+                if (a.charAt(1) === b.charAt(0)) set3DD.add(a + b.charAt(1));
+            }
         }
     }
 
-    return arr;
-}
-
-
-/* =========================================================
-   POSISI SPINNER
-========================================================= */
-
-function posisiRumus(r){
-
-    if(r==="belakang")
-        return [2,3];
-
-    if(r==="tengah")
-        return [1,2];
-
-    if(r==="depan")
-        return [0,1];
-
-    return [1,2,3];
-}
-
-
-/* =========================================================
-   DIGIT RESULT
-========================================================= */
-
-function digitResult(s){
-
-    return [
-        +s[0],
-        +s[1],
-        +s[2],
-        +s[3]
-    ];
-}
-
-
-/* =========================================================
-   FITUR 7 RESULT
-========================================================= */
-
-function buatFitur(window){
-
-    const d=
-        window.map(digitResult);
-
-    const f=[];
-
-    for(let p=0;p<4;p++){
-
-        const a=d[0][p];
-        const b=d[1][p];
-        const c=d[2][p];
-        const e=d[3][p];
-        const g=d[4][p];
-        const h=d[5][p];
-        const i=d[6][p];
-
-        f.push(
-            a,b,c,e,g,h,i
-        );
-
-        f.push(
-            a-b,
-            b-c,
-            c-e,
-            e-g,
-            g-h,
-            h-i
-        );
-
-        f.push(
-            Math.abs(a-b),
-            Math.abs(b-c),
-            Math.abs(c-e),
-            Math.abs(e-g),
-            Math.abs(g-h),
-            Math.abs(h-i)
-        );
-
-        f.push(
-            a+b,
-            b+c,
-            c+e,
-            e+g,
-            g+h,
-            h+i
-        );
-
-        f.push(
-            a*b,
-            b*c,
-            c*e,
-            e*g,
-            g*h,
-            h*i
-        );
-
-        f.push(
-            mod10(a+b),
-            mod10(b+c),
-            mod10(c+e),
-            mod10(e+g),
-            mod10(g+h),
-            mod10(h+i),
-
-            mod10(a-b),
-            mod10(b-c),
-            mod10(c-e),
-            mod10(e-g),
-            mod10(g-h),
-            mod10(h-i)
-        );
-
-        f.push(
-            a-i,
-            i-a,
-            Math.abs(a-i),
-            a+i,
-            a*i,
-            mod10(a+i),
-            mod10(a-i)
-        );
-
-        f.push(
-            e,
-            e*2,
-            e*e,
-            Math.abs(e-a),
-            Math.abs(e-i),
-            mod10(e-a),
-            mod10(e+i)
-        );
+    let set3DB = new Set();
+    if (arrDT.length > 0 && arrDB.length > 0) {
+        for (let b of arrDT) {
+            for (let c of arrDB) {
+                if (b.charAt(1) === c.charAt(0)) set3DB.add(b + c.charAt(1));
+            }
+        }
     }
 
-
-    for(let r=0;r<7;r++){
-
-        const x=d[r];
-
-        f.push(
-            x[0]+x[1],
-            x[1]+x[2],
-            x[2]+x[3],
-
-            x[0]-x[1],
-            x[1]-x[2],
-            x[2]-x[3],
-
-            Math.abs(x[0]-x[1]),
-            Math.abs(x[1]-x[2]),
-            Math.abs(x[2]-x[3]),
-
-            x[0]*x[1],
-            x[1]*x[2],
-            x[2]*x[3],
-
-            mod10(x[0]+x[1]),
-            mod10(x[1]+x[2]),
-            mod10(x[2]+x[3])
-        );
+    let res3DD = Array.from(set3DD);
+    let box3DD = document.getElementById('box3DD');
+    let lbl3DD = document.getElementById('lbl3DD');
+    if (res3DD.length > 0) {
+        box3DD.textContent = res3DD.join('*');
+        lbl3DD.textContent = `3DD = ${res3DD.length} LN`;
+    } else {
+        box3DD.textContent = '-';
+        lbl3DD.textContent = `3DD = 0 LN`;
     }
 
-    return f;
-}
-
-
-/* =========================================================
-   OPERASI
-========================================================= */
-
-const OPS=[
-    "+",
-    "-",
-    "*",
-    "/",
-    "MOD",
-    "ABS",
-    "FLOOR",
-    "CEILING",
-    "ROUND"
-];
-
-
-/* =========================================================
-   FORMULA
-========================================================= */
-
-function buatFormula(id){
-
-    const len=5000;
-
-    const a=(id*7)%len;
-    const b=(id*13+17)%len;
-    const c=(id*19+31)%len;
-    const d=(id*23+47)%len;
-    const e=(id*29+61)%len;
-    const g=(id*31+79)%len;
-
-    return {
-
-        id:id,
-
-        ia:a%100,
-        ib:b%100,
-        ic:c%100,
-
-        idd:d%100,
-        ie:e%100,
-        ig:g%100,
-
-        op1:OPS[
-            Math.floor(id/1)%OPS.length
-        ],
-
-        op2:OPS[
-            Math.floor(id/9)%OPS.length
-        ],
-
-        op3:OPS[
-            Math.floor(id/17)%OPS.length
-        ],
-
-        op4:OPS[
-            Math.floor(id/31)%OPS.length
-        ],
-
-        op5:OPS[
-            Math.floor(id/47)%OPS.length
-        ],
-
-        op6:OPS[
-            Math.floor(id/67)%OPS.length
-        ],
-
-        k1:((id%5)-2)||1,
-        k2:((Math.floor(id/5)%5)-2)||1,
-        k3:((Math.floor(id/25)%5)-2)||1
-    };
-}
-
-
-/* =========================================================
-   JALUR
-========================================================= */
-
-function hitungJalur(
-    f,
-    p,
-    offset
-){
-
-    const x1=
-        f[
-            (p.ia+offset)%
-            f.length
-        ];
-
-    const x2=
-        f[
-            (p.ib+offset)%
-            f.length
-        ];
-
-    const x3=
-        f[
-            (p.ic+offset)%
-            f.length
-        ];
-
-    const y1=
-        M(
-            p.op1,
-            x1,
-            x2
-        );
-
-    const y2=
-        M(
-            p.op2,
-            y1,
-            x3
-        );
-
-    return mod10(
-        y2*p.k1
-    );
-}
-
-
-/* =========================================================
-   PREDIKSI 3 DIGIT
-========================================================= */
-
-function hitungFormula(
-    features,
-    p
-){
-
-    return [
-
-        hitungJalur(
-            features,
-            p,
-            0
-        ),
-
-        hitungJalur(
-            features,
-            p,
-            37
-        ),
-
-        hitungJalur(
-            features,
-            p,
-            83
-        )
-
-    ];
-}
-
-
-/* =========================================================
-   TARGET SPINNER
-========================================================= */
-
-function targetDigit(
-    result,
-    posisi
-){
-
-    const d=
-        digitResult(result);
-
-    return posisi.map(
-        p=>d[p]
-    );
-}
-
-
-/* =========================================================
-   CEK
-========================================================= */
-
-function prediksiMasuk(
-    ai,
-    target
-){
-
-    for(const x of ai){
-
-        if(target.includes(x))
-            return true;
+    let res3DB = Array.from(set3DB);
+    let box3DB = document.getElementById('box3DB');
+    let lbl3DB = document.getElementById('lbl3DB');
+    if (res3DB.length > 0) {
+        box3DB.textContent = res3DB.join('*');
+        lbl3DB.textContent = `3DB = ${res3DB.length} LN`;
+    } else {
+        box3DB.textContent = '-';
+        lbl3DB.textContent = `3DB = 0 LN`;
     }
-
-    return false;
 }
 
-
-/* =========================================================
-   BACKTEST
-========================================================= */
-
-function backtestFormula(
-    result,
-    posisi,
-    formula
-){
-
-    const history=[];
-
-    for(
-        let targetIndex=7;
-        targetIndex<14;
-        targetIndex++
-    ){
-
-        const window=
-            result.slice(
-                targetIndex-7,
-                targetIndex
-            );
-
-        if(window.length!==7)
-            return null;
-
-        const features=
-            buatFitur(window);
-
-        const ai=
-            hitungFormula(
-                features,
-                formula
-            );
-
-        const target=
-            targetDigit(
-                result[targetIndex],
-                posisi
-            );
-
-        const ok=
-            prediksiMasuk(
-                ai,
-                target
-            );
-
-        if(!ok)
-            return null;
-
-        history.push({
-
-            sourceIndex:
-                targetIndex-1,
-
-            source:
-                result[targetIndex-1],
-
-            target:
-                result[targetIndex],
-
-            ai:ai
-        });
-    }
-
-    return history;
-}
-
-
-/* =========================================================
-   PREDIKSI TERAKHIR
-========================================================= */
-
-function prediksiTerakhir(
-    result,
-    formula
-){
-
-    const window=
-        result.slice(7,14);
-
-    if(window.length!==7)
-        return [0,0,0];
-
-    const features=
-        buatFitur(window);
-
-    return hitungFormula(
-        features,
-        formula
-    );
-}
-
-
-/* =========================================================
-   CARI FORMULA
-========================================================= */
-
-function cariFormula(
-    result,
-    posisi,
-    startId,
-    forbidden,
-    prediksiTerpakai
-){
-
-    const MAX=120000;
-
-    for(
-        let id=startId;
-        id<startId+MAX;
-        id++
-    ){
-
-        if(forbidden.has(id))
-            continue;
-
-        const formula=
-            buatFormula(id);
-
-        const history=
-            backtestFormula(
-                result,
-                posisi,
-                formula
-            );
-
-        if(!history)
-            continue;
-
-
-        /*
-           =================================================
-           ATURAN BARU:
-
-           Prediksi akhir harus berbeda dari semua
-           analisa yang sudah dipilih.
-
-           Jadi formula boleh lolos history,
-           tetapi tetap ditolak kalau hasil akhirnya
-           sama persis dengan analisa sebelumnya.
-           =================================================
-        */
-
-        const prediksi=
-            prediksiTerakhir(
-                result,
-                formula
-            );
-
-        const key=
-            prediksi.join("");
-
-        if(prediksiTerpakai.has(key))
-            continue;
-
-
-        return {
-
-            formula:formula,
-
-            history:history,
-
-            prediksiAkhir:prediksi
-
-        };
-    }
-
-    return null;
-}
-
-
-/* =========================================================
-   TAMPIL ANALISA
-========================================================= */
-
-function tampilAnalisa(
-    nomor,
-    result,
-    engine
-){
-
-    const p=
-        engine.formula;
-
-    let out=
-        "ANALISA "+
-        nomor+
-        "\n";
-
-    out+=
-        "FORMULA ID : "+
-        p.id+
-        "\n";
-
-    out+=
-        "HISTORY BACKTEST : 100% SUKSES\n\n";
-
-
-    for(const h of engine.history){
-
-        out+=
-            result[h.sourceIndex]+
-            " : "+
-            h.ai.join("")+
-            " ai\n";
-    }
-
-
-    out+="\n";
-
-    out+=
-        result[13]+
-        " : "+
-        engine.prediksiAkhir.join("")+
-        " ???\n";
-
-    return out;
-}
-
-
-/* =========================================================
-   KESIMPULAN
-========================================================= */
-
-function buatKesimpulan(
-    engines
-){
-
-    let teks="";
-
-    for(
-        let i=0;
-        i<engines.length;
-        i++
-    ){
-
-        teks+=
-            engines[i]
-            .prediksiAkhir
-            .join("")+
-            "\n";
-    }
-
-    return teks.trim();
-}
-
-
-/* =========================================================
-   PROSES
-========================================================= */
-
-function proses(){
-
-    const result=
-        bacaResult();
-
-    if(!result)
-        return;
-
-
-    const rumus=
-        $("rumus").value;
-
-    const posisi=
-        posisiRumus(rumus);
-
-
-    let output="";
-
-    const engines=[];
-
-    const forbidden=
-        new Set();
-
-    /*
-       Menyimpan prediksi akhir yang sudah dipakai.
-
-       Contoh:
-
-       234 sudah dipakai Analisa 1
-
-       Formula berikutnya yang menghasilkan 234
-       DITOLAK dan mesin mencari formula lain.
-    */
-
-    const prediksiTerpakai=
-        new Set();
-
-
-    let startId=0;
-
-
-    for(
-        let nomor=1;
-        nomor<=MAX_ANALISA;
-        nomor++
-    ){
-
-        const engine=
-            cariFormula(
-                result,
-                posisi,
-                startId,
-                forbidden,
-                prediksiTerpakai
-            );
-
-        if(!engine)
-            break;
-
-
-        engines.push(engine);
-
-
-        forbidden.add(
-            engine.formula.id
-        );
-
-
-        prediksiTerpakai.add(
-            engine.prediksiAkhir.join("")
-        );
-
-
-        startId=
-            engine.formula.id+1;
-    }
-
-
-    if(!engines.length){
-
-        $("hasil").innerHTML=
-            '<span class="error">'+
-            'Belum ditemukan formula yang mampu '+
-            'lolos seluruh pengujian.'+
-            '</span>';
-
-        $("kesimpulan").value="";
-
-        return;
-    }
-
-
-    output+=
-        "WINDOW TETAP : 7 RESULT\n"+
-        "BACKTEST : R1-R7 → R8 sampai R7-R13 → R14\n"+
-        "PREDIKSI : R8-R14 → R15 ???\n"+
-        "SPINNER : "+
-        rumus+
-        "\n\n";
-
-
-    for(
-        let i=0;
-        i<engines.length;
-        i++
-    ){
-
-        output+=
-            tampilAnalisa(
-                i+1,
-                result,
-                engines[i]
-            );
-
-        output+="\n";
-    }
-
-
-    output+=
-        "JUMLAH ANALISA BERHASIL : "+
-        engines.length;
-
-
-    $("hasil").textContent=
-        output;
-
-
-    /*
-       Isi textarea hanya angka 3 digit.
-       Tanpa label.
-    */
-
-    $("kesimpulan").value=
-        buatKesimpulan(
-            engines
-        );
-}
-
-
-/* =========================================================
-   COPY
-========================================================= */
-
-$("copyKesimpulan").onclick=
-async function(){
-
-    const box=
-        $("kesimpulan");
-
-    try{
-
-        await navigator.clipboard.writeText(
-            box.value
-        );
-
-        this.textContent=
-            "COPIED ✓";
-
-        this.classList.add(
-            "copied"
-        );
-
-        const tombol=this;
-
-        setTimeout(
-            function(){
-
-                tombol.textContent=
-                    "COPY";
-
-                tombol.classList.remove(
-                    "copied"
-                );
-
-            },
-            1200
-        );
-
-    }catch(e){
-
-        box.focus();
-
-        box.select();
-
-        document.execCommand(
-            "copy"
-        );
-
-        this.textContent=
-            "COPIED ✓";
-
-        const tombol=this;
-
-        setTimeout(
-            function(){
-
-                tombol.textContent=
-                    "COPY";
-
-            },
-            1200
-        );
-    }
+window.onload = function() {
+    prosesSemuaLayout();
 };
-
-
-/* =========================================================
-   EVENT
-========================================================= */
-
-$("proses").onclick=
-    proses;
-
-
-$("rumus").onchange=
-function(){
-
-    if(
-        $("inputResult")
-        .value
-        .trim()
-    ){
-
-        proses();
-    }
-};
-
 </script>
 
 </body>
