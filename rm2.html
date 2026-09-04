@@ -1,1297 +1,439 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analisis - Asimetris Cross Engine</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #2c3e50; }
+        h3 { color: #2980b9; font-size: 16px; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-top: 30px; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; }
+        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 14px; box-sizing: border-box; margin-bottom: 10px; height: 100px; resize: vertical; }
+        button { background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #219653; }
+        .col-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 300px; }
+        .result-box { background: #ecf0f1; padding: 12px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; line-height: 1.6; font-size: 13px; max-height: 180px; overflow-y: auto; }
+        .panel-engine { border: 1px solid #bdc3c7; border-radius: 6px; padding: 15px; background: #fafbfc; margin-top: 15px; }
+        
+        /* Style Kartu Level Adu Bobot */
+        .card-level { background: #fff; border-left: 5px solid #2980b9; border-top: 1px solid #dcdde1; border-right: 1px solid #dcdde1; border-bottom: 1px solid #dcdde1; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+        .card-level.rank-p1 { border-left-color: #27ae60; background: #f0fff4; } /* 37% Terlemah x Terkuat */
+        .card-level.rank-p2 { border-left-color: #3498db; background: #f0f8ff; } /* 33% Terlemah x Terlemah */
+        .card-level.rank-p3 { border-left-color: #e67e22; background: #fffaf0; } /* 30% Terkuat x Terkuat */
+        
+        .level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .level-title { font-weight: bold; font-size: 13px; color: #2c3e50; }
+        .tag-col { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #fff; margin-right: 6px; }
+        .tag-c1 { background-color: #e74c3c; }
+        .tag-c2 { background-color: #8e44ad; }
+        .tag-c3 { background-color: #2980b9; }
 
-<title>Analisa</title>
-
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        background: #0f172a;
-        color: #f8fafc;
-        margin: 0;
-        padding: 15px;
-    }
-
-    .container {
-        max-width: 720px;
-        margin: auto;
-        background: #1e293b;
-        padding: 20px;
-        border-radius: 14px;
-        box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-
-    h2 {
-        text-align: center;
-        color: #38bdf8;
-        margin: 0 0 8px;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #94a3b8;
-        font-size: 12px;
-        margin-bottom: 18px;
-    }
-
-    label {
-        display: block;
-        color: #cbd5e1;
-        font-weight: bold;
-        font-size: 14px;
-        margin-bottom: 6px;
-    }
-
-    textarea,
-    select {
-        width: 100%;
-        background: #0f172a;
-        color: #f8fafc;
-        border: 2px solid #475569;
-        border-radius: 8px;
-        padding: 12px;
-        font-family: monospace;
-        font-size: 15px;
-        outline: none;
-    }
-
-    textarea {
-        min-height: 130px;
-        resize: vertical;
-    }
-
-    textarea:focus,
-    select:focus {
-        border-color: #38bdf8;
-    }
-
-    select {
-        margin-bottom: 12px;
-    }
-
-    .hint {
-        color: #94a3b8;
-        font-size: 12px;
-        margin: 6px 0 14px;
-        line-height: 1.5;
-    }
-
-    .btn-group {
-        display: flex;
-        gap: 10px;
-        margin: 14px 0;
-    }
-
-    button {
-        flex: 1;
-        border: 0;
-        border-radius: 8px;
-        padding: 13px;
-        color: white;
-        font-size: 15px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .btn-analisa {
-        background: #0284c7;
-    }
-
-    .btn-analisa:hover {
-        background: #0369a1;
-    }
-
-    .btn-copy {
-        background: #10b981;
-    }
-
-    .btn-copy:hover {
-        background: #059669;
-    }
-
-    .panel {
-        background: #0f172a;
-        border-left: 4px solid #38bdf8;
-        padding: 13px;
-        border-radius: 7px;
-        line-height: 1.65;
-        font-size: 13px;
-        margin-bottom: 12px;
-    }
-
-    .position-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 7px;
-        margin: 12px 0;
-    }
-
-    .position {
-        background: #1e293b;
-        border: 1px solid #475569;
-        border-radius: 7px;
-        padding: 9px 5px;
-        text-align: center;
-    }
-
-    .position.active {
-        border: 2px solid #22c55e;
-        background: #14532d;
-    }
-
-    .position-name {
-        display: block;
-        color: #38bdf8;
-        font-weight: bold;
-        font-size: 12px;
-    }
-
-    .position-score {
-        display: block;
-        color: #facc15;
-        font-weight: bold;
-        font-size: 17px;
-    }
-
-    .top-list {
-        background: #111827;
-        padding: 10px;
-        border-radius: 7px;
-        color: #facc15;
-        font-family: monospace;
-        margin-top: 8px;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 3px 7px;
-        border-radius: 5px;
-        background: #334155;
-        color: #e2e8f0;
-        margin: 2px;
-        font-family: monospace;
-    }
-
-    .warning {
-        margin-top: 12px;
-        color: #fbbf24;
-        font-size: 11px;
-        line-height: 1.5;
-    }
-
-    .error {
-        color: #f87171;
-        font-weight: bold;
-    }
-</style>
+        .btn-group { display: flex; gap: 5px; }
+        .btn-copy { background-color: #2980b9; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-copy:hover { background-color: #1f618d; }
+        .btn-reset { background-color: #c0392b; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-reset:hover { background-color: #962d22; }
+        #btnProsesKedua { background-color: #2980b9; display: none; width: 100%; margin-top: 20px; }
+        .note { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
+    <h2>Dashboard Analisis Lanjutan (Asimetris Cross Engine 37%-33%-30%)</h2>
+    
+    <label for="inputData">Masukkan Data (Pemisah Koma atau Baris Baru / Campuran):</label>
+    <textarea id="inputData" placeholder="Contoh: 3256, 4578, 3283, 0545"></textarea>
+    <div id="infoInput" class="note">Jumlah Input: 0</div>
+    
+    <button onclick="prosesPertama()">Proses 1 (Brute Force Maks 5 Digit)</button>
 
-    <!-- <h2>MESIN ANALISA 14 RESULT 4D</h2> -->
-
-    <div class="subtitle">
-        <!-- 7 Result Lama + 7 Result Terbaru • Ranking 00–99 -->
+    <h3>1. Hasil Brute Force (Bisa Diedit Manual)</h3>
+    <div class="col-group">
+        <div class="col">
+            <label>Kolom 1 (AS-KOP) :</label>
+            <textarea id="bfCol1" class="result-box" style="height: 130px;"></textarea>
+        </div>
+        <div class="col">
+            <label>Kolom 2 (KOP-KEPALA) :</label>
+            <textarea id="bfCol2" class="result-box" style="height: 130px;"></textarea>
+        </div>
+        <div class="col">
+            <label>Kolom 3 (KEPALA-EKOR) :</label>
+            <textarea id="bfCol3" class="result-box" style="height: 130px;"></textarea>
+        </div>
     </div>
 
-    <label for="dataInput">
-        <!-- Masukkan 14 Result 4D -->
-    </label>
+    <button id="btnProsesKedua" onclick="prosesKedua()">Proses 2 (Adu Bobot Asimetris)</button>
 
-    <textarea
-        id="dataInput"
-        placeholder="1234,5678,dst"></textarea>
+    <!-- BAGIAN 2: ADU ENGINE LEVEL GLOBAL -->
+    <div id="areaLevel" style="display:none;">
+        <h3>2. Engine Level (Pola Asimetris: 37% LxT | 33% LxL | 30% TxT)</h3>
+        <div class="note" style="margin-bottom:10px;">* Diurutkan berdasarkan statistik dominasi: Silang Terlemah x Terkuat (37%), Terlemah x Terlemah (33%), dan Terkuat x Terkuat (30%).</div>
+        
+        <div id="globalEngineContainer"></div>
 
-    <div class="hint">
-        Gunakan koma sebagai pemisah.<br>
-        Data pertama = PALING LAMA.<br>
-        Data ke-14 = PALING BARU.
+        <!-- 3. WADAH SALINAN DENGAN TOMBOL RESET -->
+        <h3>3. Wadah Salinan</h3>
+        <div class="panel-engine">
+            <div class="level-header">
+                <span id="lblWadahDD" class="level-title">Wadah Salinan Kolom 1 / DD (0 LN)</span>
+                <div class="btn-group">
+                    <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
+                    <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
+                </div>
+            </div>
+            <div id="wadahBoxDD" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
+
+            <div class="level-header" style="margin-top:10px;">
+                <span id="lblWadahDT" class="level-title">Wadah Salinan Kolom 2 / DT (0 LN)</span>
+                <div class="btn-group">
+                    <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
+                    <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
+                </div>
+            </div>
+            <div id="wadahBoxDT" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
+
+            <div class="level-header" style="margin-top:10px;">
+                <span id="lblWadahDB" class="level-title">Wadah Salinan Kolom 3 / DB (0 LN)</span>
+                <div class="btn-group">
+                    <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
+                    <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
+                </div>
+            </div>
+            <div id="wadahBoxDB" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
+
+            <div class="level-header" style="margin-top:15px;">
+                <span id="lbl3DD" class="level-title">3DD = 0 LN</span>
+                <button class="btn-copy" onclick="copyWadah('box3DD', this)">Copy</button>
+            </div>
+            <div id="box3DD" class="result-box" style="max-height: 90px; margin-top:4px;">-</div>
+
+            <div class="level-header" style="margin-top:15px;">
+                <span id="lbl3DB" class="level-title">3DB = 0 LN</span>
+                <button class="btn-copy" onclick="copyWadah('box3DB', this)">Copy</button>
+            </div>
+            <div id="box3DB" class="result-box" style="max-height: 90px; margin-top:4px;">-</div>
+        </div>
     </div>
-
-    <label for="jumlahOutput">
-        Jumlah Kandidat
-    </label>
-
-    <select id="jumlahOutput">
-        <option value="36">36 Kandidat — Fokus</option>
-        <option value="45">45 Kandidat — Diperluas</option>
-        <option value="59">59 Kandidat — Maksimal</option>
-    </select>
-
-    <div class="btn-group">
-        <button class="btn-analisa" onclick="jalankanAnalisa()">
-            MULAI ANALISA
-        </button>
-    </div>
-
-    <div id="panelInfo" class="panel" style="display:none;"></div>
-
-    <label for="dataOutput">
-        Hasil Terkuat ke Terlemah
-    </label>
-
-    <textarea
-        id="dataOutput"
-        placeholder="Hasil akan muncul di sini..."
-        readonly></textarea>
-
-    <div class="btn-group">
-        <button class="btn-copy" onclick="copyKeClipboard()">
-            COPY HASIL
-        </button>
-    </div>
-
 </div>
 
-
 <script>
-
-/* =========================================================
-   MAP ANGKA
-========================================================= */
-
-const indexMap = {
-    '0':'5', '1':'6', '2':'7', '3':'8', '4':'9',
-    '5':'0', '6':'1', '7':'2', '8':'3', '9':'4'
+let globalProcessedData = [];
+let wadahData = {
+    DD: new Set(),
+    DT: new Set(),
+    DB: new Set()
 };
 
-const mistikLamaMap = {
-    '0':'1', '1':'0',
-    '2':'5', '5':'2',
-    '3':'8', '8':'3',
-    '4':'7', '7':'4',
-    '6':'9', '9':'6'
-};
+function getCombinations(arr, k) {
+    if (k === 0) return [[]];
+    if (arr.length === 0) return [];
+    let head = arr[0];
+    let tail = arr.slice(1);
+    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
+}
 
-const mistikBaruMap = {
-    '0':'8', '8':'0',
-    '1':'7', '7':'1',
-    '2':'6', '6':'2',
-    '3':'9', '9':'3',
-    '4':'5', '5':'4'
-};
+function getMultipleAdaptiveAM(rowsData, extractorFunc) {
+    let candidateSet = new Set();
+    for (let i = 0; i < rowsData.length - 1; i++) {
+        let val = extractorFunc(rowsData[i + 1]);
+        if (val) { for (let char of val) candidateSet.add(char); }
+    }
+    let candidateArray = Array.from(candidateSet).sort();
+    if (candidateArray.length === 0) return [];
 
+    let validResults = [];
+    let maxLen = Math.min(5, candidateArray.length);
+    for (let len = 3; len <= maxLen; len++) {
+        let combos = getCombinations(candidateArray, len);
+        for (let combo of combos) {
+            let comboSet = new Set(combo);
+            let isValid = true;
+            for (let i = 0; i < rowsData.length - 1; i++) {
+                let targetVal = extractorFunc(rowsData[i + 1]);
+                let matchCount = 0;
+                if (targetVal) {
+                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
+                }
+                if (matchCount === 0) { isValid = false; break; }
+            }
+            if (isValid) {
+                validResults.push(combo.join(''));
+            }
+        }
+    }
+    return validResults;
+}
 
-/* =========================================================
-   00 - 99
-========================================================= */
-
-function buatObjek100() {
-
-    const obj = {};
-
-    for (let i = 0; i < 100; i++) {
-        obj[String(i).padStart(2, '0')] = 0;
+function prosesPertama() {
+    let raw = document.getElementById('inputData').value;
+    let dataArray = raw.split(/[\n,]+/).map(i => i.trim()).filter(i => i.length > 0);
+    
+    if (dataArray.length < 2) {
+        alert("Masukkan minimal 2 data angka untuk dianalisis!");
+        return;
     }
 
-    return obj;
+    document.getElementById('inputData').value = dataArray.join(',');
+    document.getElementById('infoInput').textContent = "Jumlah Input: " + dataArray.length;
+
+    globalProcessedData = dataArray.map(item => {
+        let cleaned = item.replace(/\D/g, '');
+        if (cleaned.length < 4) cleaned = cleaned.padStart(4, '0');
+        return {
+            original: cleaned,
+            digits: [cleaned.charAt(0), cleaned.charAt(1), cleaned.charAt(2), cleaned.charAt(3)]
+        };
+    });
+
+    let amCol1 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[0] + row.digits[1]);
+    let amCol2 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[1] + row.digits[2]);
+    let amCol3 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[2] + row.digits[3]);
+
+    document.getElementById('bfCol1').value = amCol1.join('\n');
+    document.getElementById('bfCol2').value = amCol2.join('\n');
+    document.getElementById('bfCol3').value = amCol3.join('\n');
+
+    document.getElementById('btnProsesKedua').style.display = 'block';
 }
 
+// PEMBOBOTAN BARU PER KOLOM (T, M, L) BASED ON POSITIONAL FREQUENCY & CROSS COMBINATION
+function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagClass) {
+    let rawLines = document.getElementById(colTextareaId).value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+    
+    let leftFreq = {};  // Digit Kiri (As/Kop/Kepala)
+    let rightFreq = {}; // Digit Kanan (Kop/Kepala/Ekor)
+    let pairFreq = {};  // Pasangan Utuh
+    
+    for (let d = 0; d <= 9; d++) {
+        leftFreq[d.toString()] = 0;
+        rightFreq[d.toString()] = 0;
+    }
 
-/* =========================================================
-   BOBOT RECENCY
-   7 data terbaru lebih berat.
-========================================================= */
-
-function bobot(index, total) {
-
-    if (total <= 1) return 1;
-
-    /*
-     * index 0 = paling lama
-     * index terakhir = paling baru
-     */
-
-    return 0.5 +
-           (index / (total - 1)) * 2.5;
-}
-
-
-/* =========================================================
-   ANALISA POSISI
-========================================================= */
-
-function analisaPosisi(data, posA, posB) {
-
-    const lama = data.slice(0, 7);
-    const baru = data.slice(7, 14);
-
-    const freqTotal = buatObjek100();
-    const freqLama = buatObjek100();
-    const freqBaru = buatObjek100();
-
-    const recency = buatObjek100();
-
-    const digitTotal = Array(10).fill(0);
-    const digitLama = Array(10).fill(0);
-    const digitBaru = Array(10).fill(0);
-
-
-    /* -----------------------------------------------------
-       14 DATA
-    ----------------------------------------------------- */
-
-    data.forEach((result, index) => {
-
-        const a = result[posA];
-        const b = result[posB];
-
-        const pair = a + b;
-
-        freqTotal[pair]++;
-
-        recency[pair] +=
-            bobot(index, data.length);
-
-        digitTotal[parseInt(a)]++;
-        digitTotal[parseInt(b)]++;
+    // Hitung Frekuensi Posisi dari Data Brute Force
+    rawLines.forEach(line => {
+        for (let i = 0; i < line.length; i++) {
+            let char = line.charAt(i);
+            if (i === 0) leftFreq[char] = (leftFreq[char] || 0) + 1;
+            else rightFreq[char] = (rightFreq[char] || 0) + 1;
+        }
     });
 
-
-    /* -----------------------------------------------------
-       7 DATA LAMA
-    ----------------------------------------------------- */
-
-    lama.forEach(result => {
-
-        const pair =
-            result[posA] + result[posB];
-
-        freqLama[pair]++;
-
-        digitLama[
-            parseInt(result[posA])
-        ]++;
-
-        digitLama[
-            parseInt(result[posB])
-        ]++;
-    });
-
-
-    /* -----------------------------------------------------
-       7 DATA TERBARU
-    ----------------------------------------------------- */
-
-    baru.forEach(result => {
-
-        const pair =
-            result[posA] + result[posB];
-
-        freqBaru[pair]++;
-
-        digitBaru[
-            parseInt(result[posA])
-        ]++;
-
-        digitBaru[
-            parseInt(result[posB])
-        ]++;
-    });
-
-
-    const maxFreq =
-        Math.max(...Object.values(freqTotal), 1);
-
-    const maxRecent =
-        Math.max(...Object.values(recency), 1);
-
-    const maxDigit =
-        Math.max(...digitTotal, 1);
-
-    const maxBaru =
-        Math.max(...Object.values(freqBaru), 1);
-
-
-    const pasangan = [];
-
-
-    /* =====================================================
-       HITUNG SKOR 00-99
-    ===================================================== */
-
-    for (let i = 0; i <= 9; i++) {
-
-        for (let j = 0; j <= 9; j++) {
-
-            const angka =
-                `${i}${j}`;
-
-            const total =
-                freqTotal[angka];
-
-            const old =
-                freqLama[angka];
-
-            const recent =
-                freqBaru[angka];
-
-            const rec =
-                recency[angka];
-
-
-            /* ---------------------------------------------
-               FREKUENSI
-            --------------------------------------------- */
-
-            const scoreFrequency =
-                (total / maxFreq) * 15;
-
-
-            /* ---------------------------------------------
-               RECENCY
-            --------------------------------------------- */
-
-            const scoreRecent =
-                (rec / maxRecent) * 25;
-
-
-            /* ---------------------------------------------
-               7 TERBARU
-            --------------------------------------------- */
-
-            const scoreRecent7 =
-                (recent / maxBaru) * 20;
-
-
-            /* ---------------------------------------------
-               PERUBAHAN LAMA → BARU
-
-               Kalau angka naik dari lama ke baru,
-               berarti sedang menguat.
-
-               Kalau turun drastis,
-               berarti sedang melemah.
-            --------------------------------------------- */
-
-            let scoreChange = 0;
-
-            if (recent > old) {
-
-                scoreChange =
-                    10 +
-                    ((recent - old) * 2);
-
-            } else if (recent === old && recent > 0) {
-
-                scoreChange = 4;
-
-            } else if (recent < old && old > 0) {
-
-                scoreChange = -4;
-            }
-
-
-            scoreChange =
-                Math.max(
-                    -8,
-                    Math.min(
-                        12,
-                        scoreChange
-                    )
-                );
-
-
-            /* ---------------------------------------------
-               KEKUATAN DIGIT
-            --------------------------------------------- */
-
-            const digitA =
-                digitTotal[i] / maxDigit;
-
-            const digitB =
-                digitTotal[j] / maxDigit;
-
-            const scoreDigit =
-                ((digitA + digitB) / 2) * 12;
-
-
-            /* ---------------------------------------------
-               KONTRA POLA
-            ---------------------------------------------
-
-               Kita tidak otomatis menganggap angka dingin
-               sebagai angka bagus.
-
-               Kontra hanya mendapat bonus kecil jika:
-               - tidak dominan di 7 terbaru
-               - tetapi digitnya masih aktif
-               - dan tidak benar-benar mati
-            --------------------------------------------- */
-
-            let scoreKontra = 0;
-
-            const aktifDigit =
-                digitBaru[i] +
-                digitBaru[j];
-
-            if (
-                recent === 0 &&
-                aktifDigit > 0 &&
-                total > 0
-            ) {
-                scoreKontra += 7;
-            }
-
-            /*
-             * Jika pasangan sangat dominan di 7 terbaru,
-             * jangan terlalu mengangkatnya hanya karena panas.
-             */
-
-            if (
-                recent >= 2 &&
-                recent > old
-            ) {
-                scoreKontra -= 3;
-            }
-
-
-            /* ---------------------------------------------
-               BALIKAN
-            --------------------------------------------- */
-
-            const balik =
-                `${j}${i}`;
-
-            let scoreBalik = 0;
-
-            if (
-                balik !== angka &&
-                freqTotal[balik] > 0
-            ) {
-                scoreBalik = 3;
-            }
-
-
-            /* ---------------------------------------------
-               TOTAL
-            --------------------------------------------- */
-
-            const skor =
-                scoreFrequency +
-                scoreRecent +
-                scoreRecent7 +
-                scoreChange +
-                scoreDigit +
-                scoreKontra +
-                scoreBalik;
-
-
-            pasangan.push({
-
-                angka,
-
-                skor,
-
-                frequency: total,
-
-                old,
-
-                recent,
-
-                recency: rec,
-
-                kontra: scoreKontra,
-
-                change: scoreChange
-            });
+    // Hitung Skor Bobot tiap Digit Kiri & Kanan
+    let leftScores = [], rightScores = [];
+    for (let d = 0; d <= 9; d++) {
+        let key = d.toString();
+        leftScores.push({ digit: key, freq: leftFreq[key] });
+        rightScores.push({ digit: key, freq: rightFreq[key] });
+    }
+
+    // Urutkan Digit berdasarkan kekuatan (Terkuat -> Terlemah)
+    leftScores.sort((a, b) => b.freq - a.freq);
+    rightScores.sort((a, b) => b.freq - a.freq);
+
+    // Klasifikasi Digit Posisi: Terkuat (T) & Terlemah (L)
+    let leftT = new Set(leftScores.slice(0, 3).map(x => x.digit));
+    let leftL = new Set(leftScores.slice(6, 10).map(x => x.digit));
+
+    let rightT = new Set(rightScores.slice(0, 3).map(x => x.digit));
+    let rightL = new Set(rightScores.slice(6, 10).map(x => x.digit));
+
+    // Kategorisasi Pasangan 2D (00-99) Ke Matriks (LxT, LxL, TxT)
+    let catLxT = [], catLxL = [], catTxT = [], catLainnya = [];
+
+    for (let i = 0; i <= 99; i++) {
+        let pair = i.toString().padStart(2, '0');
+        let dLeft = pair.charAt(0);
+        let dRight = pair.charAt(1);
+
+        // Pola 1: Terlemah x Terkuat (37%) -> Kombinasi L-T atau T-L
+        if ((leftL.has(dLeft) && rightT.has(dRight)) || (leftT.has(dLeft) && rightL.has(dRight))) {
+            catLxT.push(pair);
+        }
+        // Pola 2: Terlemah x Terlemah (33%) -> Kombinasi L-L
+        else if (leftL.has(dLeft) && rightL.has(dRight)) {
+            catLxL.push(pair);
+        }
+        // Pola 3: Terkuat x Terkuat (30%) -> Kombinasi T-T
+        else if (leftT.has(dLeft) && rightT.has(dRight)) {
+            catTxT.push(pair);
+        }
+        else {
+            catLainnya.push(pair);
         }
     }
 
-
-    /* =====================================================
-       SORT
-    ===================================================== */
-
-    pasangan.sort((a, b) => {
-
-        if (
-            Math.abs(b.skor - a.skor) > 0.000001
-        ) {
-            return b.skor - a.skor;
-        }
-
-        /*
-         * Tie breaker berdasarkan perubahan
-         */
-
-        if (b.change !== a.change) {
-            return b.change - a.change;
-        }
-
-        return a.angka.localeCompare(b.angka);
-    });
-
-
-    /* =====================================================
-       KEKUATAN POSISI
-
-       Tidak menjumlahkan semua 100 angka.
-
-       Fokus pada Top 1, Top 5 dan Top 10.
-    ===================================================== */
-
-    const top1 =
-        pasangan[0].skor;
-
-    const top5 =
-        pasangan
-            .slice(0, 5)
-            .reduce(
-                (sum, x) => sum + x.skor,
-                0
-            ) / 5;
-
-    const top10 =
-        pasangan
-            .slice(0, 10)
-            .reduce(
-                (sum, x) => sum + x.skor,
-                0
-            ) / 10;
-
-
-    /*
-     * Konsentrasi pola.
-     */
-
-    const kekuatan =
-        (top1 * 0.45) +
-        (top5 * 0.35) +
-        (top10 * 0.20);
-
-
-    return {
-
-        pasangan,
-
-        freqTotal,
-
-        freqLama,
-
-        freqBaru,
-
-        digitTotal,
-
-        digitLama,
-
-        digitBaru,
-
-        top1,
-
-        top5,
-
-        top10,
-
-        kekuatan
-    };
-}
-
-
-/* =========================================================
-   ANALISA 3 POSISI
-========================================================= */
-
-function analisaSemuaPosisi(data) {
-
-    const depan =
-        analisaPosisi(data, 0, 1);
-
-    const tengah =
-        analisaPosisi(data, 1, 2);
-
-    const belakang =
-        analisaPosisi(data, 2, 3);
-
-
-    return {
-
-        depan,
-        tengah,
-        belakang
-    };
-}
-
-
-/* =========================================================
-   PILIH POSISI
-
-   Ada toleransi supaya perbedaan kecil tidak dianggap
-   sebagai kemenangan mutlak.
-========================================================= */
-
-function pilihPosisi(hasil) {
-
-    const list = [
-
-        {
-            nama: "Depan",
-            data: hasil.depan
-        },
-
-        {
-            nama: "Tengah",
-            data: hasil.tengah
-        },
-
-        {
-            nama: "Belakang",
-            data: hasil.belakang
-        }
-    ];
-
-
-    list.sort(
-        (a, b) =>
-            b.data.kekuatan -
-            a.data.kekuatan
-    );
-
-
-    return list;
-}
-
-
-/* =========================================================
-   PENGUAT DARI RESULT TERBARU
-========================================================= */
-
-function buatPenguat(result, posisi) {
-
-    let a;
-    let b;
-
-
-    if (posisi === "Depan") {
-
-        a = result[0];
-        b = result[1];
-
-    } else if (posisi === "Tengah") {
-
-        a = result[1];
-        b = result[2];
-
-    } else {
-
-        a = result[2];
-        b = result[3];
-    }
-
-
-    const akarA = [
-
-        a,
-
-        indexMap[a],
-
-        mistikLamaMap[a],
-
-        mistikBaruMap[a]
-    ];
-
-
-    const akarB = [
-
-        b,
-
-        indexMap[b],
-
-        mistikLamaMap[b],
-
-        mistikBaruMap[b]
-    ];
-
-
-    const jumlah =
-        result
-            .split("")
-            .reduce(
-                (sum, x) =>
-                    sum + parseInt(x),
-                0
-            );
-
-
-    let biji =
-        jumlah;
-
-
-    while (biji > 9) {
-
-        biji =
-            biji
-                .toString()
-                .split("")
-                .reduce(
-                    (sum, x) =>
-                        sum + parseInt(x),
-                    0
-                );
-    }
-
-
-    const akarBiji = [
-
-        biji.toString(),
-
-        indexMap[biji],
-
-        mistikLamaMap[biji],
-
-        mistikBaruMap[biji]
-    ];
-
-
-    return [
-        ...new Set([
-            ...akarA,
-            ...akarB,
-            ...akarBiji
-        ])
-    ];
-}
-
-
-/* =========================================================
-   FINAL RANKING
-
-   Posisi terkuat digunakan sebagai posisi utama.
-========================================================= */
-
-function buatFinalRanking(
-    data,
-    posisiNama,
-    posisiData
-) {
-
-    const resultTerakhir =
-        data[data.length - 1];
-
-
-    const penguat =
-        buatPenguat(
-            resultTerakhir,
-            posisiNama
-        );
-
-
-    const ranking =
-        posisiData.pasangan.map(x => {
-
-            let skor = x.skor;
-
-
-            /* -----------------------------------------
-               PENGUAT DIGIT
-            ----------------------------------------- */
-
-            const a = x.angka[0];
-            const b = x.angka[1];
-
-
-            if (penguat.includes(a)) {
-                skor += 5;
-            }
-
-            if (penguat.includes(b)) {
-                skor += 5;
-            }
-
-
-            /* -----------------------------------------
-               BONUS KONTRA TERKONTROL
-            ----------------------------------------- */
-
-            /*
-             * Angka yang tidak muncul di 7 terbaru tetapi
-             * masih punya jejak di 14 data diberi bonus kecil.
-             */
-
-            if (
-                x.recent === 0 &&
-                x.frequency > 0
-            ) {
-                skor += 5;
-            }
-
-
-            /* -----------------------------------------
-               PASANGAN BALIK
-            ----------------------------------------- */
-
-            const balik =
-                x.angka[1] +
-                x.angka[0];
-
-
-            if (
-                balik !== x.angka &&
-                posisiData.freqTotal[balik] > 0
-            ) {
-                skor += 2;
-            }
-
-
-            return {
-
-                angka: x.angka,
-
-                skor: skor,
-
-                recent: x.recent,
-
-                old: x.old,
-
-                kontra: x.kontra,
-
-                change: x.change
-            };
+    let levelResults = [];
+
+    if (catLxT.length > 0) {
+        levelResults.push({
+            prioRank: 1,
+            ratioLabel: "37% Dominan",
+            levelName: "Terlemah × Terkuat (Cross Asimetris)",
+            rankClass: "rank-p1",
+            colName: colName,
+            targetType: targetType,
+            tagClass: tagClass,
+            items: catLxT,
+            scoreWeight: 100 - catLxT.length
         });
+    }
 
+    if (catLxL.length > 0) {
+        levelResults.push({
+            prioRank: 2,
+            ratioLabel: "33% Dominan Kedua",
+            levelName: "Terlemah × Terlemah (Kombinasi Dingin)",
+            rankClass: "rank-p2",
+            colName: colName,
+            targetType: targetType,
+            tagClass: tagClass,
+            items: catLxL,
+            scoreWeight: 80 - catLxL.length
+        });
+    }
 
-    ranking.sort((a, b) => {
+    if (catTxT.length > 0) {
+        levelResults.push({
+            prioRank: 3,
+            ratioLabel: "30% Peluang Terkecil",
+            levelName: "Terkuat × Terkuat (Kombinasi Panas)",
+            rankClass: "rank-p3",
+            colName: colName,
+            targetType: targetType,
+            tagClass: tagClass,
+            items: catTxT,
+            scoreWeight: 60 - catTxT.length
+        });
+    }
 
-        if (
-            Math.abs(b.skor - a.skor) > 0.000001
-        ) {
-            return b.skor - a.skor;
-        }
-
-        if (b.kontra !== a.kontra) {
-            return b.kontra - a.kontra;
-        }
-
-        if (b.change !== a.change) {
-            return b.change - a.change;
-        }
-
-        return a.angka.localeCompare(b.angka);
-    });
-
-
-    return ranking;
+    return levelResults;
 }
 
+function prosesKedua() {
+    document.getElementById('areaLevel').style.display = 'block';
 
-/* =========================================================
-   ANALISA UTAMA
-========================================================= */
+    let r1 = analyzeColumnWeightAsymmetric('bfCol1', 'Kolom 1 (AS-KOP)', 'DD', 'tag-c1');
+    let r2 = analyzeColumnWeightAsymmetric('bfCol2', 'Kolom 2 (KOP-KEPALA)', 'DT', 'tag-c2');
+    let r3 = analyzeColumnWeightAsymmetric('bfCol3', 'Kolom 3 (KEPALA-EKOR)', 'DB', 'tag-c3');
 
-function jalankanAnalisa() {
+    let allLevels = [...r1, ...r2, ...r3];
 
-    const teks =
-        document.getElementById(
-            "dataInput"
-        ).value.trim();
+    // Urutkan berdasarkan Prioritas Rasio (Prio 1 -> Prio 2 -> Prio 3) lalu LN Terramping
+    allLevels.sort((a, b) => {
+        if (a.prioRank !== b.prioRank) return a.prioRank - b.prioRank;
+        return b.scoreWeight - a.scoreWeight;
+    });
 
+    let container = document.getElementById('globalEngineContainer');
+    container.innerHTML = '';
 
-    const jumlah =
-        parseInt(
-            document.getElementById(
-                "jumlahOutput"
-            ).value
-        );
+    allLevels.forEach((item, index) => {
+        let cardDiv = document.createElement('div');
+        cardDiv.className = `card-level ${item.rankClass}`;
+        
+        let rawItemsString = item.items.join('*');
 
-
-    /*
-     * WAJIB 14 DATA.
-     */
-
-    const data =
-        teks
-            .split(",")
-            .map(x => x.trim())
-            .filter(x => x !== "");
-
-
-    if (data.length !== 14) {
-
-        alert(
-            "Harus memasukkan tepat 14 result 4D."
-        );
-
-        return;
-    }
-
-
-    /*
-     * Validasi setiap result.
-     */
-
-    const invalid =
-        data.findIndex(
-            x => !/^\d{4}$/.test(x)
-        );
-
-
-    if (invalid !== -1) {
-
-        alert(
-            "Data ke-" +
-            (invalid + 1) +
-            " tidak valid: " +
-            data[invalid] +
-            ". Semua harus 4 digit."
-        );
-
-        return;
-    }
-
-
-    /*
-     * Data TIDAK dibalik.
-     *
-     * index 0  = paling lama
-     * index 13 = paling baru
-     */
-
-
-    const hasil =
-        analisaSemuaPosisi(data);
-
-
-    const posisi =
-        pilihPosisi(hasil);
-
-
-    const terkuat =
-        posisi[0];
-
-
-    const ranking =
-        buatFinalRanking(
-            data,
-            terkuat.nama,
-            terkuat.data
-        );
-
-
-    const kandidat =
-        ranking.slice(
-            0,
-            Math.min(jumlah, 59)
-        );
-
-
-    /*
-     * OUTPUT
-     */
-
-    document.getElementById(
-        "dataOutput"
-    ).value =
-        kandidat
-            .map(x => x.angka)
-            .join("*");
-
-
-    /* =====================================================
-       PANEL
-    ===================================================== */
-
-    const panel =
-        document.getElementById(
-            "panelInfo"
-        );
-
-
-    const top10 =
-        kandidat
-            .slice(0, 10)
-            .map(
-                (x, i) =>
-                    `${String(i + 1).padStart(2, "0")}. ` +
-                    `${x.angka}  ` +
-                    `SKOR=${x.skor.toFixed(2)}`
-            )
-            .join("<br>");
-
-
-    const topPasangan =
-        terkuat.data.pasangan
-            .slice(0, 5)
-            .map(
-                x =>
-                    `<span class="badge">
-                        ${x.angka}
-                    </span>`
-            )
-            .join("");
-
-
-    function posisiBox(
-        nama,
-        obj,
-        aktif
-    ) {
-
-        return `
-            <div class="position
-                ${aktif ? "active" : ""}">
-
-                <span class="position-name">
-                    ${nama}
-                </span>
-
-                <span class="position-score">
-                    ${obj.kekuatan.toFixed(2)}
-                </span>
-
+        cardDiv.innerHTML = `
+            <div class="level-header">
+                <div>
+                    <span class="tag-col ${item.tagClass}">${item.colName}</span>
+                    <span class="level-title">Peringkat #${index + 1} : [${item.ratioLabel}] ${item.levelName} = ${item.items.length} LN</span>
+                </div>
+                <button class="btn-copy">Copy ke ${item.targetType}</button>
             </div>
+            <div class="result-box" style="max-height: 60px;">${rawItemsString}</div>
         `;
-    }
 
-
-    panel.style.display = "block";
-
-
-    panel.innerHTML = `
-
-        <b>ANALISA 14 RESULT SELESAI</b>
-
-        <br>
-
-        Urutan input:
-        <b>data pertama lama → data terakhir baru</b>
-
-        <br>
-
-        7 lama:
-        <b>${data.slice(0,7).join(", ")}</b>
-
-        <br>
-
-        7 terbaru:
-        <b>${data.slice(7,14).join(", ")}</b>
-
-        <br>
-
-        Result terbaru:
-        <b>${data[13]}</b>
-
-
-        <div class="position-grid">
-
-            ${posisiBox(
-                "DEPAN",
-                hasil.depan,
-                terkuat.nama === "Depan"
-            )}
-
-            ${posisiBox(
-                "TENGAH",
-                hasil.tengah,
-                terkuat.nama === "Tengah"
-            )}
-
-            ${posisiBox(
-                "BELAKANG",
-                hasil.belakang,
-                terkuat.nama === "Belakang"
-            )}
-
-        </div>
-
-
-        <b>
-            POSISI UTAMA:
-            <span style="color:#22c55e">
-                ${terkuat.nama}
-            </span>
-        </b>
-
-        <br>
-
-        Skor posisi:
-        <b>${terkuat.data.kekuatan.toFixed(2)}</b>
-
-        <br><br>
-
-        <b>
-            TOP PASANGAN POSISI TERPILIH:
-        </b>
-
-        <div>
-            ${topPasangan}
-        </div>
-
-        <br>
-
-        <b>
-            10 RANKING TERATAS:
-        </b>
-
-        <div class="top-list">
-            ${top10}
-        </div>
-
-
-        <div class="warning">
-            Catatan: metode ini hanya melakukan pemeringkatan
-            berdasarkan pola 14 data, perbandingan 7 lama
-            dan 7 terbaru, recency, perubahan pola,
-            serta kontra-pola terkontrol. Tidak ada jaminan
-            bahwa hasil berikutnya mengikuti pola histori.
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   COPY
-========================================================= */
-
-function copyKeClipboard() {
-
-    const output =
-        document.getElementById(
-            "dataOutput"
-        );
-
-
-    if (!output.value) {
-
-        alert(
-            "Belum ada hasil untuk disalin."
-        );
-
-        return;
-    }
-
-
-    navigator.clipboard
-        .writeText(output.value)
-        .then(() => {
-
-            alert(
-                "Berhasil disalin ke Clipboard!"
-            );
-
-        })
-        .catch(() => {
-
-            output.select();
-
-            document.execCommand("copy");
-
-            alert(
-                "Hasil berhasil disalin."
-            );
+        let btnCopy = cardDiv.querySelector('.btn-copy');
+        btnCopy.addEventListener('click', function() {
+            copyArrayToWadah(item.items, item.targetType, this, rawItemsString);
         });
+
+        container.appendChild(cardDiv);
+    });
 }
 
+function copyArrayToWadah(arr, type, btnElement, rawText) {
+    if (!arr || arr.length === 0) return;
+    
+    arr.forEach(item => wadahData[type].add(item));
+    updateWadahUI();
+
+    if (navigator.clipboard && rawText) {
+        navigator.clipboard.writeText(rawText);
+    }
+
+    let originalText = `Copy ke ${type}`;
+    btnElement.textContent = 'Copied!';
+    btnElement.style.backgroundColor = '#27ae60';
+    btnElement.disabled = true; 
+
+    setTimeout(() => {
+        btnElement.textContent = originalText;
+        btnElement.style.backgroundColor = '#2980b9';
+        btnElement.disabled = false;
+    }, 1000);
+}
+
+function updateWadahUI() {
+    let arrDD = Array.from(wadahData.DD);
+    document.getElementById('wadahBoxDD').textContent = arrDD.length ? arrDD.join('*') : "-";
+    document.getElementById('lblWadahDD').textContent = `Wadah Salinan Kolom 1 / DD (${arrDD.length} LN)`;
+
+    let arrDT = Array.from(wadahData.DT);
+    document.getElementById('wadahBoxDT').textContent = arrDT.length ? arrDT.join('*') : "-";
+    document.getElementById('lblWadahDT').textContent = `Wadah Salinan Kolom 2 / DT (${arrDT.length} LN)`;
+
+    let arrDB = Array.from(wadahData.DB);
+    document.getElementById('wadahBoxDB').textContent = arrDB.length ? arrDB.join('*') : "-";
+    document.getElementById('lblWadahDB').textContent = `Wadah Salinan Kolom 3 / DB (${arrDB.length} LN)`;
+
+    let set3DD = new Set();
+    if (arrDD.length > 0 && arrDT.length > 0) {
+        for (let a of arrDD) {
+            for (let b of arrDT) {
+                if (a.charAt(1) === b.charAt(0)) set3DD.add(a + b.charAt(1));
+            }
+        }
+    }
+    let res3DD = Array.from(set3DD);
+    document.getElementById('box3DD').textContent = res3DD.length ? res3DD.join('*') : "-";
+    document.getElementById('lbl3DD').textContent = `3DD = ${res3DD.length} LN`;
+
+    let set3DB = new Set();
+    if (arrDT.length > 0 && arrDB.length > 0) {
+        for (let b of arrDT) {
+            for (let c of arrDB) {
+                if (b.charAt(1) === c.charAt(0)) set3DB.add(b + c.charAt(1));
+            }
+        }
+    }
+    let res3DB = Array.from(set3DB);
+    document.getElementById('box3DB').textContent = res3DB.length ? res3DB.join('*') : "-";
+    document.getElementById('lbl3DB').textContent = `3DB = ${res3DB.length} LN`;
+}
+
+function resetWadah(type) {
+    wadahData[type].clear();
+    updateWadahUI();
+}
+
+function copyWadah(boxId, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "-") return;
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
+    });
+}
 </script>
 
 </body>
 </html>
-```
