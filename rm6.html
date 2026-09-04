@@ -1,617 +1,922 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Self-Learning Engine Enterprise</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Learning Engine Enterprise</title>
 
-<style>
-*{
-    box-sizing:border-box;
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-body{
-    background-color:#f4f6f9;
-    margin:0;
-    padding:20px;
-    display:flex;
-    justify-content:center;
-}
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-.container{
-    width:100%;
-    max-width:800px;
-    background:#fff;
-    padding:25px;
-    border-radius:10px;
-    box-shadow:0 4px 15px rgba(0,0,0,.1);
-    position:relative;
-}
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
 
-label{
-    font-weight:bold;
-    display:block;
-    margin-bottom:8px;
-    color:#34495e;
-    font-size:14px;
-}
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 20px;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 10px;
+        }
 
-textarea{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:6px;
-    font-family:monospace;
-    font-size:14px;
-    margin-bottom:15px;
-    resize:vertical;
-}
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 14px;
+        }
 
-.input-area{
-    height:100px;
-}
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
 
-.output-area{
-    height:120px;
-    background:#eaedd0;
-    color:#2c3e50;
-    font-weight:bold;
-}
+        .input-area {
+            height: 100px;
+        }
 
-.btn-group{
-    display:flex;
-    gap:10px;
-    margin-bottom:20px;
-}
+        .output-area {
+            height: 120px;
+            background-color: #eaedd0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
 
-button{
-    border:none;
-    padding:12px;
-    font-size:14px;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:background .2s;
-}
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-button.btn-process{
-    flex:1;
-    background:#27ae60;
-    color:white;
-}
+        button {
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
 
-button.btn-process:hover{
-    background:#219653;
-}
+        button.btn-process {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
+        }
 
-button.btn-learning{
-    flex:2;
-    background:#e67e22;
-    color:white;
-}
+        button.btn-process:hover {
+            background-color: #219653;
+        }
 
-button.btn-learning:hover{
-    background:#d35400;
-}
+        button.btn-learning {
+            flex: 2;
+            background-color: #e67e22;
+            color: white;
+        }
 
-.result-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
-}
+        button.btn-learning:hover {
+            background-color: #d35400;
+        }
 
-.result-title{
-    font-weight:bold;
-    font-size:14px;
-    color:#2980b9;
-}
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
 
-.btn-copy{
-    background:#2980b9;
-    color:white;
-    padding:6px 14px;
-    font-size:12px;
-}
+        .result-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2980b9;
+        }
 
-.btn-copy:hover{
-    background:#1f618d;
-}
+        .btn-copy {
+            background-color: #2980b9;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
 
-.audit-box{
-    background:#1e272e;
-    color:#00d8d6;
-    font-family:monospace;
-    font-size:12px;
-    padding:15px;
-    border-radius:6px;
-    height:300px;
-    overflow-y:auto;
-    margin-top:15px;
-    border-left:4px solid #e67e22;
-}
+        .btn-copy:hover {
+            background-color: #1f618d;
+        }
 
-.audit-title{
-    color:#34495e;
-    font-weight:bold;
-    margin-top:15px;
-    margin-bottom:5px;
-    font-size:13px;
-}
+        .audit-box {
+            background-color: #1e272e;
+            color: #00d8d6;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 6px;
+            height: 250px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-left: 4px solid #e67e22;
+        }
 
-.loading-overlay{
-    display:none;
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(255,255,255,.9);
-    border-radius:10px;
-    z-index:100;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-}
+        .audit-title {
+            color: #34495e;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
 
-.spinner{
-    width:60px;
-    height:60px;
-    border:6px solid #f3f3f3;
-    border-top:6px solid #e67e22;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
-}
+        /* LOADING OVERLAY */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.94);
+            border-radius: 10px;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-@keyframes spin{
-    0%{transform:rotate(0deg)}
-    100%{transform:rotate(360deg)}
-}
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #e67e22;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-.loading-text{
-    margin-top:15px;
-    font-weight:bold;
-    color:#2c3e50;
-    font-size:14px;
-    text-align:center;
-}
-</style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<div id="loadingOverlay" class="loading-overlay">
-    <div class="spinner"></div>
-    <div id="loadingText" class="loading-text">
-        Memproses Self-Learning
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingText" class="loading-text">
+            Memproses Self-Learning
+        </div>
     </div>
+
+    <label for="inputData">Masukkan Data RM6 :</label>
+
+    <textarea
+        id="inputData"
+        class="input-area"
+        placeholder="">
+    </textarea>
+
+    <div class="btn-group">
+
+        <button
+            class="btn-process"
+            onclick="prosesEngineProUtuh()">
+            PREDIKSI SINGLE
+        </button>
+
+        <button
+            class="btn-learning"
+            onclick="runSelfLearningEngine(5)">
+            RUN (BACKTEST 5)
+        </button>
+
+    </div>
+
+    <div class="result-header">
+
+        <span
+            id="outputTitle"
+            class="result-title">
+            TOP RESULT ENGINE (0 LN)
+        </span>
+
+        <button
+            class="btn-copy"
+            id="btnCopy"
+            onclick="copyHasil()">
+            Copy
+        </button>
+
+    </div>
+
+    <textarea
+        id="outputResult"
+        class="output-area"
+        readonly
+        placeholder="">
+    </textarea>
+
+    <div class="audit-title">
+        LOG AUDIT EXECUTION:
+    </div>
+
+    <div
+        id="auditLog"
+        class="audit-box">
+        Ready..
+    </div>
+
 </div>
 
-<label for="inputData">Masukkan Data RM6 :</label>
-
-<textarea
-    id="inputData"
-    class="input-area"
-    placeholder="">
-</textarea>
-
-<div class="btn-group">
-
-<button
-    class="btn-process"
-    onclick="prosesEngineProUtuh()">
-    PREDIKSI SINGLE
-</button>
-
-<button
-    class="btn-learning"
-    onclick="runSelfLearningEngine(5)">
-    RUN (BACKTEST)
-</button>
-
-</div>
-
-<div class="result-header">
-
-<span
-    id="outputTitle"
-    class="result-title">
-    TOP RESULT ENGINE (0 LN)
-</span>
-
-<button
-    class="btn-copy"
-    id="btnCopy"
-    onclick="copyHasil()">
-    Copy
-</button>
-
-</div>
-
-<textarea
-    id="outputResult"
-    class="output-area"
-    readonly>
-</textarea>
-
-<div class="audit-title">
-LOG AUDIT EXECUTION:
-</div>
-
-<div id="auditLog" class="audit-box">
-Ready..
-</div>
-
-</div>
 
 <script>
 
-/* ================================================================
-   RM6 DYNAMIC SELF-LEARNING ENGINE
-   ================================================================
-
-   INPUT  : 4 DIGIT
-   OUTPUT : 2 DIGIT
-
-   SECTOR:
-      2DD = digit 0 + digit 1
-      2DT = digit 1 + digit 2
-      2DB = digit 2 + digit 3
-
-   KONSEP:
-      - Feature extraction
-      - Dynamic sector competition
-      - Strategy evolution
-      - Walk-forward backtest
-      - Strategy mutation
-      - Elite selection
-      - Adaptive parameter discovery
-
-   TIDAK MENGGUNAKAN:
-      - alert()
-      - brute force 10.000 kombinasi 4D
-      - bobot fixed 100/80/60/40/20
-================================================================ */
+/*
+====================================================================
+ CORE ENTERPRISE ENGINE
+ OUTPUT = 2 DIGIT
+ SECTOR DINAMIS:
+ 2DD = DIGIT 0 + DIGIT 1
+ 2DT = DIGIT 1 + DIGIT 2
+ 2DB = DIGIT 2 + DIGIT 3
+====================================================================
+*/
 
 
 /* ================================================================
-   CONFIG
+   ENGINE CONFIGURATION
 ================================================================ */
 
-const ENGINE_CONFIG = {
+let ENGINE_SYS_CONFIG = {
 
-    TOP_LIMIT: 50,
+    MAX_OUTPUT_LIMIT: 50,
 
-    MAX_GENERATIONS: 20,
+    SIMULATION_MATRIX_DEPTH: 1000,
 
-    POPULATION_SIZE: 16,
+    WEIGHT_LEVEL_0: 100,
+    WEIGHT_LEVEL_1: 80,
+    WEIGHT_LEVEL_2: 60,
+    WEIGHT_LEVEL_3: 40,
+    WEIGHT_LEVEL_4: 20,
+    WEIGHT_LEVEL_5: 0,
 
-    ELITE_SIZE: 5,
+    AM_MIN_LENGTH: 3,
 
-    DEFAULT_BACKTEST: 8,
+    STRATEGY_MODE: "STANDARD_ENTERPRISE",
 
-    MIN_HISTORY: 4,
-
-    CANDIDATE_LIMIT: 100,
-
-    MISS_TARGET: 1
+    /* MAKSIMUM GENERASI */
+    MAX_GENERATIONS: 16
 
 };
 
 
 /* ================================================================
-   STATE
+   AUDIT LOGGER
 ================================================================ */
 
-let ENGINE_STATE = {
+function writeAuditLog(message) {
 
-    bestStrategy: null,
+    let logBox = document.getElementById('auditLog');
 
-    bestFitness: -Infinity,
+    let timeStamp = new Date().toLocaleTimeString();
 
-    generation: 0,
+    logBox.innerHTML +=
+        `[${timeStamp}] ${message}<br/>`;
 
-    hits: 0,
+    logBox.scrollTop = logBox.scrollHeight;
+}
 
-    misses: 0,
 
-    total: 0
+function clearAuditLog() {
 
-};
+    document.getElementById('auditLog').innerHTML = '';
+
+}
 
 
 /* ================================================================
-   LOGGER
+   YIELD UI
+   MEMBERIKAN KESEMPATAN BROWSER UPDATE TAMPILAN
 ================================================================ */
 
-function writeAuditLog(message){
+function yieldUI() {
 
-    const box =
-        document.getElementById("auditLog");
+    return new Promise(function(resolve) {
 
-    const time =
-        new Date().toLocaleTimeString();
+        setTimeout(resolve, 0);
 
-    box.innerHTML +=
-        "[" + time + "] " +
-        message +
-        "<br>";
-
-    box.scrollTop =
-        box.scrollHeight;
+    });
 
 }
 
 
-function clearAuditLog(){
+/* ================================================================
+   DIGITAL ROOT
+================================================================ */
 
-    document.getElementById(
-        "auditLog"
-    ).innerHTML = "";
+function calculateSingleDigitSum(digitValA, digitValB) {
+
+    let parseA = parseInt(digitValA, 10);
+
+    let parseB = parseInt(digitValB, 10);
+
+    let totalSum = parseA + parseB;
+
+    while (totalSum >= 10) {
+
+        let stringConverted =
+            totalSum.toString();
+
+        let charFirst =
+            parseInt(stringConverted.charAt(0), 10);
+
+        let charSecond =
+            parseInt(stringConverted.charAt(1), 10);
+
+        totalSum =
+            charFirst + charSecond;
+
+    }
+
+    return totalSum.toString();
 
 }
 
 
-function engineStatus(message){
+/* ================================================================
+   ABSOLUTE DIFFERENCE
+================================================================ */
 
-    writeAuditLog(
-        "<span style='color:#ffdd59;font-weight:bold'>" +
-        message +
-        "</span>"
+function calculateAbsoluteDifference(digitValA, digitValB) {
+
+    let parseA = parseInt(digitValA, 10);
+
+    let parseB = parseInt(digitValB, 10);
+
+    let diffResult =
+        Math.abs(parseA - parseB);
+
+    return diffResult.toString();
+
+}
+
+
+/* ================================================================
+   COMBINATORIAL SUBSET
+================================================================ */
+
+function generateCombinatorialSubsets(
+    sourceArray,
+    subsetLength
+) {
+
+    if (subsetLength === 0) {
+        return [[]];
+    }
+
+    if (sourceArray.length === 0) {
+        return [];
+    }
+
+    let headElement =
+        sourceArray[0];
+
+    let tailElements =
+        sourceArray.slice(1);
+
+    let subsetsWithHead =
+        generateCombinatorialSubsets(
+            tailElements,
+            subsetLength - 1
+        ).map(function(subset) {
+
+            return [headElement].concat(subset);
+
+        });
+
+    let subsetsWithoutHead =
+        generateCombinatorialSubsets(
+            tailElements,
+            subsetLength
+        );
+
+    return subsetsWithHead.concat(
+        subsetsWithoutHead
     );
 
 }
 
 
 /* ================================================================
-   INPUT
+   ADAPTIVE AM
 ================================================================ */
 
-function parseInputData(){
+function extractAdaptiveAMStrict(
+    processedRowsData,
+    extractionTargetFunction
+) {
 
-    const raw =
-        document
-        .getElementById("inputData")
-        .value
-        .trim();
+    let uniqueCharacterSet =
+        new Set();
 
-    if(!raw){
+    for (
+        let rowIndex = 0;
+        rowIndex < processedRowsData.length - 1;
+        rowIndex++
+    ) {
 
-        return [];
+        let targetRow =
+            processedRowsData[rowIndex + 1];
 
-    }
+        let extractedString =
+            extractionTargetFunction(targetRow);
 
+        if (
+            extractedString &&
+            typeof extractedString === 'string'
+        ) {
 
-    return raw
-        .split(/[\s,;]+/)
-        .map(x => {
+            for (
+                let charIndex = 0;
+                charIndex < extractedString.length;
+                charIndex++
+            ) {
 
-            const clean =
-                x.replace(/\D/g,"");
-
-            if(!clean){
-
-                return null;
+                uniqueCharacterSet.add(
+                    extractedString.charAt(charIndex)
+                );
 
             }
 
-            return clean
-                .slice(-4)
-                .padStart(4,"0");
-
-        })
-        .filter(x =>
-            x &&
-            /^\d{4}$/.test(x)
-        );
-
-}
-
-
-/* ================================================================
-   DIGIT
-================================================================ */
-
-function digitsOf(value){
-
-    return value
-        .split("")
-        .map(Number);
-
-}
-
-
-/* ================================================================
-   SECTOR DEFINITION
-================================================================ */
-
-const SECTORS = {
-
-    "2DD": [0,1],
-
-    "2DT": [1,2],
-
-    "2DB": [2,3]
-
-};
-
-
-/* ================================================================
-   GET PAIR
-================================================================ */
-
-function getSectorPair(value, sector){
-
-    const d =
-        digitsOf(value);
-
-    const pos =
-        SECTORS[sector];
-
-    return (
-        String(d[pos[0]]) +
-        String(d[pos[1]])
-    );
-
-}
-
-
-/* ================================================================
-   MOD 10 DISTANCE
-================================================================ */
-
-function circularDistance(a,b){
-
-    const diff =
-        Math.abs(a-b);
-
-    return Math.min(
-        diff,
-        10-diff
-    );
-
-}
-
-
-/* ================================================================
-   FEATURE EXTRACTION
-================================================================ */
-
-function buildFeatures(history, sector){
-
-    const pos =
-        SECTORS[sector];
-
-    const pairFrequency =
-        Array(100).fill(0);
-
-    const pairRecent =
-        Array(100).fill(0);
-
-    const pairGap =
-        Array(100).fill(
-            history.length + 1
-        );
-
-    const digitFrequencyA =
-        Array(10).fill(0);
-
-    const digitFrequencyB =
-        Array(10).fill(0);
-
-    const transition =
-        Array(100).fill(0);
-
-    const differenceFrequency =
-        Array(10).fill(0);
-
-    const sumFrequency =
-        Array(10).fill(0);
-
-
-    for(let i=0;i<history.length;i++){
-
-        const pair =
-            getSectorPair(
-                history[i],
-                sector
-            );
-
-        const a =
-            Number(pair[0]);
-
-        const b =
-            Number(pair[1]);
-
-        const pairNumber =
-            Number(pair);
-
-
-        pairFrequency[pairNumber]++;
-
-        const age =
-            history.length - 1 - i;
-
-        pairRecent[pairNumber] +=
-            Math.max(
-                1,
-                20 - age
-            );
-
-
-        if(
-            pairGap[pairNumber] ===
-            history.length + 1
-        ){
-
-            pairGap[pairNumber] =
-                age;
-
-        }
-
-
-        digitFrequencyA[a]++;
-
-        digitFrequencyB[b]++;
-
-
-        const diff =
-            Math.abs(a-b);
-
-        differenceFrequency[diff]++;
-
-
-        const sum =
-            (a+b)%10;
-
-        sumFrequency[sum]++;
-
-
-        if(i > 0){
-
-            const previous =
-                getSectorPair(
-                    history[i-1],
-                    sector
-                );
-
-            transition[
-                Number(previous)
-            ]++;
-
         }
 
     }
 
+    let sortedCharacterSet =
+        Array.from(uniqueCharacterSet).sort();
+
+    if (sortedCharacterSet.length === 0) {
+
+        return [
+            '0','1','2','3','4',
+            '5','6','7','8','9'
+        ];
+
+    }
+
+    let optimalSubSetAM = null;
+
+    let minLen =
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH;
+
+    for (
+        let currentLength = minLen;
+        currentLength <= sortedCharacterSet.length;
+        currentLength++
+    ) {
+
+        let generatedSubsets =
+            generateCombinatorialSubsets(
+                sortedCharacterSet,
+                currentLength
+            );
+
+        for (
+            let comboIndex = 0;
+            comboIndex < generatedSubsets.length;
+            comboIndex++
+        ) {
+
+            let currentCombination =
+                generatedSubsets[comboIndex];
+
+            let comboComparisonSet =
+                new Set(currentCombination);
+
+            let isValidFullCoverage =
+                true;
+
+            for (
+                let verifyIndex = 0;
+                verifyIndex < processedRowsData.length - 1;
+                verifyIndex++
+            ) {
+
+                let verificationRow =
+                    processedRowsData[verifyIndex + 1];
+
+                let verifyValue =
+                    extractionTargetFunction(
+                        verificationRow
+                    );
+
+                let hitMatchCount = 0;
+
+                if (verifyValue) {
+
+                    for (
+                        let verifyCharIdx = 0;
+                        verifyCharIdx < verifyValue.length;
+                        verifyCharIdx++
+                    ) {
+
+                        if (
+                            comboComparisonSet.has(
+                                verifyValue.charAt(
+                                    verifyCharIdx
+                                )
+                            )
+                        ) {
+
+                            hitMatchCount++;
+
+                        }
+
+                    }
+
+                }
+
+                if (hitMatchCount === 0) {
+
+                    isValidFullCoverage =
+                        false;
+
+                    break;
+
+                }
+
+            }
+
+            if (isValidFullCoverage) {
+
+                optimalSubSetAM =
+                    currentCombination;
+
+                break;
+
+            }
+
+        }
+
+        if (optimalSubSetAM) {
+            break;
+        }
+
+    }
+
+    return optimalSubSetAM ||
+        sortedCharacterSet;
+
+}
+
+
+/* ================================================================
+   1000 PERMUTATION MATRIX
+================================================================ */
+
+function build1000PermutationSpace(
+    processedDataRows,
+    primaryPositionIdx,
+    secondaryPositionIdx
+) {
+
+    let baseHistoricalPairs = [];
+
+    for (
+        let dataIdx = 0;
+        dataIdx < processedDataRows.length;
+        dataIdx++
+    ) {
+
+        let selectedRow =
+            processedDataRows[dataIdx];
+
+        baseHistoricalPairs.push(
+            selectedRow.digits[primaryPositionIdx] +
+            selectedRow.digits[secondaryPositionIdx]
+        );
+
+    }
+
+    let expandedPermutationSpace = [];
+
+    let baseDataLength =
+        baseHistoricalPairs.length;
+
+    for (
+        let simulationIdx = 0;
+        simulationIdx <
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH;
+        simulationIdx++
+    ) {
+
+        let basePairString =
+            baseHistoricalPairs[
+                simulationIdx % baseDataLength
+            ];
+
+        let baseDigitA =
+            parseInt(
+                basePairString.charAt(0),
+                10
+            );
+
+        let baseDigitB =
+            parseInt(
+                basePairString.charAt(1),
+                10
+            );
+
+        let shiftOffsetA =
+            Math.floor(simulationIdx / 100);
+
+        let shiftOffsetB =
+            simulationIdx % 10;
+
+        let calculatedDigitA =
+            (baseDigitA + shiftOffsetA) % 10;
+
+        let calculatedDigitB =
+            (baseDigitB + shiftOffsetB) % 10;
+
+        expandedPermutationSpace.push(
+            calculatedDigitA.toString() +
+            calculatedDigitB.toString()
+        );
+
+    }
+
+    return expandedPermutationSpace;
+
+}
+
+
+/* ================================================================
+   SECTOR EVALUATOR
+================================================================ */
+
+function evaluateSectorGeneric(
+    matrixData,
+    listA,
+    listB,
+    listDiff,
+    listSum,
+    listAM,
+    sectorName
+) {
+
+    let scoreBoard = {};
+
+    for (
+        let pairVal = 0;
+        pairVal <= 99;
+        pairVal++
+    ) {
+
+        let pairKey =
+            pairVal
+                .toString()
+                .padStart(2, '0');
+
+        scoreBoard[pairKey] = {
+
+            pair: pairKey,
+
+            totalPowerScore: 0,
+
+            level0Count: 0,
+
+            level1Count: 0
+
+        };
+
+    }
+
+
+    let validDiffNumbers =
+        (listDiff || []).map(Number);
+
+    let validSumNumbers =
+        (listSum || []).map(Number);
+
+
+    for (
+        let i = 0;
+        i < matrixData.length;
+        i++
+    ) {
+
+        let pairStr =
+            matrixData[i];
+
+        let charA =
+            pairStr.charAt(0);
+
+        let charB =
+            pairStr.charAt(1);
+
+        let numA =
+            parseInt(charA, 10);
+
+        let numB =
+            parseInt(charB, 10);
+
+        let calcDiff =
+            Math.abs(numA - numB);
+
+        let calcSum =
+            parseInt(
+                calculateSingleDigitSum(
+                    numA,
+                    numB
+                ),
+                10
+            );
+
+        let penaltyFails = 0;
+
+
+        if (!listA.includes(charA)) {
+            penaltyFails++;
+        }
+
+        if (!listB.includes(charB)) {
+            penaltyFails++;
+        }
+
+        if (
+            validDiffNumbers.length > 0 &&
+            !validDiffNumbers.includes(calcDiff)
+        ) {
+            penaltyFails++;
+        }
+
+        if (
+            validSumNumbers.length > 0 &&
+            !validSumNumbers.includes(calcSum)
+        ) {
+            penaltyFails++;
+        }
+
+        if (
+            listAM.length > 0 &&
+            !listAM.includes(charA) &&
+            !listAM.includes(charB)
+        ) {
+            penaltyFails++;
+        }
+
+
+        let scoreAdd = 0;
+
+
+        if (penaltyFails === 0) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+
+            scoreBoard[pairStr].level0Count++;
+
+        }
+
+        else if (penaltyFails === 1) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+
+            scoreBoard[pairStr].level1Count++;
+
+        }
+
+        else if (penaltyFails === 2) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+
+        }
+
+        else if (penaltyFails === 3) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+
+        }
+
+        else if (penaltyFails === 4) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
+
+        }
+
+        else {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
+
+        }
+
+
+        scoreBoard[pairStr].totalPowerScore +=
+            scoreAdd;
+
+    }
+
+
+    let sortedList =
+        Object.values(scoreBoard);
+
+
+    sortedList.sort(function(a, b) {
+
+        if (
+            b.totalPowerScore !==
+            a.totalPowerScore
+        ) {
+
+            return (
+                b.totalPowerScore -
+                a.totalPowerScore
+            );
+
+        }
+
+        return (
+            b.level0Count -
+            a.level0Count
+        );
+
+    });
+
+
+    let top50 =
+        sortedList.slice(
+            0,
+            ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT
+        );
+
+
+    let aggregatePower =
+        top50.reduce(
+            function(acc, curr) {
+
+                return acc +
+                    curr.totalPowerScore;
+
+            },
+            0
+        );
+
 
     return {
 
-        pairFrequency,
+        sectorName: sectorName,
 
-        pairRecent,
+        topLN:
+            top50.map(
+                item => item.pair
+            ),
 
-        pairGap,
-
-        digitFrequencyA,
-
-        digitFrequencyB,
-
-        transition,
-
-        differenceFrequency,
-
-        sumFrequency,
-
-        lastPair:
-            history.length
-            ? getSectorPair(
-                history[history.length-1],
-                sector
-            )
-            : "00"
+        powerScore:
+            aggregatePower
 
     };
 
@@ -619,1003 +924,319 @@ function buildFeatures(history, sector){
 
 
 /* ================================================================
-   NORMALIZE
+   EXECUTE ENGINE DATASET
 ================================================================ */
 
-function normalizeArray(arr){
+function executeEngineForDataset(
+    dataTokens
+) {
 
-    let max = 0;
+    let processedDataRows = [];
 
-    for(const x of arr){
 
-        if(x > max){
+    for (
+        let idx = 0;
+        idx < dataTokens.length;
+        idx++
+    ) {
 
-            max = x;
+        let token =
+            dataTokens[idx];
+
+
+        if (token.length < 4) {
+
+            token =
+                token.padStart(4, '0');
 
         }
 
-    }
 
-
-    if(max <= 0){
-
-        return arr.map(() => 0);
-
-    }
-
-
-    return arr.map(
-        x => x/max
-    );
-
-}
-
-
-/* ================================================================
-   STRATEGY
-================================================================ */
-
-function createStrategy(seed){
-
-    function rnd(){
-
-        seed =
-            (
-                seed * 1664525 +
-                1013904223
-            ) >>> 0;
-
-        return seed / 4294967296;
-
-    }
-
-
-    return {
-
-        frequency:
-            0.2 + rnd()*2.8,
-
-        recent:
-            0.2 + rnd()*2.8,
-
-        gap:
-            0.2 + rnd()*2.8,
-
-        transition:
-            0.2 + rnd()*2.8,
-
-        digit:
-            0.2 + rnd()*2.8,
-
-        relation:
-            0.2 + rnd()*2.8,
-
-        stability:
-            0.2 + rnd()*2.8,
-
-        diversity:
-            0.2 + rnd()*2.8
-
-    };
-
-}
-
-
-/* ================================================================
-   MUTATE STRATEGY
-================================================================ */
-
-function mutateStrategy(parent, seed){
-
-    const child =
-        {...parent};
-
-
-    const keys =
-        Object.keys(child);
-
-
-    let state =
-        seed >>> 0;
-
-
-    function rnd(){
-
-        state =
-            (
-                state * 1664525 +
-                1013904223
-            ) >>> 0;
-
-        return state / 4294967296;
-
-    }
-
-
-    /*
-       Setiap generasi tidak sekadar menaikkan/
-       menurunkan satu bobot.
-
-       Sebagian parameter diganti,
-       sebagian dipertahankan,
-       sehingga benar-benar muncul
-       strategi baru.
-    */
-
-    for(const key of keys){
-
-        const mutation =
-            0.55 +
-            rnd()*0.90;
-
-        child[key] =
-            Math.max(
-                0.05,
-                child[key] * mutation
+        let digit0 =
+            parseInt(
+                token.charAt(0),
+                10
             );
 
-    }
+        let digit1 =
+            parseInt(
+                token.charAt(1),
+                10
+            );
 
+        let digit2 =
+            parseInt(
+                token.charAt(2),
+                10
+            );
 
-    return child;
+        let digit3 =
+            parseInt(
+                token.charAt(3),
+                10
+            );
 
-}
 
+        processedDataRows.push({
 
-/* ================================================================
-   SCORE ONE PAIR
-================================================================ */
+            rawToken: token,
 
-function scorePair(
-    pairNumber,
-    features,
-    strategy
-){
+            digits: [
 
-    const a =
-        Math.floor(
-            pairNumber / 10
-        );
+                digit0.toString(),
 
-    const b =
-        pairNumber % 10;
+                digit1.toString(),
 
+                digit2.toString(),
 
-    const freq =
-        normalizeArray(
-            features.pairFrequency
-        )[pairNumber];
+                digit3.toString()
 
+            ],
 
-    const recent =
-        normalizeArray(
-            features.pairRecent
-        )[pairNumber];
+            diffs: [
 
+                calculateAbsoluteDifference(
+                    digit0,
+                    digit1
+                ),
 
-    const gap =
-        1 /
-        (
-            1 +
-            features.pairGap[pairNumber]
-        );
+                calculateAbsoluteDifference(
+                    digit1,
+                    digit2
+                ),
 
-
-    const transition =
-        normalizeArray(
-            features.transition
-        )[pairNumber];
-
-
-    const digitA =
-        normalizeArray(
-            features.digitFrequencyA
-        )[a];
-
-
-    const digitB =
-        normalizeArray(
-            features.digitFrequencyB
-        )[b];
-
-
-    const diff =
-        Math.abs(a-b);
-
-
-    const sum =
-        (a+b)%10;
-
-
-    const relationDiff =
-        normalizeArray(
-            features.differenceFrequency
-        )[diff];
-
-
-    const relationSum =
-        normalizeArray(
-            features.sumFrequency
-        )[sum];
-
-
-    /*
-       STABILITY:
-
-       pasangan yang memiliki
-       dukungan dari beberapa feature
-       mendapat nilai lebih tinggi.
-    */
-
-    const featureValues = [
-
-        freq,
-
-        recent,
-
-        gap,
-
-        transition,
-
-        digitA,
-
-        digitB,
-
-        relationDiff,
-
-        relationSum
-
-    ];
-
-
-    let supported = 0;
-
-    for(const x of featureValues){
-
-        if(x > 0.25){
-
-            supported++;
-
-        }
-
-    }
-
-
-    const stability =
-        supported /
-        featureValues.length;
-
-
-    /*
-       DIVERSITY:
-
-       jangan terlalu bergantung
-       hanya kepada satu sumber feature.
-    */
-
-    const nonZero =
-        featureValues.filter(
-            x => x > 0
-        ).length;
-
-
-    const diversity =
-        nonZero /
-        featureValues.length;
-
-
-    return (
-
-        freq *
-        strategy.frequency
-
-        +
-
-        recent *
-        strategy.recent
-
-        +
-
-        gap *
-        strategy.gap
-
-        +
-
-        transition *
-        strategy.transition
-
-        +
-
-        (
-            (digitA+digitB)/2
-        ) *
-        strategy.digit
-
-        +
-
-        (
-            relationDiff+
-            relationSum
-        )/2 *
-        strategy.relation
-
-        +
-
-        stability *
-        strategy.stability
-
-        +
-
-        diversity *
-        strategy.diversity
-
-    );
-
-}
-
-
-/* ================================================================
-   RANK SECTOR
-================================================================ */
-
-function rankSector(
-    history,
-    sector,
-    strategy
-){
-
-    const features =
-        buildFeatures(
-            history,
-            sector
-        );
-
-
-    const result=[];
-
-
-    for(let n=0;n<100;n++){
-
-        result.push({
-
-            pair:
-                String(n)
-                .padStart(2,"0"),
-
-            score:
-                scorePair(
-                    n,
-                    features,
-                    strategy
+                calculateAbsoluteDifference(
+                    digit2,
+                    digit3
                 )
+
+            ],
+
+            sums: [
+
+                calculateSingleDigitSum(
+                    digit0,
+                    digit1
+                ),
+
+                calculateSingleDigitSum(
+                    digit1,
+                    digit2
+                ),
+
+                calculateSingleDigitSum(
+                    digit2,
+                    digit3
+                )
+
+            ]
 
         });
 
     }
 
 
-    result.sort(
-        (a,b) =>
-            b.score-a.score ||
-            a.pair.localeCompare(
-                b.pair
-            )
-    );
+    /* ============================================================
+       ADAPTIVE DIGIT SETS
+    ============================================================ */
 
+    let listD0 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[0]
+        );
 
-    return {
+    let listD1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[1]
+        );
 
-        sector,
+    let listD2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[2]
+        );
 
-        candidates:
-            result.slice(
-                0,
-                ENGINE_CONFIG.TOP_LIMIT
-            ),
-
-        sectorStrength:
-            result.length
-            ? result[0].score
-            : 0
-
-    };
-
-}
-
-
-/* ================================================================
-   DYNAMIC SECTOR COMPETITION
-================================================================ */
-
-function competeSectors(
-    history,
-    strategy
-){
-
-    const dd =
-        rankSector(
-            history,
-            "2DD",
-            strategy
+    let listD3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[3]
         );
 
 
-    const dt =
-        rankSector(
-            history,
-            "2DT",
-            strategy
+    /* ============================================================
+       DIFFERENCE
+    ============================================================ */
+
+    let listDiff1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.diffs[0]
+        );
+
+    let listDiff2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.diffs[1]
+        );
+
+    let listDiff3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.diffs[2]
         );
 
 
-    const db =
-        rankSector(
-            history,
-            "2DB",
-            strategy
+    /* ============================================================
+       SUM
+    ============================================================ */
+
+    let listSum1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.sums[0]
+        );
+
+    let listSum2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.sums[1]
+        );
+
+    let listSum3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.sums[2]
         );
 
 
-    const all = [
-        dd,
-        dt,
-        db
+    /* ============================================================
+       AM PAIR
+    ============================================================ */
+
+    let listAM1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row =>
+                row.digits[0] +
+                row.digits[1]
+        );
+
+    let listAM2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row =>
+                row.digits[1] +
+                row.digits[2]
+        );
+
+    let listAM3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row =>
+                row.digits[2] +
+                row.digits[3]
+        );
+
+
+    /* ============================================================
+       MATRIX
+    ============================================================ */
+
+    let matrix2DD =
+        build1000PermutationSpace(
+            processedDataRows,
+            0,
+            1
+        );
+
+    let matrix2DT =
+        build1000PermutationSpace(
+            processedDataRows,
+            1,
+            2
+        );
+
+    let matrix2DB =
+        build1000PermutationSpace(
+            processedDataRows,
+            2,
+            3
+        );
+
+
+    /* ============================================================
+       EVALUATE 3 SECTORS
+    ============================================================ */
+
+    let result2DD =
+        evaluateSectorGeneric(
+            matrix2DD,
+            listD0,
+            listD1,
+            listDiff1,
+            listSum1,
+            listAM1,
+            "2DD"
+        );
+
+
+    let result2DT =
+        evaluateSectorGeneric(
+            matrix2DT,
+            listD1,
+            listD2,
+            listDiff2,
+            listSum2,
+            listAM2,
+            "2DT"
+        );
+
+
+    let result2DB =
+        evaluateSectorGeneric(
+            matrix2DB,
+            listD2,
+            listD3,
+            listDiff3,
+            listSum3,
+            listAM3,
+            "2DB"
+        );
+
+
+    /*
+    ================================================================
+    DINAMIS
+
+    TIDAK DIKUNCI KE 2DD.
+
+    SETIAP DATASET BACKTEST BOLEH MEMILIH:
+    2DD / 2DT / 2DB
+    BERDASARKAN POWER SCORE.
+    ================================================================
+    */
+
+    let engineContenders = [
+
+        result2DD,
+
+        result2DT,
+
+        result2DB
+
     ];
 
 
-    /*
-       SEKTOR TIDAK DITETAPKAN.
-
-       Setiap training window
-       melakukan kompetisi ulang.
-    */
-
-    all.sort(
-        (a,b) =>
-            b.sectorStrength -
-            a.sectorStrength
+    engineContenders.sort(
+        (a, b) =>
+            b.powerScore -
+            a.powerScore
     );
 
 
-    return {
-
-        winner:
-            all[0],
-
-        all
-
-    };
-
-}
-
-
-/* ================================================================
-   PREDICTION
-================================================================ */
-
-function predict(
-    history,
-    strategy
-){
-
-    const competition =
-        competeSectors(
-            history,
-            strategy
-        );
-
-
-    return competition;
-
-}
-
-
-/* ================================================================
-   BACKTEST ONE STEP
-================================================================ */
-
-function backtestOne(
-    data,
-    trainEnd,
-    strategy
-){
-
-    const history =
-        data.slice(
-            0,
-            trainEnd
-        );
-
-
-    const actual =
-        data[trainEnd];
-
-
-    const prediction =
-        predict(
-            history,
-            strategy
-        );
-
-
-    const winner =
-        prediction.winner;
-
-
-    const actualPair =
-        getSectorPair(
-            actual,
-            winner.sector
-        );
-
-
-    const index =
-        winner.candidates.findIndex(
-            x =>
-                x.pair ===
-                actualPair
-        );
-
-
-    return {
-
-        hit:
-            index >= 0,
-
-        rank:
-            index >= 0
-            ? index+1
-            : null,
-
-        sector:
-            winner.sector,
-
-        actual,
-        actualPair,
-
-        prediction:
-
-            winner.candidates
-            .map(x=>x.pair),
-
-        sectorStrength:
-            winner.sectorStrength
-
-    };
-
-}
-
-
-/* ================================================================
-   STRATEGY EVALUATION
-================================================================ */
-
-function evaluateStrategy(
-    data,
-    strategy,
-    backtestCount
-){
-
-    const start =
-        data.length -
-        backtestCount;
-
-
-    let hits = 0;
-
-    let misses = 0;
-
-    let rankScore = 0;
-
-    let sectorCounts = {
-
-        "2DD":0,
-
-        "2DT":0,
-
-        "2DB":0
-
-    };
-
-
-    const details=[];
-
-
-    for(
-        let i=0;
-        i<backtestCount;
-        i++
-    ){
-
-        const trainEnd =
-            start+i;
-
-
-        if(
-            trainEnd <
-            ENGINE_CONFIG.MIN_HISTORY
-        ){
-
-            continue;
-
-        }
-
-
-        const result =
-            backtestOne(
-                data,
-                trainEnd,
-                strategy
-            );
-
-
-        details.push(result);
-
-
-        sectorCounts[
-            result.sector
-        ]++;
-
-
-        if(result.hit){
-
-            hits++;
-
-            /*
-               Rank 1 lebih berharga
-               daripada rank 40.
-            */
-
-            rankScore +=
-                1 /
-                (
-                    result.rank || 100
-                );
-
-        }
-        else{
-
-            misses++;
-
-        }
-
-    }
-
-
-    const total =
-        hits+misses;
-
-
-    const hitRate =
-        total
-        ? hits/total
-        : 0;
-
-
-    /*
-       FITNESS TIDAK HANYA HIT RATE.
-
-       Rank prediction ikut dinilai.
-       Jadi engine tidak sekadar mengejar
-       hit acak.
-    */
-
-    const fitness =
-        hitRate * 1000 +
-        rankScore * 100;
-
-
-    return {
-
-        fitness,
-
-        hits,
-
-        misses,
-
-        total,
-
-        hitRate,
-
-        rankScore,
-
-        details,
-
-        sectorCounts
-
-    };
-
-}
-
-
-/* ================================================================
-   POPULATION
-================================================================ */
-
-function createPopulation(seed){
-
-    const population=[];
-
-
-    population.push(
-        createStrategy(seed)
-    );
-
-
-    for(
-        let i=1;
-        i<ENGINE_CONFIG.POPULATION_SIZE;
-        i++
-    ){
-
-        population.push(
-            createStrategy(
-                seed+i*137
-            )
-        );
-
-    }
-
-
-    return population;
-
-}
-
-
-/* ================================================================
-   LEARN
-================================================================ */
-
-function learnStrategy(
-    data,
-    backtestCount
-){
-
-    let population =
-        createPopulation(
-            Date.now() &
-            0xffffffff
-        );
-
-
-    let globalBest = null;
-
-
-    for(
-        let generation=1;
-        generation<=
-        ENGINE_CONFIG.MAX_GENERATIONS;
-        generation++
-    ){
-
-        const evaluated=[];
-
-
-        for(
-            const strategy
-            of population
-        ){
-
-            const result =
-                evaluateStrategy(
-                    data,
-                    strategy,
-                    backtestCount
-                );
-
-
-            evaluated.push({
-
-                strategy,
-
-                ...result
-
-            });
-
-        }
-
-
-        evaluated.sort(
-            (a,b) =>
-                b.fitness -
-                a.fitness
-        );
-
-
-        const best =
-            evaluated[0];
-
-
-        if(
-            !globalBest ||
-            best.fitness >
-            globalBest.fitness
-        ){
-
-            globalBest = {
-
-                ...best,
-
-                generation
-
-            };
-
-        }
-
-
-        writeAuditLog(
-            "GEN "+generation+
-            " | FITNESS "+
-            best.fitness.toFixed(2)+
-            " | HIT "+
-            best.hits+
-            " | MISS "+
-            best.misses+
-            " | 2DD="+
-            best.sectorCounts["2DD"]+
-            " 2DT="+
-            best.sectorCounts["2DT"]+
-            " 2DB="+
-            best.sectorCounts["2DB"]
-        );
-
-
-        /*
-           TARGET UTAMA:
-
-           MISS <= 1
-        */
-
-        if(
-            best.misses <=
-            ENGINE_CONFIG.MISS_TARGET
-        ){
-
-            writeAuditLog(
-                "<span style='color:#2ecc71;font-weight:bold'>" +
-                "STRATEGI BERHASIL: MISS <= 1" +
-                "</span>"
-            );
-
-            return globalBest;
-
-        }
-
-
-        /*
-           ELITE
-        */
-
-        const elite =
-            evaluated.slice(
-                0,
-                ENGINE_CONFIG.ELITE_SIZE
-            );
-
-
-        /*
-           STRATEGI BARU:
-
-           bukan sekadar mengganti
-           satu angka.
-
-           Elite dipertahankan,
-           sisanya dimutasi.
-        */
-
-        const next=[];
-
-
-        for(
-            const item of elite
-        ){
-
-            next.push(
-                item.strategy
-            );
-
-        }
-
-
-        let seed =
-            generation*100000;
-
-
-        while(
-            next.length <
-            ENGINE_CONFIG.POPULATION_SIZE
-        ){
-
-            const parent =
-                elite[
-                    next.length %
-                    elite.length
-                ].strategy;
-
-
-            const child =
-                mutateStrategy(
-                    parent,
-                    seed+
-                    next.length*7919
-                );
-
-
-            next.push(child);
-
-        }
-
-
-        population =
-            next;
-
-    }
-
-
-    return globalBest;
-
-}
-
-
-/* ================================================================
-   APPLY FINAL PREDICTION
-================================================================ */
-
-function applyFinalPrediction(
-    data,
-    strategy
-){
-
-    const prediction =
-        predict(
-            data,
-            strategy
-        );
-
-
-    const winner =
-        prediction.winner;
-
-
-    const output =
-        winner.candidates
-        .map(x=>x.pair)
-        .join("*");
-
-
-    document
-        .getElementById(
-            "outputTitle"
-        )
-        .textContent =
-            "TOP "+
-            winner.candidates.length+
-            " "+
-            winner.sector;
-
-
-    document
-        .getElementById(
-            "outputResult"
-        )
-        .value =
-            output;
-
-
-    writeAuditLog(
-        "<b>FINAL SECTOR: "+
-        winner.sector+
-        "</b>"
-    );
-
-
-    writeAuditLog(
-        "FINAL OUTPUT: "+
-        output
-    );
-
-
-    return winner;
+    return engineContenders[0];
 
 }
 
@@ -1624,448 +1245,845 @@ function applyFinalPrediction(
    SINGLE PREDICTION
 ================================================================ */
 
-function prosesEngineProUtuh(){
+function prosesEngineProUtuh() {
 
     clearAuditLog();
 
-
-    const data =
-        parseInputData();
-
-
-    if(
-        data.length <
-        ENGINE_CONFIG.MIN_HISTORY
-    ){
-
-        engineStatus(
-            "Data minimal "+
-            ENGINE_CONFIG.MIN_HISTORY+
-            " hasil."
-        );
-
-        return;
-
-    }
-
-
     writeAuditLog(
-        "<b>PREDIKSI SINGLE</b>"
+        "Initialising Single Prediction Engine Execution..."
     );
 
 
-    /*
-       Untuk single prediction,
-       gunakan strategi hasil learning
-       jika tersedia.
-
-       Kalau belum ada,
-       learning singkat dibuat.
-    */
-
-    let strategy =
-        ENGINE_STATE.bestStrategy;
-
-
-    if(!strategy){
-
-        const learned =
-            learnStrategy(
-                data,
-                Math.min(
-                    ENGINE_CONFIG.DEFAULT_BACKTEST,
-                    data.length -
-                    ENGINE_CONFIG.MIN_HISTORY
-                )
-            );
-
-
-        if(!learned){
-
-            engineStatus(
-                "Strategi belum berhasil ditemukan."
-            );
-
-            return;
-
-        }
-
-
-        strategy =
-            learned.strategy;
-
-
-        ENGINE_STATE.bestStrategy =
-            strategy;
-
-    }
-
-
-    applyFinalPrediction(
-        data,
-        strategy
-    );
-
-}
-
-
-/* ================================================================
-   RUN BACKTEST
-================================================================ */
-
-function runSelfLearningEngine(
-    iterationsCount
-){
-
-    clearAuditLog();
-
-
-    const data =
-        parseInputData();
-
-
-    const requested =
-        Number(iterationsCount) || 8;
-
-
-    if(
-        data.length <
-        ENGINE_CONFIG.MIN_HISTORY+
-        requested
-    ){
-
-        engineStatus(
-            "Data tidak cukup. "+
-            "Untuk "+requested+
-            " backtest diperlukan minimal "+
-            (
-                ENGINE_CONFIG.MIN_HISTORY+
-                requested
-            )+
-            " data."
-        );
-
-        return;
-
-    }
-
-
-    const overlay =
-        document.getElementById(
-            "loadingOverlay"
-        );
-
-
-    const loading =
-        document.getElementById(
-            "loadingText"
-        );
-
-
-    overlay.style.display =
-        "flex";
-
-
-    loading.innerHTML =
-        "Mencari strategi terbaik...";
-
-
-    writeAuditLog(
-        "================================================"
-    );
-
-    writeAuditLog(
-        "<b>DYNAMIC SELF-LEARNING BACKTEST</b>"
-    );
-
-    writeAuditLog(
-        "Backtest: "+requested
-    );
-
-    writeAuditLog(
-        "Input: "+data.length+" data"
-    );
-
-    writeAuditLog(
-        "Target: MISS <= 1"
-    );
-
-    writeAuditLog(
-        "Sektor: 2DD / 2DT / 2DB DINAMIS"
-    );
-
-    writeAuditLog(
-        "================================================"
-    );
-
-
-    /*
-       Jalankan async supaya browser
-       tidak terlihat hang.
-    */
-
-    setTimeout(()=>{
-
-        const best =
-            learnStrategy(
-                data,
-                requested
-            );
-
-
-        if(!best){
-
-            overlay.style.display =
-                "none";
-
-            engineStatus(
-                "Learning gagal menghasilkan strategi."
-            );
-
-            return;
-
-        }
-
-
-        ENGINE_STATE = {
-
-            bestStrategy:
-                best.strategy,
-
-            bestFitness:
-                best.fitness,
-
-            generation:
-                best.generation,
-
-            hits:
-                best.hits,
-
-            misses:
-                best.misses,
-
-            total:
-                best.total
-
-        };
-
-
-        writeAuditLog(
-            "------------------------------------------------"
-        );
-
-        writeAuditLog(
-            "<b>STRATEGI TERBAIK DITEMUKAN</b>"
-        );
-
-        writeAuditLog(
-            "Generation: "+
-            best.generation
-        );
-
-        writeAuditLog(
-            "Fitness: "+
-            best.fitness.toFixed(2)
-        );
-
-        writeAuditLog(
-            "HIT: "+
-            best.hits+
-            "/"+
-            best.total
-        );
-
-        writeAuditLog(
-            "MISS: "+
-            best.misses+
-            "/"+
-            best.total
-        );
-
-
-        /*
-           AUDIT SETIAP BACKTEST
-        */
-
-        for(
-            let i=0;
-            i<best.details.length;
-            i++
-        ){
-
-            const r =
-                best.details[i];
-
-
-            writeAuditLog(
-
-                "[TEST "+
-                (i+1)+
-                "] "+
-
-                "TARGET="+
-                r.actual+
-
-                " | "+
-
-                r.sector+
-                ":"+
-                r.actualPair+
-
-                " | RANK="+
-                (
-                    r.rank || "MISS"
-                )+
-
-                " | "+
-                (
-                    r.hit
-                    ?"<span style='color:#2ecc71;font-weight:bold'>HIT</span>"
-                    :"<span style='color:#e74c3c;font-weight:bold'>MISS</span>"
-                )
-
-            );
-
-        }
-
-
-        /*
-           HASIL FINAL DITENTUKAN
-           OLEH SEKTOR DINAMIS TERAKHIR.
-        */
-
-        applyFinalPrediction(
-            data,
-            best.strategy
-        );
-
-
-        writeAuditLog(
-            "------------------------------------------------"
-        );
-
-
-        if(
-            best.misses <= 1
-        ){
-
-            writeAuditLog(
-                "<span style='color:#2ecc71;font-weight:bold'>" +
-                "LEARNING SUCCESS — MISS <= 1" +
-                "</span>"
-            );
-
-        }
-        else{
-
-            writeAuditLog(
-                "<span style='color:#f1c40f;font-weight:bold'>" +
-                "MAX GENERATION — STRATEGI TERBAIK DIPERTAHANKAN" +
-                "</span>"
-            );
-
-        }
-
-
-        overlay.style.display =
-            "none";
-
-
-    },50);
-
-}
-
-
-/* ================================================================
-   COPY
-================================================================ */
-
-function copyHasil(){
-
-    const output =
+    let rawInputValue =
         document
-        .getElementById(
-            "outputResult"
-        )
-        .value;
+            .getElementById('inputData')
+            .value
+            .trim();
 
 
-    if(!output){
+    if (!rawInputValue) {
+
+        writeAuditLog(
+            "<b style='color:#e74c3c;'>ERROR: Data RM6 belum dimasukkan.</b>"
+        );
 
         return;
 
     }
 
 
-    navigator
-        .clipboard
-        .writeText(output)
-        .then(()=>{
+    let dataTokens =
+        rawInputValue
+            .split(',')
+            .map(
+                item => item.trim()
+            )
+            .filter(
+                item => item.length > 0
+            );
 
-            const btn =
-                document.getElementById(
-                    "btnCopy"
+
+    if (dataTokens.length < 2) {
+
+        writeAuditLog(
+            "<b style='color:#e74c3c;'>ERROR: Minimal 2 data.</b>"
+        );
+
+        return;
+
+    }
+
+
+    let winningEngine =
+        executeEngineForDataset(
+            dataTokens
+        );
+
+
+    document
+        .getElementById('outputTitle')
+        .textContent =
+        `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
+
+
+    document
+        .getElementById('outputResult')
+        .value =
+        winningEngine.topLN.join('*');
+
+
+    writeAuditLog(
+        `Prediction Completed. Winning Sector: <b>${winningEngine.sectorName}</b>`
+    );
+
+    writeAuditLog(
+        `Power Score: <b>${winningEngine.powerScore}</b>`
+    );
+
+}
+
+
+/* ================================================================
+   AUTO MUTATION ALGORITHM
+================================================================ */
+
+function mutateAlgorithmStrategy(
+    attemptLevel
+) {
+
+    if (attemptLevel === 1) {
+
+        ENGINE_SYS_CONFIG.STRATEGY_MODE =
+            "GEN_2_STRICT_WEIGHTS";
+
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+            1500;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+            120;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+            60;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+            30;
+
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+            2;
+
+    }
+
+    else if (attemptLevel === 2) {
+
+        ENGINE_SYS_CONFIG.STRATEGY_MODE =
+            "GEN_3_ULTRA_MATRIX";
+
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+            2000;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+            150;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+            90;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+            40;
+
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+            1;
+
+    }
+
+    else {
+
+        ENGINE_SYS_CONFIG.STRATEGY_MODE =
+            "GEN_4_HYBRID_SHIFT";
+
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+            2500;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+            200;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+            100;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+            50;
+
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+            3;
+
+    }
+
+}
+
+
+/* ================================================================
+   MAIN SELF LEARNING ENGINE
+   MAX = 16 GENERATIONS
+================================================================ */
+
+async function runSelfLearningEngine(
+    iterationsCount
+) {
+
+    clearAuditLog();
+
+
+    writeAuditLog(
+        "===================================================="
+    );
+
+    writeAuditLog(
+        "STARTING AUTOMATED SELF-LEARNING ENGINE"
+    );
+
+    writeAuditLog(
+        "MAX GENERATION = 16"
+    );
+
+    writeAuditLog(
+        "MISS TARGET = <= 1"
+    );
+
+    writeAuditLog(
+        "SECTOR = 2DD / 2DT / 2DB DINAMIS"
+    );
+
+    writeAuditLog(
+        "===================================================="
+    );
+
+
+    let rawInputValue =
+        document
+            .getElementById('inputData')
+            .value
+            .trim();
+
+
+    if (!rawInputValue) {
+
+        writeAuditLog(
+            "<b style='color:#e74c3c;'>ERROR: Data RM6 belum dimasukkan.</b>"
+        );
+
+        return;
+
+    }
+
+
+    let dataTokens =
+        rawInputValue
+            .split(',')
+            .map(
+                item => item.trim()
+            )
+            .filter(
+                item => item.length > 0
+            );
+
+
+    if (
+        dataTokens.length <
+        iterationsCount + 2
+    ) {
+
+        writeAuditLog(
+            `<b style='color:#e74c3c;'>ERROR: Data tidak cukup untuk ${iterationsCount}x backtest.</b>`
+        );
+
+        writeAuditLog(
+            `Minimal diperlukan ${iterationsCount + 2} data.`
+        );
+
+        return;
+
+    }
+
+
+    let loadingOverlay =
+        document.getElementById(
+            'loadingOverlay'
+        );
+
+    let loadingText =
+        document.getElementById(
+            'loadingText'
+        );
+
+
+    loadingOverlay.style.display =
+        'flex';
+
+
+    /*
+    ================================================================
+    RESET STRATEGY
+    ================================================================
+    */
+
+    ENGINE_SYS_CONFIG.STRATEGY_MODE =
+        "STANDARD_ENTERPRISE";
+
+    ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+        1000;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+        100;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+        80;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+        60;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3 =
+        40;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4 =
+        20;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5 =
+        0;
+
+    ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+        3;
+
+
+    let generationAttempt = 0;
+
+    let bestMissCount =
+        Infinity;
+
+    let bestResult = null;
+
+    let completed = false;
+
+
+    /*
+    ================================================================
+    GENERATION LOOP
+    ================================================================
+    */
+
+    try {
+
+        while (
+            generationAttempt <
+            ENGINE_SYS_CONFIG.MAX_GENERATIONS
+        ) {
+
+            generationAttempt++;
+
+
+            writeAuditLog(
+                `<br/><b>========== GENERATION ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS} ==========</b>`
+            );
+
+
+            writeAuditLog(
+                `Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`
+            );
+
+
+            writeAuditLog(
+                `Matrix Depth: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`
+            );
+
+
+            let successCount = 0;
+
+            let failCount = 0;
+
+
+            let totalAvailable =
+                dataTokens.length;
+
+
+            let startIndex =
+                totalAvailable -
+                iterationsCount;
+
+
+            /*
+            ============================================================
+            BACKTEST LOOP
+            ============================================================
+            */
+
+            for (
+                let testIndex = 0;
+                testIndex < iterationsCount;
+                testIndex++
+            ) {
+
+                loadingText.innerHTML =
+                    `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
+                    `BACKTEST ${testIndex + 1}/${iterationsCount}<br>` +
+                    `MODE: ${ENGINE_SYS_CONFIG.STRATEGY_MODE}`;
+
+
+                await yieldUI();
+
+
+                let currentCutLength =
+                    startIndex +
+                    testIndex;
+
+
+                let trainingData =
+                    dataTokens.slice(
+                        0,
+                        currentCutLength
+                    );
+
+
+                let targetActual =
+                    dataTokens[
+                        currentCutLength
+                    ];
+
+
+                let prediction =
+                    executeEngineForDataset(
+                        trainingData
+                    );
+
+
+                let secName =
+                    prediction.sectorName;
+
+
+                let topLN =
+                    prediction.topLN;
+
+
+                /*
+                ========================================================
+                TARGET 2 DIGIT SESUAI SEKTOR PEMENANG
+                ========================================================
+                */
+
+                let actualPair = "";
+
+
+                if (secName === "2DD") {
+
+                    actualPair =
+                        targetActual.substring(
+                            0,
+                            2
+                        );
+
+                }
+
+                else if (secName === "2DT") {
+
+                    actualPair =
+                        targetActual.substring(
+                            1,
+                            3
+                        );
+
+                }
+
+                else if (secName === "2DB") {
+
+                    actualPair =
+                        targetActual.substring(
+                            2,
+                            4
+                        );
+
+                }
+
+
+                let isHit =
+                    topLN.includes(
+                        actualPair
+                    );
+
+
+                if (isHit) {
+
+                    successCount++;
+
+
+                    writeAuditLog(
+                        `[GEN ${generationAttempt}][TEST ${testIndex + 1}] ` +
+                        `Target: ${targetActual} ` +
+                        `(${secName}:${actualPair}) ` +
+                        `=> <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`
+                    );
+
+                }
+
+                else {
+
+                    failCount++;
+
+
+                    writeAuditLog(
+                        `[GEN ${generationAttempt}][TEST ${testIndex + 1}] ` +
+                        `Target: ${targetActual} ` +
+                        `(${secName}:${actualPair}) ` +
+                        `=> <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`
+                    );
+
+                }
+
+
+                writeAuditLog(
+                    `Sector Winner: <b>${secName}</b> | Power: ${prediction.powerScore}`
                 );
 
 
-            const old =
+                /*
+                --------------------------------------------------------
+                SIMPAN HASIL TERBAIK
+                --------------------------------------------------------
+                */
+
+                if (
+                    failCount <
+                    bestMissCount
+                ) {
+
+                    bestMissCount =
+                        failCount;
+
+                    bestResult = {
+                        sectorName:
+                            secName,
+
+                        topLN:
+                            topLN.slice(),
+
+                        powerScore:
+                            prediction.powerScore,
+
+                        generation:
+                            generationAttempt,
+
+                        hits:
+                            successCount,
+
+                        misses:
+                            failCount
+
+                    };
+
+                }
+
+
+                await yieldUI();
+
+
+                /*
+                ========================================================
+                EARLY SUCCESS
+                MISS <= 1
+                ========================================================
+                */
+
+                if (
+                    failCount <= 1 &&
+                    testIndex ===
+                    iterationsCount - 1
+                ) {
+
+                    completed = true;
+
+                    break;
+
+                }
+
+            }
+
+
+            /*
+            ============================================================
+            GENERATION RESULT
+            ============================================================
+            */
+
+            writeAuditLog(
+                `<b>RESULT GEN ${generationAttempt}:</b> ` +
+                `HIT = ${successCount} | MISS = ${failCount}`
+            );
+
+
+            /*
+            ============================================================
+            SUCCESS
+            ============================================================
+            */
+
+            if (
+                failCount <= 1
+            ) {
+
+                loadingText.innerHTML =
+                    `LEARNING SUCCESS<br>` +
+                    `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
+                    `MISS = ${failCount}`;
+
+
+                writeAuditLog(
+                    `<span style='color:#2ecc71;font-weight:bold;'>`
+                    +
+                    `[LEARNING SUCCESS]`
+                    +
+                    `</span>`
+                );
+
+
+                writeAuditLog(
+                    `MISS = <b>${failCount}</b> (TARGET <= 1)`
+                );
+
+
+                writeAuditLog(
+                    `Learning berhenti pada GEN ${generationAttempt}.`
+                );
+
+
+                completed = true;
+
+                break;
+
+            }
+
+
+            /*
+            ============================================================
+            MISS > 1
+            BUAT LOGIKA BARU
+            ============================================================
+            */
+
+            if (
+                failCount > 1
+            ) {
+
+                if (
+                    generationAttempt <
+                    ENGINE_SYS_CONFIG.MAX_GENERATIONS
+                ) {
+
+                    writeAuditLog(
+                        `<span style='color:#e67e22;font-weight:bold;'>`
+                        +
+                        `[MISS > 1]`
+                        +
+                        ` Membuat strategi algoritma berikutnya...`
+                        +
+                        `</span>`
+                    );
+
+
+                    mutateAlgorithmStrategy(
+                        generationAttempt
+                    );
+
+
+                    writeAuditLog(
+                        `NEW STRATEGY: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`
+                    );
+
+
+                    writeAuditLog(
+                        `Matrix Depth baru: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`
+                    );
+
+
+                    await yieldUI();
+
+                }
+
+                else {
+
+                    /*
+                    ====================================================
+                    GEN 16 TERAKHIR
+                    ====================================================
+                    */
+
+                    writeAuditLog(
+                        `<span style='color:#f1c40f;font-weight:bold;'>`
+                        +
+                        `[MAX GENERATION REACHED]`
+                        +
+                        ` GEN 16 selesai tetapi MISS masih > 1.`
+                        +
+                        `</span>`
+                    );
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+        ================================================================
+        FINAL RESULT
+        ================================================================
+        */
+
+        if (bestResult) {
+
+            document
+                .getElementById('outputTitle')
+                .textContent =
+                `BEST RESULT ${bestResult.sectorName} — GEN ${bestResult.generation}`;
+
+
+            document
+                .getElementById('outputResult')
+                .value =
+                bestResult.topLN.join('*');
+
+
+            writeAuditLog(
+                "----------------------------------------------------"
+            );
+
+
+            writeAuditLog(
+                `<b>BEST RESULT:</b> ${bestResult.sectorName}`
+            );
+
+
+            writeAuditLog(
+                `Best Generation: <b>${bestResult.generation}</b>`
+            );
+
+
+            writeAuditLog(
+                `Best HIT: <b>${bestResult.hits}</b>`
+            );
+
+
+            writeAuditLog(
+                `Best MISS: <b>${bestResult.misses}</b>`
+            );
+
+
+            writeAuditLog(
+                `Best Power Score: <b>${bestResult.powerScore}</b>`
+            );
+
+
+            writeAuditLog(
+                `FINAL SECTOR: <b>${bestResult.sectorName}</b>`
+            );
+
+        }
+
+
+        if (completed) {
+
+            writeAuditLog(
+                `<span style='color:#2ecc71;font-weight:bold;'>`
+                +
+                `LEARNING SELESAI — TARGET MISS <= 1 TERCAPAI`
+                +
+                `</span>`
+            );
+
+        }
+
+        else {
+
+            writeAuditLog(
+                `<span style='color:#f1c40f;font-weight:bold;'>`
+                +
+                `SELESAI GEN 16 — TARGET BELUM TERCAPAI`
+                +
+                `</span>`
+            );
+
+            writeAuditLog(
+                `Strategi terbaik tetap dipertahankan.`
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        writeAuditLog(
+            `<span style='color:#e74c3c;font-weight:bold;'>`
+            +
+            `ERROR LEARNING: ${error.message}`
+            +
+            `</span>`
+        );
+
+        console.error(
+            "Self-Learning Error:",
+            error
+        );
+
+    }
+
+    finally {
+
+        loadingOverlay.style.display =
+            'none';
+
+    }
+
+}
+
+
+/* ================================================================
+   COPY RESULT
+================================================================ */
+
+function copyHasil() {
+
+    let outputText =
+        document
+            .getElementById('outputResult')
+            .value;
+
+
+    if (!outputText) {
+        return;
+    }
+
+
+    navigator.clipboard
+        .writeText(outputText)
+        .then(function() {
+
+            let btn =
+                document.getElementById(
+                    'btnCopy'
+                );
+
+            let oldText =
                 btn.textContent;
 
 
             btn.textContent =
-                "Copied!";
+                'Copied!';
 
 
             btn.style.backgroundColor =
-                "#27ae60";
+                '#27ae60';
 
 
-            setTimeout(()=>{
+            setTimeout(function() {
 
                 btn.textContent =
-                    old;
+                    oldText;
 
                 btn.style.backgroundColor =
-                    "#2980b9";
+                    '#2980b9';
 
-            },1200);
+            }, 1200);
 
         })
-        .catch(error=>{
+        .catch(function(error) {
 
-            engineStatus(
-                "Clipboard gagal: "+
-                error.message
+            console.error(
+                "Clipboard error:",
+                error
             );
 
         });
 
 }
-
-
-/* ================================================================
-   INITIAL LOG
-================================================================ */
-
-writeAuditLog(
-    "<b>RM6 DYNAMIC ENGINE READY</b>"
-);
-
-writeAuditLog(
-    "Output = 2 digit."
-);
-
-writeAuditLog(
-    "2DD / 2DT / 2DB = dinamis."
-);
-
-writeAuditLog(
-    "Backtest = walk-forward."
-);
-
-writeAuditLog(
-    "MISS > 1 = buat strategi baru."
-);
 
 </script>
 
