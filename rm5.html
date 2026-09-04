@@ -841,24 +841,50 @@ async function runSelfLearningEngine() {
             }
         }
 
-        if (bestResult) {
-            document.getElementById('outputTitle').textContent = `BEST RESULT ${bestResult.sectorName} — GEN ${bestResult.generation}`;
-            document.getElementById('outputResult').value = bestResult.topLN.join('*');
+		if (bestResult) {
+            // Update Textarea dan Title dengan Sektor & Generasi Terbaik
+            document.getElementById('outputTitle').textContent =
+                `BEST RESULT ${bestResult.sectorName} — GEN ${bestResult.generation} (MISS: ${bestResult.misses})`;
 
+            document.getElementById('outputResult').value =
+                bestResult.topLN.join('*');
+
+            writeAuditLog("<br/>====================================================");
+            writeAuditLog("<b>DETAIL REKAPITULASI HASIL TERBAIK (BEST MEMORY)</b>");
+            writeAuditLog("====================================================");
+            writeAuditLog(`Strategi Terbaik Ditemukan Pada : <b>GENERASI ${bestResult.generation}</b>`);
+            writeAuditLog(`Sektor Target Terpilih           : <b>${bestResult.sectorName}</b>`);
+            writeAuditLog(`Jumlah HIT                      : <b style='color:#2ecc71;'>${bestResult.hits}</b>`);
+            writeAuditLog(`Jumlah MISS                     : <b style='color:#e74c3c;'>${bestResult.misses}</b>`);
+            writeAuditLog(`Power Score Engine              : <b>${bestResult.powerScore}</b>`);
+            writeAuditLog(`Top LN Result                    : <b>${bestResult.topLN.join('*')}</b>`);
             writeAuditLog("----------------------------------------------------");
-            writeAuditLog(`<b>BEST RESULT:</b> ${bestResult.sectorName}`);
-            writeAuditLog(`Best Generation: <b>${bestResult.generation}</b>`);
-            writeAuditLog(`Best HIT: <b>${bestResult.hits}</b>`);
-            writeAuditLog(`Best MISS: <b>${bestResult.misses}</b>`);
-            writeAuditLog(`Best Power Score: <b>${bestResult.powerScore}</b>`);
-            writeAuditLog(`FINAL SECTOR: <b>${bestResult.sectorName}</b>`);
+            
+            // CETAK ULANG LOG HISTORIS DARI GENERASI TERBAIK
+            writeAuditLog(`<b>CATATAN HISTORIS EKSEKUSI GEN ${bestResult.generation} (BEST RUN):</b>`);
+            if (bestResult.executionLogs && bestResult.executionLogs.length > 0) {
+                bestResult.executionLogs.forEach(function(logLine) {
+                    writeAuditLog(` &gt;&gt; ${logLine}`);
+                });
+            }
+            writeAuditLog("----------------------------------------------------");
         }
 
         if (completed) {
-            writeAuditLog(`<span style='color:#2ecc71;font-weight:bold;'>LEARNING SELESAI — TARGET MISS <= ${allowedMiss} TERCAPAI</span>`);
+            writeAuditLog(
+                `<span style='color:#2ecc71;font-weight:bold;'>` +
+                `LEARNING SELESAI — TARGET MISS <= ${allowedMiss} TERCAPAI` +
+                `</span>`
+            );
         } else {
-            writeAuditLog(`<span style='color:#f1c40f;font-weight:bold;'>SELESAI GEN ${maxGenerations} — TARGET BELUM TERCAPAI</span>`);
-            writeAuditLog(`Strategi terbaik tetap dipertahankan.`);
+            writeAuditLog(
+                `<span style='color:#f1c40f;font-weight:bold;'>` +
+                `SELESAI GEN ${maxGenerations} — TARGET BELUM TERCAPAI.` +
+                `</span>`
+            );
+            writeAuditLog(
+                `Strategi terbaik (Gen ${bestResult ? bestResult.generation : '-'}, Miss ${bestResult ? bestResult.misses : '-'}) dipertahankan di Textarea & Log.`
+            );
         }
 
     } catch (error) {
