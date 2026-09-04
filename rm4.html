@@ -109,7 +109,7 @@
 <body>
 
 <div class="container">
-    <!-- <h2>Dashboard Analisis Pola Angka Terstruktur</h2> -->
+     <!-- <h2>Dashboard Analisis Pola Angka Terstruktur (5 Saringan / 6 Level)</h2> -->
     
     <label for="inputData">Masukkan Data (Pemisah Koma, Terlama di Depan):</label>
     <textarea id="inputData"></textarea>
@@ -137,8 +137,8 @@
     <h3>5. Engine 2DD</h3>
     <div class="panel-engine">
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1;"><label>Digit Pertama:</label><input type="text" id="DDDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Digit Kedua:</label><input type="text" id="DDDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1;"><label>Sortir Digit 1:</label><input type="text" id="DDDigit1" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1;"><label>Sortir Digit 2:</label><input type="text" id="DDDigit2" readonly style="background:#ecf0f1;"></div>
             <div style="flex: 1;"><label>Pemisah:</label>
                 <select id="DDSeparator" onchange="jalankanEngine2DD()">
                     <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
@@ -159,6 +159,10 @@
             <div id="boxDD2" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
             <div class="level-row"><span id="lblDD3" class="level-title">Level 3 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD3', 'DD', this)">Copy</button></div>
             <div id="boxDD3" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
+            <div class="level-row"><span id="lblDD4" class="level-title">Level 4 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD4', 'DD', this)">Copy</button></div>
+            <div id="boxDD4" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
+            <div class="level-row"><span id="lblDD5" class="level-title">Level 5 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDD5', 'DD', this)">Copy</button></div>
+            <div id="boxDD5" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
         </div>
     </div>
 
@@ -166,8 +170,8 @@
     <h3>6. Engine 2DT</h3>
     <div class="panel-engine">
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1;"><label>Digit Pertama:</label><input type="text" id="DTDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Digit Kedua:</label><input type="text" id="DTDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1;"><label>Sortir Digit 1:</label><input type="text" id="DTDigit1" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1;"><label>Sortir Digit 2:</label><input type="text" id="DTDigit2" readonly style="background:#ecf0f1;"></div>
             <div style="flex: 1;"><label>Pemisah:</label>
                 <select id="DTSeparator" onchange="jalankanEngine2DT()">
                     <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
@@ -188,6 +192,10 @@
             <div id="boxDT2" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
             <div class="level-row"><span id="lblDT3" class="level-title">Level 3 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT3', 'DT', this)">Copy</button></div>
             <div id="boxDT3" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
+            <div class="level-row"><span id="lblDT4" class="level-title">Level 4 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT4', 'DT', this)">Copy</button></div>
+            <div id="boxDT4" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
+            <div class="level-row"><span id="lblDT5" class="level-title">Level 5 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDT5', 'DT', this)">Copy</button></div>
+            <div id="boxDT5" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
         </div>
     </div>
 
@@ -195,8 +203,8 @@
     <h3>7. Engine 2DB</h3>
     <div class="panel-engine">
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1;"><label>Digit Pertama:</label><input type="text" id="DBDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
-            <div style="flex: 1;"><label>Digit Kedua:</label><input type="text" id="DBDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1;"><label>Sortir Digit 1:</label><input type="text" id="DBDigit1" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1;"><label>Sortir Digit 2:</label><input type="text" id="DBDigit2" readonly style="background:#ecf0f1;"></div>
             <div style="flex: 1;"><label>Pemisah:</label>
                 <select id="DBSeparator" onchange="jalankanEngine2DB()">
                     <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
@@ -217,6 +225,10 @@
             <div id="boxDB2" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
             <div class="level-row"><span id="lblDB3" class="level-title">Level 3 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB3', 'DB', this)">Copy</button></div>
             <div id="boxDB3" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
+            <div class="level-row"><span id="lblDB4" class="level-title">Level 4 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB4', 'DB', this)">Copy</button></div>
+            <div id="boxDB4" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
+            <div class="level-row"><span id="lblDB5" class="level-title">Level 5 = 0 LN</span><button class="btn-copy" onclick="copyLevelBox('boxDB5', 'DB', this)">Copy</button></div>
+            <div id="boxDB5" class="result-box" style="margin-top: 4px; max-height: 80px;">-</div>
         </div>
     </div>
 
@@ -280,7 +292,6 @@ let globalDataEngine = {
     am1: [], am2: [], am3: []
 };
 
-// Penyimpanan wadah salinan unik per tipe
 let wadahData = {
     DD: new Set(),
     DT: new Set(),
@@ -431,41 +442,40 @@ function prosesEngineGeneric(d1List, d2List, slsList, jmlList, amList, sepId, pr
     document.getElementById(prefix + 'Jml').value = (jmlList || []).join('');
     document.getElementById(prefix + 'AM').value = (amList || []).join('');
 
-    let sep = document.getElementById(sepId).value;
     let slsValid = (slsList || []).map(Number);
     let jmlValid = (jmlList || []).map(Number);
     let amValid = (amList || []);
+    let d1Valid = d1List;
+    let d2Valid = d2List;
 
-    let crossSet = new Set();
-    d1Str.split('').forEach(a => d2Str.split('').forEach(b => crossSet.add(a + b)));
-
-    let levels = { 0: [], 1: [], 2: [], 3: [] };
+    let levels = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [] };
 
     for (let i = 0; i <= 99; i++) {
         let pair = i.toString().padStart(2, '0');
-        if (!crossSet.has(pair)) {
-            levels[3].push(pair);
-        } else {
-            let d1 = parseInt(pair.charAt(0));
-            let d2 = parseInt(pair.charAt(1));
-            let sls = Math.abs(d1 - d2);
-            let jml = parseInt(getSingleDigitSum(d1, d2));
+        let d1Char = pair.charAt(0);
+        let d2Char = pair.charAt(1);
+        let d1Num = parseInt(d1Char);
+        let d2Num = parseInt(d2Char);
+        let sls = Math.abs(d1Num - d2Num);
+        let jml = parseInt(getSingleDigitSum(d1Num, d2Num));
 
-            let fails = 0;
-            if (slsValid.length && !slsValid.includes(sls)) fails++;
-            if (jmlValid.length && !jmlValid.includes(jml)) fails++;
-            if (amValid.length && !amValid.includes(pair.charAt(0)) && !amValid.includes(pair.charAt(1))) fails++;
+        let fails = 0;
+        // 5 Saringan Independen
+        if (!d1Valid.includes(d1Char)) fails++;
+        if (!d2Valid.includes(d2Char)) fails++;
+        if (slsValid.length && !slsValid.includes(sls)) fails++;
+        if (jmlValid.length && !jmlValid.includes(jml)) fails++;
+        if (amValid.length && !amValid.includes(d1Char) && !amValid.includes(d2Char)) fails++;
 
-            if (fails > 2) fails = 2;
-            levels[fails].push(pair);
-        }
+        if (fails > 5) fails = 5;
+        levels[fails].push(pair);
     }
 
-    for (let l = 0; l <= 3; l++) {
+    let sepVal = document.getElementById(sepId).value;
+    for (let l = 0; l <= 5; l++) {
         let arr = levels[l];
         let box = document.getElementById(`box${prefix}${l}`);
         let lbl = document.getElementById(`lbl${prefix}${l}`);
-        let sepVal = document.getElementById(sepId).value;
         if (box && lbl) {
             box.textContent = arr.length ? arr.join(sepVal) : "(Tidak ada angka)";
             lbl.textContent = `Level ${l} = ${arr.length} LN`;
@@ -481,13 +491,11 @@ function copyLevelBox(boxId, type, btn) {
     let box = document.getElementById(boxId);
     if (!box || !box.textContent || box.textContent === "(Tidak ada angka)") return;
     
-    // Ambil data item, split berdasarkan karakter pemisah yang ada di box (atau default *)
     let textItems = box.textContent.split(/[\s*#,]/).filter(item => item.length > 0);
     textItems.forEach(item => wadahData[type].add(item));
     
     updateWadahUI(type);
 
-    // Salin ke clipboard juga
     navigator.clipboard.writeText(box.textContent).then(() => {
         let old = btn.textContent;
         btn.textContent = 'Copied!';
@@ -511,7 +519,6 @@ function updateWadahUI(type) {
         lblEl.textContent = `Salinan 2${type} (0 LN)`;
     }
 
-    // Perbarui Hasil Olahan 3 Digit setelah wadah berubah
     prosesHasil3Digit();
 }
 
@@ -531,18 +538,15 @@ function copyWadah(boxId, btn) {
     });
 }
 
-// Logika Penggabungan 2 Digit Menjadi 3 Digit (3DD & 3DB)
 function prosesHasil3Digit() {
     let arrDD = Array.from(wadahData.DD);
     let arrDT = Array.from(wadahData.DT);
     let arrDB = Array.from(wadahData.DB);
 
-    // 3DD: Perkawinan antara wadah 2DD dan 2DT (Irisan digit belakang 2DD == digit depan 2DT)
     let set3DD = new Set();
     if (arrDD.length > 0 && arrDT.length > 0) {
         for (let a of arrDD) {
             for (let b of arrDT) {
-                // a format "XY", b format "YZ" -> gabung jadi "XYZ" di mana Y adalah digit akhir a dan digit awal b
                 if (a.charAt(1) === b.charAt(0)) {
                     set3DD.add(a + b.charAt(1));
                 }
@@ -550,7 +554,6 @@ function prosesHasil3Digit() {
         }
     }
 
-    // 3DB: Perkawinan antara wadah 2DT dan 2DB (Irisan digit belakang 2DT == digit depan 2DB)
     let set3DB = new Set();
     if (arrDT.length > 0 && arrDB.length > 0) {
         for (let b of arrDT) {
@@ -562,7 +565,6 @@ function prosesHasil3Digit() {
         }
     }
 
-    // Render 3DD
     let res3DD = Array.from(set3DD);
     let box3DD = document.getElementById('box3DD');
     let lbl3DD = document.getElementById('lbl3DD');
@@ -574,7 +576,6 @@ function prosesHasil3Digit() {
         lbl3DD.textContent = `3DD = 0 LN`;
     }
 
-    // Render 3DB
     let res3DB = Array.from(set3DB);
     let box3DB = document.getElementById('box3DB');
     let lbl3DB = document.getElementById('lbl3DB');
