@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Analisa</title>
+    <title>Self-Learning Engine Enterprise</title>
     <style>
         * {
             box-sizing: border-box;
@@ -18,11 +18,12 @@
         }
         .container {
             width: 100%;
-            max-width: 750px;
+            max-width: 800px;
             background: #ffffff;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
         }
         h2 {
             margin-top: 0;
@@ -50,29 +51,43 @@
             resize: vertical;
         }
         .input-area {
-            height: 110px;
+            height: 100px;
         }
         .output-area {
-            height: 140px;
+            height: 120px;
             background-color: #eaedd0;
             color: #2c3e50;
             font-weight: bold;
         }
-        button.btn-process {
-            width: 100%;
-            background-color: #27ae60;
-            color: white;
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
             border: none;
-            padding: 14px;
-            font-size: 16px;
+            padding: 12px;
+            font-size: 14px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
-            margin-bottom: 25px;
+        }
+        button.btn-process {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
         }
         button.btn-process:hover {
             background-color: #219653;
+        }
+        button.btn-learning {
+            flex: 2;
+            background-color: #e67e22;
+            color: white;
+        }
+        button.btn-learning:hover {
+            background-color: #d35400;
         }
         .result-header {
             display: flex;
@@ -88,12 +103,8 @@
         .btn-copy {
             background-color: #2980b9;
             color: white;
-            border: none;
             padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
             font-size: 12px;
-            font-weight: bold;
         }
         .btn-copy:hover {
             background-color: #1f618d;
@@ -105,38 +116,81 @@
             font-size: 12px;
             padding: 15px;
             border-radius: 6px;
-            height: 180px;
+            height: 250px;
             overflow-y: auto;
-            margin-top: 20px;
+            margin-top: 15px;
+            border-left: 4px solid #e67e22;
         }
         .audit-title {
             color: #ffdd59;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-top: 15px;
+            margin-bottom: 5px;
             font-size: 13px;
+        }
+        
+        /* OVERLAY LOADING ANIMATION */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #e67e22;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>ENGINE PRO ENTERPRISE</h2>
+    <!-- Overlay Spinner Loading -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingText" class="loading-text">Memproses Self-Learning</div>
+    </div>
+
+    <!-- <h2>SISTEM ANALISA & SELF-LEARNING ENGINE ENTERPRISE</h2> -->
     
     <label for="inputData">Masukkan Data RM5 :</label>
     <textarea id="inputData" class="input-area" placeholder=""></textarea>
     
-    <button class="btn-process" onclick="prosesEngineProUtuh()">ANALISA</button>
+    <div class="btn-group">
+        <button class="btn-process" onclick="prosesEngineProUtuh()">PREDIKSI SINGLE</button>
+        <button class="btn-learning" onclick="runSelfLearningEngine(5)">RUN (BACKTEST)</button>
+    </div>
 
     <div class="result-header">
-        <span id="outputTitle" class="result-title">TOP RESULT (0 LN)</span>
-        <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy to Clipboard</button>
+        <span id="outputTitle" class="result-title">TOP RESULT ENGINE (0 LN)</span>
+        <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy</button>
     </div>
 
     <textarea id="outputResult" class="output-area" readonly placeholder=""></textarea>
 
     <!-- Console Log & Audit Trail Box -->
     <div class="audit-title">LOG AUDIT EXECUTION:</div>
-    <div id="auditLog" class="audit-box">Ready...</div>
+    <div id="auditLog" class="audit-box">Ready..</div>
 </div>
 
 <script>
@@ -146,16 +200,18 @@
  * ====================================================================
  */
 
-// REGISTRY UTAMA CONFIGURATION
-const ENGINE_SYS_CONFIG = {
+// CONFIGURATION STATE (DAPAT DI-ADAPTASI SECARA DYNAMIS OLEH LEARNING ENGINE)
+let ENGINE_SYS_CONFIG = {
     MAX_OUTPUT_LIMIT: 50,
     SIMULATION_MATRIX_DEPTH: 1000,
-    WEIGHT_LEVEL_0: 100, // Pass Sempurna (0 Fail)
-    WEIGHT_LEVEL_1: 80,  // Pass 1 Fail
-    WEIGHT_LEVEL_2: 60,  // Pass 2 Fail
-    WEIGHT_LEVEL_3: 40,  // Pass 3 Fail
-    WEIGHT_LEVEL_4: 20,  // Pass 4 Fail
-    WEIGHT_LEVEL_5: 0    // Gagal Total
+    WEIGHT_LEVEL_0: 100, 
+    WEIGHT_LEVEL_1: 80,  
+    WEIGHT_LEVEL_2: 60,  
+    WEIGHT_LEVEL_3: 40,  
+    WEIGHT_LEVEL_4: 20,  
+    WEIGHT_LEVEL_5: 0,
+    AM_MIN_LENGTH: 3,     // Param Adaptif 1: Panjang Min Coverage AM
+    STRATEGY_MODE: "STANDARD_ENTERPRISE" // Mode Algoritma Aktif
 };
 
 // AUDIT LOGGER UTILITY
@@ -193,14 +249,10 @@ function calculateAbsoluteDifference(digitValA, digitValB) {
     return diffResult.toString();
 }
 
-// 3. COMBINATORIAL SUBSET GENERATOR
+// 3. COMBINATORIAL SUBSET GENERATOR[cite: 2]
 function generateCombinatorialSubsets(sourceArray, subsetLength) {
-    if (subsetLength === 0) {
-        return [[]];
-    }
-    if (sourceArray.length === 0) {
-        return [];
-    }
+    if (subsetLength === 0) return [[]];
+    if (sourceArray.length === 0) return [];
     
     let headElement = sourceArray[0];
     let tailElements = sourceArray.slice(1);
@@ -210,11 +262,10 @@ function generateCombinatorialSubsets(sourceArray, subsetLength) {
     });
     
     let subsetsWithoutHead = generateCombinatorialSubsets(tailElements, subsetLength);
-    
     return subsetsWithHead.concat(subsetsWithoutHead);
 }
 
-// 4. ADAPTIVE AM EXTRACTOR
+// 4. ADAPTIVE AM EXTRACTOR (DYNAMICALLY ADAPTIVE)[cite: 2]
 function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
     let uniqueCharacterSet = new Set();
     
@@ -224,21 +275,20 @@ function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
         
         if (extractedString && typeof extractedString === 'string') {
             for (let charIndex = 0; charIndex < extractedString.length; charIndex++) {
-                let singleChar = extractedString.charAt(charIndex);
-                uniqueCharacterSet.add(singleChar);
+                uniqueCharacterSet.add(extractedString.charAt(charIndex));
             }
         }
     }
     
     let sortedCharacterSet = Array.from(uniqueCharacterSet).sort();
-    
     if (sortedCharacterSet.length === 0) {
         return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     }
 
     let optimalSubSetAM = null;
+    let minLen = ENGINE_SYS_CONFIG.AM_MIN_LENGTH;
     
-    for (let currentLength = 3; currentLength <= sortedCharacterSet.length; currentLength++) {
+    for (let currentLength = minLen; currentLength <= sortedCharacterSet.length; currentLength++) {
         let generatedSubsets = generateCombinatorialSubsets(sortedCharacterSet, currentLength);
         
         for (let comboIndex = 0; comboIndex < generatedSubsets.length; comboIndex++) {
@@ -253,8 +303,7 @@ function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
                 
                 if (verifyValue) {
                     for (let verifyCharIdx = 0; verifyCharIdx < verifyValue.length; verifyCharIdx++) {
-                        let verifyChar = verifyValue.charAt(verifyCharIdx);
-                        if (comboComparisonSet.has(verifyChar)) {
+                        if (comboComparisonSet.has(verifyValue.charAt(verifyCharIdx))) {
                             hitMatchCount++;
                         }
                     }
@@ -271,24 +320,19 @@ function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
                 break;
             }
         }
-        
-        if (optimalSubSetAM) {
-            break;
-        }
+        if (optimalSubSetAM) break;
     }
     
     return optimalSubSetAM || sortedCharacterSet;
 }
 
-// 5. MATRIXEXPANDED 1000 LINES GENERATOR
+// 5. MATRIXEXPANDED 1000 LINES GENERATOR[cite: 2]
 function build1000PermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
     let baseHistoricalPairs = [];
     
     for (let dataIdx = 0; dataIdx < processedDataRows.length; dataIdx++) {
         let selectedRow = processedDataRows[dataIdx];
-        let digitValA = selectedRow.digits[primaryPositionIdx];
-        let digitValB = selectedRow.digits[secondaryPositionIdx];
-        baseHistoricalPairs.push(digitValA + digitValB);
+        baseHistoricalPairs.push(selectedRow.digits[primaryPositionIdx] + selectedRow.digits[secondaryPositionIdx]);
     }
 
     let expandedPermutationSpace = [];
@@ -311,26 +355,18 @@ function build1000PermutationSpace(processedDataRows, primaryPositionIdx, second
     return expandedPermutationSpace;
 }
 
-// 6. EVALUATOR SEKTOR 2DD
-function evaluateSector2DD(matrixData, listD0, listD1, listDiff1, listSum1, listAM1) {
+// 6. EVALUATOR SEKTOR GENERIC (TERINTEGRASI DENGAN WEIGHT SYSTEM CONTEXT)[cite: 2]
+function evaluateSectorGeneric(matrixData, listA, listB, listDiff, listSum, listAM, sectorName) {
     let scoreBoard = {};
-    
     for (let pairVal = 0; pairVal <= 99; pairVal++) {
         let pairKey = pairVal.toString().padStart(2, '0');
         scoreBoard[pairKey] = {
-            pair: pairKey,
-            totalPowerScore: 0,
-            level0Count: 0,
-            level1Count: 0,
-            level2Count: 0,
-            level3Count: 0,
-            level4Count: 0,
-            level5Count: 0
+            pair: pairKey, totalPowerScore: 0, level0Count: 0, level1Count: 0
         };
     }
 
-    let validDiffNumbers = (listDiff1 || []).map(Number);
-    let validSumNumbers = (listSum1 || []).map(Number);
+    let validDiffNumbers = (listDiff || []).map(Number);
+    let validSumNumbers = (listSum || []).map(Number);
 
     for (let i = 0; i < matrixData.length; i++) {
         let pairStr = matrixData[i];
@@ -344,11 +380,11 @@ function evaluateSector2DD(matrixData, listD0, listD1, listDiff1, listSum1, list
 
         let penaltyFails = 0;
 
-        if (!listD0.includes(charA)) penaltyFails++;
-        if (!listD1.includes(charB)) penaltyFails++;
+        if (!listA.includes(charA)) penaltyFails++;
+        if (!listB.includes(charB)) penaltyFails++;
         if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
         if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
-        if (listAM1.length > 0 && !listAM1.includes(charA) && !listAM1.includes(charB)) penaltyFails++;
+        if (listAM.length > 0 && !listAM.includes(charA) && !listAM.includes(charB)) penaltyFails++;
 
         let scoreAdd = 0;
         if (penaltyFails === 0) {
@@ -359,16 +395,12 @@ function evaluateSector2DD(matrixData, listD0, listD1, listDiff1, listSum1, list
             scoreBoard[pairStr].level1Count++;
         } else if (penaltyFails === 2) {
             scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
-            scoreBoard[pairStr].level2Count++;
         } else if (penaltyFails === 3) {
             scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
-            scoreBoard[pairStr].level3Count++;
         } else if (penaltyFails === 4) {
             scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
-            scoreBoard[pairStr].level4Count++;
         } else {
             scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
-            scoreBoard[pairStr].level5Count++;
         }
 
         scoreBoard[pairStr].totalPowerScore += scoreAdd;
@@ -377,201 +409,21 @@ function evaluateSector2DD(matrixData, listD0, listD1, listDiff1, listSum1, list
     let sortedList = Object.values(scoreBoard);
     sortedList.sort(function(a, b) {
         if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
-        if (b.level0Count !== a.level0Count) return b.level0Count - a.level0Count;
-        return b.level1Count - a.level1Count;
+        return b.level0Count - a.level0Count;
     });
 
     let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
     let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
 
     return {
-        sectorName: "2DD",
+        sectorName: sectorName,
         topLN: top50.map(item => item.pair),
         powerScore: aggregatePower
     };
 }
 
-// 7. EVALUATOR SEKTOR 2DT
-function evaluateSector2DT(matrixData, listD1, listD2, listDiff2, listSum2, listAM2) {
-    let scoreBoard = {};
-    
-    for (let pairVal = 0; pairVal <= 99; pairVal++) {
-        let pairKey = pairVal.toString().padStart(2, '0');
-        scoreBoard[pairKey] = {
-            pair: pairKey,
-            totalPowerScore: 0,
-            level0Count: 0,
-            level1Count: 0,
-            level2Count: 0,
-            level3Count: 0,
-            level4Count: 0,
-            level5Count: 0
-        };
-    }
-
-    let validDiffNumbers = (listDiff2 || []).map(Number);
-    let validSumNumbers = (listSum2 || []).map(Number);
-
-    for (let i = 0; i < matrixData.length; i++) {
-        let pairStr = matrixData[i];
-        let charA = pairStr.charAt(0);
-        let charB = pairStr.charAt(1);
-        let numA = parseInt(charA, 10);
-        let numB = parseInt(charB, 10);
-
-        let calcDiff = Math.abs(numA - numB);
-        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
-
-        let penaltyFails = 0;
-
-        if (!listD1.includes(charA)) penaltyFails++;
-        if (!listD2.includes(charB)) penaltyFails++;
-        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
-        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
-        if (listAM2.length > 0 && !listAM2.includes(charA) && !listAM2.includes(charB)) penaltyFails++;
-
-        let scoreAdd = 0;
-        if (penaltyFails === 0) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
-            scoreBoard[pairStr].level0Count++;
-        } else if (penaltyFails === 1) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
-            scoreBoard[pairStr].level1Count++;
-        } else if (penaltyFails === 2) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
-            scoreBoard[pairStr].level2Count++;
-        } else if (penaltyFails === 3) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
-            scoreBoard[pairStr].level3Count++;
-        } else if (penaltyFails === 4) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
-            scoreBoard[pairStr].level4Count++;
-        } else {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
-            scoreBoard[pairStr].level5Count++;
-        }
-
-        scoreBoard[pairStr].totalPowerScore += scoreAdd;
-    }
-
-    let sortedList = Object.values(scoreBoard);
-    sortedList.sort(function(a, b) {
-        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
-        if (b.level0Count !== a.level0Count) return b.level0Count - a.level0Count;
-        return b.level1Count - a.level1Count;
-    });
-
-    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
-    let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
-
-    return {
-        sectorName: "2DT",
-        topLN: top50.map(item => item.pair),
-        powerScore: aggregatePower
-    };
-}
-
-// 8. EVALUATOR SEKTOR 2DB
-function evaluateSector2DB(matrixData, listD2, listD3, listDiff3, listSum3, listAM3) {
-    let scoreBoard = {};
-    
-    for (let pairVal = 0; pairVal <= 99; pairVal++) {
-        let pairKey = pairVal.toString().padStart(2, '0');
-        scoreBoard[pairKey] = {
-            pair: pairKey,
-            totalPowerScore: 0,
-            level0Count: 0,
-            level1Count: 0,
-            level2Count: 0,
-            level3Count: 0,
-            level4Count: 0,
-            level5Count: 0
-        };
-    }
-
-    let validDiffNumbers = (listDiff3 || []).map(Number);
-    let validSumNumbers = (listSum3 || []).map(Number);
-
-    for (let i = 0; i < matrixData.length; i++) {
-        let pairStr = matrixData[i];
-        let charA = pairStr.charAt(0);
-        let charB = pairStr.charAt(1);
-        let numA = parseInt(charA, 10);
-        let numB = parseInt(charB, 10);
-
-        let calcDiff = Math.abs(numA - numB);
-        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
-
-        let penaltyFails = 0;
-
-        if (!listD2.includes(charA)) penaltyFails++;
-        if (!listD3.includes(charB)) penaltyFails++;
-        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
-        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
-        if (listAM3.length > 0 && !listAM3.includes(charA) && !listAM3.includes(charB)) penaltyFails++;
-
-        let scoreAdd = 0;
-        if (penaltyFails === 0) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
-            scoreBoard[pairStr].level0Count++;
-        } else if (penaltyFails === 1) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
-            scoreBoard[pairStr].level1Count++;
-        } else if (penaltyFails === 2) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
-            scoreBoard[pairStr].level2Count++;
-        } else if (penaltyFails === 3) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
-            scoreBoard[pairStr].level3Count++;
-        } else if (penaltyFails === 4) {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
-            scoreBoard[pairStr].level4Count++;
-        } else {
-            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
-            scoreBoard[pairStr].level5Count++;
-        }
-
-        scoreBoard[pairStr].totalPowerScore += scoreAdd;
-    }
-
-    let sortedList = Object.values(scoreBoard);
-    sortedList.sort(function(a, b) {
-        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
-        if (b.level0Count !== a.level0Count) return b.level0Count - a.level0Count;
-        return b.level1Count - a.level1Count;
-    });
-
-    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
-    let aggregatePower = top50.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
-
-    return {
-        sectorName: "2DB",
-        topLN: top50.map(item => item.pair),
-        powerScore: aggregatePower
-    };
-}
-
-// 9. MAIN EXECUTION CONTROLLER
-function prosesEngineProUtuh() {
-    clearAuditLog();
-    writeAuditLog("Initializing Enterprise Engine Analysis...");
-
-    let rawInputValue = document.getElementById('inputData').value.trim();
-    if (!rawInputValue) {
-        alert("Silakan masukkan data masukan RM4 terlebih dahulu!");
-        writeAuditLog("ERROR: Input data empty.");
-        return;
-    }
-
-    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
-    if (dataTokens.length < 2) {
-        alert("Data masukan minimal harus 2 baris!");
-        writeAuditLog("ERROR: Insufficient data rows.");
-        return;
-    }
-
-    writeAuditLog(`Data Ingestion Success. Total rows: ${dataTokens.length}`);
-
+// EXECUTION ENGINE UNTUK DATASET TERTENTU[cite: 2]
+function executeEngineForDataset(dataTokens) {
     let processedDataRows = [];
     for (let idx = 0; idx < dataTokens.length; idx++) {
         let token = dataTokens[idx];
@@ -598,8 +450,6 @@ function prosesEngineProUtuh() {
         });
     }
 
-    writeAuditLog("Extracting Adaptive Saringan (Digit, Diff, Sum, AM)...");
-
     let listD0 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0]);
     let listD1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1]);
     let listD2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2]);
@@ -610,44 +460,188 @@ function prosesEngineProUtuh() {
     let listDiff3 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[2]);
 
     let listSum1 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[0]);
-    let listSum2 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[2]);
+    let listSum2 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[1]);
     let listSum3 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[2]);
 
     let listAM1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0] + row.digits[1]);
     let listAM2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1] + row.digits[2]);
     let listAM3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2] + row.digits[3]);
 
-    writeAuditLog(`AM 2DD: [${listAM1.join(',')}] | AM 2DT: [${listAM2.join(',')}] | AM 2DB: [${listAM3.join(',')}]`);
-
-    writeAuditLog("Generating 1,000 Expanded Permutation Matrices per Sector...");
     let matrix2DD = build1000PermutationSpace(processedDataRows, 0, 1);
     let matrix2DT = build1000PermutationSpace(processedDataRows, 1, 2);
     let matrix2DB = build1000PermutationSpace(processedDataRows, 2, 3);
 
-    writeAuditLog("Running Multi-Pass Penalization Engine Evaluators...");
-    let result2DD = evaluateSector2DD(matrix2DD, listD0, listD1, listDiff1, listSum1, listAM1);
-    let result2DT = evaluateSector2DT(matrix2DT, listD1, listD2, listDiff2, listSum2, listAM2);
-    let result2DB = evaluateSector2DB(matrix2DB, listD2, listD3, listDiff3, listSum3, listAM3);
-
-    writeAuditLog(`Power Score -> 2DD: ${result2DD.powerScore} | 2DT: ${result2DT.powerScore} | 2DB: ${result2DB.powerScore}`);
+    let result2DD = evaluateSectorGeneric(matrix2DD, listD0, listD1, listDiff1, listSum1, listAM1, "2DD");
+    let result2DT = evaluateSectorGeneric(matrix2DT, listD1, listD2, listDiff2, listSum2, listAM2, "2DT");
+    let result2DB = evaluateSectorGeneric(matrix2DB, listD2, listD3, listDiff3, listSum3, listAM3, "2DB");
 
     let engineContenders = [result2DD, result2DT, result2DB];
     engineContenders.sort((a, b) => b.powerScore - a.powerScore);
 
-    let winningEngine = engineContenders[0];
-    writeAuditLog(`WINNING ENGINE SECTOR: ${winningEngine.sectorName} with Power Score: ${winningEngine.powerScore}`);
-
-    let finalTop50 = winningEngine.topLN;
-    if (finalTop50.length > ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT) {
-        finalTop50 = finalTop50.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
-    }
-
-    document.getElementById('outputTitle').textContent = `TOP ${finalTop50.length} ${winningEngine.sectorName}`;
-    document.getElementById('outputResult').value = finalTop50.join('*');
-    writeAuditLog("Execution Completed Successfully. Results rendered.");
+    return engineContenders[0];
 }
 
-// 10. COPY UTILITY
+// SINGLE PREDICTION CONTROLLER[cite: 2]
+function prosesEngineProUtuh() {
+    clearAuditLog();
+    writeAuditLog("Initialising Single Prediction Engine Execution...");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        alert("Silakan masukkan data masukan RM4 terlebih dahulu!");
+        return;
+    }
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < 2) {
+        alert("Data masukan minimal harus 2 baris!");
+        return;
+    }
+
+    let winningEngine = executeEngineForDataset(dataTokens);
+
+    document.getElementById('outputTitle').textContent = `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
+    document.getElementById('outputResult').value = winningEngine.topLN.join('*');
+    writeAuditLog(`Prediction Completed. Winning Sector: ${winningEngine.sectorName} (Power Score: ${winningEngine.powerScore})`);
+}
+
+/**
+ * ====================================================================
+ * AUTO SELF-LEARNING ENGINE (MUTATION & AUTO-LOGIC LOOPER)
+ * ====================================================================
+ */
+
+// ALGORITMA AUTO-MUTASI LOGIKA JIKA MISS > 1
+function mutateAlgorithmStrategy(attemptLevel) {
+    if (attemptLevel === 1) {
+        // Generasi 2: Bobot Toleransi Pasangan Diperketat, Depth Permutasi Ditingkatkan
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_2_STRICT_WEIGHTS";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1500;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 120;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 60;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 30;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 2;
+    } else if (attemptLevel === 2) {
+        // Generasi 3: Mode Ultra-Coverage, Permutasi Matrix 2000 Lines
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_3_ULTRA_MATRIX";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2000;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 150;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 90;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 40;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 1;
+    } else {
+        // Generasi 4: Dynamic Shift Hybrid Mode
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_4_HYBRID_SHIFT";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2500;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 200;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 100;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 50;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
+    }
+}
+
+// MAIN SELF-LEARNING LOOPER CONTROLLER
+function runSelfLearningEngine(iterationsCount) {
+    clearAuditLog();
+    writeAuditLog("====================================================");
+    writeAuditLog(`STARTING AUTOMATED SELF-LEARNING ENGINE PROCESS`);
+    writeAuditLog("====================================================");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        alert("Silakan masukkan data masukan RM4 terlebih dahulu!");
+        return;
+    }
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < iterationsCount + 2) {
+        alert(`Data tidak cukup untuk ${iterationsCount}x backtest! Diperlukan minimal ${iterationsCount + 2} pasang data.`);
+        return;
+    }
+
+    let loadingOverlay = document.getElementById('loadingOverlay');
+    let loadingText = document.getElementById('loadingText');
+    loadingOverlay.style.display = 'flex';
+
+    let generationAttempt = 0;
+    let maxGenerations = 4;
+
+    function executeFullLearningCycle() {
+        generationAttempt++;
+        writeAuditLog(`<br/><b>--- ENGINE GENERATION LEARNING STEP #${generationAttempt} ---</b>`);
+        writeAuditLog(`Active Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b> (Matrix Depth: ${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH})`);
+
+        let successCount = 0;
+        let failCount = 0;
+        let testIndex = 0;
+
+        let totalAvailable = dataTokens.length;
+        let startIndex = totalAvailable - iterationsCount;
+
+        function runTestStep() {
+            if (testIndex < iterationsCount) {
+                let currentCutLength = startIndex + testIndex;
+                let trainingData = dataTokens.slice(0, currentCutLength);
+                let targetActual = dataTokens[currentCutLength];
+
+                loadingText.innerHTML = `Gen #${generationAttempt} (${ENGINE_SYS_CONFIG.STRATEGY_MODE})<br/>Backtesting Iterasi ${testIndex + 1}/${iterationsCount}...`;
+
+                setTimeout(() => {
+                    let prediction = executeEngineForDataset(trainingData);
+                    let secName = prediction.sectorName;
+                    let topLN = prediction.topLN;
+
+                    let actualPair = "";
+                    if (secName === "2DD") actualPair = targetActual.substring(0, 2);
+                    else if (secName === "2DT") actualPair = targetActual.substring(1, 3);
+                    else if (secName === "2DB") actualPair = targetActual.substring(2, 4);
+
+                    let isHit = topLN.includes(actualPair);
+
+                    if (isHit) {
+                        successCount++;
+                        writeAuditLog(`[TEST ${testIndex + 1}] Target: ${targetActual} (${secName}:${actualPair}) => <span style='color:#2ecc71; font-weight:bold;'>OK (HIT)</span>`);
+                    } else {
+                        failCount++;
+                        writeAuditLog(`[TEST ${testIndex + 1}] Target: ${targetActual} (${secName}:${actualPair}) => <span style='color:#e74c3c; font-weight:bold;'>NG (MISS)</span>`);
+                    }
+
+                    testIndex++;
+                    runTestStep();
+                }, 200);
+            } else {
+                // EVALUASI APAPUN HASIL BACKTEST DARI GENERASI INI
+                writeAuditLog(`Evaluation Result Gen #${generationAttempt} -> HIT: ${successCount} | MISS (NG): ${failCount}`);
+
+                // PERINTAH UTAMA: BILA MISS > 1 MAKA HARUS BUAT LOGIKA/ALGORITMA BARU DENGAN LOOPING
+                if (failCount > 1 && generationAttempt < maxGenerations) {
+                    writeAuditLog(`<span style='color:#e67e22; font-weight:bold;'>[CRITICAL TRIGGER]: MISS Terjadi > 1 Kali (${failCount} MISS). Memicu Reformulasi Algoritma Engine Baru...</span>`);
+                    mutateAlgorithmStrategy(generationAttempt);
+                    
+                    setTimeout(() => {
+                        executeFullLearningCycle(); // RE-LOOP BACKTEST ENGINE BARU
+                    }, 500);
+                } else {
+                    // SELESAI (SUDAH MEMENUHI SYARAT MISS <= 1 ATAU MEMENUHI MAKSIMAL GENERASI)
+                    loadingOverlay.style.display = 'none';
+                    writeAuditLog("----------------------------------------------------");
+                    if (failCount <= 1) {
+                        writeAuditLog(`<span style='color:#2ecc71; font-weight:bold;'>[LEARNING SUCCESS]: Logika Engine Berhasil Ditemukan! Total MISS = ${failCount} (<= 1).</span>`);
+                    } else {
+                        writeAuditLog(`<span style='color:#f1c40f; font-weight:bold;'>[MAX GENERATION REACHED]: Iterasi Algoritma Maksimal Tercapai. Optimasi Terbaik Terpasang.</span>`);
+                    }
+                    writeAuditLog(`STRATEGI ENGINE FINAL DIPAKAI: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
+                }
+            }
+        }
+
+        runTestStep();
+    }
+
+    executeFullLearningCycle();
+}
+
+// COPY UTILITY[cite: 2]
 function copyHasil() {
     let outputText = document.getElementById('outputResult').value;
     if (!outputText) return;
