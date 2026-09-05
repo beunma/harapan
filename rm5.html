@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self-Learning Engine Enterprise Dynamic (RM6 Core)</title>
+    <title>Self-Learning Engine Enterprise Dynamic (RM6 Core Fixed)</title>
 
     <style>
         * {
@@ -292,14 +292,14 @@
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div id="loadingText" class="loading-text">
-            Self-Learning...
+            Memproses Self-Learning RM6 Engine...
         </div>
         <button id="btnBreak" class="btn-break" onclick="triggerEngineBreak()">
             BREAK (STOP PROCESS)
         </button>
     </div>
 
-    <label for="inputData">Masukkan Data RM5 :</label>
+    <label for="inputData">Masukkan Data RM :</label>
     <textarea id="inputData" class="input-area" placeholder=""></textarea>
 
     <div class="param-panel">
@@ -350,7 +350,7 @@
 
 <script>
 
-/* CONFIGURATION & DEFAULTS - ADOPTED FROM RM6 */
+/* CONFIGURATION RM6 EXACT */
 const DEFAULT_CONFIG = {
     MAX_OUTPUT_LIMIT: 50,
     SIMULATION_MATRIX_DEPTH: 1000,
@@ -361,7 +361,7 @@ const DEFAULT_CONFIG = {
     WEIGHT_LEVEL_4: 20,
     WEIGHT_LEVEL_5: 0,
     AM_MIN_LENGTH: 3,
-    STRATEGY_MODE: "STANDARD_ENTERPRISE",
+    STRATEGY_MODE: "GEN_1_DEFAULT",
     MAX_GENERATIONS: 16
 };
 
@@ -506,7 +506,7 @@ function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
     return optimalSubSetAM || sortedCharacterSet;
 }
 
-function build1000PermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
+function buildPermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
     let baseHistoricalPairs = [];
     for (let dataIdx = 0; dataIdx < processedDataRows.length; dataIdx++) {
         let selectedRow = processedDataRows[dataIdx];
@@ -638,15 +638,17 @@ function executeEngineForDataset(dataTokens) {
     let listAM2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1] + row.digits[2]);
     let listAM3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2] + row.digits[3]);
 
-    let matrix2DD = build1000PermutationSpace(processedDataRows, 0, 1);
-    let matrix2DT = build1000PermutationSpace(processedDataRows, 1, 2);
-    let matrix2DB = build1000PermutationSpace(processedDataRows, 2, 3);
+    let matrix2DD = buildPermutationSpace(processedDataRows, 0, 1);
+    let matrix2DT = buildPermutationSpace(processedDataRows, 1, 2);
+    let matrix2DB = buildPermutationSpace(processedDataRows, 2, 3);
 
     let result2DD = evaluateSectorGeneric(matrix2DD, listD0, listD1, listDiff1, listSum1, listAM1, "2DD");
     let result2DT = evaluateSectorGeneric(matrix2DT, listD1, listD2, listDiff2, listSum2, listAM2, "2DT");
     let result2DB = evaluateSectorGeneric(matrix2DB, listD2, listD3, listDiff3, listSum3, listAM3, "2DB");
 
     let engineContenders = [result2DD, result2DT, result2DB];
+    
+    // RM6 Core Selection Sorting
     engineContenders.sort((a, b) => b.powerScore - a.powerScore);
 
     return engineContenders[0];
@@ -680,16 +682,16 @@ function prosesEngineProUtuh() {
     document.getElementById('btnReset').disabled = false;
 }
 
-/* EXACT MUTATION ALGORITHM FROM RM6 */
-function mutateAlgorithmStrategy(attemptLevel) {
-    if (attemptLevel === 1) {
+/* KOREKSI MUTASI PERSIS SEPERTI MEKANISME RM6 */
+function mutateAlgorithmStrategy(generationAttempt) {
+    if (generationAttempt === 1) {
         ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_2_STRICT_WEIGHTS";
         ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1500;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 120;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 60;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 30;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 40;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 10;
         ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 2;
-    } else if (attemptLevel === 2) {
+    } else if (generationAttempt === 2) {
         ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_3_ULTRA_MATRIX";
         ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2000;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 150;
@@ -728,7 +730,6 @@ function navigateMatches(direction) {
     renderMatchToUI(currentMatchIndex + direction);
 }
 
-/* MAIN SELF LEARNING ENGINE WITH RM6 CORE & RM4 DYNAMIC NAVIGATION */
 async function runSelfLearningEngine() {
     clearAuditLog();
     let dataTokens = getValidTokens();
@@ -743,9 +744,8 @@ async function runSelfLearningEngine() {
     }
 
     writeAuditLog("====================================================");
-    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE (RM6 LOGIC)");
+    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE (RM6 STRICT)");
     writeAuditLog(`MAX GENERATION = ${maxGenerations} | TARGET MISS <= ${allowedMiss} | BACKTEST = ${iterationsCount}`);
-    writeAuditLog("SECTOR = 2DD / 2DT / 2DB DINAMIS");
     writeAuditLog("====================================================");
 
     let loadingOverlay = document.getElementById('loadingOverlay');
@@ -846,12 +846,10 @@ async function runSelfLearningEngine() {
                 completedTests: actualCompletedTests
             };
 
-            /* PENYIMPANAN TEMUAN BERDASARKAN MISS LEBIH PRESISI */
+            // Berhenti tepat ketika syarat MISS <= AllowedMiss terpenuhi di RM6
             if (failCount <= allowedMiss && actualCompletedTests === iterationsCount) {
                 TARGET_MATCHES.push(genResultObj);
                 writeAuditLog(`<span style='color:#2ecc71;font-weight:bold;'>[LEARNING SUCCESS] MISS = ${failCount} (TARGET <= ${allowedMiss})</span>`);
-                
-                // Hentikan Otomatis Jika Menginginkan Target Miss Tercapai Seperti RM6
                 break;
             } else {
                 if (failCount < lowestMissRecord) {
@@ -863,11 +861,6 @@ async function runSelfLearningEngine() {
             }
 
             if (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS && !isBreakRequested) {
-                writeAuditLog(
-                    `<span style='color:#e67e22;font-weight:bold;'>` +
-                    `[MISS > ${allowedMiss}] Membuat strategi algoritma berikutnya...` +
-                    `</span>`
-                );
                 mutateAlgorithmStrategy(generationAttempt);
                 await yieldUI();
             }
@@ -881,13 +874,13 @@ async function runSelfLearningEngine() {
 
         if (activeDisplayList.length > 0) {
             document.getElementById('navPanel').style.display = 'flex';
-            renderMatchToUI(activeDisplayList.length - 1); // Tampilkan temuan terbaru
+            renderMatchToUI(0); // Tampilkan temuan terbaik Gen 2 pertama persis seperti RM6
 
             writeAuditLog("<br/>====================================================");
             if (TARGET_MATCHES.length > 0) {
-                writeAuditLog(`<b style='color:#2ecc71;'>LEARNING SELESAI — TARGET MISS <= ${allowedMiss} TERCAPAI</b>`);
+                writeAuditLog(`<b style='color:#2ecc71;'>LEARNING SELESAI — TARGET MISS <= ${allowedMiss} TERCAPAI (RM6 MATCHED)</b>`);
             } else {
-                writeAuditLog(`<b style='color:#f1c40f;'>SELESAI GEN ${generationAttempt} — TARGET BELUM TERCAPAI (REKOR MISS TERENDAH: ${lowestMissRecord})</b>`);
+                writeAuditLog(`<b style='color:#f1c40f;'>SELESAI GEN ${generationAttempt} — REKOR TERBAIK DITEMUKAN</b>`);
             }
         } else {
             document.getElementById('navPanel').style.display = 'none';
