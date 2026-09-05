@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engine Enterprise - Pure RM6 Exact Match</title>
+    <title>Engine Enterprise - Pure RM6 Exact Engine</title>
     <style>
         * {
             box-sizing: border-box;
@@ -242,31 +242,31 @@
 </div>
 
 <script>
-/* CONFIG HAKIKAT RM6 - DIPERTAHANKAN PERSIS FILE ASLI */
-const DEFAULT_CONFIG = {
-    MAX_OUTPUT_LIMIT: 50,
-    SIMULATION_MATRIX_DEPTH: 1000,
-    WEIGHT_LEVEL_0: 100,
-    WEIGHT_LEVEL_1: 80,
-    WEIGHT_LEVEL_2: 60,
-    WEIGHT_LEVEL_3: 40,
-    WEIGHT_LEVEL_4: 20,
-    WEIGHT_LEVEL_5: 0,
-    AM_MIN_LENGTH: 3,
-    STRATEGY_MODE: "GEN_1_DEFAULT",
-    MAX_GENERATIONS: 16
-};
+/* ==========================================================================
+   CONFIG & STATE ENGINE MURNI RM6
+   ========================================================================== */
 
-let ENGINE_SYS_CONFIG = Object.assign({}, DEFAULT_CONFIG);
+function createInitialRM6Config() {
+    return {
+        MAX_OUTPUT_LIMIT: 50,
+        SIMULATION_MATRIX_DEPTH: 1000,
+        WEIGHT_LEVEL_0: 100,
+        WEIGHT_LEVEL_1: 80,
+        WEIGHT_LEVEL_2: 60,
+        WEIGHT_LEVEL_3: 40,
+        WEIGHT_LEVEL_4: 20,
+        WEIGHT_LEVEL_5: 0,
+        AM_MIN_LENGTH: 3,
+        STRATEGY_MODE: "GEN_1_DEFAULT"
+    };
+}
+
+let ENGINE_SYS_CONFIG = createInitialRM6Config();
 let TARGET_MATCHES = [];
 let BEST_ATTEMPTS = [];
 let currentMatchIndex = 0;
 let activeDisplayList = [];
 let isBreakRequested = false;
-
-function resetEngineConfig() {
-    ENGINE_SYS_CONFIG = Object.assign({}, DEFAULT_CONFIG);
-}
 
 function writeAuditLog(msg) {
     let logBox = document.getElementById('auditLog');
@@ -311,10 +311,13 @@ function resetFormState() {
 
     clearAuditLog();
     writeAuditLog("System Reset Completed. Ready for Single Process..");
-    resetEngineConfig();
+    ENGINE_SYS_CONFIG = createInitialRM6Config();
 }
 
-/* HELPER SAMA PERSIS RM6 */
+/* ==========================================================================
+   MATHEMATICAL & LOGIC ENGINE (100% MERUPAKAN PORTING MURNI FILE RM6 ASLI)
+   ========================================================================== */
+
 function calculateSingleDigitSum(digitA, digitB) {
     let sum = parseInt(digitA, 10) + parseInt(digitB, 10);
     while (sum >= 10) {
@@ -508,23 +511,30 @@ function executeEngineForDataset(dataTokens) {
     return contenders[0];
 }
 
-/* SKEMA MUTASI LOGIKA ASLI RM6 */
-function mutateAlgorithmStrategy(gen) {
-    if (gen === 1) {
+function applyRM6MutationForGen(genStep) {
+    let moduloStep = (genStep - 1) % 4;
+    if (moduloStep === 0) {
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_1_DEFAULT";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1000;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 100;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 80;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 60;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
+    } else if (moduloStep === 1) {
         ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_2_STRICT_WEIGHTS";
         ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1500;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 120;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 80;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 60;
         ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 2;
-    } else if (gen === 2) {
+    } else if (moduloStep === 2) {
         ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_3_ULTRA_MATRIX";
         ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2000;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 150;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 90;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 40;
         ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 1;
-    } else {
+    } else if (moduloStep === 3) {
         ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_4_HYBRID_SHIFT";
         ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2500;
         ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 200;
@@ -533,6 +543,10 @@ function mutateAlgorithmStrategy(gen) {
         ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
     }
 }
+
+/* ==========================================================================
+   EKSPLISIT BACKTEST ENGINE RM6 UNTUK DITEMPATKAN DI KONTROL UI
+   ========================================================================== */
 
 function prosesEngineProUtuh() {
     clearAuditLog();
@@ -543,7 +557,7 @@ function prosesEngineProUtuh() {
         return;
     }
 
-    resetEngineConfig();
+    ENGINE_SYS_CONFIG = createInitialRM6Config();
     let winningEngine = executeEngineForDataset(tokens);
 
     document.getElementById('outputTitle').textContent = `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
@@ -578,7 +592,6 @@ function navigateMatches(dir) {
     renderMatchToUI(currentMatchIndex + dir);
 }
 
-/* BACKTEST ALUR EKSAM RM6 */
 async function runSelfLearningEngine() {
     clearAuditLog();
     let tokens = getValidTokens();
@@ -593,7 +606,7 @@ async function runSelfLearningEngine() {
     }
 
     writeAuditLog("====================================================");
-    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE (EXACT RM6 EXECUTION)");
+    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE (PURE RM6 LOGIC)");
     writeAuditLog(`MAX GEN = ${maxGen} | TARGET MISS <= ${allowedMiss} | BACKTEST COUNT = ${backtestCount}`);
     writeAuditLog("====================================================");
 
@@ -601,36 +614,38 @@ async function runSelfLearningEngine() {
     let loadingText = document.getElementById('loadingText');
     loadingOverlay.style.display = 'flex';
 
-    resetEngineConfig();
     TARGET_MATCHES = [];
     BEST_ATTEMPTS = [];
     activeDisplayList = [];
     currentMatchIndex = 0;
     isBreakRequested = false;
 
-    let genAttempt = 0;
+    let currentGen = 0;
     let lowestMissRecord = Infinity;
 
     try {
-        while (genAttempt < maxGen) {
+        while (currentGen < maxGen) {
             if (isBreakRequested) break;
-            genAttempt++;
+            currentGen++;
 
-            writeAuditLog(`<br/><b>========== GENERATION ${genAttempt}/${maxGen} ==========</b>`);
+            // Terapkan mutasi variabel eksak untuk Generasi berjalan
+            applyRM6MutationForGen(currentGen);
+
+            writeAuditLog(`<br/><b>========== GENERATION ${currentGen}/${maxGen} ==========</b>`);
             writeAuditLog(`Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
-            writeAuditLog(`Matrix Depth: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`);
+            writeAuditLog(`Matrix Depth: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b> | AM Min Len: <b>${ENGINE_SYS_CONFIG.AM_MIN_LENGTH}</b>`);
 
             let hits = 0;
             let misses = 0;
             let totalAvailable = tokens.length;
             
-            // Indeks penanda persis RM6
+            // Formula slice data eksak RM6
             let startIndex = totalAvailable - backtestCount - 1;
 
             for (let testIdx = 0; testIdx < backtestCount; testIdx++) {
                 if (isBreakRequested) break;
 
-                loadingText.innerHTML = `GEN ${genAttempt}/${maxGen}<br>BACKTEST ${testIdx + 1}/${backtestCount}`;
+                loadingText.innerHTML = `GEN ${currentGen}/${maxGen}<br>BACKTEST ${testIdx + 1}/${backtestCount}`;
                 await yieldUI();
 
                 let cutLength = startIndex + testIdx + 1;
@@ -649,21 +664,21 @@ async function runSelfLearningEngine() {
                 let isHit = topLN.includes(actualPair);
                 if (isHit) {
                     hits++;
-                    writeAuditLog(`[GEN ${genAttempt}][TEST ${testIdx + 1}] Target: ${targetActual} (${sec}:${actualPair}) => <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`);
+                    writeAuditLog(`[GEN ${currentGen}][TEST ${testIdx + 1}] Target: ${targetActual} (${sec}:${actualPair}) => <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`);
                 } else {
                     misses++;
-                    writeAuditLog(`[GEN ${genAttempt}][TEST ${testIdx + 1}] Target: ${targetActual} (${sec}:${actualPair}) => <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`);
+                    writeAuditLog(`[GEN ${currentGen}][TEST ${testIdx + 1}] Target: ${targetActual} (${sec}:${actualPair}) => <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`);
                 }
             }
 
-            writeAuditLog(`<b>RESULT GEN ${genAttempt}:</b> HIT = ${hits} | MISS = ${misses}`);
+            writeAuditLog(`<b>RESULT GEN ${currentGen}:</b> HIT = ${hits} | MISS = ${misses}`);
 
             let finalPred = executeEngineForDataset(tokens);
             let genObj = {
                 sectorName: finalPred.sectorName,
                 topLN: finalPred.topLN.slice(),
                 powerScore: finalPred.powerScore,
-                generation: genAttempt,
+                generation: currentGen,
                 hits: hits,
                 misses: misses
             };
@@ -679,9 +694,6 @@ async function runSelfLearningEngine() {
                 } else if (misses === lowestMissRecord) {
                     BEST_ATTEMPTS.push(genObj);
                 }
-
-                // Lakukan mutasi untuk generasi berikutnya persis alur RM6
-                mutateAlgorithmStrategy(genAttempt);
             }
         }
 
