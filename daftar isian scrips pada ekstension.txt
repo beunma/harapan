@@ -70,11 +70,11 @@ javascript:(()=>{if(window.__purpleMask)return;window.__purpleMask=1;const m=doc
 
 11. isi depan
 
-javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[2].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
 
 12. isi tengah
 
-javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[2].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
 
 13. isi belakang
 
@@ -82,7 +82,7 @@ javascript:(async function(){try{const text=await navigator.clipboard.readText()
 
 14. isi 3d depan
 
-javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[1].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
+javascript:(async function(){try{const text=await navigator.clipboard.readText();if(text.startsWith('2Z')){localStorage.setItem('tempKOS',text.slice(0,3));const result=text.slice(3);await navigator.clipboard.writeText(result);await new Promise(r=>setTimeout(r,500));}document.getElementsByTagName("input")[2].value="JOSS";var a=document.getElementsByTagName("textarea")[0];if(a){a.focus();const t=await navigator.clipboard.readText();a.value=t;a.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(function(){var b=document.getElementById("beliBtn");if(b)b.click();},800);}}catch(e){}})();
 
 
 15. js confirm OK
