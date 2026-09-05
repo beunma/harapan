@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor & Floating Utility</title>
+    <style>
+        body {
+            font-family: monospace, sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.2);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .header-info {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-size: 13px;
+            font-family: monospace;
+            resize: vertical;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .btn-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        button {
+            flex: 1;
+            padding: 8px;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-reset { background: #dc3545; }
+        .btn-paste { background: #007bff; }
+        .btn-copy { background: #28a745; }
+        .btn-find { background: #17a2b8; }
+        .btn-replace { background: #ffc107; color: #000; }
+        .btn-replaceAll { background: #fd7e14; }
+
+        /* Floating Panel untuk Find & Replace */
+        #floatingPanel {
+            display: none;
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.3);
+            z-index: 10;
+        }
+        .float-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .float-btns {
+            display: flex;
+            gap: 4px;
+            margin-top: 5px;
+        }
+        .float-btns button {
+            padding: 6px;
+            font-size: 11px;
+        }
+        .btn-next { background: #6f42c1; }
+        .btn-prev { background: #6c757d; }
+        .btn-exec-replace { background: #28a745; }
+        .btn-cancel { background: #dc3545; }
+
+        #toast {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 8px 16px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,.3);
+            display: none;
+            z-index: 9999;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="container">
+    <div id="headerInfo" class="header-info">Jumlah = 0 karakter</div>
+    <textarea id="mainTextarea" placeholder="Ketik atau paste teks di sini..."></textarea>
+    
+    <div class="btn-row">
+        <button class="btn-reset" id="resetBtn">Reset</button>
+        <button class="btn-paste" id="pasteBtn">Paste</button>
+        <button class="btn-copy" id="copyBtn">Copy</button>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-find" id="findBtn">Find</button>
+        <button class="btn-replace" id="replaceBtn">Replace</button>
+        <button class="btn-replaceAll" id="replaceAllBtn">Replace All</button>
+    </div>
+
+    <!-- Floating Action Panel -->
+    <div id="floatingPanel">
+        <div class="float-title">
+            <span id="floatLabel">Mode</span>
+            <button class="btn-cancel" id="cancelFloatBtn" style="flex:none; padding:2px 6px; font-size:10px;">X</button>
+        </div>
+        <div class="float-btns" id="floatBtnContainer">
+            <!-- Tombol dinamis muncul di sini -->
+        </div>
+    </div>
+</div>
+
+<script>
+const textarea = document.getElementById('mainTextarea');
+const headerInfo = document.getElementById('headerInfo');
+const resetBtn = document.getElementById('resetBtn');
+const pasteBtn = document.getElementById('pasteBtn');
+const copyBtn = document.getElementById('copyBtn');
+const findBtn = document.getElementById('findBtn');
+const replaceBtn = document.getElementById('replaceBtn');
+const replaceAllBtn = document.getElementById('replaceAllBtn');
+const toastEl = document.getElementById('toast');
+
+const floatingPanel = document.getElementById('floatingPanel');
+const floatLabel = document.getElementById('floatLabel');
+const floatBtnContainer = document.getElementById('floatBtnContainer');
+const cancelFloatBtn = document.getElementById('cancelFloatBtn');
+
+let searchState = {
+    query: '',
+    replacement: '',
+    indices: [],
+    currentIndex: -1,
+    mode: null
+};
+
+function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastEl.t);
+    toastEl.t = setTimeout(() => {
+        toastEl.style.display = 'none';
+    }, 1500);
+}
+
+function updateInfo() {
+    const val = textarea.value;
+    headerInfo.textContent = `Jumlah = ${val.length} karakter`;
+}
+
+textarea.oninput = updateInfo;
+
+resetBtn.onclick = () => {
+    textarea.value = '';
+    updateInfo();
+    closeFloating();
+    showToast('Direset');
+};
+
+pasteBtn.onclick = async () => {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const val = textarea.value;
+            textarea.value = val.substring(0, start) + text + val.substring(end);
+            updateInfo();
+            showToast('Berhasil Paste');
+        }
+    } catch (e) {
+        showToast('Gagal Paste');
+    }
+};
+
+copyBtn.onclick = async () => {
+    if (textarea.value) {
+        try {
+            await navigator.clipboard.writeText(textarea.value);
+            showToast('Berhasil Disalin');
+        } catch (e) {
+            showToast('Gagal Salin');
+        }
+    }
+};
+
+function closeFloating() {
+    floatingPanel.style.display ='none';
+    searchState.mode = null;
+}
+
+cancelFloatBtn.onclick = closeFloating;
+
+function findAllIndices(text, query) {
+    const indices = [];
+    if (!query) return indices;
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    let idx = lowerText.indexOf(lowerQuery);
+    while (idx !== -1) {
+        indices.push(idx);
+        idx = lowerText.indexOf(lowerQuery, idx + 1);
+    }
+    return indices;
+}
+
+// Fungsi menghitung perkiraan nomor baris visual (memperhitungkan lebar kotak & wrap teks)
+function getVisualLineNumber(text, index) {
+    const computed = window.getComputedStyle(textarea);
+    const paddingX = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight);
+    const innerWidth = textarea.clientWidth - paddingX;
+    
+    // Estimasi lebar 1 karakter monospace berdasarkan ukuran font
+    const fontSize = parseFloat(computed.fontSize) || 13;
+    const charWidth = fontSize * 0.6; // Standar lebar karakter monospace
+    const charsPerLine = Math.max(1, Math.floor(innerWidth / charWidth));
+
+    const lines = text.split('\n');
+    let currentTotalLines = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const lineLength = lines[i].length + 1; // +1 untuk newline '\n'
+        if (index < lineLength) {
+            // Indeks ada di baris asli ke-i ini
+            const wrapLinesBeforeIndex = Math.floor(index / charsPerLine);
+            return currentTotalLines + wrapLinesBeforeIndex;
+        }
+        index -= lineLength;
+        const totalWraps = Math.max(1, Math.ceil(lines[i].length / charsPerLine));
+        currentTotalLines += totalWraps;
+    }
+    return currentTotalLines;
+}
+
+function highlightAndScroll(idx, len) {
+    textarea.focus();
+    textarea.setSelectionRange(idx, idx + len);
+
+    setTimeout(() => {
+        const text = textarea.value;
+        const visualLine = getVisualLineNumber(text, idx);
+
+        const computedStyle = window.getComputedStyle(textarea);
+        let lineHeight = parseFloat(computedStyle.lineHeight);
+        if (isNaN(lineHeight)) {
+            lineHeight = 18;
+        }
+
+        const targetScrollTop = visualLine * lineHeight;
+        const visibleHeight = textarea.clientHeight;
+        const maxScrollTop = textarea.scrollHeight - visibleHeight;
+
+        // Posisikan agar sorotan berada di tengah, atau di akhir teks jika sudah mentok bawah
+        let desiredScrollTop = targetScrollTop - (visibleHeight / 2) + (lineHeight / 2);
+        if (desiredScrollTop > maxScrollTop) {
+            desiredScrollTop = maxScrollTop;
+        }
+        if (desiredScrollTop < 0) {
+            desiredScrollTop = 0;
+        }
+
+        textarea.scrollTop = desiredScrollTop;
+
+        // Teknik penempatan kursor cadangan agar browser ikut mengunci posisi pandang
+        const targetPos = Math.min(text.length, idx + len + (charsPerLineCount() * 3));
+        textarea.setSelectionRange(targetPos, targetPos);
+        setTimeout(() => {
+            textarea.setSelectionRange(idx, idx + len);
+        }, 10);
+    }, 15);
+}
+
+function charsPerLineCount() {
+    const computed = window.getComputedStyle(textarea);
+    const paddingX = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight);
+    const innerWidth = textarea.clientWidth - paddingX;
+    const fontSize = parseFloat(computed.fontSize) || 13;
+    const charWidth = fontSize * 0.6;
+    return Math.max(1, Math.floor(innerWidth / charWidth));
+}
+
+findBtn.onclick = () => {
+    const query = prompt('Karakter apa yang mau dicari?');
+    if (!query) return;
+
+    const text = textarea.value;
+    const indices = findAllIndices(text, query);
+
+    if (indices.length === 0) {
+        showToast('Teks tidak ditemukan');
+        closeFloating();
+        return;
+    }
+
+    searchState = {
+        query: query,
+        replacement: '',
+        indices: indices,
+        currentIndex: 0,
+        mode: 'find'
+    };
+
+    highlightAndScroll(indices[0], query.length);
+    showToast(`Ketemu! (${indices.length} ditemukan)`);
+    renderFloatingUI();
+};
+
+replaceBtn.onclick = () => {
+    const target = prompt('Karakter apa yang mau diganti (Cari)?');
+    if (target === null) return;
+    const replacement = prompt('Mau diganti dengan apa? (Kosongkan jika ingin dihapus):');
+    if (replacement === null) return;
+
+    const text = textarea.value;
+    const indices = findAllIndices(text, target);
+
+    if (indices.length === 0) {
+        showToast('Teks tidak ditemukan');
+        closeFloating();
+        return;
+    }
+
+    searchState = {
+        query: target,
+        replacement: replacement,
+        indices: indices,
+        currentIndex: 0,
+        mode: 'replace'
+    };
+
+    highlightAndScroll(indices[0], target.length);
+    showToast(`Siap Replace (${indices.length} ditemukan)`);
+    renderFloatingUI();
+};
+
+function renderFloatingUI() {
+    floatBtnContainer.innerHTML = '';
+    floatingPanel.style.display = 'block';
+
+    if (searchState.mode === 'find') {
+        floatLabel.textContent = `Find: "${searchState.query}" (${searchState.currentIndex + 1}/${searchState.indices.length})`;
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'btn-prev';
+        prevBtn.textContent = 'Prev';
+        prevBtn.onclick = () => {
+            searchState.currentIndex = (searchState.currentIndex - 1 + searchState.indices.length) % searchState.indices.length;
+            highlightAndScroll(searchState.indices[searchState.currentIndex], searchState.query.length);
+            floatLabel.textContent = `Find: "${searchState.query}" (${searchState.currentIndex + 1}/${searchState.indices.length})`;
+        };
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn-next';
+        nextBtn.textContent = 'Next';
+        nextBtn.onclick = () => {
+            searchState.currentIndex = (searchState.currentIndex + 1) % searchState.indices.length;
+            highlightAndScroll(searchState.indices[searchState.currentIndex], searchState.query.length);
+            floatLabel.textContent = `Find: "${searchState.query}" (${searchState.currentIndex + 1}/${searchState.indices.length})`;
+        };
+
+        floatBtnContainer.appendChild(prevBtn);
+        floatBtnContainer.appendChild(nextBtn);
+
+    } else if (searchState.mode === 'replace') {
+        floatLabel.textContent = `Replace: "${searchState.query}" ke "${searchState.replacement}" (${searchState.currentIndex + 1}/${searchState.indices.length})`;
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'btn-prev';
+        prevBtn.textContent = 'Prev';
+        prevBtn.onclick = () => {
+            searchState.currentIndex = (searchState.currentIndex - 1 + searchState.indices.length) % searchState.indices.length;
+            highlightAndScroll(searchState.indices[searchState.currentIndex], searchState.query.length);
+            floatLabel.textContent = `Replace: "${searchState.query}" (${searchState.currentIndex + 1}/${searchState.indices.length})`;
+        };
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn-next';
+        nextBtn.textContent = 'Next';
+        nextBtn.onclick = () => {
+            searchState.currentIndex = (searchState.currentIndex + 1) % searchState.indices.length;
+            highlightAndScroll(searchState.indices[searchState.currentIndex], searchState.query.length);
+            floatLabel.textContent = `Replace: "${searchState.query}" (${searchState.currentIndex + 1}/${searchState.indices.length})`;
+        };
+
+        const execReplaceBtn = document.createElement('button');
+        execReplaceBtn.className = 'btn-exec-replace';
+        execReplaceBtn.textContent = 'Replace This';
+        execReplaceBtn.onclick = () => {
+            const idx = searchState.indices[searchState.currentIndex];
+            const text = textarea.value;
+            const targetLen = searchState.query.length;
+            
+            textarea.value = text.substring(0, idx) + searchState.replacement + text.substring(idx + targetLen);
+            updateInfo();
+            showToast('Diganti!');
+
+            const newIndices = findAllIndices(textarea.value, searchState.query);
+            searchState.indices = newIndices;
+
+            if (newIndices.length === 0) {
+                showToast('Semua temuan sudah habis');
+                closeFloating();
+            } else {
+                if (searchState.currentIndex >= newIndices.length) {
+                    searchState.currentIndex = 0;
+                }
+                highlightAndScroll(searchState.indices[searchState.currentIndex], searchState.query.length);
+                renderFloatingUI();
+            }
+        };
+
+        floatBtnContainer.appendChild(prevBtn);
+        floatBtnContainer.appendChild(nextBtn);
+        floatBtnContainer.appendChild(execReplaceBtn);
+    }
+}
+
+replaceAllBtn.onclick = () => {
+    const target = prompt('Karakter apa yang mau dicari untuk Replace All?');
+    if (!target) return;
+    const replacement = prompt('Mau diganti dengan apa seluruhnya? (Kosongkan untuk hapus):');
+    if (replacement === null) return;
+
+    const text = textarea.value;
+    try {
+        const regex = new RegExp(target.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+        const newText = text.replace(regex, replacement);
+        textarea.value = newText;
+        updateInfo();
+        closeFloating();
+        showToast('Replace All Selesai');
+    } catch (e) {
+        showToast('Gagal Replace All');
+    }
+};
+
+updateInfo();
+</script>
+
+</body>
+</html>
