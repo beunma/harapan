@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engine Enterprise - RM6 Core Pure Integration</title>
+    <title>Engine Enterprise - Pure RM6 Exact Match</title>
     <style>
         * {
             box-sizing: border-box;
@@ -242,20 +242,36 @@
 </div>
 
 <script>
-/* ==========================================================================
-   OTAK UTAMA PURE RM6 ENGINE (TIDAK ADA RUMUS YANG DIUBAH)
-   ========================================================================== */
+/* CONFIG HAKIKAT RM6 - DIPERTAHANKAN PERSIS FILE ASLI */
+const DEFAULT_CONFIG = {
+    MAX_OUTPUT_LIMIT: 50,
+    SIMULATION_MATRIX_DEPTH: 1000,
+    WEIGHT_LEVEL_0: 100,
+    WEIGHT_LEVEL_1: 80,
+    WEIGHT_LEVEL_2: 60,
+    WEIGHT_LEVEL_3: 40,
+    WEIGHT_LEVEL_4: 20,
+    WEIGHT_LEVEL_5: 0,
+    AM_MIN_LENGTH: 3,
+    STRATEGY_MODE: "GEN_1_DEFAULT",
+    MAX_GENERATIONS: 16
+};
 
+let ENGINE_SYS_CONFIG = Object.assign({}, DEFAULT_CONFIG);
 let TARGET_MATCHES = [];
 let BEST_ATTEMPTS = [];
 let currentMatchIndex = 0;
 let activeDisplayList = [];
 let isBreakRequested = false;
 
-function writeAuditLog(message) {
+function resetEngineConfig() {
+    ENGINE_SYS_CONFIG = Object.assign({}, DEFAULT_CONFIG);
+}
+
+function writeAuditLog(msg) {
     let logBox = document.getElementById('auditLog');
     let timeStamp = new Date().toLocaleTimeString();
-    logBox.innerHTML += `[${timeStamp}] ${message}<br/>`;
+    logBox.innerHTML += `[${timeStamp}] ${msg}<br/>`;
     logBox.scrollTop = logBox.scrollHeight;
 }
 
@@ -268,9 +284,9 @@ function yieldUI() {
 }
 
 function getValidTokens() {
-    let rawInputValue = document.getElementById('inputData').value.trim();
-    if (!rawInputValue) return [];
-    return rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    let val = document.getElementById('inputData').value.trim();
+    if (!val) return [];
+    return val.split(',').map(x => x.trim()).filter(x => x.length > 0);
 }
 
 function triggerEngineBreak() {
@@ -295,20 +311,21 @@ function resetFormState() {
 
     clearAuditLog();
     writeAuditLog("System Reset Completed. Ready for Single Process..");
+    resetEngineConfig();
 }
 
-/* KORE RM6 MATHEMATICAL HELPERS */
-function calculateSingleDigitSum(a, b) {
-    let sum = parseInt(a, 10) + parseInt(b, 10);
+/* HELPER SAMA PERSIS RM6 */
+function calculateSingleDigitSum(digitA, digitB) {
+    let sum = parseInt(digitA, 10) + parseInt(digitB, 10);
     while (sum >= 10) {
-        let s = sum.toString();
-        sum = parseInt(s.charAt(0), 10) + parseInt(s.charAt(1), 10);
+        let str = sum.toString();
+        sum = parseInt(str.charAt(0), 10) + parseInt(str.charAt(1), 10);
     }
     return sum.toString();
 }
 
-function calculateAbsoluteDifference(a, b) {
-    return Math.abs(parseInt(a, 10) - parseInt(b, 10)).toString();
+function calculateAbsoluteDifference(digitA, digitB) {
+    return Math.abs(parseInt(digitA, 10) - parseInt(digitB, 10)).toString();
 }
 
 function generateCombinatorialSubsets(arr, k) {
@@ -321,12 +338,11 @@ function generateCombinatorialSubsets(arr, k) {
     return withHead.concat(withoutHead);
 }
 
-/* LOGIKA ESTRAKSI AM PERSIS RM6 */
-function extractAdaptiveAMStrict(processedRows, extractFn, minLen) {
+function extractAdaptiveAMStrict(processedRows, extractFn) {
     let charSet = new Set();
     for (let i = 0; i < processedRows.length - 1; i++) {
         let val = extractFn(processedRows[i + 1]);
-        if (val) {
+        if (val && typeof val === 'string') {
             for (let c = 0; c < val.length; c++) charSet.add(val.charAt(c));
         }
     }
@@ -334,10 +350,10 @@ function extractAdaptiveAMStrict(processedRows, extractFn, minLen) {
     let sortedSet = Array.from(charSet).sort();
     if (sortedSet.length === 0) return ['0','1','2','3','4','5','6','7','8','9'];
 
-    let bestAM = null;
-    let startLen = Math.max(1, Math.min(minLen, sortedSet.length));
+    let optimalAM = null;
+    let minLen = ENGINE_SYS_CONFIG.AM_MIN_LENGTH;
 
-    for (let len = startLen; len <= sortedSet.length; len++) {
+    for (let len = minLen; len <= sortedSet.length; len++) {
         let combos = generateCombinatorialSubsets(sortedSet, len);
         for (let c = 0; c < combos.length; c++) {
             let combo = combos[c];
@@ -355,20 +371,25 @@ function extractAdaptiveAMStrict(processedRows, extractFn, minLen) {
                 if (hits === 0) { valid = false; break; }
             }
 
-            if (valid) { bestAM = combo; break; }
+            if (valid) { optimalAM = combo; break; }
         }
-        if (bestAM) break;
+        if (optimalAM) break;
     }
-    return bestAM || sortedSet;
+
+    return optimalAM || sortedSet;
 }
 
-/* MATRIX GENERATION PERSIS RM6 */
-function buildPermutationSpaceRM6(processedRows, pos1, pos2, depth) {
-    let basePairs = processedRows.map(r => r.digits[pos1] + r.digits[pos2]);
+function buildPermutationSpace(processedRows, pos1, pos2) {
+    let basePairs = [];
+    for (let i = 0; i < processedRows.length; i++) {
+        let r = processedRows[i];
+        basePairs.push(r.digits[pos1] + r.digits[pos2]);
+    }
+
     let expanded = [];
     let len = basePairs.length;
 
-    for (let i = 0; i < depth; i++) {
+    for (let i = 0; i < ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH; i++) {
         let pair = basePairs[i % len];
         let dA = parseInt(pair.charAt(0), 10);
         let dB = parseInt(pair.charAt(1), 10);
@@ -381,22 +402,22 @@ function buildPermutationSpaceRM6(processedRows, pos1, pos2, depth) {
 
         expanded.push(calA.toString() + calB.toString());
     }
+
     return expanded;
 }
 
-/* EVALUASI SCORE PERSIS RM6 */
-function evaluateSectorRM6(matrix, listA, listB, listDiff, listSum, listAM, sectorName, weights) {
+function evaluateSectorGeneric(matrixData, listA, listB, listDiff, listSum, listAM, sectorName) {
     let board = {};
     for (let i = 0; i <= 99; i++) {
         let k = i.toString().padStart(2, '0');
-        board[k] = { pair: k, totalPowerScore: 0, level0Count: 0 };
+        board[k] = { pair: k, totalPowerScore: 0, level0Count: 0, level1Count: 0 };
     }
 
     let diffNums = (listDiff || []).map(Number);
     let sumNums = (listSum || []).map(Number);
 
-    for (let i = 0; i < matrix.length; i++) {
-        let pair = matrix[i];
+    for (let i = 0; i < matrixData.length; i++) {
+        let pair = matrixData[i];
         let cA = pair.charAt(0);
         let cB = pair.charAt(1);
         let nA = parseInt(cA, 10);
@@ -413,12 +434,12 @@ function evaluateSectorRM6(matrix, listA, listB, listDiff, listSum, listAM, sect
         if (listAM.length > 0 && !listAM.includes(cA) && !listAM.includes(cB)) fails++;
 
         let score = 0;
-        if (fails === 0) { score = weights.w0; board[pair].level0Count++; }
-        else if (fails === 1) score = weights.w1;
-        else if (fails === 2) score = weights.w2;
-        else if (fails === 3) score = weights.w3;
-        else if (fails === 4) score = weights.w4;
-        else score = weights.w5;
+        if (fails === 0) { score = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0; board[pair].level0Count++; }
+        else if (fails === 1) { score = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1; board[pair].level1Count++; }
+        else if (fails === 2) score = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+        else if (fails === 3) score = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+        else if (fails === 4) score = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
+        else score = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
 
         board[pair].totalPowerScore += score;
     }
@@ -428,7 +449,7 @@ function evaluateSectorRM6(matrix, listA, listB, listDiff, listSum, listAM, sect
         return b.level0Count - a.level0Count;
     });
 
-    let top50 = sorted.slice(0, 50);
+    let top50 = sorted.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
     return {
         sectorName: sectorName,
         topLN: top50.map(x => x.pair),
@@ -436,74 +457,80 @@ function evaluateSectorRM6(matrix, listA, listB, listDiff, listSum, listAM, sect
     };
 }
 
-/* EXECUTION CORE RM6 DENGAN CONFIG MUTASI */
-function executeRM6Engine(dataTokens, genConfig) {
+function executeEngineForDataset(dataTokens) {
     let processedRows = [];
     for (let token of dataTokens) {
         if (token.length < 4) token = token.padStart(4, '0');
         let d0 = token.charAt(0), d1 = token.charAt(1), d2 = token.charAt(2), d3 = token.charAt(3);
         processedRows.push({
+            rawToken: token,
             digits: [d0, d1, d2, d3],
-            diffs: [calculateAbsoluteDifference(d0, d1), calculateAbsoluteDifference(d1, d2), calculateAbsoluteDifference(d2, d3)],
-            sums: [calculateSingleDigitSum(d0, d1), calculateSingleDigitSum(d1, d2), calculateSingleDigitSum(d2, d3)]
+            diffs: [
+                calculateAbsoluteDifference(d0, d1),
+                calculateAbsoluteDifference(d1, d2),
+                calculateAbsoluteDifference(d2, d3)
+            ],
+            sums: [
+                calculateSingleDigitSum(d0, d1),
+                calculateSingleDigitSum(d1, d2),
+                calculateSingleDigitSum(d2, d3)
+            ]
         });
     }
 
-    let minLen = genConfig.amMinLen;
-    let listD0 = extractAdaptiveAMStrict(processedRows, r => r.digits[0], minLen);
-    let listD1 = extractAdaptiveAMStrict(processedRows, r => r.digits[1], minLen);
-    let listD2 = extractAdaptiveAMStrict(processedRows, r => r.digits[2], minLen);
-    let listD3 = extractAdaptiveAMStrict(processedRows, r => r.digits[3], minLen);
+    let listD0 = extractAdaptiveAMStrict(processedRows, r => r.digits[0]);
+    let listD1 = extractAdaptiveAMStrict(processedRows, r => r.digits[1]);
+    let listD2 = extractAdaptiveAMStrict(processedRows, r => r.digits[2]);
+    let listD3 = extractAdaptiveAMStrict(processedRows, r => r.digits[3]);
 
-    let listDiff1 = extractAdaptiveAMStrict(processedRows, r => r.diffs[0], minLen);
-    let listDiff2 = extractAdaptiveAMStrict(processedRows, r => r.diffs[1], minLen);
-    let listDiff3 = extractAdaptiveAMStrict(processedRows, r => r.diffs[2], minLen);
+    let listDiff1 = extractAdaptiveAMStrict(processedRows, r => r.diffs[0]);
+    let listDiff2 = extractAdaptiveAMStrict(processedRows, r => r.diffs[1]);
+    let listDiff3 = extractAdaptiveAMStrict(processedRows, r => r.diffs[2]);
 
-    let listSum1 = extractAdaptiveAMStrict(processedRows, r => r.sums[0], minLen);
-    let listSum2 = extractAdaptiveAMStrict(processedRows, r => r.sums[1], minLen);
-    let listSum3 = extractAdaptiveAMStrict(processedRows, r => r.sums[2], minLen);
+    let listSum1 = extractAdaptiveAMStrict(processedRows, r => r.sums[0]);
+    let listSum2 = extractAdaptiveAMStrict(processedRows, r => r.sums[1]);
+    let listSum3 = extractAdaptiveAMStrict(processedRows, r => r.sums[2]);
 
-    let listAM1 = extractAdaptiveAMStrict(processedRows, r => r.digits[0] + r.digits[1], minLen);
-    let listAM2 = extractAdaptiveAMStrict(processedRows, r => r.digits[1] + r.digits[2], minLen);
-    let listAM3 = extractAdaptiveAMStrict(processedRows, r => r.digits[2] + r.digits[3], minLen);
+    let listAM1 = extractAdaptiveAMStrict(processedRows, r => r.digits[0] + r.digits[1]);
+    let listAM2 = extractAdaptiveAMStrict(processedRows, r => r.digits[1] + r.digits[2]);
+    let listAM3 = extractAdaptiveAMStrict(processedRows, r => r.digits[2] + r.digits[3]);
 
-    let depth = genConfig.depth;
-    let m2DD = buildPermutationSpaceRM6(processedRows, 0, 1, depth);
-    let m2DT = buildPermutationSpaceRM6(processedRows, 1, 2, depth);
-    let m2DB = buildPermutationSpaceRM6(processedRows, 2, 3, depth);
+    let m2DD = buildPermutationSpace(processedRows, 0, 1);
+    let m2DT = buildPermutationSpace(processedRows, 1, 2);
+    let m2DB = buildPermutationSpace(processedRows, 2, 3);
 
-    let w = genConfig.weights;
-    let r2DD = evaluateSectorRM6(m2DD, listD0, listD1, listDiff1, listSum1, listAM1, "2DD", w);
-    let r2DT = evaluateSectorRM6(m2DT, listD1, listD2, listDiff2, listSum2, listAM2, "2DT", w);
-    let r2DB = evaluateSectorRM6(m2DB, listD2, listD3, listDiff3, listSum3, listAM3, "2DB", w);
+    let r2DD = evaluateSectorGeneric(m2DD, listD0, listD1, listDiff1, listSum1, listAM1, "2DD");
+    let r2DT = evaluateSectorGeneric(m2DT, listD1, listD2, listDiff2, listSum2, listAM2, "2DT");
+    let r2DB = evaluateSectorGeneric(m2DB, listD2, listD3, listDiff3, listSum3, listAM3, "2DB");
 
     let contenders = [r2DD, r2DT, r2DB];
     contenders.sort((a, b) => b.powerScore - a.powerScore);
     return contenders[0];
 }
 
-/* SKEMA MUTASI EXACT DARI FILE RM6 ASLI */
-function getRM6GenConfig(genNumber) {
-    if (genNumber === 1) {
-        return {
-            depth: 1000, amMinLen: 3,
-            weights: { w0: 100, w1: 80, w2: 60, w3: 40, w4: 20, w5: 0 }
-        };
-    } else if (genNumber === 2) {
-        return {
-            depth: 1500, amMinLen: 2,
-            weights: { w0: 120, w1: 80, w2: 60, w3: 40, w4: 20, w5: 0 }
-        };
-    } else if (genNumber === 3) {
-        return {
-            depth: 2000, amMinLen: 1,
-            weights: { w0: 150, w1: 90, w2: 40, w3: 20, w4: 10, w5: 0 }
-        };
+/* SKEMA MUTASI LOGIKA ASLI RM6 */
+function mutateAlgorithmStrategy(gen) {
+    if (gen === 1) {
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_2_STRICT_WEIGHTS";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1500;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 120;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 80;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 60;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 2;
+    } else if (gen === 2) {
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_3_ULTRA_MATRIX";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2000;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 150;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 90;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 40;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 1;
     } else {
-        return {
-            depth: 2500, amMinLen: 3,
-            weights: { w0: 200, w1: 100, w2: 50, w3: 20, w4: 10, w5: 0 }
-        };
+        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_4_HYBRID_SHIFT";
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2500;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 200;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 100;
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 50;
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
     }
 }
 
@@ -516,8 +543,8 @@ function prosesEngineProUtuh() {
         return;
     }
 
-    let defaultConfig = getRM6GenConfig(1);
-    let winningEngine = executeRM6Engine(tokens, defaultConfig);
+    resetEngineConfig();
+    let winningEngine = executeEngineForDataset(tokens);
 
     document.getElementById('outputTitle').textContent = `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
     document.getElementById('outputResult').value = winningEngine.topLN.join('*');
@@ -528,10 +555,6 @@ function prosesEngineProUtuh() {
     document.getElementById('btnBacktest').disabled = false;
     document.getElementById('btnReset').disabled = false;
 }
-
-/* ==========================================================================
-   BACKTEST DINAMIS DENGAN INTEGRASI TAMPILAN RM4 & ENGINE PURE RM6
-   ========================================================================== */
 
 function renderMatchToUI(index) {
     if (!activeDisplayList || activeDisplayList.length === 0) return;
@@ -555,106 +578,110 @@ function navigateMatches(dir) {
     renderMatchToUI(currentMatchIndex + dir);
 }
 
+/* BACKTEST ALUR EKSAM RM6 */
 async function runSelfLearningEngine() {
     clearAuditLog();
     let tokens = getValidTokens();
     let backtestCount = parseInt(document.getElementById('cfgBacktest').value, 10) || 5;
-    let targetMiss = parseInt(document.getElementById('cfgAllowedMiss').value, 10);
-    if (isNaN(targetMiss)) targetMiss = 1;
+    let allowedMiss = parseInt(document.getElementById('cfgAllowedMiss').value, 10);
+    if (isNaN(allowedMiss)) allowedMiss = 1;
     let maxGen = parseInt(document.getElementById('cfgMaxGen').value, 10) || 16;
 
     if (tokens.length < backtestCount + 1) {
-        alert(`Data tidak cukup! Diberikan ${tokens.length} data, butuh minimal ${backtestCount + 1} data untuk ${backtestCount}x backtest.`);
+        alert(`Data tidak cukup! Diberikan ${tokens.length} data, butuh minimal ${backtestCount + 1} data.`);
         return;
     }
 
     writeAuditLog("====================================================");
-    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE (PURE RM6 LOGIC)");
-    writeAuditLog(`MAX GEN = ${maxGen} | TARGET MISS <= ${targetMiss} | BACKTEST COUNT = ${backtestCount}`);
+    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE (EXACT RM6 EXECUTION)");
+    writeAuditLog(`MAX GEN = ${maxGen} | TARGET MISS <= ${allowedMiss} | BACKTEST COUNT = ${backtestCount}`);
     writeAuditLog("====================================================");
 
     let loadingOverlay = document.getElementById('loadingOverlay');
     let loadingText = document.getElementById('loadingText');
     loadingOverlay.style.display = 'flex';
 
+    resetEngineConfig();
     TARGET_MATCHES = [];
     BEST_ATTEMPTS = [];
     activeDisplayList = [];
     currentMatchIndex = 0;
     isBreakRequested = false;
 
-    let currentGen = 0;
+    let genAttempt = 0;
     let lowestMissRecord = Infinity;
 
     try {
-        while (currentGen < maxGen) {
+        while (genAttempt < maxGen) {
             if (isBreakRequested) break;
-            currentGen++;
+            genAttempt++;
 
-            let genCfg = getRM6GenConfig(currentGen);
-            writeAuditLog(`<br/><b>========== GENERATION ${currentGen}/${maxGen} ==========</b>`);
-            writeAuditLog(`Matrix Depth: <b>${genCfg.depth}</b> | AM Min Len: <b>${genCfg.amMinLen}</b>`);
+            writeAuditLog(`<br/><b>========== GENERATION ${genAttempt}/${maxGen} ==========</b>`);
+            writeAuditLog(`Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
+            writeAuditLog(`Matrix Depth: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`);
 
             let hits = 0;
             let misses = 0;
             let totalAvailable = tokens.length;
             
-            // Mekanisme perulangan backtest eksak RM6
-            for (let b = 0; b < backtestCount; b++) {
+            // Indeks penanda persis RM6
+            let startIndex = totalAvailable - backtestCount - 1;
+
+            for (let testIdx = 0; testIdx < backtestCount; testIdx++) {
                 if (isBreakRequested) break;
 
-                loadingText.innerHTML = `GEN ${currentGen}/${maxGen}<br>BACKTEST ${b + 1}/${backtestCount}`;
+                loadingText.innerHTML = `GEN ${genAttempt}/${maxGen}<br>BACKTEST ${testIdx + 1}/${backtestCount}`;
                 await yieldUI();
 
-                // Slice data eksak RM6: potong dari indeks 0 hingga batas pengujian
-                let cutIndex = totalAvailable - backtestCount + b;
-                let trainData = tokens.slice(0, cutIndex);
-                let actualTarget = tokens[cutIndex];
+                let cutLength = startIndex + testIdx + 1;
+                let trainData = tokens.slice(0, cutLength);
+                let targetActual = tokens[cutLength];
 
-                let pred = executeRM6Engine(trainData, genCfg);
+                let pred = executeEngineForDataset(trainData);
                 let sec = pred.sectorName;
                 let topLN = pred.topLN;
-                
+
                 let actualPair = "";
-                if (sec === "2DD") actualPair = actualTarget.substring(0, 2);
-                else if (sec === "2DT") actualPair = actualTarget.substring(1, 3);
-                else if (sec === "2DB") actualPair = actualTarget.substring(2, 4);
+                if (sec === "2DD") actualPair = targetActual.substring(0, 2);
+                else if (sec === "2DT") actualPair = targetActual.substring(1, 3);
+                else if (sec === "2DB") actualPair = targetActual.substring(2, 4);
 
                 let isHit = topLN.includes(actualPair);
                 if (isHit) {
                     hits++;
-                    writeAuditLog(`[GEN ${currentGen}][TEST ${b + 1}] Target: ${actualTarget} (${sec}:${actualPair}) => <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`);
+                    writeAuditLog(`[GEN ${genAttempt}][TEST ${testIdx + 1}] Target: ${targetActual} (${sec}:${actualPair}) => <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`);
                 } else {
                     misses++;
-                    writeAuditLog(`[GEN ${currentGen}][TEST ${b + 1}] Target: ${actualTarget} (${sec}:${actualPair}) => <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`);
+                    writeAuditLog(`[GEN ${genAttempt}][TEST ${testIdx + 1}] Target: ${targetActual} (${sec}:${actualPair}) => <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`);
                 }
             }
 
-            writeAuditLog(`<b>RESULT GEN ${currentGen}:</b> HIT = ${hits} | MISS = ${misses}`);
+            writeAuditLog(`<b>RESULT GEN ${genAttempt}:</b> HIT = ${hits} | MISS = ${misses}`);
 
-            // Jalankan prediksi akhir pada seluruh dataset
-            let finalPred = executeRM6Engine(tokens, genCfg);
-            let resultObj = {
+            let finalPred = executeEngineForDataset(tokens);
+            let genObj = {
                 sectorName: finalPred.sectorName,
                 topLN: finalPred.topLN.slice(),
                 powerScore: finalPred.powerScore,
-                generation: currentGen,
+                generation: genAttempt,
                 hits: hits,
                 misses: misses
             };
 
-            // Kunci jika Miss <= Target Miss yang diinput di input box
-            if (misses <= targetMiss) {
-                TARGET_MATCHES.push(resultObj);
-                writeAuditLog(`<span style='color:#2ecc71;font-weight:bold;'>[TARGET REACHED] MISS = ${misses} (TARGET <= ${targetMiss})</span>`);
-                break; // Hentikan loop jika target terpenuhi
+            if (misses <= allowedMiss) {
+                TARGET_MATCHES.push(genObj);
+                writeAuditLog(`<span style='color:#2ecc71;font-weight:bold;'>[TARGET REACHED] MISS = ${misses} (TARGET <= ${allowedMiss})</span>`);
+                break;
             } else {
                 if (misses < lowestMissRecord) {
                     lowestMissRecord = misses;
-                    BEST_ATTEMPTS = [resultObj];
+                    BEST_ATTEMPTS = [genObj];
                 } else if (misses === lowestMissRecord) {
-                    BEST_ATTEMPTS.push(resultObj);
+                    BEST_ATTEMPTS.push(genObj);
                 }
+
+                // Lakukan mutasi untuk generasi berikutnya persis alur RM6
+                mutateAlgorithmStrategy(genAttempt);
             }
         }
 
@@ -669,7 +696,7 @@ async function runSelfLearningEngine() {
             renderMatchToUI(0);
             writeAuditLog("<br/>====================================================");
             if (TARGET_MATCHES.length > 0) {
-                writeAuditLog(`<b style='color:#2ecc71;'>LEARNING SELESAI — TARGET MISS <= ${targetMiss} TERCAPAI PERSIS LOGIKA RM6</b>`);
+                writeAuditLog(`<b style='color:#2ecc71;'>LEARNING SELESAI — TARGET MISS <= ${allowedMiss} TERCAPAI PERSIS LOGIKA RM6</b>`);
             } else {
                 writeAuditLog(`<b style='color:#f1c40f;'>SELESAI ALL GEN — REKOR MISS TERENDAH (${lowestMissRecord}) DITAMPILKAN</b>`);
             }
