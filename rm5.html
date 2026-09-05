@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Self-Learning Engine</title>
+    <title>Self-Learning Engine Enterprise</title>
+
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
             background-color: #f4f6f9;
             margin: 0;
@@ -16,6 +18,7 @@
             display: flex;
             justify-content: center;
         }
+
         .container {
             width: 100%;
             max-width: 800px;
@@ -25,6 +28,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             position: relative;
         }
+
         h2 {
             margin-top: 0;
             color: #2c3e50;
@@ -33,6 +37,7 @@
             border-bottom: 2px solid #27ae60;
             padding-bottom: 10px;
         }
+
         label {
             font-weight: bold;
             display: block;
@@ -40,6 +45,7 @@
             color: #34495e;
             font-size: 14px;
         }
+
         textarea {
             width: 100%;
             padding: 12px;
@@ -50,49 +56,57 @@
             margin-bottom: 15px;
             resize: vertical;
         }
-        textarea[readonly] {
-            background-color: #eef2f5;
-            color: #555555;
-            cursor: not-allowed;
+
+        .input-area {
+            height: 100px;
         }
-        .input-area { height: 100px; }
+
         .output-area {
             height: 120px;
             background-color: #eaedd0;
             color: #2c3e50;
             font-weight: bold;
         }
+
+        /* PANEL PARAMETER SPINNER DINAMIS */
         .param-panel {
             display: flex;
-            gap: 15px;
-            background-color: #ecf0f1;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #eef2f5;
             padding: 12px;
             border-radius: 6px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            border: 1px solid #dcdfe3;
         }
+
         .param-group {
             flex: 1;
-            min-width: 150px;
         }
+
         .param-group label {
-            font-size: 12px;
+            font-size: 11px;
             margin-bottom: 4px;
-            color: #2c3e50;
+            color: #555;
+            text-transform: uppercase;
         }
-        .param-group input {
+
+        .param-group input[type="number"] {
             width: 100%;
             padding: 8px;
-            border: 1px solid #bdc3c7;
+            border: 1px solid #ccc;
             border-radius: 4px;
             font-weight: bold;
             text-align: center;
+            font-size: 14px;
+            background-color: #fff;
         }
+
         .btn-group {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
+
         button {
             border: none;
             padding: 12px;
@@ -100,43 +114,91 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s;
+            transition: background 0.2s;
         }
-        button:disabled {
-            background-color: #bdc3c7 !important;
-            color: #7f8c8d !important;
-            cursor: not-allowed !important;
-            opacity: 0.7;
+
+        button.btn-process {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
         }
-        button.btn-process { flex: 2; background-color: #27ae60; color: white; }
-        button.btn-process:hover:not(:disabled) { background-color: #219653; }
-        button.btn-learning { flex: 2; background-color: #e67e22; color: white; }
-        button.btn-learning:hover:not(:disabled) { background-color: #d35400; }
-        button.btn-reset { flex: 1; background-color: #c0392b; color: white; }
-        button.btn-reset:hover:not(:disabled) { background-color: #a93226; }
+
+        button.btn-process:hover {
+            background-color: #219653;
+        }
+
+        button.btn-learning {
+            flex: 2;
+            background-color: #e67e22;
+            color: white;
+        }
+
+        button.btn-learning:hover {
+            background-color: #d35400;
+        }
+
+        button.btn-reset {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 18px;
+        }
+
+        button.btn-reset:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-break {
+            background-color: #c0392b;
+            color: white;
+            margin-top: 15px;
+            padding: 8px 16px;
+        }
+
+        .btn-break:hover {
+            background-color: #a93226;
+        }
+
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
-        .result-title { font-weight: bold; font-size: 14px; color: #2980b9; }
-        .btn-copy { background-color: #2980b9; color: white; padding: 6px 14px; font-size: 12px; }
-        .btn-copy:hover { background-color: #1f618d; }
-        .nav-panel { display: none; align-items: center; gap: 8px; }
-        .btn-nav { background-color: #8e44ad; color: white; padding: 5px 10px; font-size: 12px; border-radius: 4px; }
-        .btn-nav:hover:not(:disabled) { background-color: #732d91; }
-        .nav-status {
-            font-size: 12px;
+
+        .result-title {
             font-weight: bold;
-            color: #2c3e50;
-            background: #e8daef;
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid #bb8fce;
+            font-size: 14px;
+            color: #2980b9;
         }
+
+        .nav-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            background-color: #8e44ad;
+            color: white;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .btn-nav:hover {
+            background-color: #71368a;
+        }
+
+        .btn-copy {
+            background-color: #2980b9;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-copy:hover {
+            background-color: #1f618d;
+        }
+
         .audit-box {
             background-color: #1e272e;
             color: #00d8d6;
@@ -149,29 +211,50 @@
             margin-top: 15px;
             border-left: 4px solid #e67e22;
         }
-        .audit-title { color: #34495e; font-weight: bold; margin-top: 15px; margin-bottom: 5px; font-size: 13px; }
+
+        .audit-title {
+            color: #34495e;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        /* LOADING OVERLAY */
         .loading-overlay {
             display: none;
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.94);
             border-radius: 10px;
             z-index: 100;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
+
         .spinner {
-            width: 60px; height: 60px;
+            width: 60px;
+            height: 60px;
             border: 6px solid #f3f3f3;
             border-top: 6px solid #e67e22;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .loading-text {
             margin-top: 15px;
             font-weight: bold;
@@ -180,560 +263,1912 @@
             text-align: center;
             line-height: 1.6;
         }
-        .btn-break {
-            margin-top: 20px;
-            background-color: #c0392b;
-            color: white;
-            padding: 10px 24px;
-            font-size: 14px;
-            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
-        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
 
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
-        <div id="loadingText" class="loading-text">Memproses Self-Learning Engine...</div>
-        <button id="btnBreak" class="btn-break" onclick="triggerEngineBreak()">BREAK (STOP PROCESS)</button>
+        <div id="loadingText" class="loading-text">
+            Memproses Self-Learning
+        </div>
+        <button class="btn-break" onclick="triggerBreak()">BREAK / STOP</button>
     </div>
 
-    <label for="inputData">Masukkan Data RM5 :</label>
-    <textarea id="inputData" class="input-area" placeholder=""></textarea>
+    <label for="inputData">Masukkan Data RM6 :</label>
 
+    <textarea
+        id="inputData"
+        class="input-area"
+        placeholder=""
+        oninput="autoDetectParameters()">
+    </textarea>
+
+    <!-- SPINNER PARAMETER CONTROL (SPINNER TERHUBUNG DENGAN ISIAN DATA) -->
     <div class="param-panel">
         <div class="param-group">
-            <label for="cfgBacktest">Backtest (5 sd 1000):</label>
-            <input type="number" id="cfgBacktest" value="5" min="5" max="1000">
+            <label for="cfgBacktest">BACKTEST (SPINNER):</label>
+            <input type="number" id="cfgBacktest" min="1" step="1" value="5" onchange="updateBtnText()">
         </div>
         <div class="param-group">
-            <label for="cfgAllowedMiss">Miss (0 sd 1000) :</label>
-            <input type="number" id="cfgAllowedMiss" value="1" min="0" max="1000">
+            <label for="cfgMiss">ALLOWED MISS (SPINNER):</label>
+            <input type="number" id="cfgMiss" min="0" step="1" value="1">
         </div>
         <div class="param-group">
-            <label for="cfgMaxGen">GEN (16 sd 5000):</label>
-            <input type="number" id="cfgMaxGen" value="16" min="16" max="5000">
+            <label for="cfgMaxGen">MAX GEN (SPINNER):</label>
+            <input type="number" id="cfgMaxGen" min="1" step="1" value="16">
         </div>
     </div>
 
     <div class="btn-group">
-        <button id="btnSingle" class="btn-process" onclick="prosesEngineProUtuh()">PREDIKSI SINGLE</button>
-        <button id="btnBacktest" class="btn-learning" onclick="runSelfLearningEngineWrapper()">RUN LEARNING</button>
-        <button id="btnReset" class="btn-reset" onclick="resetFormState()">RESET</button>
+
+        <button
+            class="btn-process"
+            onclick="prosesEngineProUtuh()">
+            PREDIKSI SINGLE
+        </button>
+
+        <button
+            id="btnRunLearning"
+            class="btn-learning"
+            onclick="runSelfLearningEngineDinamis()">
+            RUN (BACKTEST 5)
+        </button>
+
+        <button
+            class="btn-reset"
+            onclick="resetAllData()">
+            RESET
+        </button>
+
     </div>
 
     <div class="result-header">
-        <span id="outputTitle" class="result-title">TOP RESULT ENGINE (0 LN)</span>
-        <div id="navPanel" class="nav-panel">
-            <button id="btnPrev" class="btn-nav" onclick="navigateMatches(-1)">&lt; PREV</button>
-            <span id="navStatus" class="nav-status">Temuan 0/0</span>
-            <button id="btnNext" class="btn-nav" onclick="navigateMatches(1)">NEXT &gt;</button>
+
+        <span
+            id="outputTitle"
+            class="result-title">
+            TOP RESULT ENGINE (0 LN)
+        </span>
+
+        <div class="nav-controls">
+            <button class="btn-nav" onclick="navResult(-1)">&lt; PREV</button>
+            <span id="navCounter" style="font-size:12px; font-weight:bold; color:#2c3e50;">0/0</span>
+            <button class="btn-nav" onclick="navResult(1)">NEXT &gt;</button>
+            <button
+                class="btn-copy"
+                id="btnCopy"
+                onclick="copyHasil()">
+                Copy
+            </button>
         </div>
-        <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy</button>
+
     </div>
 
-    <textarea id="outputResult" class="output-area" readonly placeholder=""></textarea>
+    <textarea
+        id="outputResult"
+        class="output-area"
+        readonly
+        placeholder="">
+    </textarea>
 
-    <div class="audit-title">LOG AUDIT EXECUTION:</div>
-    <div id="auditLog" class="audit-box">Ready..</div>
+    <div class="audit-title">
+        LOG AUDIT EXECUTION:
+    </div>
+
+    <div
+        id="auditLog"
+        class="audit-box">
+        Ready..
+    </div>
 
 </div>
 
+
 <script>
+
+/*
+====================================================================
+ CORE ENTERPRISE ENGINE
+ OUTPUT = 2 DIGIT
+ SECTOR DINAMIS:
+ 2DD = DIGIT 0 + DIGIT 1
+ 2DT = DIGIT 1 + DIGIT 2
+ 2DB = DIGIT 2 + DIGIT 3
+====================================================================
+*/
+
+
 /* ================================================================
-   LOGIKA RM6_2.HTML MURNI DARI FILE ASLI BAPAK (100% TANPA DIUBAH)
-   ================================================================ */
+   ENGINE CONFIGURATION
+================================================================ */
 
 let ENGINE_SYS_CONFIG = {
+
     MAX_OUTPUT_LIMIT: 50,
+
     SIMULATION_MATRIX_DEPTH: 1000,
+
     WEIGHT_LEVEL_0: 100,
     WEIGHT_LEVEL_1: 80,
     WEIGHT_LEVEL_2: 60,
     WEIGHT_LEVEL_3: 40,
     WEIGHT_LEVEL_4: 20,
     WEIGHT_LEVEL_5: 0,
+
     AM_MIN_LENGTH: 3,
+
     STRATEGY_MODE: "STANDARD_ENTERPRISE",
+
+    /* MAKSIMUM GENERASI */
     MAX_GENERATIONS: 16
+
 };
 
-let TARGET_MATCHES = [];
-let BEST_ATTEMPTS = [];
-let currentMatchIndex = 0;
-let activeDisplayList = [];
-let isBreakRequested = false;
+/* VARIABEL KONTROL NAVIGASI & BREAK */
+let historyResults = [];
+let historyIndex = 0;
+let isBreakTriggered = false;
 
-function writeAuditLog(message) {
-    let logBox = document.getElementById('auditLog');
-    let timeStamp = new Date().toLocaleTimeString();
-    logBox.innerHTML += `[${timeStamp}] ${message}<br/>`;
-    logBox.scrollTop = logBox.scrollHeight;
-}
-
-function clearAuditLog() {
-    document.getElementById('auditLog').innerHTML = '';
-}
-
-function yieldUI() {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, 0);
-    });
-}
-
-function calculateSingleDigitSum(digitValA, digitValB) {
-    let parseA = parseInt(digitValA, 10);
-    let parseB = parseInt(digitValB, 10);
-    let totalSum = parseA + parseB;
-    while (totalSum >= 10) {
-        let stringConverted = totalSum.toString();
-        let charFirst = parseInt(stringConverted.charAt(0), 10);
-        let charSecond = parseInt(stringConverted.charAt(1), 10);
-        totalSum = charFirst + charSecond;
-    }
-    return totalSum.toString();
-}
-
-function calculateAbsoluteDifference(digitValA, digitValB) {
-    let parseA = parseInt(digitValA, 10);
-    let parseB = parseInt(digitValB, 10);
-    let diffResult = Math.abs(parseA - parseB);
-    return diffResult.toString();
-}
-
-function generateCombinatorialSubsets(sourceArray, subsetLength) {
-    if (subsetLength === 0) return [[]];
-    if (sourceArray.length === 0) return [];
-    let headElement = sourceArray[0];
-    let tailElements = sourceArray.slice(1);
-    let subsetsWithHead = generateCombinatorialSubsets(tailElements, subsetLength - 1).map(function(subset) {
-        return [headElement].concat(subset);
-    });
-    let subsetsWithoutHead = generateCombinatorialSubsets(tailElements, subsetLength);
-    return subsetsWithHead.concat(subsetsWithoutHead);
-}
-
-function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
-    let uniqueCharacterSet = new Set();
-    for (let rowIndex = 0; rowIndex < processedRowsData.length - 1; rowIndex++) {
-        let targetRow = processedRowsData[rowIndex + 1];
-        let extractedString = extractionTargetFunction(targetRow);
-        if (extractedString && typeof extractedString === 'string') {
-            for (let charIndex = 0; charIndex < extractedString.length; charIndex++) {
-                uniqueCharacterSet.add(extractedString.charAt(charIndex));
-            }
-        }
-    }
-    let sortedCharacterSet = Array.from(uniqueCharacterSet).sort();
-    if (sortedCharacterSet.length === 0) {
-        return ['0','1','2','3','4','5','6','7','8','9'];
-    }
-    let optimalSubSetAM = null;
-    let minLen = ENGINE_SYS_CONFIG.AM_MIN_LENGTH;
-    for (let currentLength = minLen; currentLength <= sortedCharacterSet.length; currentLength++) {
-        let generatedSubsets = generateCombinatorialSubsets(sortedCharacterSet, currentLength);
-        for (let comboIndex = 0; comboIndex < generatedSubsets.length; comboIndex++) {
-            let currentCombination = generatedSubsets[comboIndex];
-            let comboComparisonSet = new Set(currentCombination);
-            let isValidFullCoverage = true;
-            for (let verifyIndex = 0; verifyIndex < processedRowsData.length - 1; verifyIndex++) {
-                let verificationRow = processedRowsData[verifyIndex + 1];
-                let verifyValue = extractionTargetFunction(verificationRow);
-                let hitMatchCount = 0;
-                if (verifyValue) {
-                    for (let verifyCharIdx = 0; verifyCharIdx < verifyValue.length; verifyCharIdx++) {
-                        if (comboComparisonSet.has(verifyValue.charAt(verifyCharIdx))) {
-                            hitMatchCount++;
-                        }
-                    }
-                }
-                if (hitMatchCount === 0) {
-                    isValidFullCoverage = false;
-                    break;
-                }
-            }
-            if (isValidFullCoverage) {
-                optimalSubSetAM = currentCombination;
-                break;
-            }
-        }
-        if (optimalSubSetAM) break;
-    }
-    return optimalSubSetAM || sortedCharacterSet;
-}
-
-function build1000PermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
-    let baseHistoricalPairs = [];
-    for (let dataIdx = 0; dataIdx < processedDataRows.length; dataIdx++) {
-        let selectedRow = processedDataRows[dataIdx];
-        baseHistoricalPairs.push(selectedRow.digits[primaryPositionIdx] + selectedRow.digits[secondaryPositionIdx]);
-    }
-    let expandedPermutationSpace = [];
-    let baseDataLength = baseHistoricalPairs.length;
-    for (let simulationIdx = 0; simulationIdx < ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH; simulationIdx++) {
-        let basePairString = baseHistoricalPairs[simulationIdx % baseDataLength];
-        let baseDigitA = parseInt(basePairString.charAt(0), 10);
-        let baseDigitB = parseInt(basePairString.charAt(1), 10);
-        let shiftOffsetA = Math.floor(simulationIdx / 100);
-        let shiftOffsetB = simulationIdx % 10;
-        let calculatedDigitA = (baseDigitA + shiftOffsetA) % 10;
-        let calculatedDigitB = (baseDigitB + shiftOffsetB) % 10;
-        expandedPermutationSpace.push(calculatedDigitA.toString() + calculatedDigitB.toString());
-    }
-    return expandedPermutationSpace;
-}
-
-function evaluateSectorGeneric(matrixData, listA, listB, listDiff, listSum, listAM, sectorName) {
-    let scoreBoard = {};
-    for (let pairVal = 0; pairVal <= 99; pairVal++) {
-        let pairKey = pairVal.toString().padStart(2, '0');
-        scoreBoard[pairKey] = { pair: pairKey, totalPowerScore: 0, level0Count: 0, level1Count: 0 };
-    }
-    let validDiffNumbers = (listDiff || []).map(Number);
-    let validSumNumbers = (listSum || []).map(Number);
-    for (let i = 0; i < matrixData.length; i++) {
-        let pairStr = matrixData[i];
-        let charA = pairStr.charAt(0);
-        let charB = pairStr.charAt(1);
-        let numA = parseInt(charA, 10);
-        let numB = parseInt(charB, 10);
-        let calcDiff = Math.abs(numA - numB);
-        let calcSum = parseInt(calculateSingleDigitSum(numA, numB), 10);
-        let penaltyFails = 0;
-        if (!listA.includes(charA)) penaltyFails++;
-        if (!listB.includes(charB)) penaltyFails++;
-        if (validDiffNumbers.length > 0 && !validDiffNumbers.includes(calcDiff)) penaltyFails++;
-        if (validSumNumbers.length > 0 && !validSumNumbers.includes(calcSum)) penaltyFails++;
-        if (listAM.length > 0 && !listAM.includes(charA) && !listAM.includes(charB)) penaltyFails++;
-
-        let scoreAdd = 0;
-        if (penaltyFails === 0) { scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0; scoreBoard[pairStr].level0Count++; }
-        else if (penaltyFails === 1) { scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1; scoreBoard[pairStr].level1Count++; }
-        else if (penaltyFails === 2) scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
-        else if (penaltyFails === 3) scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
-        else if (penaltyFails === 4) scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
-        else scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
-
-        scoreBoard[pairStr].totalPowerScore += scoreAdd;
-    }
-    let sortedList = Object.values(scoreBoard);
-    sortedList.sort(function(a, b) {
-        if (b.totalPowerScore !== a.totalPowerScore) return b.totalPowerScore - a.totalPowerScore;
-        return b.level0Count - a.level0Count;
-    });
-    let top50 = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
-    let aggregatePower = top50.reduce(function(acc, curr) { return acc + curr.totalPowerScore; }, 0);
-    return { sectorName: sectorName, topLN: top50.map(item => item.pair), powerScore: aggregatePower };
-}
-
-function executeEngineForDataset(dataTokens) {
-    let processedDataRows = [];
-    for (let idx = 0; idx < dataTokens.length; idx++) {
-        let token = dataTokens[idx];
-        if (token.length < 4) token = token.padStart(4, '0');
-        let digit0 = parseInt(token.charAt(0), 10);
-        let digit1 = parseInt(token.charAt(1), 10);
-        let digit2 = parseInt(token.charAt(2), 10);
-        let digit3 = parseInt(token.charAt(3), 10);
-        processedDataRows.push({
-            rawToken: token,
-            digits: [digit0.toString(), digit1.toString(), digit2.toString(), digit3.toString()],
-            diffs: [calculateAbsoluteDifference(digit0, digit1), calculateAbsoluteDifference(digit1, digit2), calculateAbsoluteDifference(digit2, digit3)],
-            sums: [calculateSingleDigitSum(digit0, digit1), calculateSingleDigitSum(digit1, digit2), calculateSingleDigitSum(digit2, digit3)]
-        });
-    }
-
-    let listD0 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0]);
-    let listD1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1]);
-    let listD2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2]);
-    let listD3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[3]);
-
-    let listDiff1 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[0]);
-    let listDiff2 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[1]);
-    let listDiff3 = extractAdaptiveAMStrict(processedDataRows, row => row.diffs[2]);
-
-    let listSum1 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[0]);
-    let listSum2 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[1]);
-    let listSum3 = extractAdaptiveAMStrict(processedDataRows, row => row.sums[2]);
-
-    let listAM1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[0] + row.digits[1]);
-    let listAM2 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[1] + row.digits[2]);
-    let listAM3 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[2] + row.digits[3]);
-
-    let matrix2DD = build1000PermutationSpace(processedDataRows, 0, 1);
-    let matrix2DT = build1000PermutationSpace(processedDataRows, 1, 2);
-    let matrix2DB = build1000PermutationSpace(processedDataRows, 2, 3);
-
-    let result2DD = evaluateSectorGeneric(matrix2DD, listD0, listD1, listDiff1, listSum1, listAM1, "2DD");
-    let result2DT = evaluateSectorGeneric(matrix2DT, listD1, listD2, listDiff2, listSum2, listAM2, "2DT");
-    let result2DB = evaluateSectorGeneric(matrix2DB, listD2, listD3, listDiff3, listSum3, listAM3, "2DB");
-
-    let engineContenders = [result2DD, result2DT, result2DB];
-    engineContenders.sort((a, b) => b.powerScore - a.powerScore);
-    return engineContenders[0];
-}
-
-function mutateAlgorithmStrategy(attemptLevel) {
-    if (attemptLevel === 1) {
-        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_2_STRICT_WEIGHTS";
-        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1500;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 120;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 60;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 30;
-        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 2;
-    } else if (attemptLevel === 2) {
-        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_3_ULTRA_MATRIX";
-        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2000;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 150;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 90;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 40;
-        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 1;
-    } else {
-        ENGINE_SYS_CONFIG.STRATEGY_MODE = "GEN_4_HYBRID_SHIFT";
-        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 2500;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 200;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 100;
-        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 50;
-        ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
-    }
-}
-
-function prosesEngineProUtuh() {
-    clearAuditLog();
-    writeAuditLog("Initialising Single Prediction Engine Execution...");
+/* DETEKSI OTOMATIS DATA DI INPUTAREA UNTUK NILAI SPINNER */
+function autoDetectParameters() {
     let rawInputValue = document.getElementById('inputData').value.trim();
-    if (!rawInputValue) {
-        writeAuditLog("<b style='color:#e74c3c;'>ERROR: Data RM6 belum dimasukkan.</b>");
-        return;
-    }
+    if (!rawInputValue) return;
+
     let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
-    if (dataTokens.length < 2) {
-        writeAuditLog("<b style='color:#e74c3c;'>ERROR: Minimal 2 data.</b>");
-        return;
+    
+    if (dataTokens.length >= 3) {
+        // Otomatis tentukan nilai default Backtest Spinner dari jumlah data - 2 (agar tersisa min 2 data training)
+        let calcBacktest = Math.max(1, Math.min(5, dataTokens.length - 2));
+        document.getElementById('cfgBacktest').value = calcBacktest;
+        document.getElementById('cfgBacktest').max = dataTokens.length - 2;
+        updateBtnText();
     }
-    let winningEngine = executeEngineForDataset(dataTokens);
-    document.getElementById('outputTitle').textContent = `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
-    document.getElementById('outputResult').value = winningEngine.topLN.join('*');
-    writeAuditLog(`Prediction Completed. Winning Sector: <b>${winningEngine.sectorName}</b>`);
-    writeAuditLog(`Power Score: <b>${winningEngine.powerScore}</b>`);
+}
+
+function updateBtnText() {
+    let bVal = document.getElementById('cfgBacktest').value || 5;
+    document.getElementById('btnRunLearning').textContent = `RUN (BACKTEST ${bVal})`;
+}
+
+function triggerBreak() {
+    isBreakTriggered = true;
+    writeAuditLog("<b style='color:#e74c3c;'>PROSES DIHENTIKAN OLEH USER (BREAK)</b>");
+}
+
+function navResult(dir) {
+    if (historyResults.length === 0) return;
+    historyIndex += dir;
+    if (historyIndex < 0) historyIndex = 0;
+    if (historyIndex >= historyResults.length) historyIndex = historyResults.length - 1;
+    
+    let current = historyResults[historyIndex];
+    document.getElementById('outputTitle').textContent = current.title;
+    document.getElementById('outputResult').value = current.ln;
+    document.getElementById('navCounter').textContent = `${historyIndex + 1}/${historyResults.length}`;
+}
+
+function resetAllData() {
+    document.getElementById('inputData').value = '';
+    document.getElementById('outputResult').value = '';
+    document.getElementById('outputTitle').textContent = 'TOP RESULT ENGINE (0 LN)';
+    document.getElementById('cfgBacktest').value = 5;
+    document.getElementById('cfgMiss').value = 1;
+    document.getElementById('cfgMaxGen').value = 16;
+    updateBtnText();
+    historyResults = [];
+    historyIndex = 0;
+    document.getElementById('navCounter').textContent = '0/0';
+    clearAuditLog();
+    writeAuditLog("Ready..");
 }
 
 /* ================================================================
-   FUNKSI KONTROL TAMBAHAN UNTUK INTERAKSI UI
-   ================================================================ */
+   AUDIT LOGGER
+================================================================ */
 
-function triggerEngineBreak() {
-    isBreakRequested = true;
-    writeAuditLog("<b style='color:#e74c3c;'>[USER BREAK] Permintaan pemberhentian diterima...</b>");
+function writeAuditLog(message) {
+
+    let logBox = document.getElementById('auditLog');
+
+    let timeStamp = new Date().toLocaleTimeString();
+
+    logBox.innerHTML +=
+        `[${timeStamp}] ${message}<br/>`;
+
+    logBox.scrollTop = logBox.scrollHeight;
 }
 
-function resetFormState() {
-    document.getElementById('inputData').readOnly = false;
-    document.getElementById('outputResult').value = '';
-    document.getElementById('outputTitle').textContent = 'TOP RESULT ENGINE (0 LN)';
-    document.getElementById('navPanel').style.display = 'none';
-    
-    TARGET_MATCHES = [];
-    BEST_ATTEMPTS = [];
-    activeDisplayList = [];
-    currentMatchIndex = 0;
-    isBreakRequested = false;
+
+function clearAuditLog() {
+
+    document.getElementById('auditLog').innerHTML = '';
+
+}
+
+
+/* ================================================================
+   YIELD UI
+================================================================ */
+
+function yieldUI() {
+
+    return new Promise(function(resolve) {
+
+        setTimeout(resolve, 0);
+
+    });
+
+}
+
+
+/* ================================================================
+   DIGITAL ROOT
+================================================================ */
+
+function calculateSingleDigitSum(digitValA, digitValB) {
+
+    let parseA = parseInt(digitValA, 10);
+
+    let parseB = parseInt(digitValB, 10);
+
+    let totalSum = parseA + parseB;
+
+    while (totalSum >= 10) {
+
+        let stringConverted =
+            totalSum.toString();
+
+        let charFirst =
+            parseInt(stringConverted.charAt(0), 10);
+
+        let charSecond =
+            parseInt(stringConverted.charAt(1), 10);
+
+        totalSum =
+            charFirst + charSecond;
+
+    }
+
+    return totalSum.toString();
+
+}
+
+
+/* ================================================================
+   ABSOLUTE DIFFERENCE
+================================================================ */
+
+function calculateAbsoluteDifference(digitValA, digitValB) {
+
+    let parseA = parseInt(digitValA, 10);
+
+    let parseB = parseInt(digitValB, 10);
+
+    let diffResult =
+        Math.abs(parseA - parseB);
+
+    return diffResult.toString();
+
+}
+
+
+/* ================================================================
+   COMBINATORIAL SUBSET
+================================================================ */
+
+function generateCombinatorialSubsets(
+    sourceArray,
+    subsetLength
+) {
+
+    if (subsetLength === 0) {
+        return [[]];
+    }
+
+    if (sourceArray.length === 0) {
+        return [];
+    }
+
+    let headElement =
+        sourceArray[0];
+
+    let tailElements =
+        sourceArray.slice(1);
+
+    let subsetsWithHead =
+        generateCombinatorialSubsets(
+            tailElements,
+            subsetLength - 1
+        ).map(function(subset) {
+
+            return [headElement].concat(subset);
+
+        });
+
+    let subsetsWithoutHead =
+        generateCombinatorialSubsets(
+            tailElements,
+            subsetLength
+        );
+
+    return subsetsWithHead.concat(
+        subsetsWithoutHead
+    );
+
+}
+
+
+/* ================================================================
+   ADAPTIVE AM
+================================================================ */
+
+function extractAdaptiveAMStrict(
+    processedRowsData,
+    extractionTargetFunction
+) {
+
+    let uniqueCharacterSet =
+        new Set();
+
+    for (
+        let rowIndex = 0;
+        rowIndex < processedRowsData.length - 1;
+        rowIndex++
+    ) {
+
+        let targetRow =
+            processedRowsData[rowIndex + 1];
+
+        let extractedString =
+            extractionTargetFunction(targetRow);
+
+        if (
+            extractedString &&
+            typeof extractedString === 'string'
+        ) {
+
+            for (
+                let charIndex = 0;
+                charIndex < extractedString.length;
+                charIndex++
+            ) {
+
+                uniqueCharacterSet.add(
+                    extractedString.charAt(charIndex)
+                );
+
+            }
+
+        }
+
+    }
+
+    let sortedCharacterSet =
+        Array.from(uniqueCharacterSet).sort();
+
+    if (sortedCharacterSet.length === 0) {
+
+        return [
+            '0','1','2','3','4',
+            '5','6','7','8','9'
+        ];
+
+    }
+
+    let optimalSubSetAM = null;
+
+    let minLen =
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH;
+
+    for (
+        let currentLength = minLen;
+        currentLength <= sortedCharacterSet.length;
+        currentLength++
+    ) {
+
+        let generatedSubsets =
+            generateCombinatorialSubsets(
+                sortedCharacterSet,
+                currentLength
+            );
+
+        for (
+            let comboIndex = 0;
+            comboIndex < generatedSubsets.length;
+            comboIndex++
+        ) {
+
+            let currentCombination =
+                generatedSubsets[comboIndex];
+
+            let comboComparisonSet =
+                new Set(currentCombination);
+
+            let isValidFullCoverage =
+                true;
+
+            for (
+                let verifyIndex = 0;
+                verifyIndex < processedRowsData.length - 1;
+                verifyIndex++
+            ) {
+
+                let verificationRow =
+                    processedRowsData[verifyIndex + 1];
+
+                let verifyValue =
+                    extractionTargetFunction(
+                        verificationRow
+                    );
+
+                let hitMatchCount = 0;
+
+                if (verifyValue) {
+
+                    for (
+                        let verifyCharIdx = 0;
+                        verifyCharIdx < verifyValue.length;
+                        verifyCharIdx++
+                    ) {
+
+                        if (
+                            comboComparisonSet.has(
+                                verifyValue.charAt(
+                                    verifyCharIdx
+                                )
+                            )
+                        ) {
+
+                            hitMatchCount++;
+
+                        }
+
+                    }
+
+                }
+
+                if (hitMatchCount === 0) {
+
+                    isValidFullCoverage =
+                        false;
+
+                    break;
+
+                }
+
+            }
+
+            if (isValidFullCoverage) {
+
+                optimalSubSetAM =
+                    currentCombination;
+
+                break;
+
+            }
+
+        }
+
+        if (optimalSubSetAM) {
+            break;
+        }
+
+    }
+
+    return optimalSubSetAM ||
+        sortedCharacterSet;
+
+}
+
+
+/* ================================================================
+   1000 PERMUTATION MATRIX
+================================================================ */
+
+function build1000PermutationSpace(
+    processedDataRows,
+    primaryPositionIdx,
+    secondaryPositionIdx
+) {
+
+    let baseHistoricalPairs = [];
+
+    for (
+        let dataIdx = 0;
+        dataIdx < processedDataRows.length;
+        dataIdx++
+    ) {
+
+        let selectedRow =
+            processedDataRows[dataIdx];
+
+        baseHistoricalPairs.push(
+            selectedRow.digits[primaryPositionIdx] +
+            selectedRow.digits[secondaryPositionIdx]
+        );
+
+    }
+
+    let expandedPermutationSpace = [];
+
+    let baseDataLength =
+        baseHistoricalPairs.length;
+
+    for (
+        let simulationIdx = 0;
+        simulationIdx <
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH;
+        simulationIdx++
+    ) {
+
+        let basePairString =
+            baseHistoricalPairs[
+                simulationIdx % baseDataLength
+            ];
+
+        let baseDigitA =
+            parseInt(
+                basePairString.charAt(0),
+                10
+            );
+
+        let baseDigitB =
+            parseInt(
+                basePairString.charAt(1),
+                10
+            );
+
+        let shiftOffsetA =
+            Math.floor(simulationIdx / 100);
+
+        let shiftOffsetB =
+            simulationIdx % 10;
+
+        let calculatedDigitA =
+            (baseDigitA + shiftOffsetA) % 10;
+
+        let calculatedDigitB =
+            (baseDigitB + shiftOffsetB) % 10;
+
+        expandedPermutationSpace.push(
+            calculatedDigitA.toString() +
+            calculatedDigitB.toString()
+        );
+
+    }
+
+    return expandedPermutationSpace;
+
+}
+
+
+/* ================================================================
+   SECTOR EVALUATOR
+================================================================ */
+
+function evaluateSectorGeneric(
+    matrixData,
+    listA,
+    listB,
+    listDiff,
+    listSum,
+    listAM,
+    sectorName
+) {
+
+    let scoreBoard = {};
+
+    for (
+        let pairVal = 0;
+        pairVal <= 99;
+        pairVal++
+    ) {
+
+        let pairKey =
+            pairVal
+                .toString()
+                .padStart(2, '0');
+
+        scoreBoard[pairKey] = {
+
+            pair: pairKey,
+
+            totalPowerScore: 0,
+
+            level0Count: 0,
+
+            level1Count: 0
+
+        };
+
+    }
+
+
+    let validDiffNumbers =
+        (listDiff || []).map(Number);
+
+    let validSumNumbers =
+        (listSum || []).map(Number);
+
+
+    for (
+        let i = 0;
+        i < matrixData.length;
+        i++
+    ) {
+
+        let pairStr =
+            matrixData[i];
+
+        let charA =
+            pairStr.charAt(0);
+
+        let charB =
+            pairStr.charAt(1);
+
+        let numA =
+            parseInt(charA, 10);
+
+        let numB =
+            parseInt(charB, 10);
+
+        let calcDiff =
+            Math.abs(numA - numB);
+
+        let calcSum =
+            parseInt(
+                calculateSingleDigitSum(
+                    numA,
+                    numB
+                ),
+                10
+            );
+
+        let penaltyFails = 0;
+
+
+        if (!listA.includes(charA)) {
+            penaltyFails++;
+        }
+
+        if (!listB.includes(charB)) {
+            penaltyFails++;
+        }
+
+        if (
+            validDiffNumbers.length > 0 &&
+            !validDiffNumbers.includes(calcDiff)
+        ) {
+            penaltyFails++;
+        }
+
+        if (
+            validSumNumbers.length > 0 &&
+            !validSumNumbers.includes(calcSum)
+        ) {
+            penaltyFails++;
+        }
+
+        if (
+            listAM.length > 0 &&
+            !listAM.includes(charA) &&
+            !listAM.includes(charB)
+        ) {
+            penaltyFails++;
+        }
+
+
+        let scoreAdd = 0;
+
+
+        if (penaltyFails === 0) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+
+            scoreBoard[pairStr].level0Count++;
+
+        }
+
+        else if (penaltyFails === 1) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+
+            scoreBoard[pairStr].level1Count++;
+
+        }
+
+        else if (penaltyFails === 2) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+
+        }
+
+        else if (penaltyFails === 3) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+
+        }
+
+        else if (penaltyFails === 4) {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4;
+
+        }
+
+        else {
+
+            scoreAdd =
+                ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5;
+
+        }
+
+
+        scoreBoard[pairStr].totalPowerScore +=
+            scoreAdd;
+
+    }
+
+
+    let sortedList =
+        Object.values(scoreBoard);
+
+
+    sortedList.sort(function(a, b) {
+
+        if (
+            b.totalPowerScore !==
+            a.totalPowerScore
+        ) {
+
+            return (
+                b.totalPowerScore -
+                a.totalPowerScore
+            );
+
+        }
+
+        return (
+            b.level0Count -
+            a.level0Count
+        );
+
+    });
+
+
+    let top50 =
+        sortedList.slice(
+            0,
+            ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT
+        );
+
+
+    let aggregatePower =
+        top50.reduce(
+            function(acc, curr) {
+
+                return acc +
+                    curr.totalPowerScore;
+
+            },
+            0
+        );
+
+
+    return {
+
+        sectorName: sectorName,
+
+        topLN:
+            top50.map(
+                item => item.pair
+            ),
+
+        powerScore:
+            aggregatePower
+
+    };
+
+}
+
+
+/* ================================================================
+   EXECUTE ENGINE DATASET
+================================================================ */
+
+function executeEngineForDataset(
+    dataTokens
+) {
+
+    let processedDataRows = [];
+
+
+    for (
+        let idx = 0;
+        idx < dataTokens.length;
+        idx++
+    ) {
+
+        let token =
+            dataTokens[idx];
+
+
+        if (token.length < 4) {
+
+            token =
+                token.padStart(4, '0');
+
+        }
+
+
+        let digit0 =
+            parseInt(
+                token.charAt(0),
+                10
+            );
+
+        let digit1 =
+            parseInt(
+                token.charAt(1),
+                10
+            );
+
+        let digit2 =
+            parseInt(
+                token.charAt(2),
+                10
+            );
+
+        let digit3 =
+            parseInt(
+                token.charAt(3),
+                10
+            );
+
+
+        processedDataRows.push({
+
+            rawToken: token,
+
+            digits: [
+
+                digit0.toString(),
+
+                digit1.toString(),
+
+                digit2.toString(),
+
+                digit3.toString()
+
+            ],
+
+            diffs: [
+
+                calculateAbsoluteDifference(
+                    digit0,
+                    digit1
+                ),
+
+                calculateAbsoluteDifference(
+                    digit1,
+                    digit2
+                ),
+
+                calculateAbsoluteDifference(
+                    digit2,
+                    digit3
+                )
+
+            ],
+
+            sums: [
+
+                calculateSingleDigitSum(
+                    digit0,
+                    digit1
+                ),
+
+                calculateSingleDigitSum(
+                    digit1,
+                    digit2
+                ),
+
+                calculateSingleDigitSum(
+                    digit2,
+                    digit3
+                )
+
+            ]
+
+        });
+
+    }
+
+
+    let listD0 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[0]
+        );
+
+    let listD1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[1]
+        );
+
+    let listD2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[2]
+        );
+
+    let listD3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.digits[3]
+        );
+
+
+    let listDiff1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.diffs[0]
+        );
+
+    let listDiff2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.diffs[1]
+        );
+
+    let listDiff3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.diffs[2]
+        );
+
+
+    let listSum1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.sums[0]
+        );
+
+    let listSum2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.sums[1]
+        );
+
+    let listSum3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row => row.sums[2]
+        );
+
+
+    let listAM1 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row =>
+                row.digits[0] +
+                row.digits[1]
+        );
+
+    let listAM2 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row =>
+                row.digits[1] +
+                row.digits[2]
+        );
+
+    let listAM3 =
+        extractAdaptiveAMStrict(
+            processedDataRows,
+            row =>
+                row.digits[2] +
+                row.digits[3]
+        );
+
+
+    let matrix2DD =
+        build1000PermutationSpace(
+            processedDataRows,
+            0,
+            1
+        );
+
+    let matrix2DT =
+        build1000PermutationSpace(
+            processedDataRows,
+            1,
+            2
+        );
+
+    let matrix2DB =
+        build1000PermutationSpace(
+            processedDataRows,
+            2,
+            3
+        );
+
+
+    let result2DD =
+        evaluateSectorGeneric(
+            matrix2DD,
+            listD0,
+            listD1,
+            listDiff1,
+            listSum1,
+            listAM1,
+            "2DD"
+        );
+
+
+    let result2DT =
+        evaluateSectorGeneric(
+            matrix2DT,
+            listD1,
+            listD2,
+            listDiff2,
+            listSum2,
+            listAM2,
+            "2DT"
+        );
+
+
+    let result2DB =
+        evaluateSectorGeneric(
+            matrix2DB,
+            listD2,
+            listD3,
+            listDiff3,
+            listSum3,
+            listAM3,
+            "2DB"
+        );
+
+
+    let engineContenders = [
+
+        result2DD,
+
+        result2DT,
+
+        result2DB
+
+    ];
+
+
+    engineContenders.sort(
+        (a, b) =>
+            b.powerScore -
+            a.powerScore
+    );
+
+
+    return engineContenders[0];
+
+}
+
+
+/* ================================================================
+   SINGLE PREDICTION
+================================================================ */
+
+function prosesEngineProUtuh() {
 
     clearAuditLog();
-    writeAuditLog("System Reset Completed. Ready for execution..");
-}
 
-function renderMatchToUI(index) {
-    if (!activeDisplayList || activeDisplayList.length === 0) return;
-    if (index < 0) index = 0;
-    if (index >= activeDisplayList.length) index = activeDisplayList.length - 1;
-    currentMatchIndex = index;
+    writeAuditLog(
+        "Initialising Single Prediction Engine Execution..."
+    );
 
-    let match = activeDisplayList[currentMatchIndex];
-    let isTargetType = (TARGET_MATCHES.length > 0);
 
-    let typeLabel = isTargetType ? "Temuan Target" : "Temuan Terbaik";
-    document.getElementById('outputTitle').textContent = `${typeLabel} (${currentMatchIndex + 1}/${activeDisplayList.length}) ${match.sectorName} — GEN ${match.generation} (MISS: ${match.misses})`;
-    document.getElementById('outputResult').value = match.topLN.join('*');
+    let rawInputValue =
+        document
+            .getElementById('inputData')
+            .value
+            .trim();
 
-    document.getElementById('navStatus').textContent = `${typeLabel} ${currentMatchIndex + 1}/${activeDisplayList.length}`;
-    document.getElementById('btnPrev').disabled = (currentMatchIndex === 0);
-    document.getElementById('btnNext').disabled = (currentMatchIndex === activeDisplayList.length - 1);
-}
 
-function navigateMatches(dir) {
-    renderMatchToUI(currentMatchIndex + dir);
-}
-
-function runSelfLearningEngineWrapper() {
-    let iterationsCount = parseInt(document.getElementById('cfgBacktest').value, 10) || 5;
-    let allowedMiss = parseInt(document.getElementById('cfgAllowedMiss').value, 10);
-    if (isNaN(allowedMiss)) allowedMiss = 1;
-    let maxGen = parseInt(document.getElementById('cfgMaxGen').value, 10) || 16;
-    
-    ENGINE_SYS_CONFIG.MAX_GENERATIONS = maxGen;
-    runSelfLearningEngineCustom(iterationsCount, allowedMiss);
-}
-
-async function runSelfLearningEngineCustom(iterationsCount, allowedMissTarget) {
-    clearAuditLog();
-    writeAuditLog("====================================================");
-    writeAuditLog("STARTING AUTOMATED SELF-LEARNING ENGINE");
-    writeAuditLog(`MAX GENERATION = ${ENGINE_SYS_CONFIG.MAX_GENERATIONS}`);
-    writeAuditLog(`MISS TARGET = <= ${allowedMissTarget}`);
-    writeAuditLog("SECTOR = 2DD / 2DT / 2DB DINAMIS");
-    writeAuditLog("====================================================");
-
-    let rawInputValue = document.getElementById('inputData').value.trim();
     if (!rawInputValue) {
-        writeAuditLog("<b style='color:#e74c3c;'>ERROR: Data RM6 belum dimasukkan.</b>");
+
+        writeAuditLog(
+            "<b style='color:#e74c3c;'>ERROR: Data RM6 belum dimasukkan.</b>"
+        );
+
         return;
+
     }
 
-    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
-    if (dataTokens.length < iterationsCount + 2) {
-        writeAuditLog(`<b style='color:#e74c3c;'>ERROR: Data tidak cukup untuk ${iterationsCount}x backtest.</b>`);
-        writeAuditLog(`Minimal diperlukan ${iterationsCount + 2} data.`);
+
+    let dataTokens =
+        rawInputValue
+            .split(',')
+            .map(
+                item => item.trim()
+            )
+            .filter(
+                item => item.length > 0
+            );
+
+
+    if (dataTokens.length < 2) {
+
+        writeAuditLog(
+            "<b style='color:#e74c3c;'>ERROR: Minimal 2 data.</b>"
+        );
+
         return;
+
     }
 
-    let loadingOverlay = document.getElementById('loadingOverlay');
-    let loadingText = document.getElementById('loadingText');
-    loadingOverlay.style.display = 'flex';
 
-    TARGET_MATCHES = [];
-    BEST_ATTEMPTS = [];
-    activeDisplayList = [];
-    currentMatchIndex = 0;
-    isBreakRequested = false;
+    let winningEngine =
+        executeEngineForDataset(
+            dataTokens
+        );
 
-    ENGINE_SYS_CONFIG.STRATEGY_MODE = "STANDARD_ENTERPRISE";
-    ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1000;
-    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 100;
-    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 = 80;
-    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 = 60;
-    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3 = 40;
-    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4 = 20;
-    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5 = 0;
-    ENGINE_SYS_CONFIG.AM_MIN_LENGTH = 3;
+    let titleText = `TOP ${winningEngine.topLN.length} ${winningEngine.sectorName}`;
+    let lnText = winningEngine.topLN.join('*');
+
+    document
+        .getElementById('outputTitle')
+        .textContent = titleText;
+
+
+    document
+        .getElementById('outputResult')
+        .value = lnText;
+
+    historyResults = [{ title: titleText, ln: lnText }];
+    historyIndex = 0;
+    document.getElementById('navCounter').textContent = `1/1`;
+
+
+    writeAuditLog(
+        `Prediction Completed. Winning Sector: <b>${winningEngine.sectorName}</b>`
+    );
+
+    writeAuditLog(
+        `Power Score: <b>${winningEngine.powerScore}</b>`
+    );
+
+}
+
+
+/* ================================================================
+   AUTO MUTATION ALGORITHM
+================================================================ */
+
+function mutateAlgorithmStrategy(
+    attemptLevel
+) {
+
+    if (attemptLevel === 1) {
+
+        ENGINE_SYS_CONFIG.STRATEGY_MODE =
+            "GEN_2_STRICT_WEIGHTS";
+
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+            1500;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+            120;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+            60;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+            30;
+
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+            2;
+
+    }
+
+    else if (attemptLevel === 2) {
+
+        ENGINE_SYS_CONFIG.STRATEGY_MODE =
+            "GEN_3_ULTRA_MATRIX";
+
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+            2000;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+            150;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+            90;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+            40;
+
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+            1;
+
+    }
+
+    else {
+
+        ENGINE_SYS_CONFIG.STRATEGY_MODE =
+            "GEN_4_HYBRID_SHIFT";
+
+        ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+            2500;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+            200;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+            100;
+
+        ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+            50;
+
+        ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+            3;
+
+    }
+
+}
+
+
+/* ================================================================
+   WRAPPER MEMBACA PARAMETER DINAMIS DARI SPINNER & EXECUTE
+================================================================ */
+
+function runSelfLearningEngineDinamis() {
+    let bTest = parseInt(document.getElementById('cfgBacktest').value, 10) || 5;
+    let maxGen = parseInt(document.getElementById('cfgMaxGen').value, 10) || 16;
+    ENGINE_SYS_CONFIG.MAX_GENERATIONS = maxGen;
+    
+    runSelfLearningEngine(bTest);
+}
+
+
+/* ================================================================
+   MAIN SELF LEARNING ENGINE
+================================================================ */
+
+async function runSelfLearningEngine(
+    iterationsCount
+) {
+
+    clearAuditLog();
+    historyResults = [];
+    historyIndex = 0;
+    isBreakTriggered = false;
+
+    let targetMissVal = parseInt(document.getElementById('cfgMiss').value, 10);
+    if (isNaN(targetMissVal)) targetMissVal = 1;
+
+
+    writeAuditLog(
+        "===================================================="
+    );
+
+    writeAuditLog(
+        "STARTING AUTOMATED SELF-LEARNING ENGINE"
+    );
+
+    writeAuditLog(
+        `MAX GENERATION = ${ENGINE_SYS_CONFIG.MAX_GENERATIONS}`
+    );
+
+    writeAuditLog(
+        `MISS TARGET = <= ${targetMissVal}`
+    );
+
+    writeAuditLog(
+        "SECTOR = 2DD / 2DT / 2DB DINAMIS"
+    );
+
+    writeAuditLog(
+        "===================================================="
+    );
+
+
+    let rawInputValue =
+        document
+            .getElementById('inputData')
+            .value
+            .trim();
+
+
+    if (!rawInputValue) {
+
+        writeAuditLog(
+            "<b style='color:#e74c3c;'>ERROR: Data RM6 belum dimasukkan.</b>"
+        );
+
+        return;
+
+    }
+
+
+    let dataTokens =
+        rawInputValue
+            .split(',')
+            .map(
+                item => item.trim()
+            )
+            .filter(
+                item => item.length > 0
+            );
+
+
+    if (
+        dataTokens.length <
+        iterationsCount + 2
+    ) {
+
+        writeAuditLog(
+            `<b style='color:#e74c3c;'>ERROR: Data tidak cukup untuk ${iterationsCount}x backtest.</b>`
+        );
+
+        writeAuditLog(
+            `Minimal diperlukan ${iterationsCount + 2} data.`
+        );
+
+        return;
+
+    }
+
+
+    let loadingOverlay =
+        document.getElementById(
+            'loadingOverlay'
+        );
+
+    let loadingText =
+        document.getElementById(
+            'loadingText'
+        );
+
+
+    loadingOverlay.style.display =
+        'flex';
+
+
+    ENGINE_SYS_CONFIG.STRATEGY_MODE =
+        "STANDARD_ENTERPRISE";
+
+    ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH =
+        1000;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 =
+        100;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1 =
+        80;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2 =
+        60;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3 =
+        40;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_4 =
+        20;
+
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_5 =
+        0;
+
+    ENGINE_SYS_CONFIG.AM_MIN_LENGTH =
+        3;
+
 
     let generationAttempt = 0;
-    let bestMissCount = Infinity;
+
+    let bestMissCount =
+        Infinity;
+
+    let bestResult = null;
+
     let completed = false;
 
+
     try {
-        while (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS) {
-            if (isBreakRequested) break;
+
+        while (
+            generationAttempt <
+            ENGINE_SYS_CONFIG.MAX_GENERATIONS
+        ) {
+
+            if (isBreakTriggered) break;
+
             generationAttempt++;
 
-            writeAuditLog(`<br/><b>========== GENERATION ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS} ==========</b>`);
-            writeAuditLog(`Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
-            writeAuditLog(`Matrix Depth: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`);
+
+            writeAuditLog(
+                `<br/><b>========== GENERATION ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS} ==========</b>`
+            );
+
+
+            writeAuditLog(
+                `Strategy Mode: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`
+            );
+
+
+            writeAuditLog(
+                `Matrix Depth: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`
+            );
+
 
             let successCount = 0;
+
             let failCount = 0;
-            let totalAvailable = dataTokens.length;
-            let startIndex = totalAvailable - iterationsCount;
 
-            for (let testIndex = 0; testIndex < iterationsCount; testIndex++) {
-                if (isBreakRequested) break;
 
-                loadingText.innerHTML = `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
+            let totalAvailable =
+                dataTokens.length;
+
+
+            let startIndex =
+                totalAvailable -
+                iterationsCount;
+
+
+            for (
+                let testIndex = 0;
+                testIndex < iterationsCount;
+                testIndex++
+            ) {
+
+                if (isBreakTriggered) break;
+
+                loadingText.innerHTML =
+                    `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
                     `BACKTEST ${testIndex + 1}/${iterationsCount}<br>` +
                     `MODE: ${ENGINE_SYS_CONFIG.STRATEGY_MODE}`;
 
+
                 await yieldUI();
 
-                let currentCutLength = startIndex + testIndex;
-                let trainingData = dataTokens.slice(0, currentCutLength);
-                let targetActual = dataTokens[currentCutLength];
 
-                let prediction = executeEngineForDataset(trainingData);
-                let secName = prediction.sectorName;
-                let topLN = prediction.topLN;
+                let currentCutLength =
+                    startIndex +
+                    testIndex;
+
+
+                let trainingData =
+                    dataTokens.slice(
+                        0,
+                        currentCutLength
+                    );
+
+
+                let targetActual =
+                    dataTokens[
+                        currentCutLength
+                    ];
+
+
+                let prediction =
+                    executeEngineForDataset(
+                        trainingData
+                    );
+
+
+                let secName =
+                    prediction.sectorName;
+
+
+                let topLN =
+                    prediction.topLN;
+
 
                 let actualPair = "";
-                if (secName === "2DD") actualPair = targetActual.substring(0, 2);
-                else if (secName === "2DT") actualPair = targetActual.substring(1, 3);
-                else if (secName === "2DB") actualPair = targetActual.substring(2, 4);
 
-                let isHit = topLN.includes(actualPair);
+
+                if (secName === "2DD") {
+
+                    actualPair =
+                        targetActual.substring(
+                            0,
+                            2
+                        );
+
+                }
+
+                else if (secName === "2DT") {
+
+                    actualPair =
+                        targetActual.substring(
+                            1,
+                            3
+                        );
+
+                }
+
+                else if (secName === "2DB") {
+
+                    actualPair =
+                        targetActual.substring(
+                            2,
+                            4
+                        );
+
+                }
+
+
+                let isHit =
+                    topLN.includes(
+                        actualPair
+                    );
+
+
                 if (isHit) {
+
                     successCount++;
-                    writeAuditLog(`[GEN ${generationAttempt}][TEST ${testIndex + 1}] Target: ${targetActual} (${secName}:${actualPair}) => <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`);
-                } else {
+
+
+                    writeAuditLog(
+                        `[GEN ${generationAttempt}][TEST ${testIndex + 1}] ` +
+                        `Target: ${targetActual} ` +
+                        `(${secName}:${actualPair}) ` +
+                        `=> <span style='color:#2ecc71;font-weight:bold;'>HIT</span>`
+                    );
+
+                }
+
+                else {
+
                     failCount++;
-                    writeAuditLog(`[GEN ${generationAttempt}][TEST ${testIndex + 1}] Target: ${targetActual} (${secName}:${actualPair}) => <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`);
+
+
+                    writeAuditLog(
+                        `[GEN ${generationAttempt}][TEST ${testIndex + 1}] ` +
+                        `Target: ${targetActual} ` +
+                        `(${secName}:${actualPair}) ` +
+                        `=> <span style='color:#e74c3c;font-weight:bold;'>MISS</span>`
+                    );
+
                 }
 
-                writeAuditLog(`Sector Winner: <b>${secName}</b> | Power: ${prediction.powerScore}`);
+
+                writeAuditLog(
+                    `Sector Winner: <b>${secName}</b> | Power: ${prediction.powerScore}`
+                );
+
+
+                if (
+                    failCount <
+                    bestMissCount
+                ) {
+
+                    bestMissCount =
+                        failCount;
+
+                    bestResult = {
+                        sectorName:
+                            secName,
+
+                        topLN:
+                            topLN.slice(),
+
+                        powerScore:
+                            prediction.powerScore,
+
+                        generation:
+                            generationAttempt,
+
+                        hits:
+                            successCount,
+
+                        misses:
+                            failCount
+
+                    };
+
+                }
+
+
+                await yieldUI();
+
+
+                if (
+                    failCount <= targetMissVal &&
+                    testIndex ===
+                    iterationsCount - 1
+                ) {
+
+                    completed = true;
+
+                    break;
+
+                }
+
             }
 
-            let finalPred = executeEngineForDataset(dataTokens);
-            let genObj = {
-                sectorName: finalPred.sectorName,
-                topLN: finalPred.topLN.slice(),
-                powerScore: finalPred.powerScore,
-                generation: generationAttempt,
-                hits: successCount,
-                misses: failCount
-            };
 
-            if (failCount <= allowedMissTarget) {
-                TARGET_MATCHES.push(genObj);
+            if (isBreakTriggered) break;
+
+            let currentFinal = executeEngineForDataset(dataTokens);
+            historyResults.push({
+                title: `GEN ${generationAttempt} | SECTOR ${currentFinal.sectorName} | MISS: ${failCount}`,
+                ln: currentFinal.topLN.join('*')
+            });
+
+
+            writeAuditLog(
+                `<b>RESULT GEN ${generationAttempt}:</b> ` +
+                `HIT = ${successCount} | MISS = ${failCount}`
+            );
+
+
+            if (
+                failCount <= targetMissVal
+            ) {
+
+                loadingText.innerHTML =
+                    `LEARNING SUCCESS<br>` +
+                    `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
+                    `MISS = ${failCount}`;
+
+
+                writeAuditLog(
+                    `<span style='color:#2ecc71;font-weight:bold;'>`
+                    +
+                    `[LEARNING SUCCESS]`
+                    +
+                    `</span>`
+                );
+
+
+                writeAuditLog(
+                    `MISS = <b>${failCount}</b> (TARGET <= ${targetMissVal})`
+                );
+
+
+                writeAuditLog(
+                    `Learning berhenti pada GEN ${generationAttempt}.`
+                );
+
+
                 completed = true;
-                writeAuditLog(`<span style='color:#2ecc71;font-weight:bold;'>[LEARNING SUCCESS] MISS = ${failCount} (TARGET <= ${allowedMissTarget})</span>`);
+
                 break;
-            } else {
-                if (failCount < bestMissCount) {
-                    bestMissCount = failCount;
-                    BEST_ATTEMPTS = [genObj];
-                } else if (failCount === bestMissCount) {
-                    BEST_ATTEMPTS.push(genObj);
-                }
 
-                if (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS) {
-                    writeAuditLog(`<span style='color:#e67e22;font-weight:bold;'>[MISS > ${allowedMissTarget}] Membuat strategi algoritma berikutnya...</span>`);
-                    mutateAlgorithmStrategy(generationAttempt);
-                    writeAuditLog(`NEW STRATEGY: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
-                    writeAuditLog(`Matrix Depth baru: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`);
-                    await yieldUI();
-                } else {
-                    writeAuditLog(`<span style='color:#f1c40f;font-weight:bold;'>[MAX GENERATION REACHED] GEN ${ENGINE_SYS_CONFIG.MAX_GENERATIONS} selesai tetapi MISS masih > ${allowedMissTarget}.</span>`);
-                }
             }
+
+
+            if (
+                failCount > targetMissVal
+            ) {
+
+                if (
+                    generationAttempt <
+                    ENGINE_SYS_CONFIG.MAX_GENERATIONS
+                ) {
+
+                    writeAuditLog(
+                        `<span style='color:#e67e22;font-weight:bold;'>`
+                        +
+                        `[MISS > ${targetMissVal}]`
+                        +
+                        ` Membuat strategi algoritma berikutnya...`
+                        +
+                        `</span>`
+                    );
+
+
+                    mutateAlgorithmStrategy(
+                        generationAttempt
+                    );
+
+
+                    writeAuditLog(
+                        `NEW STRATEGY: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`
+                    );
+
+
+                    writeAuditLog(
+                        `Matrix Depth baru: <b>${ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH}</b>`
+                    );
+
+
+                    await yieldUI();
+
+                }
+
+                else {
+
+                    writeAuditLog(
+                        `<span style='color:#f1c40f;font-weight:bold;'>`
+                        +
+                        `[MAX GENERATION REACHED]`
+                        +
+                        ` GEN ${ENGINE_SYS_CONFIG.MAX_GENERATIONS} selesai tetapi MISS masih > ${targetMissVal}.`
+                        +
+                        `</span>`
+                    );
+
+                    break;
+
+                }
+
+            }
+
         }
 
-        activeDisplayList = (TARGET_MATCHES.length > 0) ? TARGET_MATCHES : BEST_ATTEMPTS;
 
-        if (activeDisplayList.length > 0) {
-            document.getElementById('navPanel').style.display = 'flex';
-            renderMatchToUI(0);
+        if (historyResults.length > 0) {
+            historyIndex = historyResults.length - 1;
+            let lastRes = historyResults[historyIndex];
+            document.getElementById('outputTitle').textContent = lastRes.title;
+            document.getElementById('outputResult').value = lastRes.ln;
+            document.getElementById('navCounter').textContent = `${historyIndex + 1}/${historyResults.length}`;
         }
 
-    } catch (error) {
-        writeAuditLog(`<span style='color:#e74c3c;font-weight:bold;'>ERROR LEARNING: ${error.message}</span>`);
-    } finally {
-        loadingOverlay.style.display = 'none';
+        if (bestResult) {
+
+            writeAuditLog(
+                "----------------------------------------------------"
+            );
+
+
+            writeAuditLog(
+                `<b>BEST RESULT:</b> ${bestResult.sectorName}`
+            );
+
+
+            writeAuditLog(
+                `Best Generation: <b>${bestResult.generation}</b>`
+            );
+
+
+            writeAuditLog(
+                `Best HIT: <b>${bestResult.hits}</b>`
+            );
+
+
+            writeAuditLog(
+                `Best MISS: <b>${bestResult.misses}</b>`
+            );
+
+
+            writeAuditLog(
+                `Best Power Score: <b>${bestResult.powerScore}</b>`
+            );
+
+
+            writeAuditLog(
+                `FINAL SECTOR: <b>${bestResult.sectorName}</b>`
+            );
+
+        }
+
+
+        if (completed) {
+
+            writeAuditLog(
+                `<span style='color:#2ecc71;font-weight:bold;'>`
+                +
+                `LEARNING SELESAI — TARGET MISS <= ${targetMissVal} TERCAPAI`
+                +
+                `</span>`
+            );
+
+        }
+
+        else {
+
+            writeAuditLog(
+                `<span style='color:#f1c40f;font-weight:bold;'>`
+                +
+                `SELESAI GEN ${ENGINE_SYS_CONFIG.MAX_GENERATIONS} — TARGET BELUM TERCAPAI`
+                +
+                `</span>`
+            );
+
+            writeAuditLog(
+                `Strategi terbaik tetap dipertahankan.`
+            );
+
+        }
+
     }
+
+    catch (error) {
+
+        writeAuditLog(
+            `<span style='color:#e74c3c;font-weight:bold;'>`
+            +
+            `ERROR LEARNING: ${error.message}`
+            +
+            `</span>`
+        );
+
+        console.error(
+            "Self-Learning Error:",
+            error
+        );
+
+    }
+
+    finally {
+
+        loadingOverlay.style.display =
+            'none';
+
+    }
+
 }
+
+
+/* ================================================================
+   COPY RESULT
+================================================================ */
 
 function copyHasil() {
-    let outputText = document.getElementById('outputResult').value;
-    if (!outputText) return;
-    navigator.clipboard.writeText(outputText).then(function() {
-        let btn = document.getElementById('btnCopy');
-        let oldText = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.style.backgroundColor = '#27ae60';
-        setTimeout(function() {
-            btn.textContent = oldText;
-            btn.style.backgroundColor = '#2980b9';
-        }, 1200);
-    });
+
+    let outputText =
+        document
+            .getElementById('outputResult')
+            .value;
+
+
+    if (!outputText) {
+        return;
+    }
+
+
+    navigator.clipboard
+        .writeText(outputText)
+        .then(function() {
+
+            let btn =
+                document.getElementById(
+                    'btnCopy'
+                );
+
+            let oldText =
+                btn.textContent;
+
+
+            btn.textContent =
+                'Copied!';
+
+
+            btn.style.backgroundColor =
+                '#27ae60';
+
+
+            setTimeout(function() {
+
+                btn.textContent =
+                    oldText;
+
+                btn.style.backgroundColor =
+                    '#2980b9';
+
+            }, 1200);
+
+        })
+        .catch(function(error) {
+
+            console.error(
+                "Clipboard error:",
+                error
+            );
+
+        });
+
 }
+
 </script>
 
 </body>
