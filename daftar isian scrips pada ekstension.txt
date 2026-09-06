@@ -206,6 +206,29 @@ javascript:(function(){window.alert=function(m){if(m&&m.toLowerCase().includes('
 javascript:(function(){window.alert=function(msg){if(msg&&String(msg).toLowerCase().includes('tidak mencukupi')){window.close();}};})();
 
 
+===================================================
+
+buatkan BOOKMARKLET UNTUK ISI  USER DI ISI "user1"
+dan passwordnya di isi kan "123456"
+
+javascript:(function(){document.getElementById('username').value='user1';document.getElementById('password').value='123456';})();
+
+javascript:(function(){document.getElementById('username').value='user1';document.getElementById('password').value='123456';setTimeout(function(){var btn=document.querySelector('input[value="MASUK"]');if(btn)btn.click();},300);})();
+
+javascript:(function(){var u=document.getElementById('ranger700');var p=document.getElementById('ular76');if(u&&p){u.value='user1';u.dispatchEvent(new Event('input',{bubbles:true}));p.value='123456';p.dispatchEvent(new Event('input',{bubbles:true}));}})();
+
+
+javascript:(function(){var u=document.getElementById('username'),p=document.getElementById('password');if(u&&p){u.value='user1';u.dispatchEvent(new Event('input',{bubbles:!0}));p.value='123456';p.dispatchEvent(new Event('input',{bubbles:!0}));setTimeout(function(){var f=u.closest('form');if(f)f.submit();else{var b=document.querySelector('input[type="submit"]');if(b)b.click()}},500)}})();
+
+javascript:(function(){var u=document.getElementById('username'),p=document.getElementById('password');if(u&&p){u.value='ranger700';u.dispatchEvent(new Event('input',{bubbles:!0}));p.value='ular76';p.dispatchEvent(new Event('input',{bubbles:!0}));setTimeout(function(){var f=u.closest('form');if(f)f.submit();else{var b=document.querySelector('input[type="submit"]');if(b)b.click()}},500)}})();
+
+ini yang terakhir joss
+
+sekarang jajal warnain merah saat sdh berhasil login supaya tahu hrs klik ulang
+
+javascript:(function(){if(window.location.href.includes('pasaran')){if(window.__greenMask)return;window.__greenMask=true;const m=document.createElement('div');m.id='__greenMaskOverlay';Object.assign(m.style,{position:'fixed',top:'0',left:'0',width:'100vw',height:'100vh',backgroundColor:'rgb(255, 0, 0)',zIndex:'2147483647',pointerEvents:'auto',cursor:'not-allowed'});const s=e=>{e.stopPropagation();e.preventDefault();};['click','mousedown','mouseup','contextmenu'].forEach(evt=>m.addEventListener(evt,s,true));(document.body||document.documentElement).appendChild(m);const cleanup=setInterval(()=>{const p=document.getElementById('__purpleMaskOverlay');if(p)p.remove();document.documentElement.appendChild(m);m.style.zIndex='2147483647';},50);setTimeout(()=>{clearInterval(cleanup);window.close();},2000);}})();
+
+
 
 
 
