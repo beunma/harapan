@@ -141,6 +141,74 @@ javascript:(()=>{if(window.__bidikCore){clearInterval(window.__bidikCore.timer);
 (()=>{if(window.__bidikCore){clearInterval(window.__bidikCore.timer);const oldBtn=document.getElementById('__bidikToggleBtn');const oldBox=document.getElementById('__bidikMemoBox');const oldToast=document.getElementById('__bidikToast');if(oldBtn)oldBtn.remove();if(oldBox)oldBox.remove();if(oldToast)oldToast.remove()}window.__bidikCore={};const STORAGE_TEXT='__bidikMemoText';const STORAGE_SHOW='__bidikMemoShow';let memoContainer=null;let memoHeaderInfo=null;let memoTextarea=null;let copyBtnNode=null;const toast=s=>{let p=document.getElementById('__bidikToast');if(!p){p=document.createElement('div');p.id='__bidikToast';Object.assign(p.style,{position:'fixed',top:'12px',left:'50%',transform:'translateX(-50%)',zIndex:'2147483647',background:'#fff',color:'#000',padding:'8px 16px',border:'2px solid #000',borderRadius:'8px',fontSize:'14px',fontWeight:'bold',boxShadow:'0 4px 15px rgba(0,0,0,.3)',maxWidth:'80vw',textAlign:'center',pointerEvents:'none'});(document.documentElement||document.body).appendChild(p)}p.textContent=s;clearTimeout(p.t);p.t=setTimeout(()=>p.remove(),1200)};const cleanAndFormatInput=(rawText, lenType)=>{if(!rawText)return'';let clean=rawText.trim();if(!lenType){const match=clean.match(/(\d+)/);if(match)lenType=match[1].length;}if(lenType===4){clean=clean.replace(/[\r\n]+/g,',');clean=clean.replace(/\s+/g,',');clean=clean.replace(/,,+/g,',');clean=clean.replace(/^,+|,+$/g,'');let parts=clean.split(/[,*]/).map(x=>x.trim()).filter(Boolean);if(parts.length>1 && parts.every(p=>p.length===4)){return parts.join('*');}}let textNumOnly=rawText.replace(/[^0-9]/g,'');if(textNumOnly.length>0 && textNumOnly.length%4===0 && !/[,\*\s\n]/.test(rawText)){let parts=[];for(let i=0;i<textNumOnly.length;i+=4){parts.push(textNumOnly.substr(i,4));}return parts.join('*');}let clean2=rawText.replace(/[\r\n]+/g,' ');clean2=clean2.replace(/[,\s]+/g,'*');clean2=clean2.replace(/[^0-9*]/g,'');clean2=clean2.replace(/\*+/g,'*');clean2=clean2.replace(/^\*+|\*+$/g,'');return clean2};const analyzeAndValidate=text=>{const preClean=cleanAndFormatInput(text);const clean=cleanAndFormatInput(preClean);if(!clean)return{valid:true,lines:0,type:null,cleanText:''};const parts=clean.split('*');if(parts.length===0)return{valid:true,lines:0,type:null,cleanText:''};const firstLen=parts[0].length;if(firstLen!==2&&firstLen!==3&&firstLen!==4)return{valid:false,lines:0,type:null,cleanText:clean};for(let i=0;i<parts.length;i++){if(parts[i].length!==firstLen)return{valid:false,lines:0,type:null,cleanText:clean}}let typeLabel='';if(firstLen===2)typeLabel='2D';else if(firstLen===3)typeLabel='3D';else if(firstLen===4)typeLabel='4D';return{valid:true,lines:parts.length,type:typeLabel,cleanText:clean}};const updateMemoUI=()=>{if(!memoTextarea)return;const rawVal=memoTextarea.value;const analysis=analyzeAndValidate(rawVal);if(rawVal.trim()===''){memoHeaderInfo.textContent='Jumlah = 0 lines';memoHeaderInfo.style.color='#000';if(copyBtnNode)copyBtnNode.style.display='none';localStorage.setItem(STORAGE_TEXT,'');return}if(!analysis.valid){memoHeaderInfo.textContent='Inputan Invalid';memoHeaderInfo.style.color='#d32f2f';if(copyBtnNode)copyBtnNode.style.display='none';localStorage.setItem(STORAGE_TEXT,rawVal);return}if(analysis.cleanText!==rawVal){const start=memoTextarea.selectionStart;const end=memoTextarea.selectionEnd;memoTextarea.value=analysis.cleanText;try{memoTextarea.setSelectionRange(start,end)}catch(e){}}memoHeaderInfo.textContent=`Jumlah = ${analysis.lines} lines ${analysis.type}`;memoHeaderInfo.style.color='#2e7d32';if(copyBtnNode){copyBtnNode.style.display=analysis.lines>0?'inline-block':'none'}localStorage.setItem(STORAGE_TEXT,analysis.cleanText);memoTextarea.scrollTop=0};const createUI=()=>{const toggleBtn=document.createElement('button');toggleBtn.id='__bidikToggleBtn';Object.assign(toggleBtn.style,{position:'fixed',top:'12px',right:'12px',zIndex:'2147483647',width:'36px',height:'36px',borderRadius:'50%',border:'2px solid #fff',boxShadow:'0 4px 10px rgba(0,0,0,.3)',cursor:'pointer',touchAction:'manipulation'});const initialShow=localStorage.getItem(STORAGE_SHOW)==='true';toggleBtn.style.background=initialShow?'#28a745':'#dc3545';memoContainer=document.createElement('div');memoContainer.id='__bidikMemoBox';Object.assign(memoContainer.style,{position:'fixed',top:'54px',right:'12px',zIndex:'2147483647',background:'#fff',border:'2px solid #000',borderRadius:'8px',padding:'8px',boxShadow:'0 4px 15px rgba(0,0,0,.3)',width:'230px',maxWidth:'85vw',display:initialShow?'block':'none',touchAction:'manipulation'});memoHeaderInfo=document.createElement('div');Object.assign(memoHeaderInfo.style,{fontWeight:'bold',fontSize:'12px',marginBottom:'5px'});memoHeaderInfo.textContent='Jumlah = 0 lines';memoTextarea=document.createElement('textarea');Object.assign(memoTextarea.style,{width:'100%',height:'90px',boxSizing:'border-box',borderRadius:'4px',border:'1px solid #ccc',padding:'5px',fontSize:'12px',fontFamily:'monospace',resize:'vertical'});memoTextarea.value=localStorage.getItem(STORAGE_TEXT)||'';memoTextarea.oninput=updateMemoUI;const btnRow=document.createElement('div');Object.assign(btnRow.style,{display:'flex',justifyContent:'space-between',marginTop:'5px',gap:'4px'});const resetBtn=document.createElement('button');resetBtn.textContent='Reset';Object.assign(resetBtn.style,{flex:'1',padding:'5px',background:'#dc3545',color:'#fff',border:'none',borderRadius:'4px',fontWeight:'bold',cursor:'pointer',fontSize:'11px'});resetBtn.onclick=()=>{memoTextarea.value='';updateMemoUI()};const pasteBtn=document.createElement('button');pasteBtn.textContent='Paste';Object.assign(pasteBtn.style,{flex:'1',padding:'5px',background:'#007bff',color:'#fff',border:'none',borderRadius:'4px',fontWeight:'bold',cursor:'pointer',fontSize:'11px'});pasteBtn.onclick=async()=>{try{const text=await navigator.clipboard.readText();if(text){const currentVal=memoTextarea.value;const newVal=currentVal?(currentVal+'*'+text):text;memoTextarea.value=newVal;updateMemoUI();toast('✓ Paste Berhasil')}}catch(e){toast('Gagal Paste')}};copyBtnNode=document.createElement('button');copyBtnNode.textContent='Copy';Object.assign(copyBtnNode.style,{flex:'1',padding:'5px',background:'#28a745',color:'#fff',border:'none',borderRadius:'4px',fontWeight:'bold',cursor:'pointer',display:'none',fontSize:'11px'});copyBtnNode.onclick=async()=>{if(memoTextarea.value){try{await navigator.clipboard.writeText(memoTextarea.value);toast('✓ Disalin')}catch(e){}}};btnRow.appendChild(resetBtn);btnRow.appendChild(pasteBtn);btnRow.appendChild(copyBtnNode);memoContainer.appendChild(memoHeaderInfo);memoContainer.appendChild(memoTextarea);memoContainer.appendChild(btnRow);const root=document.documentElement||document.body;root.appendChild(toggleBtn);root.appendChild(memoContainer);toggleBtn.onclick=()=>{const isVisible=memoContainer.style.display!=='none';if(isVisible){memoContainer.style.display='none';toggleBtn.style.background='#dc3545';localStorage.setItem(STORAGE_SHOW,'false')}else{memoContainer.style.display='block';toggleBtn.style.background='#28a745';localStorage.setItem(STORAGE_SHOW,'true')}};updateMemoUI()};const eksekusiKlik=(b,kode)=>{try{b.removeAttribute('disabled');b.disabled=false;if(typeof window.aksiBidik==='function'){window.aksiBidik(kode,'web1')}else{b.click()}}catch(e){b.click()}};const cek=async()=>{try{const okURL=location.href.toLowerCase().includes('beunma')&&location.href.toLowerCase().includes('harapan');let c='';try{c=await navigator.clipboard.readText()}catch(e){}c=c.trim().toUpperCase();const okCLP=c.length===1;const m={D:'btn-2d-web1',T:'btn-2t-web1',B:'btn-2b-web1',X:'btn-3d-web1',Y:'btn-3b-web1'};const kMap={D:'2D',T:'2T',B:'2B',X:'3D',Y:'3B'};const b=okCLP?document.getElementById(m[c]):null;const okBTT=!!b&&!b.disabled;let s='';if(okURL)s+='URL ';if(okCLP)s+=c+' ';else s+='CLP ';if(okBTT)s+=b.textContent.trim();toast(s.trim()||'-');if(okURL&&okCLP&&okBTT){try{await navigator.clipboard.writeText('')}catch(err){}eksekusiKlik(b,kMap[c]);setTimeout(()=>toast('✓ '+b.textContent.trim()),150)}}catch(e){}};createUI();window.__bidikCore.timer=setInterval(cek,5000);cek()})();
 
 
+18 SUNPANTAT
+
+    <form method="post" style="background-color: #296D0D; border-radius: 3px; margin-bottom: 20px; padding: 6px;" id="bettingForm">
+        <input type="hidden" name="_token" value="oXHdaSs6Ka7G9jK20OZHgFsVtuM5w3KlcMeV1BX2">
+        <input type="hidden" name="category" value="2">
+        <input type="hidden" name="type" value="1">
+        <input type="hidden" name="valid" value="0">
+        <input type="hidden" name="minimal_man" value="1">
+        <div class="man"></div>
+        <textarea name="mancing" id="mancing" class="mancing" style="height: 240px; border-radius: 0; width: 100%; font-weight: bold;"></textarea>
+
+
+
+javascript:(async()=>{let t=await navigator.clipboard.readText();let e=document.getElementById('betting');if(e){e.value=t;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}})( );
+
+
+      <div style="display: flex; margin-top: 8px;">
+            <div class="sum-man btn-submit" style="cursor: pointer; background-color: #FED192; margin: auto 0 auto auto; padding: 6px;">
+                HITUNG TOTAL
+            </div>
+
+            <button
+                style="width: fit-content; background-color: #FF5A00; border: none; margin: auto 4px auto 8px; padding: 6px;"
+                type="submit" class="btn btn-primary submit buy-btn" id="submitBtn">
+                <span class="btn-text">SUBMIT</span>
+                <span class="spinner-border spinner-border-sm hide" role="status" aria-hidden="true"></span>
+                <span class="loading-text hide">Memproses...</span>
+            </button>
+        </div>
+
+
+
+javascript:(async()=>{let e=document.getElementById('betting');if(e){e.value=await navigator.clipboard.readText();e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}setTimeout(()=>{let b=document.getElementById('submitBtn')||document.querySelector('button.submit.buy-btn');if(b){b.click();}else{alert('Tombol SUBMIT tidak ditemukan!');}},1000);})();
+
+
+javascript:(async()=>{let e=document.getElementById('betting');if(e){e.value=await navigator.clipboard.readText();e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}setTimeout(()=>{let b=document.getElementById('submitBtn')||document.querySelector('button.submit.buy-btn');if(b){b.click();}},1000);})();
+
+kalau js confirmationnya sama aja dgn yg punya wla cuma inet settingan domainnya \
+jadi bikin skripnya di domain masing asing
+
+
+
+script ini gagal mau di ubah 
+javascript:(async()=>{let e=document.getElementById('betting');if(e){e.value=await navigator.clipboard.readText();e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}setTimeout(()=>{let b=document.getElementById('submitBtn')||document.querySelector('button.submit.buy-btn');if(b){b.click();}},1000);})();
+
+pakai delay di awal
+javascript:(async()=>{let e=document.getElementById('mancing');if(e){e.value=await navigator.clipboard.readText();e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}setTimeout(()=>{let b=document.getElementById('submitBtn')||document.querySelector('button.submit.buy-btn');if(b){b.click();}},1000);})();
+
+javascript:(async()=>{await new Promise(r=>setTimeout(r,1000));let e=document.getElementById('betting');if(e){e.value=await navigator.clipboard.readText();e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}setTimeout(()=>{let b=document.getElementById('submitBtn')||document.querySelector('button.submit.buy-btn');if(b){b.click();}},1000);})();
+
+ g bekerja juga maka di ganti baca adrees bar
+
+javascript:(async()=>{if(!location.href.includes('sub_type='))return;await new Promise(r=>setTimeout(r,500));let e=document.getElementById('betting');if(e){e.value=await navigator.clipboard.readText();e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}setTimeout(()=>{let b=document.getElementById('submitBtn')||document.querySelector('button.submit.buy-btn');if(b){b.click();}},1000);})();
+
+berhasil jadi ini cuma di pasang di domain maka g usah bikin isian depan belakang dll
+
+
+sekarang menutup windows saat jsaler saldo tidak mencukupi
+
+javascript:(function(){window.alert=function(m){if(m&&m.toLowerCase().includes('tidak mencukupi')){window.close();}};})();
+
+
+javascript:(function(){window.alert=function(msg){if(msg&&String(msg).toLowerCase().includes('tidak mencukupi')){window.close();}};})();
+
+
+
+
+
 
 
 
