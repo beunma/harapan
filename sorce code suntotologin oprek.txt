@@ -1,0 +1,87 @@
+
+    <form action="https://suntogel.site/wap/masuk" method="post" style="margin: 40px 0;">
+        <input type="hidden" name="_token" value="zgXsr9SB1iEtIuGBlhVr7oUbM6SL0Dqd54meqpSR">
+        <div style="margin-bottom: 8px;">
+            <input type="text" name="username" id="username" class="input-custom" placeholder="Username" style="padding: 6px 10px; width: 100%;">
+        </div>
+
+        <div>
+            <input type="password" name="password" id="password" class="input-custom" placeholder="Password" style="padding: 6px 10px; width: 100%;">
+        </div>
+
+        <div style="text-align: center; margin-top: 12px; display: flex;">
+            <input type="submit" class="btn button-submit" value="MASUK" style="background-image: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%), radial-gradient(ellipse farthest-corner at left top, #e99c05 0%, #f4ae00 8%, #f8bf33 25%, #f8ce19 62.5%, #ffdc02 100%); font-size: 13px; border: 0; padding: 6px 16px; color: #fff; width: 80px; border-radius: unset; margin: auto 6px auto auto;">
+
+            <a href="https://suntogel.site/wap/daftar" class="btn button-submit" style="font-size: 13px; background: linear-gradient(#000 0 0) padding-box, linear-gradient(to left, #FEDB37, #8A6E2F) border-box; border: 1px solid transparent; padding: 6px 16px; color: #FFD700; width: 80px; border-radius: unset; margin: auto auto auto 0;">
+                DAFTAR
+            </a>
+        </div>
+    </form>
+
+ 
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4f44e8ba3a6b4738b308d83ec219eeec","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+        <script src="https://suntoto.dataklmsad903.site/js/app.min.js?v=1.1"></script>
+</body>
+</html>
+    <script>
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        }
+
+        $(document).on('keyup', '.search', debounce(function() {
+            $.ajax({
+                url: 'https://suntogel.site/cari-togel?search='+$(this).val(),
+                type: "GET",
+                success: function(res) {
+                    $('.lottery-list').css('display','none');
+                    $.each( res.data, function( key, value ) {
+                        $('.lottery-' + value.id).css('display','block');
+                    });
+                },
+                error: function(res) {
+                    toastr['error'](res.error);
+                }
+            });
+        }, 500));
+    </script>
+	
+	
+	
+
+buatkan BOOKMARKLET UNTUK ISI  USER DI ISI "user1"
+dan passwordnya di isi kan "123456"
+
+javascript:(function(){document.getElementById('username').value='user1';document.getElementById('password').value='123456';})();
+
+javascript:(function(){document.getElementById('username').value='user1';document.getElementById('password').value='123456';setTimeout(function(){var btn=document.querySelector('input[value="MASUK"]');if(btn)btn.click();},300);})();
+
+javascript:(function(){var u=document.getElementById('ranger700');var p=document.getElementById('ular76');if(u&&p){u.value='user1';u.dispatchEvent(new Event('input',{bubbles:true}));p.value='123456';p.dispatchEvent(new Event('input',{bubbles:true}));}})();
+
+
+javascript:(function(){var u=document.getElementById('username'),p=document.getElementById('password');if(u&&p){u.value='user1';u.dispatchEvent(new Event('input',{bubbles:!0}));p.value='123456';p.dispatchEvent(new Event('input',{bubbles:!0}));setTimeout(function(){var f=u.closest('form');if(f)f.submit();else{var b=document.querySelector('input[type="submit"]');if(b)b.click()}},500)}})();
+
+javascript:(function(){var u=document.getElementById('username'),p=document.getElementById('password');if(u&&p){u.value='ranger700';u.dispatchEvent(new Event('input',{bubbles:!0}));p.value='ular76';p.dispatchEvent(new Event('input',{bubbles:!0}));setTimeout(function(){var f=u.closest('form');if(f)f.submit();else{var b=document.querySelector('input[type="submit"]');if(b)b.click()}},500)}})();
+
+
+
+
+
+
+
+
+
+	
+	
