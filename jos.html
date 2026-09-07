@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisa Engine VIP</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 15px; }
+        .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #2c3e50; font-size: 20px; text-transform: uppercase; border-bottom: 2px solid #3498db; padding-bottom: 10px;}
+        h3 { color: #2980b9; font-size: 15px; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-top: 20px; text-transform: uppercase; }
+        label { font-weight: bold; display: block; margin-bottom: 6px; font-size: 13px; color: #34495e; }
+        textarea, input[type="text"], input[type="number"], select {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 14px; box-sizing: border-box; margin-bottom: 10px;
+        }
+        textarea { height: 80px; resize: vertical; }
+        
+        /* Panel Khusus Config VIP */
+        .panel-config {
+            display: flex; gap: 15px; background: #e8f4f8; border: 1px solid #3498db; border-radius: 6px; padding: 15px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .panel-config div { flex: 1; min-width: 120px; }
+        .panel-config input { margin-bottom: 0; border: 1px solid #2980b9; }
+
+        /* Button Utama */
+        button.btn-main { background-color: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        button.btn-main:hover { background-color: #219653; box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3); }
+        
+        .result-box {
+            margin-top: 6px; background: #ecf0f1; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; line-height: 1.5; font-size: 13px; max-height: 150px; overflow-y: auto; overflow-x: auto; word-break: break-all;
+        }
+        .panel-engine { border: 1px solid #bdc3c7; border-radius: 6px; padding: 12px; background: #fafbfc; margin-top: 10px; }
+        
+        /* Baris Header Level / Wadah */
+        .level-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #dcdde1; padding: 8px 10px; border-radius: 4px; margin-top: 10px; }
+        .level-title { font-weight: bold; font-size: 12px; color: #2c3e50; }
+        
+        /* Styling Khusus BEST RESULT */
+        .best-row { background: #eafaf1; border: 2px solid #2ecc71; }
+        .best-title { color: #27ae60; font-size: 14px; font-weight: 800; text-transform: uppercase; }
+        .best-box { border: 2px solid #2ecc71; background: #f9fff9; font-weight: bold; color: #2c3e50; font-size: 14px; }
+        
+        /* Wrapper Tombol Agar Selalu Rapi di Kanan */
+        .btn-group { display: flex; gap: 5px; align-items: center; }
+        
+        /* Styling Tombol Ringkas */
+        .btn-copy { background-color: #2980b9; color: white; border: none; padding: 6px 14px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; width: auto !important; transition: 0.2s; }
+        .btn-copy:hover { background-color: #1f618d; }
+        .btn-copy-best { background-color: #27ae60; color: white; }
+        .btn-copy-best:hover { background-color: #1e8449; }
+        .btn-reset { background-color: #c0392b; color: white; border: none; padding: 6px 14px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; width: auto !important; }
+        .btn-reset:hover { background-color: #962d22; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- <h2>🎯 Dashboard Analisis VIP - Smart Generation</h2> -->
+    
+    <!-- PANEL CONFIG VIP -->
+    <div class="panel-config">
+        <div>
+            <label title="Berapa baris data ke belakang yang akan dianalisa">Backtest:</label>
+            <input type="number" id="inpBacktest" value="5" min="2" onchange="prosesSemuaLayout()">
+        </div>
+        <div>
+            <label title="Toleransi kegagalan pola pada history">Miss:</label>
+            <input type="number" id="inpMiss" value="0" min="0" onchange="prosesSemuaLayout()">
+        </div>
+        <div>
+            <label title="Iterasi pengetatan pembobotan (Semakin tinggi semakin spesifik)">GEN:</label>
+            <input type="number" id="inpGen" value="5" min="1" onchange="prosesSemuaLayout()">
+        </div>
+    </div>
+
+    <label for="inputData">Masukkan Data JOS :</label>
+    <textarea id="inputData" placeholder="Contoh: 1234, 5678, 9012 ..."></textarea>
+    <button class="btn-main" onclick="prosesSemuaLayout()">🔥 PROSES</button>
+
+    <!-- AREA LAYOUT 1 - 4 DI-HIDE -->
+    <div style="display: none;">
+        <div id="resultDigit"></div>
+        <div id="resultSelisih"></div>
+        <div id="resultJumlah"></div>
+        <div id="resultAM"></div>
+    </div>
+
+    <!-- ENGINE 2DD -->
+    <h3>1. Engine 2DD</h3>
+    <div class="panel-engine">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;"><label>Digit 1:</label><input type="text" id="DDDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 120px;"><label>Digit 2:</label><input type="text" id="DDDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 100px;"><label>Pemisah:</label>
+                <select id="DDSeparator" onchange="jalankanEngine2DD()">
+                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 90px;"><label>Selisih:</label><input type="text" id="DDSls" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>Jumlah:</label><input type="text" id="DDJml" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>AM:</label><input type="text" id="DDAM" readonly style="background:#ecf0f1;"></div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <!-- BEST RESULT VIP -->
+            <div class="level-row best-row">
+                <span id="lblBestDD" class="level-title best-title">⭐ BEST RESULT = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy btn-copy-best" onclick="copyLevelBox('boxBestDD', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxBestDD" class="result-box best-box">-</div>
+
+            <!-- REGULAR LEVELS -->
+            <div class="level-row">
+                <span id="lblDD0" class="level-title">Level 0 = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD0', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxDD0" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDD1" class="level-title">Level 1 = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD1', 'DD', this)">Copy</button></div>
+            </div>
+            <div id="boxDD1" class="result-box">-</div>
+            
+            <details style="margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                <summary style="cursor: pointer; font-weight: bold;">Level Bawah (2 & 3)</summary>
+                <div class="level-row"><span id="lblDD2" class="level-title">Level 2 = 0 LN</span><div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD2', 'DD', this)">Copy</button></div></div>
+                <div id="boxDD2" class="result-box">-</div>
+                <div class="level-row"><span id="lblDD3" class="level-title">Level 3 = 0 LN</span><div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDD3', 'DD', this)">Copy</button></div></div>
+                <div id="boxDD3" class="result-box">-</div>
+            </details>
+        </div>
+    </div>
+
+    <!-- ENGINE 2DT -->
+    <h3>2. Engine 2DT</h3>
+    <div class="panel-engine">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;"><label>Digit 2:</label><input type="text" id="DTDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 120px;"><label>Digit 3:</label><input type="text" id="DTDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 100px;"><label>Output:</label>
+                <select id="DTSeparator" onchange="jalankanEngine2DT()">
+                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 90px;"><label>Selisih:</label><input type="text" id="DTSls" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>Jumlah:</label><input type="text" id="DTJml" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>AM:</label><input type="text" id="DTAM" readonly style="background:#ecf0f1;"></div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <!-- BEST RESULT VIP -->
+            <div class="level-row best-row">
+                <span id="lblBestDT" class="level-title best-title">⭐ BEST RESULT = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy btn-copy-best" onclick="copyLevelBox('boxBestDT', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxBestDT" class="result-box best-box">-</div>
+
+            <!-- REGULAR LEVELS -->
+            <div class="level-row">
+                <span id="lblDT0" class="level-title">Level 0 = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT0', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxDT0" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDT1" class="level-title">Level 1 = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT1', 'DT', this)">Copy</button></div>
+            </div>
+            <div id="boxDT1" class="result-box">-</div>
+            
+            <details style="margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                <summary style="cursor: pointer; font-weight: bold;">Level Bawah (2 & 3)</summary>
+                <div class="level-row"><span id="lblDT2" class="level-title">Level 2 = 0 LN</span><div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT2', 'DT', this)">Copy</button></div></div>
+                <div id="boxDT2" class="result-box">-</div>
+                <div class="level-row"><span id="lblDT3" class="level-title">Level 3 = 0 LN</span><div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDT3', 'DT', this)">Copy</button></div></div>
+                <div id="boxDT3" class="result-box">-</div>
+            </details>
+        </div>
+    </div>
+
+    <!-- ENGINE 2DB -->
+    <h3>3. Engine 2DB</h3>
+    <div class="panel-engine">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;"><label>Digit 3:</label><input type="text" id="DBDigit1" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 120px;"><label>Digit 4:</label><input type="text" id="DBDigit2" readonly style="background:#ecf0f1; font-weight:bold;"></div>
+            <div style="flex: 1; min-width: 100px;"><label>Output:</label>
+                <select id="DBSeparator" onchange="jalankanEngine2DB()">
+                    <option value="*">Bintang (*)</option><option value="#">Pagar (#)</option><option value=",">Koma (,)</option><option value=" ">Spasi ( )</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 90px;"><label>Selisih:</label><input type="text" id="DBSls" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>Jumlah:</label><input type="text" id="DBJml" readonly style="background:#ecf0f1;"></div>
+            <div style="flex: 1; min-width: 90px;"><label>AM:</label><input type="text" id="DBAM" readonly style="background:#ecf0f1;"></div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <!-- BEST RESULT VIP -->
+            <div class="level-row best-row">
+                <span id="lblBestDB" class="level-title best-title">⭐ BEST RESULT = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy btn-copy-best" onclick="copyLevelBox('boxBestDB', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxBestDB" class="result-box best-box">-</div>
+
+            <!-- REGULAR LEVELS -->
+            <div class="level-row">
+                <span id="lblDB0" class="level-title">Level 0 = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB0', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxDB0" class="result-box">-</div>
+
+            <div class="level-row">
+                <span id="lblDB1" class="level-title">Level 1 = 0 LN</span>
+                <div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB1', 'DB', this)">Copy</button></div>
+            </div>
+            <div id="boxDB1" class="result-box">-</div>
+            
+            <details style="margin-top: 10px; font-size: 13px; color: #7f8c8d;">
+                <summary style="cursor: pointer; font-weight: bold;">Level Bawah (2 & 3)</summary>
+                <div class="level-row"><span id="lblDB2" class="level-title">Level 2 = 0 LN</span><div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB2', 'DB', this)">Copy</button></div></div>
+                <div id="boxDB2" class="result-box">-</div>
+                <div class="level-row"><span id="lblDB3" class="level-title">Level 3 = 0 LN</span><div class="btn-group"><button class="btn-copy" onclick="copyLevelBox('boxDB3', 'DB', this)">Copy</button></div></div>
+                <div id="boxDB3" class="result-box">-</div>
+            </details>
+        </div>
+    </div>
+
+    <!-- WADAH SALINAN -->
+    <h3>4. Wadah Salinan</h3>
+    <div class="panel-engine">
+        <div class="level-row">
+            <span id="lblWadahDD" class="level-title">Terkumpul 2DD (0 LN)</span>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
+                <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
+            </div>
+        </div>
+        <div id="wadahBoxDD" class="result-box">-</div>
+
+        <div class="level-row">
+            <span id="lblWadahDT" class="level-title">Terkumpul 2DT (0 LN)</span>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
+                <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
+            </div>
+        </div>
+        <div id="wadahBoxDT" class="result-box">-</div>
+
+        <div class="level-row">
+            <span id="lblWadahDB" class="level-title">Terkumpul 2DB (0 LN)</span>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
+                <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
+            </div>
+        </div>
+        <div id="wadahBoxDB" class="result-box">-</div>
+    </div>
+
+    <!-- HASIL OLAHAN 3 DIGIT -->
+    <h3>5. Eksekusi Akhir </h3>
+    <div class="panel-engine">
+        <div class="level-row">
+            <span id="lbl3DD" class="level-title" style="color: #c0392b; font-weight: 800;">🔥 3DD = 0 LN</span>
+            <div class="btn-group"><button class="btn-copy" onclick="copyWadah('box3DD', this)">Copy</button></div>
+        </div>
+        <div id="box3DD" class="result-box" style="border: 1px solid #c0392b;">-</div>
+
+        <div class="level-row">
+            <span id="lbl3DB" class="level-title" style="color: #c0392b; font-weight: 800;">🔥 3DB = 0 LN</span>
+            <div class="btn-group"><button class="btn-copy" onclick="copyWadah('box3DB', this)">Copy</button></div>
+        </div>
+        <div id="box3DB" class="result-box" style="border: 1px solid #c0392b;">-</div>
+    </div>
+
+</div>
+
+<script>
+let globalDataEngine = {
+    dig0: [], dig1: [], dig2: [], dig3: [],
+    diff1: [], diff2: [], diff3: [],
+    sum1: [], sum2: [], sum3: [],
+    am1: [], am2: [], am3: []
+};
+
+let wadahData = { DD: new Set(), DT: new Set(), DB: new Set() };
+
+function getCombinations(arr, k) {
+    if (k === 0) return [[]];
+    if (arr.length === 0) return [];
+    let head = arr[0], tail = arr.slice(1);
+    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
+}
+
+// Adaptive AM Logic dimodifikasi dengan Toleransi Miss (missAllowed)
+function getAdaptiveAM(rowsData, extractorFunc, missAllowed) {
+    let candidateSet = new Set();
+    for (let i = 0; i < rowsData.length - 1; i++) {
+        let val = extractorFunc(rowsData[i + 1]);
+        if (val) { for (let char of val) candidateSet.add(char); }
+    }
+    let candidateArray = Array.from(candidateSet).sort();
+    if (candidateArray.length === 0) return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    
+    let bestAM = null;
+    for (let len = 2; len <= candidateArray.length; len++) {
+        let combos = getCombinations(candidateArray, len);
+        for (let combo of combos) {
+            let comboSet = new Set(combo);
+            let failCount = 0;
+            
+            for (let i = 0; i < rowsData.length - 1; i++) {
+                let targetVal = extractorFunc(rowsData[i + 1]);
+                let matchCount = 0;
+                if (targetVal) {
+                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
+                }
+                if (matchCount === 0) { failCount++; }
+            }
+            // Validasi berdasarkan toleransi miss
+            if (failCount <= missAllowed) { bestAM = combo; break; }
+        }
+        if (bestAM) break;
+    }
+    return bestAM || candidateArray;
+}
+
+function getSingleDigitSum(a, b) {
+    let sum = a + b;
+    while (sum >= 10) {
+        let sumStr = sum.toString();
+        sum = parseInt(sumStr.charAt(0)) + parseInt(sumStr.charAt(1));
+    }
+    return sum.toString();
+}
+
+function prosesSemuaLayout() {
+    let rawInput = document.getElementById('inputData').value.trim();
+    if (!rawInput) return;
+
+    let backtest = parseInt(document.getElementById('inpBacktest').value) || 20;
+    let miss = parseInt(document.getElementById('inpMiss').value) || 0;
+
+    let dataArray = rawInput.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataArray.length < 2) return;
+    
+    // Potong data berdasarkan Backtest
+    if(dataArray.length > backtest) {
+        dataArray = dataArray.slice(0, backtest);
+    }
+
+    let processedData = dataArray.map(item => {
+        if (item.length < 4) item = item.padStart(4, '0');
+        let r = parseInt(item.charAt(0)), ra = parseInt(item.charAt(1)), p = parseInt(item.charAt(2)), s = parseInt(item.charAt(3));
+        return {
+            original: item,
+            digits: [r.toString(), ra.toString(), p.toString(), s.toString()],
+            diffs: [Math.abs(r - ra).toString(), Math.abs(ra - p).toString(), Math.abs(p - s).toString()],
+            sums: [getSingleDigitSum(r, ra), getSingleDigitSum(ra, p), getSingleDigitSum(p, s)]
+        };
+    });
+
+    // Panggil getAdaptiveAM dengan parameter miss
+    globalDataEngine.dig0 = getAdaptiveAM(processedData, row => row.digits[0], miss);
+    globalDataEngine.dig1 = getAdaptiveAM(processedData, row => row.digits[1], miss);
+    globalDataEngine.dig2 = getAdaptiveAM(processedData, row => row.digits[2], miss);
+    globalDataEngine.dig3 = getAdaptiveAM(processedData, row => row.digits[3], miss);
+
+    globalDataEngine.diff1 = getAdaptiveAM(processedData, row => row.diffs[0], miss);
+    globalDataEngine.diff2 = getAdaptiveAM(processedData, row => row.diffs[1], miss);
+    globalDataEngine.diff3 = getAdaptiveAM(processedData, row => row.diffs[2], miss);
+
+    globalDataEngine.sum1 = getAdaptiveAM(processedData, row => row.sums[0], miss);
+    globalDataEngine.sum2 = getAdaptiveAM(processedData, row => row.sums[1], miss);
+    globalDataEngine.sum3 = getAdaptiveAM(processedData, row => row.sums[2], miss);
+
+    globalDataEngine.am1 = getAdaptiveAM(processedData, row => row.digits[0] + row.digits[1], miss);
+    globalDataEngine.am2 = getAdaptiveAM(processedData, row => row.digits[1] + row.digits[2], miss);
+    globalDataEngine.am3 = getAdaptiveAM(processedData, row => row.digits[2] + row.digits[3], miss);
+
+    jalankanEngine2DD();
+    jalankanEngine2DT();
+    jalankanEngine2DB();
+}
+
+function prosesEngineGeneric(d1List, d2List, slsList, jmlList, amList, sepId, prefix) {
+    let gen = parseInt(document.getElementById('inpGen').value) || 5;
+    
+    if (!d1List.length) d1List = ['0','1','2','3','4','5','6','7','8','9'];
+    if (!d2List.length) d2List = ['0','1','2','3','4','5','6','7','8','9'];
+
+    document.getElementById(prefix + 'Digit1').value = d1List.join('');
+    document.getElementById(prefix + 'Digit2').value = d2List.join('');
+    document.getElementById(prefix + 'Sls').value = (slsList || []).join('');
+    document.getElementById(prefix + 'Jml').value = (jmlList || []).join('');
+    document.getElementById(prefix + 'AM').value = (amList || []).join('');
+
+    let slsValid = (slsList || []).map(Number);
+    let jmlValid = (jmlList || []).map(Number);
+    let amValid = (amList || []);
+
+    let d1Set = new Set(d1List);
+    let d2Set = new Set(d2List);
+
+    let levels = { 0: [], 1: [], 2: [], 3: [] };
+    let scoredPairs = [];
+
+    // Proses Bobot & Skor Berdasarkan Iterasi (Gen)
+    let genWeight = gen * 3; // Menambah ketajaman saringan berdasarkan iterasi
+
+    for (let i = 0; i <= 99; i++) {
+        let pair = i.toString().padStart(2, '0');
+        let c1 = pair.charAt(0), c2 = pair.charAt(1);
+        let d1 = parseInt(c1), d2 = parseInt(c2);
+        let score = 0;
+
+        // Bobot Utama Digit
+        if (d1Set.has(c1) && d2Set.has(c2)) score += (40 + genWeight);
+        else if (d1Set.has(c1) || d2Set.has(c2)) score += (20 + (genWeight/2));
+
+        // Bobot Kuncian
+        let sls = Math.abs(d1 - d2);
+        if (slsValid.length === 0 || slsValid.includes(sls)) score += 20;
+
+        let jml = parseInt(getSingleDigitSum(d1, d2));
+        if (jmlValid.length === 0 || jmlValid.includes(jml)) score += 20;
+
+        if (amValid.length === 0 || amValid.includes(c1) || amValid.includes(c2)) score += 20;
+
+        scoredPairs.push({pair: pair, score: score});
+
+        // Pengelompokan Level Klasik
+        let baseScore = score - genWeight; // Normalisasi untuk level klasik
+        if (baseScore >= 80) levels[0].push(pair);
+        else if (baseScore >= 60) levels[1].push(pair);
+        else if (baseScore >= 40) levels[2].push(pair);
+        else levels[3].push(pair);
+    }
+
+    // LOGIKA BEST RESULT DINAMIS (Max 50 LN, Cari Paling Optimal)
+    scoredPairs.sort((a, b) => b.score - a.score);
+    let bestResult = [];
+    let currentScoreLimit = -1;
+
+    for (let i = 0; i < scoredPairs.length; i++) {
+        let p = scoredPairs[i];
+        
+        // Pengecekan group score
+        if (p.score !== currentScoreLimit) {
+            let nextGroupCount = scoredPairs.filter(x => x.score === p.score).length;
+            // Jika penambahan group ini membuat total > 50, dan kita sudah punya LN, hentikan (Jangan terpotong tidak adil).
+            if (bestResult.length + nextGroupCount > 50 && bestResult.length > 0) {
+                break;
+            }
+        }
+        
+        if (bestResult.length < 50) {
+            bestResult.push(p.pair);
+        } else {
+            break;
+        }
+        currentScoreLimit = p.score;
+    }
+
+    // Tampilkan hasil level klasik
+    let sepVal = document.getElementById(sepId).value;
+    for (let l = 0; l <= 3; l++) {
+        let arr = levels[l];
+        let box = document.getElementById(`box${prefix}${l}`);
+        let lbl = document.getElementById(`lbl${prefix}${l}`);
+        if (box && lbl) {
+            box.textContent = arr.length ? arr.join(sepVal) : "(Tidak ada angka)";
+            lbl.textContent = `Level ${l} = ${arr.length} LN`;
+        }
+    }
+
+    // Tampilkan BEST RESULT
+    let boxBest = document.getElementById(`boxBest${prefix}`);
+    let lblBest = document.getElementById(`lblBest${prefix}`);
+    if (boxBest && lblBest) {
+        boxBest.textContent = bestResult.length ? bestResult.join(sepVal) : "(Tidak ada angka)";
+        lblBest.textContent = `⭐ BEST RESULT = ${bestResult.length} LN (Max 50)`;
+    }
+}
+
+function jalankanEngine2DD() { prosesEngineGeneric(globalDataEngine.dig0, globalDataEngine.dig1, globalDataEngine.diff1, globalDataEngine.sum1, globalDataEngine.am1, 'DDSeparator', 'DD'); }
+function jalankanEngine2DT() { prosesEngineGeneric(globalDataEngine.dig1, globalDataEngine.dig2, globalDataEngine.diff2, globalDataEngine.sum2, globalDataEngine.am2, 'DTSeparator', 'DT'); }
+function jalankanEngine2DB() { prosesEngineGeneric(globalDataEngine.dig2, globalDataEngine.dig3, globalDataEngine.diff3, globalDataEngine.sum3, globalDataEngine.am3, 'DBSeparator', 'DB'); }
+
+function copyLevelBox(boxId, type, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "(Tidak ada angka)") return;
+    
+    let textItems = box.textContent.split(/[\s*#,]/).filter(item => item.length > 0);
+    textItems.forEach(item => wadahData[type].add(item));
+    
+    updateWadahUI(type);
+
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        let oldBg = btn.style.backgroundColor;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#16a085';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = oldBg || ''; }, 1200);
+    });
+}
+
+function updateWadahUI(type) {
+    let arr = Array.from(wadahData[type]);
+    let boxEl = document.getElementById('wadahBox' + type);
+    let lblEl = document.getElementById('lblWadah' + type);
+
+    if (arr.length > 0) {
+        boxEl.textContent = arr.join('*');
+        lblEl.textContent = `Terkumpul 2${type} (${arr.length} LN)`;
+    } else {
+        boxEl.textContent = '-';
+        lblEl.textContent = `Terkumpul 2${type} (0 LN)`;
+    }
+
+    prosesHasil3Digit();
+}
+
+function resetWadah(type) {
+    wadahData[type].clear();
+    updateWadahUI(type);
+}
+
+function copyWadah(boxId, btn) {
+    let box = document.getElementById(boxId);
+    if (!box || !box.textContent || box.textContent === "-") return;
+    navigator.clipboard.writeText(box.textContent).then(() => {
+        let old = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#16a085';
+        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = ''; }, 1200);
+    });
+}
+
+function prosesHasil3Digit() {
+    let arrDD = Array.from(wadahData.DD);
+    let arrDT = Array.from(wadahData.DT);
+    let arrDB = Array.from(wadahData.DB);
+
+    let set3DD = new Set();
+    if (arrDD.length > 0 && arrDT.length > 0) {
+        for (let a of arrDD) {
+            for (let b of arrDT) {
+                if (a.charAt(1) === b.charAt(0)) set3DD.add(a + b.charAt(1));
+            }
+        }
+    }
+
+    let set3DB = new Set();
+    if (arrDT.length > 0 && arrDB.length > 0) {
+        for (let b of arrDT) {
+            for (let c of arrDB) {
+                if (b.charAt(1) === c.charAt(0)) set3DB.add(b + c.charAt(1));
+            }
+        }
+    }
+
+    let res3DD = Array.from(set3DD);
+    let box3DD = document.getElementById('box3DD');
+    let lbl3DD = document.getElementById('lbl3DD');
+    if (res3DD.length > 0) {
+        box3DD.textContent = res3DD.join('*');
+        lbl3DD.textContent = `🔥 3DD = ${res3DD.length} LN`;
+    } else {
+        box3DD.textContent = '-';
+        lbl3DD.textContent = `🔥 3DD = 0 LN`;
+    }
+
+    let res3DB = Array.from(set3DB);
+    let box3DB = document.getElementById('box3DB');
+    let lbl3DB = document.getElementById('lbl3DB');
+    if (res3DB.length > 0) {
+        box3DB.textContent = res3DB.join('*');
+        lbl3DB.textContent = `🔥 3DB = ${res3DB.length} LN`;
+    } else {
+        box3DB.textContent = '-';
+        lbl3DB.textContent = `🔥 3DB = 0 LN`;
+    }
+}
+
+window.onload = function() {
+    // Akan otomatis berjalan jika data di text-area ada (misal di-refresh)
+    prosesSemuaLayout();
+};
+</script>
+
+</body>
+</html>
