@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Learning Engine (Shio Logic)</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 20px;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+
+        .input-area {
+            height: 100px;
+        }
+
+        .output-area {
+            height: 120px;
+            background-color: #eaedd0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .param-panel {
+            display: flex;
+            gap: 15px;
+            background-color: #ecf0f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .param-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .param-group label {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #2c3e50;
+        }
+
+        .param-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button.btn-process {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
+        }
+
+        button.btn-process:hover {
+            background-color: #219653;
+        }
+
+        button.btn-learning {
+            flex: 2;
+            background-color: #e67e22;
+            color: white;
+        }
+
+        button.btn-learning:hover {
+            background-color: #d35400;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2980b9;
+        }
+
+        .btn-copy {
+            background-color: #2980b9;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-copy:hover {
+            background-color: #1f618d;
+        }
+
+        .audit-box {
+            background-color: #1e272e;
+            color: #00d8d6;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 6px;
+            height: 350px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-left: 4px solid #e67e22;
+        }
+
+        .audit-title {
+            color: #34495e;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.94);
+            border-radius: 10px;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #e67e22;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .btn-break {
+            margin-top: 20px;
+            background-color: #c0392b;
+            color: white;
+            padding: 10px 24px;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+        }
+
+        .btn-break:hover {
+            background-color: #962d22;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    
+    <!-- <h2>Self-Learning Engine (Advanced Shio Logic)</h2> -->
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingText" class="loading-text">
+            Self-Learning...
+        </div>
+        <button id="btnBreak" class="btn-break" onclick="triggerEngineBreak()">
+            BREAK (STOP PROCESS)
+        </button>
+    </div>
+
+    <label for="inputData">Masukkan Data TOP :</label>
+    <textarea id="inputData" class="input-area" placeholder=""></textarea>
+
+    <div class="param-panel">
+        <div class="param-group">
+            <label for="cfgBacktest">Backtest (2 sd 1000):</label>
+            <input type="number" id="cfgBacktest" value="5" min="2" max="1000">
+        </div>
+        <div class="param-group">
+            <label for="cfgAllowedMiss">Miss (0 sd 1000):</label>
+            <input type="number" id="cfgAllowedMiss" value="0" min="0" max="1000">
+        </div>
+        <div class="param-group">
+            <label for="cfgMaxGen">GEN (1 sd 5000):</label>
+            <input type="number" id="cfgMaxGen" value="100" min="1" max="5000">
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-process" onclick="prosesEngineProUtuh()">
+            SINGLE
+        </button>
+        <button class="btn-learning" onclick="runSelfLearningEngine()">
+            LEARNING
+        </button>
+    </div>
+
+    <div class="result-header">
+        <span id="outputTitle" class="result-title">BEST RESULT (0 LN)</span>
+        <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy</button>
+    </div>
+
+    <textarea id="outputResult" class="output-area" readonly placeholder=""></textarea>
+
+    <div class="audit-title">LOG AUDIT EXECUTION:</div>
+    <div id="auditLog" class="audit-box">Ready..</div>
+
+</div>
+
+
+<script>
+let ENGINE_SYS_CONFIG = {};
+
+function resetEngineConfig() {
+    ENGINE_SYS_CONFIG = {
+        MAX_SHIO: 5,       // Default maksimal 5 shio (Batas maksimal adalah 7)
+        W_FREQ: 5,         // Weight for Historical Frequency
+        W_RECENCY: 2,      // Weight for Recency
+        W_TRANS: 1,        // Weight for Transition Pattern
+        MAX_GENERATIONS: 100,
+        STRATEGY_MODE: "SHIO_BASE"
+    };
+}
+resetEngineConfig();
+
+let isBreakRequested = false;
+
+function triggerEngineBreak() {
+    isBreakRequested = true;
+    writeAuditLog("<b style='color:#e74c3c;'>[USER BREAK] Permintaan pemberhentian diproses...</b>");
+}
+
+function writeAuditLog(message) {
+    let logBox = document.getElementById('auditLog');
+    let timeStamp = new Date().toLocaleTimeString();
+    logBox.innerHTML += `[${timeStamp}] ${message}<br/>`;
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+function clearAuditLog() {
+    document.getElementById('auditLog').innerHTML = '';
+}
+
+function yieldUI() {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, 0);
+    });
+}
+
+// Logika Shio Standard Togel
+function getShio(numStr) {
+    let num = parseInt(numStr, 10);
+    if (num === 0) return 4; 
+    let mod = num % 12;
+    return mod === 0 ? 12 : mod;
+}
+
+function getLinesForShioArray(shioArray) {
+    let lines = [];
+    for (let i = 0; i <= 99; i++) {
+        let str = i.toString().padStart(2, '0');
+        if (shioArray.includes(getShio(str))) {
+            lines.push(str);
+        }
+    }
+    return lines;
+}
+
+function evaluateSectorShio(trainingPairs, sectorName) {
+    let shioHistory = trainingPairs.map(getShio);
+    let lastShio = shioHistory[shioHistory.length - 1] || 1;
+    
+    let freqMap = {};
+    let recMap = {};
+    let transMap = {};
+    
+    // Inisialisasi peta 12 shio
+    for(let i = 1; i <= 12; i++) {
+        freqMap[i] = 0;
+        recMap[i] = -1;
+        transMap[i] = 0;
+    }
+    
+    // Scan history untuk mendapatkan weight metrics
+    for(let i = 0; i < shioHistory.length; i++) {
+        let s = shioHistory[i];
+        freqMap[s]++;
+        recMap[s] = i; 
+        if (i > 0 && shioHistory[i-1] === lastShio) {
+            transMap[s]++;
+        }
+    }
+    
+    // Hitung score per shio berdasarkan config weight
+    let scores = [];
+    for(let i = 1; i <= 12; i++) {
+        let s = i;
+        let score = 
+            (freqMap[s] * ENGINE_SYS_CONFIG.W_FREQ) + 
+            (recMap[s] * ENGINE_SYS_CONFIG.W_RECENCY) + 
+            (transMap[s] * ENGINE_SYS_CONFIG.W_TRANS);
+        scores.push({ shio: s, score: score });
+    }
+    
+    // Sort dari score tertinggi ke terendah
+    scores.sort((a, b) => b.score - a.score);
+    
+    // Ambil top shio (Batas maskimal shio otomatis menyesuaikan CONFIG.MAX_SHIO)
+    let topShios = [];
+    for(let i = 0; i < Math.min(ENGINE_SYS_CONFIG.MAX_SHIO, 7); i++) {
+        topShios.push(scores[i].shio);
+    }
+    
+    let topLN = getLinesForShioArray(topShios);
+    
+    // Power Score = Berapa kali kelompok Shio terpilih ini Result (Hit) di dalam data training (Akurasi Prediksi)
+    let powerScore = 0;
+    for(let i = 0; i < shioHistory.length; i++) {
+        if(topShios.includes(shioHistory[i])) powerScore++;
+    }
+    
+    return {
+        sectorName: sectorName,
+        topShios: topShios,
+        topLN: topLN,
+        powerScore: powerScore
+    };
+}
+
+function executeEngineForDataset(dataTokens) {
+    let pairs2DD = dataTokens.map(t => t.padStart(4, '0').substring(0,2));
+    let pairs2DT = dataTokens.map(t => t.padStart(4, '0').substring(1,3));
+    let pairs2DB = dataTokens.map(t => t.padStart(4, '0').substring(2,4));
+
+    let result2DD = evaluateSectorShio(pairs2DD, "2DD");
+    let result2DT = evaluateSectorShio(pairs2DT, "2DT");
+    let result2DB = evaluateSectorShio(pairs2DB, "2DB");
+
+    let engineContenders = [result2DD, result2DT, result2DB];
+    
+    // Prioritaskan sektor dengan akurasi formasi terbaik
+    engineContenders.sort((a, b) => b.powerScore - a.powerScore);
+
+    return engineContenders[0];
+}
+
+function prosesEngineProUtuh() {
+    clearAuditLog();
+    resetEngineConfig();
+    isBreakRequested = false;
+    writeAuditLog("Initialising Single Shio Engine Execution...");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        writeAuditLog("<b style='color:#e74c3c;'>ERROR: Data belum dimasukkan.</b>");
+        return;
+    }
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < 2) {
+        writeAuditLog("<b style='color:#e74c3c;'>ERROR: Minimal 2 data.</b>");
+        return;
+    }
+
+    let winningEngine = executeEngineForDataset(dataTokens);
+
+    document.getElementById('outputTitle').textContent = `BEST RESULT ${winningEngine.sectorName} — GEN SINGLE = ${winningEngine.topLN.length} LN`;
+    document.getElementById('outputResult').value = winningEngine.topLN.join('*');
+
+    writeAuditLog(`Prediction Completed. Winning Sector: <b>${winningEngine.sectorName}</b>`);
+    writeAuditLog(`Shio Terpilih: <b>${winningEngine.topShios.join(', ')}</b>`);
+    writeAuditLog(`Power Hit Score (Train): <b>${winningEngine.powerScore}</b>`);
+}
+
+// Mutasi pola pembacaan Shio (Hyper-Parameter Tuning pada setiap iterasi/Generasi)
+function mutateAlgorithmStrategy(attemptLevel) {
+    // MAX Shio berkisar antara 4 sampai 7 untuk efisiensi jumlah LN
+    ENGINE_SYS_CONFIG.MAX_SHIO = 4 + (attemptLevel % 4);
+    
+    // Perubahan dinamika bobot matrix secara non-linear (Self-Adjustment Weights)
+    ENGINE_SYS_CONFIG.W_FREQ = (attemptLevel % 9) - 4; 
+    ENGINE_SYS_CONFIG.W_RECENCY = (attemptLevel % 7) - 3;
+    ENGINE_SYS_CONFIG.W_TRANS = (attemptLevel % 5);
+
+    ENGINE_SYS_CONFIG.STRATEGY_MODE = `SHIO_GEN_S${ENGINE_SYS_CONFIG.MAX_SHIO}_[F:${ENGINE_SYS_CONFIG.W_FREQ}|R:${ENGINE_SYS_CONFIG.W_RECENCY}|T:${ENGINE_SYS_CONFIG.W_TRANS}]`;
+}
+
+async function runSelfLearningEngine() {
+    clearAuditLog();
+    resetEngineConfig();
+    isBreakRequested = false; 
+
+    let iterationsCount = parseInt(document.getElementById('cfgBacktest').value, 10) || 5;
+    let allowedMiss = parseInt(document.getElementById('cfgAllowedMiss').value, 10);
+    if (isNaN(allowedMiss)) allowedMiss = 0;
+    let maxGenerations = parseInt(document.getElementById('cfgMaxGen').value, 10) || 100;
+    ENGINE_SYS_CONFIG.MAX_GENERATIONS = maxGenerations;
+
+    writeAuditLog("====================================================");
+    writeAuditLog("STARTING DYNAMIC SHIO-LEARNING ENGINE");
+    writeAuditLog(`MAX GENERATION = ${maxGenerations}`);
+    writeAuditLog(`MISS TARGET = <= ${allowedMiss}`);
+    writeAuditLog(`BACKTEST = ${iterationsCount}`);
+    writeAuditLog("SECTOR = 2DD / 2DT / 2DB DINAMIS");
+    writeAuditLog("LIMIT SHIO = MAKS 7 SHIO");
+    writeAuditLog("====================================================");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) {
+        writeAuditLog("<b style='color:#e74c3c;'>ERROR: Data belum dimasukkan.</b>");
+        return;
+    }
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < iterationsCount + 2) {
+        writeAuditLog(`<b style='color:#e74c3c;'>ERROR: Data tidak cukup untuk ${iterationsCount}x backtest.</b>`);
+        writeAuditLog(`Minimal diperlukan ${iterationsCount + 2} data.`);
+        return;
+    }
+
+    let loadingOverlay = document.getElementById('loadingOverlay');
+    let loadingText = document.getElementById('loadingText');
+    loadingOverlay.style.display = 'flex';
+
+    let generationAttempt = 0;
+    let globalBestMissCount = Infinity;
+    let bestConfigState = null;
+    let bestHits = 0;
+    let bestGenFound = 0;
+    let completed = false;
+
+    try {
+        while (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS) {
+            if (isBreakRequested) break;
+            generationAttempt++;
+
+            let successCount = 0;
+            let failCount = 0;
+            let totalAvailable = dataTokens.length;
+            let startIndex = totalAvailable - iterationsCount - 1;
+
+            for (let testIndex = 0; testIndex < iterationsCount; testIndex++) {
+                if (isBreakRequested) break;
+
+                loadingText.innerHTML = 
+                    `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
+                    `BACKTEST ${testIndex + 1}/${iterationsCount}<br>` +
+                    `<span style="font-size:11px;font-weight:normal;">${ENGINE_SYS_CONFIG.STRATEGY_MODE}</span>`;
+
+                await yieldUI();
+
+                let currentCutLength = startIndex + testIndex + 1;
+                let trainingData = dataTokens.slice(0, currentCutLength);
+                let targetActual = dataTokens[currentCutLength].padStart(4, '0');
+
+                let prediction = executeEngineForDataset(trainingData);
+                let secName = prediction.sectorName;
+                let topLN = prediction.topLN;
+                let actualPair = "";
+
+                if (secName === "2DD") { actualPair = targetActual.substring(0, 2); }
+                else if (secName === "2DT") { actualPair = targetActual.substring(1, 3); }
+                else if (secName === "2DB") { actualPair = targetActual.substring(2, 4); }
+
+                let isHit = topLN.includes(actualPair);
+
+                if (isHit) {
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+            }
+
+            if (isBreakRequested) break;
+
+            writeAuditLog(`[GEN ${generationAttempt}] <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
+            writeAuditLog(`-> HIT: <span style='color:#2ecc71;'>${successCount}</span> | MISS: <span style='color:#e74c3c;'>${failCount}</span>`);
+
+            if (failCount < globalBestMissCount) {
+                globalBestMissCount = failCount;
+                bestHits = successCount;
+                bestGenFound = generationAttempt;
+                bestConfigState = JSON.parse(JSON.stringify(ENGINE_SYS_CONFIG));
+                writeAuditLog(`<span style='color:#3498db;font-weight:bold;'>*** BEST FORMULA FOUND SO FAR (MISS: ${failCount}) ***</span>`);
+            }
+
+            if (failCount <= allowedMiss) {
+                completed = true;
+                break;
+            }
+
+            if (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS) {
+                mutateAlgorithmStrategy(generationAttempt);
+                await yieldUI();
+            }
+        }
+
+        if (bestConfigState) {
+            Object.assign(ENGINE_SYS_CONFIG, bestConfigState);
+            let finalPrediction = executeEngineForDataset(dataTokens);
+
+            // Format Output persis seperti instruksi user: BEST RESULT [SECTOR] - GEN [X] = [Y] LN
+            document.getElementById('outputTitle').textContent = `BEST RESULT ${finalPrediction.sectorName} — GEN ${bestGenFound} = ${finalPrediction.topLN.length} LN`;
+            document.getElementById('outputResult').value = finalPrediction.topLN.join('*');
+
+            writeAuditLog("<br/>====================================================");
+            writeAuditLog(`<b>FINAL APPLIED FORMULA (DARI GEN ${bestGenFound})</b>`);
+            writeAuditLog(`Strategi: <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b>`);
+            writeAuditLog(`Total HIT: <b>${bestHits}</b>`);
+            writeAuditLog(`Total MISS: <b>${globalBestMissCount}</b>`);
+            writeAuditLog(`Sector Terpilih: <b>${finalPrediction.sectorName}</b>`);
+            writeAuditLog(`Shio Terpilih: <b>${finalPrediction.topShios.join(', ')}</b>`);
+            writeAuditLog("====================================================");
+        }
+
+        if (isBreakRequested) {
+            writeAuditLog(`<span style='color:#e74c3c;font-weight:bold;'>PROSES DIHENTIKAN OLEH PENGGUNA. Formula terbaik dipertahankan.</span>`);
+        } else if (completed) {
+            writeAuditLog(`<span style='color:#2ecc71;font-weight:bold;'>LEARNING SELESAI — TARGET MISS <= ${allowedMiss} TERCAPAI.</span>`);
+        } else {
+            writeAuditLog(`<span style='color:#f1c40f;font-weight:bold;'>SELESAI GEN ${ENGINE_SYS_CONFIG.MAX_GENERATIONS} — TARGET MISS <= ${allowedMiss} BELUM TERCAPAI.</span>`);
+            writeAuditLog(`Formula dengan miss terkecil diterapkan ke hasil akhir.`);
+        }
+
+    } catch (error) {
+        writeAuditLog(`<span style='color:#e74c3c;font-weight:bold;'>ERROR LEARNING: ${error.message}</span>`);
+        console.error("Self-Learning Error:", error);
+    } finally {
+        loadingOverlay.style.display = 'none';
+    }
+}
+
+function copyHasil() {
+    let outputText = document.getElementById('outputResult').value;
+    if (!outputText) return;
+
+    navigator.clipboard.writeText(outputText).then(function() {
+        let btn = document.getElementById('btnCopy');
+        let oldText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+
+        setTimeout(function() {
+            btn.textContent = oldText;
+            btn.style.backgroundColor = '#2980b9';
+        }, 1200);
+    });
+}
+</script>
+
+</body>
+</html>
