@@ -4,18 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harapan adalah Kehidupan</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         body {
@@ -1233,21 +1222,17 @@ atau:
 -->
     <br><br>
 
-
-		
-<!-- TEMPAT LABEL -->		
-	<div id="containerLabelUrl" style="display: none;"margin: 10px 0; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; font-family: sans-serif;">
-	    <div style="margin-bottom: 4px;"><strong>URL 1:</strong> <span id="labelurl1">Loading...</span></div>
-	    <div style="margin-bottom: 4px;"><strong>URL 2:</strong> <span id="labelurl2">Loading...</span></div>
-	    <div><strong>URL 3:</strong> <span id="labelurl3">Loading...</span></div>
-	</div>		
+    <!-- <div id="labelHasil" style="font-size: 18px; font-weight: bold; color: blue;"></div> -->		
+	<div id="labelHasil" style="display: none;"></div>
 		
 		
 		
 		
 		
-    <!-- <div id="labelHasil" style="font-size: 18px; font-weight: bold; color: blue;"></div> 	 -->		
-	<div id="labelHasil" style="display: none;"></div>		
+		
+		
+		
+		
 		
 		
 		
@@ -1279,44 +1264,6 @@ atau:
 
 
 <script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /* =========================================================
        DATA KONFIGURASI DISKON
@@ -2933,8 +2880,7 @@ atau:
         // --- SILAKAN BOS GANTI ISIAN DI BAWAH INI ---
 
         // Data Pokok
-        let pokok1 = "";
-		
+        const pokok1 = "https://suntogel.site";
         const pokok2 = "/wap/user/togel/main/";
         const pokok3 = "?type=1&sub_type=";
         const pokok4 = "&category=2";
@@ -2946,65 +2892,10 @@ atau:
 		
 		
 		
-// Fungsi untuk mengambil data dari Supabase
-async function ambilDataUrl() {
-    try {
-        // Menggunakan .limit(1) tanpa .single() agar tidak crash jika data kosong
-        const { data, error } = await supabaseClient
-            .from('users_config')
-            .select('urlweb1, urlweb2, urlweb3')
-            .limit(1);
-
-        if (error) {
-            console.error('Detail Error Supabase:', error);
-            // Menampilkan pesan error spesifik ke layar
-            document.getElementById('labelurl1').innerText = 'Error: ' + error.message;
-            return;
-        }
-
-        if (data && data.length > 0) {
-            const row = data[0];
-            document.getElementById('labelurl1').innerText = row.urlweb1 || '-';
-            document.getElementById('labelurl2').innerText = row.urlweb2 || '-';
-            document.getElementById('labelurl3').innerText = row.urlweb3 || '-';
-
-        } else {
-            document.getElementById('labelurl1').innerText = 'Tabel kosong (0 baris)';
-            document.getElementById('labelurl2').innerText = '-';
-            document.getElementById('labelurl3').innerText = '-';
-        }
-    } catch (err) {
-        console.error('Terjadi kesalahan script:', err);
-        document.getElementById('labelurl1').innerText = 'Error Script JS';
-    }
-	
-
-// 1. Ambil teks dari labelurl3 (isinya: "matahari.site/wap")
-let teksUrl = document.getElementById("labelurl3").innerText;
-
-// 2. Ambil kata sebelum tanda '/' saja -> menghasilkan "matahari.site"
-pokok1 = "https://" + teksUrl.split('/')[0];
-//pokok1 = "jajal";
-
-// 3. Panggil fungsi gabungan Anda agar hasilnya langsung terupdate
-sinkronkanData();	
-	
-	
-	
-	
-	
-	
-	
-	
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    ambilDataUrl();
-});
-			
 		
 		
-
+		
+		
 		
 		
 		
@@ -3181,7 +3072,6 @@ function aksiTombolBaru3B() {
 	
 	
 	
-
 	
 	
 	
