@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Learning Engine Pro</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 20px;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+
+        .input-area {
+            height: 100px;
+        }
+
+        .output-area {
+            height: 120px;
+            background-color: #eaedd0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .param-panel {
+            display: flex;
+            gap: 15px;
+            background-color: #ecf0f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .param-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .param-group label {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #2c3e50;
+        }
+
+        .param-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button.btn-process {
+            flex: 1;
+            background-color: #27ae60;
+            color: white;
+        }
+
+        button.btn-process:hover {
+            background-color: #219653;
+        }
+
+        button.btn-learning {
+            flex: 2;
+            background-color: #e67e22;
+            color: white;
+        }
+
+        button.btn-learning:hover {
+            background-color: #d35400;
+        }
+
+        /* Tabs Styling */
+        .tabs-header {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 5px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tabs-nav {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            padding: 8px 16px;
+            border-radius: 6px 6px 0 0;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: none;
+        }
+
+        .tab-btn.active {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .btn-copy {
+            background-color: #2980b9;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-copy:hover {
+            background-color: #1f618d;
+        }
+
+        .audit-box {
+            background-color: #1e272e;
+            color: #00d8d6;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 6px;
+            height: 350px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-left: 4px solid #e67e22;
+        }
+
+        .audit-title {
+            color: #34495e;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.94);
+            border-radius: 10px;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #e67e22;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .btn-break {
+            margin-top: 20px;
+            background-color: #c0392b;
+            color: white;
+            padding: 10px 24px;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
+        }
+
+        .btn-break:hover {
+            background-color: #962d22;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingText" class="loading-text">
+            Self-Learning...
+        </div>
+        <button id="btnBreak" class="btn-break" onclick="triggerEngineBreak()">
+            BREAK (STOP PROCESS)
+        </button>
+    </div>
+
+    <label for="inputData">Masukkan Data JOS :</label>
+    <textarea id="inputData" class="input-area" placeholder="Format: 1234, 5678, ..."></textarea>
+
+    <div class="param-panel">
+        <div class="param-group">
+            <label for="cfgBacktest">Backtest (2 sd 1000):</label>
+            <input type="number" id="cfgBacktest" value="5" min="2" max="1000">
+        </div>
+        <div class="param-group">
+            <label for="cfgAllowedMiss">Miss Threshold (0 sd 1000):</label>
+            <input type="number" id="cfgAllowedMiss" value="0" min="0" max="1000">
+        </div>
+        <div class="param-group">
+            <label for="cfgMaxGen">MAX GEN (1 sd 5000):</label>
+            <input type="number" id="cfgMaxGen" value="100" min="1" max="5000">
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-process" onclick="prosesEngineProUtuh()">
+            SINGLE
+        </button>
+        <button class="btn-learning" onclick="runSelfLearningEngine()">
+            LEARNING
+        </button>
+    </div>
+
+    <div class="tabs-header">
+        <div class="tabs-nav">
+            <button class="tab-btn active" id="btn-2DD" onclick="switchTab('2DD')">2DD (0 LN)</button>
+            <button class="tab-btn" id="btn-2DT" onclick="switchTab('2DT')">2DT (0 LN)</button>
+            <button class="tab-btn" id="btn-2DB" onclick="switchTab('2DB')">2DB (0 LN)</button>
+        </div>
+        <button class="btn-copy" id="btnCopy" onclick="copyHasil()">Copy Tab Aktif</button>
+    </div>
+
+    <!-- Output Textareas per Sector -->
+    <textarea id="out-2DD" class="output-area tab-content active" readonly placeholder="Hasil 2DD..."></textarea>
+    <textarea id="out-2DT" class="output-area tab-content" readonly placeholder="Hasil 2DT..."></textarea>
+    <textarea id="out-2DB" class="output-area tab-content" readonly placeholder="Hasil 2DB..."></textarea>
+
+    <div class="audit-title">LOG AUDIT REAL-TIME:</div>
+    <div id="auditLog" class="audit-box">Ready..</div>
+
+</div>
+
+<script>
+let ENGINE_SYS_CONFIG = {};
+let currentActiveTab = '2DD';
+
+function resetEngineConfig() {
+    ENGINE_SYS_CONFIG = {
+        MAX_OUTPUT_LIMIT: 50,
+        SIMULATION_MATRIX_DEPTH: 1000,
+        WEIGHT_LEVEL_0: 100,
+        WEIGHT_LEVEL_1: 80,
+        WEIGHT_LEVEL_2: 60,
+        WEIGHT_LEVEL_3: 40,
+        WEIGHT_LEVEL_4: 20,
+        WEIGHT_LEVEL_5: 0,
+        AM_MIN_LENGTH: 3,
+        STRATEGY_MODE: "STANDARD_ENTERPRISE",
+        USE_DIFF: true,
+        USE_SUM: true,
+        USE_AM: true,
+        USE_DIGIT_STRICT: true,
+        MAX_GENERATIONS: 100
+    };
+}
+resetEngineConfig();
+
+let isBreakRequested = false;
+
+function triggerEngineBreak() {
+    isBreakRequested = true;
+    writeAuditLog("<b style='color:#e74c3c;'>[USER BREAK] Permintaan pemberhentian diproses...</b>");
+}
+
+function writeAuditLog(message) {
+    let logBox = document.getElementById('auditLog');
+    let timeStamp = new Date().toLocaleTimeString();
+    logBox.innerHTML += `[${timeStamp}] ${message}<br/>`;
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+function clearAuditLog() {
+    document.getElementById('auditLog').innerHTML = '';
+}
+
+function yieldUI() {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, 0);
+    });
+}
+
+function switchTab(sector) {
+    ['2DD', '2DT', '2DB'].forEach(s => {
+        document.getElementById(`btn-${s}`).classList.remove('active');
+        document.getElementById(`out-${s}`).classList.remove('active');
+    });
+    document.getElementById(`btn-${sector}`).classList.add('active');
+    document.getElementById(`out-${sector}`).classList.add('active');
+    currentActiveTab = sector;
+}
+
+function copyHasil() {
+    let outputText = document.getElementById(`out-${currentActiveTab}`).value;
+    if (!outputText) return;
+
+    navigator.clipboard.writeText(outputText).then(function() {
+        let btn = document.getElementById('btnCopy');
+        let oldText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.backgroundColor = '#27ae60';
+
+        setTimeout(function() {
+            btn.textContent = oldText;
+            btn.style.backgroundColor = '#2980b9';
+        }, 1200);
+    });
+}
+
+// ==========================================
+// CORE LOGIC: SELISIH & JUMLAH (SINGLE DIGIT)
+// ==========================================
+function calculateSingleDigitSum(digitValA, digitValB) {
+    let totalSum = parseInt(digitValA, 10) + parseInt(digitValB, 10);
+    while (totalSum >= 10) {
+        let stringConverted = totalSum.toString();
+        totalSum = parseInt(stringConverted.charAt(0), 10) + parseInt(stringConverted.charAt(1), 10);
+    }
+    return totalSum.toString();
+}
+
+function calculateAbsoluteDifference(digitValA, digitValB) {
+    return Math.abs(parseInt(digitValA, 10) - parseInt(digitValB, 10)).toString();
+}
+
+// Generate Angka Main (AM) specifically from historical Selisih and Jumlah
+function extractAMFromLogic(processedRowsData, posA, posB) {
+    let amSet = new Set();
+    for(let i = 0; i < processedRowsData.length; i++) {
+        let valA = processedRowsData[i].digits[posA];
+        let valB = processedRowsData[i].digits[posB];
+        amSet.add(calculateAbsoluteDifference(valA, valB));
+        amSet.add(calculateSingleDigitSum(valA, valB));
+    }
+    return Array.from(amSet);
+}
+
+function extractAdaptiveAMStrict(processedRowsData, extractionTargetFunction) {
+    let uniqueCharacterSet = new Set();
+    for (let rowIndex = 0; rowIndex < processedRowsData.length; rowIndex++) {
+        let targetRow = processedRowsData[rowIndex];
+        let extractedString = extractionTargetFunction(targetRow);
+        if (extractedString && typeof extractedString === 'string') {
+            for (let charIndex = 0; charIndex < extractedString.length; charIndex++) {
+                uniqueCharacterSet.add(extractedString.charAt(charIndex));
+            }
+        }
+    }
+    let sortedCharacterSet = Array.from(uniqueCharacterSet).sort();
+    return sortedCharacterSet.length > 0 ? sortedCharacterSet : ['0','1','2','3','4','5','6','7','8','9'];
+}
+
+function build1000PermutationSpace(processedDataRows, primaryPositionIdx, secondaryPositionIdx) {
+    let baseHistoricalPairs = [];
+    for (let dataIdx = 0; dataIdx < processedDataRows.length; dataIdx++) {
+        let selectedRow = processedDataRows[dataIdx];
+        baseHistoricalPairs.push(
+            selectedRow.digits[primaryPositionIdx] + selectedRow.digits[secondaryPositionIdx]
+        );
+    }
+
+    let expandedPermutationSpace = [];
+    let baseDataLength = baseHistoricalPairs.length;
+    if (baseDataLength === 0) return Array.from({length: 100}, (_, i) => i.toString().padStart(2, '0'));
+
+    for (let simulationIdx = 0; simulationIdx < ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH; simulationIdx++) {
+        let basePairString = baseHistoricalPairs[simulationIdx % baseDataLength];
+        let baseDigitA = parseInt(basePairString.charAt(0), 10);
+        let baseDigitB = parseInt(basePairString.charAt(1), 10);
+        
+        let shiftOffsetA = Math.floor(simulationIdx / 100);
+        let shiftOffsetB = simulationIdx % 10;
+        
+        let calculatedDigitA = (baseDigitA + shiftOffsetA) % 10;
+        let calculatedDigitB = (baseDigitB + shiftOffsetB) % 10;
+        
+        expandedPermutationSpace.push(calculatedDigitA.toString() + calculatedDigitB.toString());
+    }
+    return expandedPermutationSpace;
+}
+
+function evaluateSectorGeneric(matrixData, listA, listB, listAM, sectorName) {
+    let scoreBoard = {};
+    for (let pairVal = 0; pairVal <= 99; pairVal++) {
+        let pairKey = pairVal.toString().padStart(2, '0');
+        scoreBoard[pairKey] = { pair: pairKey, totalPowerScore: 0, level0Count: 0, level1Count: 0 };
+    }
+
+    for (let i = 0; i < matrixData.length; i++) {
+        let pairStr = matrixData[i];
+        let charA = pairStr.charAt(0);
+        let charB = pairStr.charAt(1);
+        let numA = parseInt(charA, 10);
+        let numB = parseInt(charB, 10);
+        
+        let calcDiff = calculateAbsoluteDifference(numA, numB);
+        let calcSum = calculateSingleDigitSum(numA, numB);
+        let penaltyFails = 0;
+
+        // Digit Strict Checks
+        if (ENGINE_SYS_CONFIG.USE_DIGIT_STRICT) {
+            if (!listA.includes(charA)) penaltyFails++;
+            if (!listB.includes(charB)) penaltyFails++;
+        }
+        
+        // AM Logic based on Selisih & Jumlah Union Set
+        if (ENGINE_SYS_CONFIG.USE_AM && listAM.length > 0) {
+            if (!listAM.includes(calcDiff) && !listAM.includes(calcSum)) penaltyFails++;
+        }
+
+        let scoreAdd = 0;
+        if (penaltyFails === 0) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0;
+            scoreBoard[pairStr].level0Count++;
+        } else if (penaltyFails === 1) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_1;
+            scoreBoard[pairStr].level1Count++;
+        } else if (penaltyFails === 2) {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_2;
+        } else {
+            scoreAdd = ENGINE_SYS_CONFIG.WEIGHT_LEVEL_3;
+        }
+        scoreBoard[pairStr].totalPowerScore += scoreAdd;
+    }
+
+    let sortedList = Object.values(scoreBoard);
+    sortedList.sort(function(a, b) {
+        if (b.totalPowerScore !== a.totalPowerScore) return (b.totalPowerScore - a.totalPowerScore);
+        return (b.level0Count - a.level0Count);
+    });
+
+    let topOutput = sortedList.slice(0, ENGINE_SYS_CONFIG.MAX_OUTPUT_LIMIT);
+    let aggregatePower = topOutput.reduce((acc, curr) => acc + curr.totalPowerScore, 0);
+
+    return {
+        sectorName: sectorName,
+        topLN: topOutput.map(item => item.pair),
+        powerScore: aggregatePower
+    };
+}
+
+function parseDataTokens(dataTokens) {
+    let processedDataRows = [];
+    for (let idx = 0; idx < dataTokens.length; idx++) {
+        let token = dataTokens[idx];
+        if (token.length < 4) token = token.padStart(4, '0');
+        let d0 = token.charAt(0);
+        let d1 = token.charAt(1);
+        let d2 = token.charAt(2);
+        let d3 = token.charAt(3);
+        processedDataRows.push({ digits: [d0, d1, d2, d3] });
+    }
+    return processedDataRows;
+}
+
+function executeEngineForSector(processedDataRows, sectorName) {
+    let pos1 = (sectorName === '2DD') ? 0 : (sectorName === '2DT') ? 1 : 2;
+    let pos2 = pos1 + 1;
+
+    let listD0 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[pos1]);
+    let listD1 = extractAdaptiveAMStrict(processedDataRows, row => row.digits[pos2]);
+    
+    // Extract AM Union (Selisih + Jumlah) for this specific sector
+    let listAMLogic = extractAMFromLogic(processedDataRows, pos1, pos2);
+    
+    let matrix = build1000PermutationSpace(processedDataRows, pos1, pos2);
+
+    return evaluateSectorGeneric(matrix, listD0, listD1, listAMLogic, sectorName);
+}
+
+function prosesEngineProUtuh() {
+    clearAuditLog();
+    isBreakRequested = false;
+    writeAuditLog("Initialising Single Prediction...");
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) return writeAuditLog("<b style='color:#e74c3c;'>ERROR: Data kosong.</b>");
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < 2) return writeAuditLog("<b style='color:#e74c3c;'>ERROR: Minimal 2 data.</b>");
+
+    let processedRows = parseDataTokens(dataTokens);
+    
+    ['2DD', '2DT', '2DB'].forEach(sector => {
+        resetEngineConfig();
+        let prediction = executeEngineForSector(processedRows, sector);
+        document.getElementById(`btn-${sector}`).textContent = `${sector} (${prediction.topLN.length} LN)`;
+        document.getElementById(`out-${sector}`).value = prediction.topLN.join('*');
+        writeAuditLog(`Single Proc <b>${sector}</b> Selesai. (Score: ${prediction.powerScore})`);
+    });
+}
+
+function mutateAlgorithmStrategy(attemptLevel) {
+    let cycle = attemptLevel % 15; 
+    ENGINE_SYS_CONFIG.USE_AM = (cycle & 2) === 0;
+    ENGINE_SYS_CONFIG.USE_DIGIT_STRICT = (cycle & 4) === 0;
+
+    ENGINE_SYS_CONFIG.STRATEGY_MODE = `GEN_${attemptLevel}_[AM:${ENGINE_SYS_CONFIG.USE_AM?1:0}|STRICT:${ENGINE_SYS_CONFIG.USE_DIGIT_STRICT?1:0}]`;
+
+    ENGINE_SYS_CONFIG.SIMULATION_MATRIX_DEPTH = 1000 + (attemptLevel * 20);
+    ENGINE_SYS_CONFIG.WEIGHT_LEVEL_0 = 100 + (attemptLevel * 2);
+}
+
+async function runSelfLearningEngine() {
+    clearAuditLog();
+    isBreakRequested = false; 
+
+    let iterationsCount = parseInt(document.getElementById('cfgBacktest').value, 10) || 5;
+    let allowedMiss = parseInt(document.getElementById('cfgAllowedMiss').value, 10) || 0;
+    let maxGenerations = parseInt(document.getElementById('cfgMaxGen').value, 10) || 100;
+
+    let rawInputValue = document.getElementById('inputData').value.trim();
+    if (!rawInputValue) return writeAuditLog("<b style='color:#e74c3c;'>ERROR: Data belum dimasukkan.</b>");
+
+    let dataTokens = rawInputValue.split(',').map(item => item.trim()).filter(item => item.length > 0);
+    if (dataTokens.length < iterationsCount + 2) {
+        return writeAuditLog(`<b style='color:#e74c3c;'>ERROR: Data tidak cukup untuk ${iterationsCount}x backtest.</b>`);
+    }
+
+    let loadingOverlay = document.getElementById('loadingOverlay');
+    let loadingText = document.getElementById('loadingText');
+    loadingOverlay.style.display = 'flex';
+
+    let sectors = ['2DD', '2DT', '2DB'];
+
+    try {
+        // Proses Independen Berurutan Per Sektor
+        for (let sector of sectors) {
+            if (isBreakRequested) break;
+
+            writeAuditLog(`\n<b style='color:#8e44ad;'>=== MEMULAI ANALISA SEKTOR ${sector} ===</b>`);
+            resetEngineConfig();
+            ENGINE_SYS_CONFIG.MAX_GENERATIONS = maxGenerations;
+
+            let generationAttempt = 0;
+            let globalBestMissCount = Infinity;
+            let bestConfigState = null;
+            let bestHits = 0;
+            let bestGenFound = 0;
+            let sectorCompleted = false;
+
+            while (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS) {
+                if (isBreakRequested) break;
+                generationAttempt++;
+
+                let successCount = 0;
+                let failCount = 0;
+                let startIndex = dataTokens.length - iterationsCount - 1;
+
+                for (let testIndex = 0; testIndex < iterationsCount; testIndex++) {
+                    if (isBreakRequested) break;
+
+                    loadingText.innerHTML = 
+                        `<b>SEKTOR ${sector}</b><br>`+
+                        `GEN ${generationAttempt}/${ENGINE_SYS_CONFIG.MAX_GENERATIONS}<br>` +
+                        `BACKTEST ${testIndex + 1}/${iterationsCount}<br>` +
+                        `<span style="font-size:11px;font-weight:normal;">${ENGINE_SYS_CONFIG.STRATEGY_MODE}</span>`;
+
+                    await yieldUI(); // Progress UI Non-blocking real-time
+
+                    let currentCutLength = startIndex + testIndex + 1;
+                    let trainingData = dataTokens.slice(0, currentCutLength);
+                    let targetActual = dataTokens[currentCutLength];
+                    if (targetActual.length < 4) targetActual = targetActual.padStart(4, '0');
+
+                    let processedTrainingRows = parseDataTokens(trainingData);
+                    let prediction = executeEngineForSector(processedTrainingRows, sector);
+                    
+                    let actualPair = "";
+                    if (sector === "2DD") { actualPair = targetActual.substring(0, 2); }
+                    else if (sector === "2DT") { actualPair = targetActual.substring(1, 3); }
+                    else if (sector === "2DB") { actualPair = targetActual.substring(2, 4); }
+
+                    if (prediction.topLN.includes(actualPair)) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                    }
+                }
+
+                if (isBreakRequested) break;
+
+                writeAuditLog(`[${sector} - GEN ${generationAttempt}] <b>${ENGINE_SYS_CONFIG.STRATEGY_MODE}</b> | HIT: <span style='color:#2ecc71;'>${successCount}</span> | MISS: <span style='color:#e74c3c;'>${failCount}</span>`);
+
+                if (failCount < globalBestMissCount) {
+                    globalBestMissCount = failCount;
+                    bestHits = successCount;
+                    bestGenFound = generationAttempt;
+                    bestConfigState = JSON.parse(JSON.stringify(ENGINE_SYS_CONFIG));
+                }
+
+                if (failCount <= allowedMiss) {
+                    sectorCompleted = true;
+                    break;
+                }
+
+                if (generationAttempt < ENGINE_SYS_CONFIG.MAX_GENERATIONS) {
+                    mutateAlgorithmStrategy(generationAttempt);
+                    await yieldUI();
+                }
+            }
+
+            // Apply Best Config for this Specific Sector
+            if (bestConfigState) {
+                Object.assign(ENGINE_SYS_CONFIG, bestConfigState);
+                let fullProcessedRows = parseDataTokens(dataTokens);
+                let finalPrediction = executeEngineForSector(fullProcessedRows, sector);
+
+                document.getElementById(`btn-${sector}`).textContent = `${sector} (${finalPrediction.topLN.length} LN)`;
+                document.getElementById(`out-${sector}`).value = finalPrediction.topLN.join('*');
+
+                writeAuditLog(`>> <b>SEKTOR ${sector} SELESAI</b> (Applied Gen: ${bestGenFound} | Miss: ${globalBestMissCount})`);
+            }
+            
+            // Focus Tab automatically on completed sector momentarily
+            switchTab(sector);
+            await yieldUI();
+        }
+
+        if (isBreakRequested) {
+            writeAuditLog(`\n<span style='color:#e74c3c;font-weight:bold;'>PROSES DIHENTIKAN. Formula terbaik masing-masing sektor dipertahankan.</span>`);
+        } else {
+            writeAuditLog(`\n<span style='color:#2ecc71;font-weight:bold;'>KESELURUHAN PROSES LEARNING SELESAI. Silakan cek tab masing-masing.</span>`);
+        }
+
+    } catch (error) {
+        writeAuditLog(`<span style='color:#e74c3c;font-weight:bold;'>ERROR LEARNING: ${error.message}</span>`);
+        console.error("Self-Learning Error:", error);
+    } finally {
+        loadingOverlay.style.display = 'none';
+        switchTab('2DD'); // Reset view to 2DD at the end
+    }
+}
+</script>
+
+</body>
+</html>
