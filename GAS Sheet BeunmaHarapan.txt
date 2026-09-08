@@ -1,0 +1,40 @@
+function doGet(e) {
+  try {
+    var url = "https://suntogel.site/wap";
+    var response = UrlFetchApp.fetch(url);
+    var html = response.getContentText();
+    
+    var blocks = html.split(/class="[^"]*lottery-/i);
+    var dataList = [];
+    
+    for (var i = 1; i < blocks.length; i++) {
+      var block = blocks[i];
+      
+      // Ambil ID
+      var idMatch = block.match(/^(\d+)/);
+      if (!idMatch) continue;
+      var id = idMatch[1]; 
+      
+      // Ambil Nama Ikan
+      var namaMatch = block.match(/<div[^>]*style="[^"]*font-size:\s*18px[^>]*>([^<]+)<\/div>/i);
+      var nama = namaMatch ? namaMatch[1].trim() : "";
+      
+      if (nama) {
+        dataList.push({
+          id: id,
+          nama: nama
+        });
+      }
+    }
+    
+    // Kembalikan data dalam format JSON yang bersih
+    var output = ContentService.createTextOutput(JSON.stringify(dataList));
+    output.setMimeType(ContentService.MimeType.JSON);
+    return output;
+    
+  } catch (error) {
+    var errorOutput = ContentService.createTextOutput(JSON.stringify({ error: error.toString() }));
+    errorOutput.setMimeType(ContentService.MimeType.JSON);
+    return errorOutput;
+  }
+}
