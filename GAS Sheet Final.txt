@@ -1,0 +1,84 @@
+// ==========================================
+// DEKLARASI VARIABEL GLOBAL
+// ==========================================
+var url = "";
+
+
+
+function doGet(e) {
+  try {
+    var url = "https://suntogel.site/wap";
+    var response = UrlFetchApp.fetch(url);
+    var html = response.getContentText();
+    
+    var blocks = html.split(/class="[^"]*lottery-/i);
+    var dataList = [];
+    
+    for (var i = 1; i < blocks.length; i++) {
+      var block = blocks[i];
+      
+      // Ambil ID
+      var idMatch = block.match(/^(\d+)/);
+      if (!idMatch) continue;
+      var id = idMatch[1]; 
+      
+      // Ambil Nama Ikan
+      var namaMatch = block.match(/<div[^>]*style="[^"]*font-size:\s*18px[^>]*>([^<]+)<\/div>/i);
+      var nama = namaMatch ? namaMatch[1].trim() : "";
+      
+      if (nama) {
+        dataList.push({
+          id: id,
+          nama: nama
+        });
+      }
+    }
+    
+    // Kembalikan data dalam format JSON yang bersih
+    var output = ContentService.createTextOutput(JSON.stringify(dataList));
+    output.setMimeType(ContentService.MimeType.JSON);
+    return output;
+    
+  } catch (error) {
+    var errorOutput = ContentService.createTextOutput(JSON.stringify({ error: error.toString() }));
+    errorOutput.setMimeType(ContentService.MimeType.JSON);
+    return errorOutput;
+  }
+}
+
+
+
+// ==========================================
+// 3. FUNGSI AMBIL DATA SUPABASE (OTOMATIS www)
+// ==========================================
+function muatDataSupabase() {
+    try {
+        const response = UrlFetchApp.fetch(
+            'https://qhlutwgdpspukgjelzjw.supabase.co/rest/v1/users_config?select=urlweb1,urlweb2,urlweb3&limit=1',
+            {
+                method: 'GET',
+                headers: {
+                    'apikey': 'sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG',
+                    'Authorization': 'Bearer sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG',
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                muteHttpExceptions: true
+            }
+        );
+
+        const data = JSON.parse(response.getContentText())[0];
+
+        if (data) {
+            // Memastikan pokok1 dan pokok2 otomatis berawalan https://www. 
+            // agar tidak patah saat dipanggil di fungsi bawah.
+            var bersih1 = data.urlweb1 ? data.urlweb1.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] : "";
+            var bersih2 = data.urlweb2 ? data.urlweb2.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] : "";
+            var bersih3 = data.urlweb3 ? data.urlweb3.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] : "";
+
+            url = "https://" + bersih3;
+        }
+    } catch (err) {
+        Logger.log("Error muat data Supabase: " + err.toString());
+    }
+}
