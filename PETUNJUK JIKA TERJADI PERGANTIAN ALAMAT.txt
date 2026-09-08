@@ -5,7 +5,7 @@ ketik perubahan
 lalu klik di luar isian sampai hilang 
 refresh sudah
 
-============================================
+============================================ intro
 Langkah 2: Cara Menjalankan Server Lokal untuk Uji Coba AI
 Setelah Python terinstal, ikuti 3 langkah kilat ini untuk mengetes HTML dan file model Anda di browser laptop:
 
@@ -26,7 +26,18 @@ Selesai! Halaman index.html Anda akan langsung terbuka di browser dan siap meloa
 python -m http.server 8000 --bind 127.0.0.1
 
 http://127.0.0.1:8000](http://127.0.0.1:8000
-=================================================================
+=================================================================intro
+
+
+edit index.html jika suntoto yang berubah
+di awal script bawah
+<script>
+
+// ganti yebi
+  let kodebaruListPicker1 = [];
+  let listPicker1baru = [];
+  var pokokyebi3 = "https://suntotopunya.com";
+
 
 
 
@@ -41,8 +52,8 @@ https://script.google.com/home/projects/148c3R-DirmajPc_lWqyZr1GXx2nnqx8-OvIjLwQ
 // ==========================================
 var pokok1 = "https://www.saatwlatogel88.net";
 var pokok2 = "https://engine2s2.engine4d.com";
-var pokok3 = "https://suntogel.site";
-var pokok4 = "suntogel.site";
+var pokok3 = "https://suntotopunya.com";
+var pokok4 = "suntotopunya.com";
 
 
 
@@ -55,7 +66,7 @@ ini fullnya ganti var url
 
 function doGet(e) {
   try {
-    var url = "https://suntogel.site/wap";
+    var url = "https://suntotopunya.com/wap";
     var response = UrlFetchApp.fetch(url);
     var html = response.getContentText();
     
