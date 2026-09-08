@@ -1,0 +1,99 @@
+ganti data supabase 
+dari github koneknyapass github dan supabase Marga8972
+cara ganti supabase klik aja dua kali cell nya
+ketik perubahan
+lalu klik di luar isian sampai hilang 
+refresh sudah
+
+============================================
+Langkah 2: Cara Menjalankan Server Lokal untuk Uji Coba AI
+Setelah Python terinstal, ikuti 3 langkah kilat ini untuk mengetes HTML dan file model Anda di browser laptop:
+
+Satukan file index.html, webllm.js, dan semua file model (.json & .bin) ke dalam satu folder di laptop Anda.
+
+Buka folder tersebut, lalu klik pada bagian address bar (kolom alamat folder di bagian atas), ketik cmd lalu tekan Enter (ini akan membuka Command Prompt langsung di dalam folder tersebut).
+
+Di jendela hitam (CMD) yang muncul, ketik perintah ini lalu tekan Enter:
+
+Bash
+python -m http.server 8000
+Buka browser laptop Anda (Chrome/Edge), lalu ketik link ini di atas:
+👉 http://localhost:8000
+
+Selesai! Halaman index.html Anda akan langsung terbuka di browser dan siap meload AI secara lokal tanpa terhalang error keamanan (CORS). Gampang kan, Bos? Silakan dicoba!
+
+
+python -m http.server 8000 --bind 127.0.0.1
+
+http://127.0.0.1:8000](http://127.0.0.1:8000
+=================================================================
+
+
+
+
+
+edit GAS utama 
+ini klo mau edit GAS linknya
+https://script.google.com/home/projects/148c3R-DirmajPc_lWqyZr1GXx2nnqx8-OvIjLwQKgc8eshXBZGJxVA3w/edit
+
+// ==========================================
+// DEKLARASI VARIABEL GLOBAL
+// ==========================================
+var pokok1 = "https://www.saatwlatogel88.net";
+var pokok2 = "https://engine2s2.engine4d.com";
+var pokok3 = "https://suntogel.site";
+var pokok4 = "suntogel.site";
+
+
+
+
+khusus perubahan suntoto saja lakukan ini selain yang di atas
+edit gas dari sgeet beunmaharapan
+https://script.google.com/u/0/home/projects/1DpNfX_Cl316Gp-SFMfQZwTInhy3DhtM_7toFFw_VI7ewzCmkttm4cy1D/edit
+
+ini fullnya ganti var url
+
+function doGet(e) {
+  try {
+    var url = "https://suntogel.site/wap";
+    var response = UrlFetchApp.fetch(url);
+    var html = response.getContentText();
+    
+    var blocks = html.split(/class="[^"]*lottery-/i);
+    var dataList = [];
+    
+    for (var i = 1; i < blocks.length; i++) {
+      var block = blocks[i];
+      
+      // Ambil ID
+      var idMatch = block.match(/^(\d+)/);
+      if (!idMatch) continue;
+      var id = idMatch[1]; 
+      
+      // Ambil Nama Ikan
+      var namaMatch = block.match(/<div[^>]*style="[^"]*font-size:\s*18px[^>]*>([^<]+)<\/div>/i);
+      var nama = namaMatch ? namaMatch[1].trim() : "";
+      
+      if (nama) {
+        dataList.push({
+          id: id,
+          nama: nama
+        });
+      }
+    }
+    
+    // Kembalikan data dalam format JSON yang bersih
+    var output = ContentService.createTextOutput(JSON.stringify(dataList));
+    output.setMimeType(ContentService.MimeType.JSON);
+    return output;
+    
+  } catch (error) {
+    var errorOutput = ContentService.createTextOutput(JSON.stringify({ error: error.toString() }));
+    errorOutput.setMimeType(ContentService.MimeType.JSON);
+    return errorOutput;
+  }
+}
+
+
+
+
