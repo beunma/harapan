@@ -1,0 +1,458 @@
+// ============================================================
+// KONFIGURASI SUPABASE DARI GOOGLE SHEET
+//
+// A1 = URL Supabase
+// A2 = Anon Key
+// A3 = Nama Tabel
+// A5 = Trigger ambil data
+//
+// HASIL DATA DIMULAI DARI B1
+// ============================================================
+
+
+// ============================================================
+// AMBIL SEMUA DATA DARI SUPABASE
+// ============================================================
+
+function ambilDataSupabase() {
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  var SUPABASE_URL = sheet.getRange("A1").getValue().toString().trim();
+  var SUPABASE_ANON_KEY = sheet.getRange("A2").getValue().toString().trim();
+  var NAMA_TABEL = sheet.getRange("A3").getValue().toString().trim();
+
+  if (!SUPABASE_URL) {
+    throw new Error("A1 kosong. Masukkan URL Supabase.");
+  }
+
+  if (!SUPABASE_ANON_KEY) {
+    throw new Error("A2 kosong. Masukkan Anon Key.");
+  }
+
+  if (!NAMA_TABEL) {
+    throw new Error("A3 kosong. Masukkan nama tabel.");
+  }
+
+  SUPABASE_URL = SUPABASE_URL.replace(/\/+$/, "");
+
+  var url =
+    SUPABASE_URL +
+    "/rest/v1/" +
+    encodeURIComponent(NAMA_TABEL) +
+    "?select=*";
+
+  var options = {
+    method: "get",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY
+    },
+    muteHttpExceptions: true
+  };
+
+  var response = UrlFetchApp.fetch(url, options);
+
+  var responseCode = response.getResponseCode();
+  var responseText = response.getContentText();
+
+  if (responseCode < 200 || responseCode >= 300) {
+    throw new Error(
+      "Gagal mengambil data Supabase.\n\n" +
+      "HTTP Code: " + responseCode + "\n\n" +
+      responseText
+    );
+  }
+
+  var data = JSON.parse(responseText);
+
+  // Bersihkan hasil lama mulai B1
+  var maxRows = sheet.getMaxRows();
+  var maxColumns = sheet.getMaxColumns();
+
+  if (maxColumns >= 2) {
+    sheet
+      .getRange(1, 2, maxRows, maxColumns - 1)
+      .clearContent();
+  }
+
+  if (!Array.isArray(data) || data.length === 0) {
+
+    sheet.getRange("B1").setValue("Tabel kosong");
+
+    return;
+  }
+
+  // Ambil nama semua kolom
+  var columns = Object.keys(data[0]);
+
+  var output = [];
+
+  // Header
+  output.push(columns);
+
+  // Semua row
+  for (var i = 0; i < data.length; i++) {
+
+    var row = [];
+
+    for (var j = 0; j < columns.length; j++) {
+
+      var value = data[i][columns[j]];
+
+      if (value === null || value === undefined) {
+        value = "";
+      }
+
+      if (typeof value === "object") {
+        value = JSON.stringify(value);
+      }
+
+      row.push(value);
+    }
+
+    output.push(row);
+  }
+
+  // Tulis mulai B1
+  sheet
+    .getRange(
+      1,
+      2,
+      output.length,
+      columns.length
+    )
+    .setValues(output);
+
+  // Header tebal
+  sheet
+    .getRange(
+      1,
+      2,
+      1,
+      columns.length
+    )
+    .setFontWeight("bold");
+
+  Logger.log(
+    "Berhasil mengambil " +
+    data.length +
+    " row dari " +
+    NAMA_TABEL
+  );
+}
+
+
+// ============================================================
+// SIMPAN PERUBAHAN SHEET → SUPABASE
+//
+// B1 = id
+// C1 = created_at
+// D1 dst = kolom lainnya
+//
+// id TIDAK diubah
+// created_at TIDAK diubah
+// ============================================================
+
+function simpanPerubahanSupabase() {
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  var SUPABASE_URL = sheet.getRange("A1").getValue().toString().trim();
+  var SUPABASE_ANON_KEY = sheet.getRange("A2").getValue().toString().trim();
+  var NAMA_TABEL = sheet.getRange("A3").getValue().toString().trim();
+
+  if (!SUPABASE_URL) {
+    throw new Error("A1 kosong. Masukkan URL Supabase.");
+  }
+
+  if (!SUPABASE_ANON_KEY) {
+    throw new Error("A2 kosong. Masukkan Anon Key.");
+  }
+
+  if (!NAMA_TABEL) {
+    throw new Error("A3 kosong. Masukkan nama tabel.");
+  }
+
+  SUPABASE_URL = SUPABASE_URL.replace(/\/+$/, "");
+
+  // ----------------------------------------------------------
+  // BACA DATA SHEET
+  // ----------------------------------------------------------
+
+  var lastRow = sheet.getLastRow();
+  var lastColumn = sheet.getLastColumn();
+
+  if (lastRow < 2 || lastColumn < 2) {
+    throw new Error("Tidak ada data Supabase di Sheet.");
+  }
+
+  var data = sheet
+    .getRange(
+      1,
+      2,
+      lastRow,
+      lastColumn - 1
+    )
+    .getValues();
+
+  // ----------------------------------------------------------
+  // HEADER
+  // ----------------------------------------------------------
+
+  var headers = data[0];
+
+  // Cari posisi kolom id
+  var idIndex = headers.indexOf("id");
+
+  if (idIndex === -1) {
+    throw new Error(
+      "Kolom 'id' tidak ditemukan di Sheet."
+    );
+  }
+
+  // ----------------------------------------------------------
+  // CARI POSISI created_at
+  // ----------------------------------------------------------
+
+  var createdAtIndex = headers.indexOf("created_at");
+
+  var berhasil = 0;
+  var gagal = 0;
+  var hasilGagal = [];
+
+  // ----------------------------------------------------------
+  // PROSES SETIAP ROW
+  // ----------------------------------------------------------
+
+  for (var i = 1; i < data.length; i++) {
+
+    var row = data[i];
+
+    var id = row[idIndex];
+
+    // Lewati baris kosong
+    if (
+      id === "" ||
+      id === null ||
+      id === undefined
+    ) {
+      continue;
+    }
+
+    // --------------------------------------------------------
+    // BUAT OBJECT UPDATE
+    // --------------------------------------------------------
+
+    var updateData = {};
+
+    for (var j = 0; j < headers.length; j++) {
+
+      var namaKolom = headers[j];
+
+      // ID jangan pernah diubah
+      if (namaKolom === "id") {
+        continue;
+      }
+
+      // created_at jangan pernah diubah
+      if (namaKolom === "created_at") {
+        continue;
+      }
+
+      var nilai = row[j];
+
+      // Google Sheet kosong → null
+      if (nilai === "") {
+        nilai = null;
+      }
+
+      // Jika Date object
+      if (nilai instanceof Date) {
+        nilai = Utilities.formatDate(
+          nilai,
+          "UTC",
+          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        );
+      }
+
+      updateData[namaKolom] = nilai;
+    }
+
+    // --------------------------------------------------------
+    // URL UPDATE
+    // --------------------------------------------------------
+
+    var updateUrl =
+      SUPABASE_URL +
+      "/rest/v1/" +
+      encodeURIComponent(NAMA_TABEL) +
+      "?id=eq." +
+      encodeURIComponent(id);
+
+    // --------------------------------------------------------
+    // REQUEST PATCH
+    // --------------------------------------------------------
+
+    var options = {
+      method: "patch",
+
+      contentType: "application/json",
+
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+        "Prefer": "return=minimal"
+      },
+
+      payload: JSON.stringify(updateData),
+
+      muteHttpExceptions: true
+    };
+
+    try {
+
+      var response = UrlFetchApp.fetch(
+        updateUrl,
+        options
+      );
+
+      var code = response.getResponseCode();
+
+      if (code >= 200 && code < 300) {
+
+        berhasil++;
+
+      } else {
+
+        gagal++;
+
+        hasilGagal.push(
+          "ID " + id +
+          " → HTTP " + code +
+          " → " +
+          response.getContentText()
+        );
+      }
+
+    } catch (err) {
+
+      gagal++;
+
+      hasilGagal.push(
+        "ID " + id +
+        " → " +
+        err.message
+      );
+    }
+  }
+
+ // ----------------------------------------------------------
+// HASIL
+// ----------------------------------------------------------
+
+var pesan =
+  "Selesai.\n\n" +
+  "Berhasil: " + berhasil + " row\n" +
+  "Gagal: " + gagal + " row";
+
+if (hasilGagal.length > 0) {
+  pesan +=
+    "\n\nDetail error:\n" +
+    hasilGagal.join("\n");
+}
+
+// Tampilkan popup di laptop/desktop
+//SpreadsheetApp.getUi().alert(pesan);
+
+// Tulis hasil yang sama ke A10
+SpreadsheetApp.getActiveSpreadsheet()
+  .getActiveSheet()
+  .getRange("A10")
+  .setValue(pesan);
+
+Logger.log(pesan);
+
+}
+
+// ============================================================
+// TRIGGER A5
+//
+// Jika A5 diubah langsung dari Google Sheet,
+// otomatis ambil data Supabase.
+// ============================================================
+
+function triggerA5(e) {
+
+  if (!e || !e.range) {
+    return;
+  }
+
+  var range = e.range;
+
+  // Hanya A5
+  if (range.getA1Notation() !== "A5") {
+    return;
+  }
+
+  ambilDataSupabase();
+}
+
+
+// ============================================================
+// BUAT INSTALLABLE TRIGGER A5
+//
+// JALANKAN SATU KALI SAJA
+// ============================================================
+
+function buatTriggerA5() {
+
+  var triggers =
+    ScriptApp.getProjectTriggers();
+
+  // Hapus trigger A5 yang lama
+  for (var i = 0; i < triggers.length; i++) {
+
+    if (
+      triggers[i].getHandlerFunction() ===
+      "triggerA5"
+    ) {
+
+      ScriptApp.deleteTrigger(
+        triggers[i]
+      );
+    }
+  }
+
+  // Buat trigger baru
+  ScriptApp.newTrigger("triggerA5")
+    .forSpreadsheet(
+      SpreadsheetApp.getActive()
+    )
+    .onEdit()
+    .create();
+
+  Logger.log(
+    "Trigger A5 berhasil dibuat."
+  );
+}
+
+
+// ============================================================
+// MENU SUPABASE
+// ============================================================
+
+function onOpen() {
+
+  SpreadsheetApp.getUi()
+    .createMenu("Supabase")
+    .addItem(
+      "Ambil Data dari Supabase",
+      "ambilDataSupabase"
+    )
+    .addItem(
+      "Simpan Perubahan ke Supabase",
+      "simpanPerubahanSupabase"
+    )
+    .addToUi();
+}

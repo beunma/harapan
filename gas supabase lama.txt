@@ -1,0 +1,281 @@
+
+// ============================================================
+// AMBIL SEMUA DATA SUPABASE KE GOOGLE SHEET
+//
+// A1 = URL Supabase
+// A2 = Anon Key
+// A3 = Nama Tabel
+//
+// HASIL:
+// B1, C1, D1 ... = nama kolom
+// B2, C2, D2 ... = row pertama
+// B3, C3, D3 ... = row kedua
+// dst.
+// ============================================================
+
+function ambilDataSupabase() {
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  // ----------------------------------------------------------
+  // BACA KONFIGURASI DARI SHEET
+  // ----------------------------------------------------------
+
+  var SUPABASE_URL = sheet.getRange("A1").getValue().toString().trim();
+  var SUPABASE_ANON_KEY = sheet.getRange("A2").getValue().toString().trim();
+  var NAMA_TABEL = sheet.getRange("A3").getValue().toString().trim();
+
+  // ----------------------------------------------------------
+  // CEK KONFIGURASI
+  // ----------------------------------------------------------
+
+  if (!SUPABASE_URL) {
+    throw new Error("A1 kosong. Masukkan URL Supabase.");
+  }
+
+  if (!SUPABASE_ANON_KEY) {
+    throw new Error("A2 kosong. Masukkan Supabase Anon Key.");
+  }
+
+  if (!NAMA_TABEL) {
+    throw new Error("A3 kosong. Masukkan nama tabel Supabase.");
+  }
+
+  // Hilangkan / di belakang URL jika ada
+  SUPABASE_URL = SUPABASE_URL.replace(/\/+$/, "");
+
+  // ----------------------------------------------------------
+  // URL REST API SUPABASE
+  // ----------------------------------------------------------
+
+  var url =
+    SUPABASE_URL +
+    "/rest/v1/" +
+    encodeURIComponent(NAMA_TABEL) +
+    "?select=*";
+
+  // ----------------------------------------------------------
+  // HEADER REQUEST
+  // ----------------------------------------------------------
+
+  var options = {
+    method: "get",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY
+    },
+    muteHttpExceptions: true
+  };
+
+  // ----------------------------------------------------------
+  // REQUEST KE SUPABASE
+  // ----------------------------------------------------------
+
+  var response = UrlFetchApp.fetch(url, options);
+
+  var responseCode = response.getResponseCode();
+  var responseText = response.getContentText();
+
+  // ----------------------------------------------------------
+  // CEK RESPONSE
+  // ----------------------------------------------------------
+
+  if (responseCode < 200 || responseCode >= 300) {
+
+    throw new Error(
+      "Supabase error.\n\n" +
+      "HTTP Code: " + responseCode + "\n\n" +
+      responseText
+    );
+  }
+
+  // ----------------------------------------------------------
+  // PARSE JSON
+  // ----------------------------------------------------------
+
+  var data = JSON.parse(responseText);
+
+  if (!Array.isArray(data)) {
+    throw new Error(
+      "Response Supabase bukan array data.\n\n" +
+      responseText
+    );
+  }
+
+  // ----------------------------------------------------------
+  // BERSIHKAN HASIL LAMA
+  // Mulai dari kolom B
+  // ----------------------------------------------------------
+
+  var maxRows = sheet.getMaxRows();
+  var maxColumns = sheet.getMaxColumns();
+
+  if (maxColumns >= 2) {
+
+    sheet
+      .getRange(
+        1,
+        2,
+        maxRows,
+        maxColumns - 1
+      )
+      .clearContent();
+  }
+
+  // ----------------------------------------------------------
+  // JIKA TABEL KOSONG
+  // ----------------------------------------------------------
+
+  if (data.length === 0) {
+
+    sheet.getRange("B1").setValue("Tabel kosong");
+
+    Logger.log("Tabel Supabase kosong.");
+
+    return;
+  }
+
+  // ----------------------------------------------------------
+  // AMBIL SEMUA NAMA KOLOM
+  // Berdasarkan row pertama
+  // ----------------------------------------------------------
+
+  var columns = Object.keys(data[0]);
+
+  // ----------------------------------------------------------
+  // HEADER
+  // ----------------------------------------------------------
+
+  var output = [];
+
+  output.push(columns);
+
+  // ----------------------------------------------------------
+  // DATA ROW
+  // ----------------------------------------------------------
+
+  for (var i = 0; i < data.length; i++) {
+
+    var row = [];
+
+    for (var j = 0; j < columns.length; j++) {
+
+      var value = data[i][columns[j]];
+
+      // Jika null, jadikan kosong
+      if (value === null || value === undefined) {
+        value = "";
+      }
+
+      // Jika object/array, ubah menjadi JSON string
+      if (typeof value === "object") {
+        value = JSON.stringify(value);
+      }
+
+      row.push(value);
+    }
+
+    output.push(row);
+  }
+
+  // ----------------------------------------------------------
+  // TULIS SEKALIGUS KE SHEET
+  // Mulai B1
+  // ----------------------------------------------------------
+
+  sheet
+    .getRange(
+      1,
+      2,
+      output.length,
+      columns.length
+    )
+    .setValues(output);
+
+  // ----------------------------------------------------------
+  // FORMAT HEADER
+  // ----------------------------------------------------------
+
+  sheet
+    .getRange(
+      1,
+      2,
+      1,
+      columns.length
+    )
+    .setFontWeight("bold");
+
+  // ----------------------------------------------------------
+  // LOG
+  // ----------------------------------------------------------
+
+  Logger.log(
+    "Berhasil mengambil " +
+    data.length +
+    " row dari tabel " +
+    NAMA_TABEL
+  );
+}
+
+
+// ============================================================
+// MENU OTOMATIS DI GOOGLE SHEET
+// ============================================================
+
+function onOpen() {
+
+  SpreadsheetApp.getUi()
+    .createMenu("Supabase")
+    .addItem("Ambil Semua Data", "ambilDataSupabase")
+    .addToUi();
+}
+
+
+
+// ============================================================
+// TRIGGER A5
+// Jika nilai A5 berubah, otomatis ambil data dari Supabase
+// ============================================================
+
+function triggerA5(e) {
+
+  // Pastikan event berasal dari sheet
+  if (!e || !e.range) return;
+
+  var range = e.range;
+  var sheet = range.getSheet();
+
+  // Hanya bekerja jika yang diedit adalah A5
+  if (range.getA1Notation() !== "A5") return;
+
+  // Jalankan pengambilan data Supabase
+  ambilDataSupabase();
+}
+
+
+// ============================================================
+// BUAT INSTALLABLE TRIGGER
+// Jalankan fungsi ini SATU KALI dari Apps Script
+// ============================================================
+
+function buatTriggerA5() {
+
+  // Hapus trigger lama untuk mencegah dobel
+  var triggers = ScriptApp.getProjectTriggers();
+
+  for (var i = 0; i < triggers.length; i++) {
+
+    if (triggers[i].getHandlerFunction() === "triggerA5") {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+
+  // Buat trigger baru
+  ScriptApp.newTrigger("triggerA5")
+    .forSpreadsheet(SpreadsheetApp.getActive())
+    .onEdit()
+    .create();
+
+  Logger.log("Trigger A5 berhasil dibuat.");
+}
+
