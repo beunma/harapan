@@ -26,9 +26,16 @@ Selesai! Halaman index.html Anda akan langsung terbuka di browser dan siap meloa
 python -m http.server 8000 --bind 127.0.0.1
 
 http://127.0.0.1:8000](http://127.0.0.1:8000
+
+
+my sql di supabase
+
+SELECT user_html, pass_html, urlweb1, urlweb2, urlweb3
+FROM users_config
+LIMIT 1;
 =================================================================intro
 
-
+sementar kayaknya sdh saya perbaiki gas utama gas sheet dan index cuma ini klo error lakukan hal ini
 edit index.html jika suntoto yang berubah
 di awal script bawah
 <script>
@@ -43,7 +50,7 @@ di awal script bawah
 
 
 
-edit GAS utama 
+edit GAS utama pakai gas yg 7 september tpi ini juka ada erro aaja gagal memuat sebab gs terbaru sdh bs handle perubahan sun
 ini klo mau edit GAS linknya
 https://script.google.com/home/projects/148c3R-DirmajPc_lWqyZr1GXx2nnqx8-OvIjLwQKgc8eshXBZGJxVA3w/edit
 

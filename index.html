@@ -4,18 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harapan adalah Kehidupan</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         body {
@@ -158,7 +147,6 @@
             display: none;
         }
 
-        /* CSS TOMBOL FRAME */
         .row-buttons {
             display: flex;
             gap: 5px;
@@ -181,10 +169,6 @@
         .btn-frame:hover {
             background: #5b4bc4;
         }
-
-        /* ==========================================
-           CSS MEM-BIDIK WEB TARGET
-           ========================================== */
 
         .bidik-box {
             background: #2a2a2a;
@@ -223,7 +207,6 @@
             box-sizing: border-box;
         }
 
-        /* BARIS TOMBOL RESET POJOK KANAN */
         .bidik-action-row {
             display: flex;
             justify-content: flex-end;
@@ -319,9 +302,6 @@
             min-height: 16px;
         }
 
-        /* ==========================================
-           OVERLAY PROGRESS LOCK (ANIMASI SANGAT AMAN)
-           ========================================== */
         #global-overlay {
             display: none;
             position: fixed;
@@ -359,7 +339,6 @@
 
 <body>
 
-<!-- OVERLAY LOCK UNTUK NOTIFIKASI PROGRESS -->
 <div id="global-overlay">
     <div class="spinner-ring"></div>
     <div id="overlay-text">Memproses Data...</div>
@@ -367,65 +346,39 @@
 
 <div class="container">
 
-    <!-- =========================
-         LOGIN
-         ========================= -->
     <div id="login-area">
 
         <h2>Halaman Login</h2>
 
         <div class="form-group">
             <label>Username</label>
-            <input
-                type="text"
-                id="input-user"
-                placeholder="Masukkan username">
+            <input type="text" id="input-user" placeholder="Masukkan username">
         </div>
 
         <div class="form-group">
             <label>Password</label>
-            <input
-                type="password"
-                id="input-pass"
-                placeholder="Masukkan password">
+            <input type="password" id="input-pass" placeholder="Masukkan password">
         </div>
 
-        <button
-            class="btn"
-            onclick="prosesLoginHtml()">
+        <button class="btn" onclick="prosesLoginHtml()">
             Masuk
         </button>
 
-        <div
-            id="login-error"
-            class="error-msg">
-        </div>
+        <div id="login-error" class="error-msg"></div>
 
     </div>
 
-
-    <!-- =========================
-         DASHBOARD
-         ========================= -->
     <div id="dashboard-area">
 
-        <!-- =========================
-             WEB TARGET 1
-             ========================= -->
-        <div
-            class="card-target"
-            id="box-web1">
+        <div class="card-target" id="box-web1">
 
-            <div
-                style="font-weight: bold; margin-bottom: 8px; color: #fff;">
+            <div style="font-weight: bold; margin-bottom: 8px; color: #fff;">
                 Web Target 1
             </div>
 
             <div>
                 Saldo:
-                <span
-                    id="saldo-web1"
-                    class="saldo-text">
+                <span id="saldo-web1" class="saldo-text">
                     Belum dicek
                 </span>
             </div>
@@ -440,24 +393,15 @@
 
         </div>
 
+        <div class="card-target" id="box-web2">
 
-        <!-- =========================
-             WEB TARGET 2
-             ========================= -->
-        <div
-            class="card-target"
-            id="box-web2">
-
-            <div
-                style="font-weight: bold; margin-bottom: 8px; color: #fff;">
+            <div style="font-weight: bold; margin-bottom: 8px; color: #fff;">
                 Web Target 2
             </div>
 
             <div>
                 Saldo:
-                <span
-                    id="saldo-web2"
-                    class="saldo-text">
+                <span id="saldo-web2" class="saldo-text">
                     Belum dicek
                 </span>
             </div>
@@ -472,16 +416,9 @@
 
         </div>
 
+        <div class="spinner-box" id="box-spinner">
 
-        <!-- =========================
-             PENGUJIAN SPINNER
-             ========================= -->
-        <div
-            class="spinner-box"
-            id="box-spinner">
-
-            <div
-                style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
                 Pengujian Spinner
             </div>
 
@@ -492,18 +429,13 @@
                 Ambil Data
             </button>
 
-
-            <div
-                id="spinner-pasaran-container"
-                style="margin-bottom: 10px;">
+            <div id="spinner-pasaran-container" style="margin-bottom: 10px;">
 
                 <label for="spinner-pasaran">
                     Spinner Utama:
                 </label>
 
-                <select
-                    id="spinner-pasaran"
-                    onchange="onSpinnerUtamaChange()">
+                <select id="spinner-pasaran" onchange="onSpinnerUtamaChange()">
 
                     <option value="">
                         -- Klik 'Ambil Data' dulu --
@@ -512,7 +444,6 @@
                 </select>
 
             </div>
-
 
             <div id="spinner-user-container">
 
@@ -520,9 +451,7 @@
                     Spinner User:
                 </label>
 
-                <select
-                    id="spinner-user"
-                    onchange="onSpinnerUserChange()">
+                <select id="spinner-user" onchange="onSpinnerUserChange()">
 
                     <option value="">
                         -- Klik 'Ambil Data' dulu --
@@ -532,27 +461,19 @@
 
             </div>
 
-
-            <!-- URL DI-HIDE -->
-            <div
-                style="margin-top: 12px; display: none;">
+            <div style="margin-top: 12px; display: none;">
 
                 <label>
                     Alamat URL Terpilih (List Picker Selection):
                 </label>
 
-                <div
-                    id="label-url"
-                    class="url-label">
+                <div id="label-url" class="url-label">
                     Alamat URL akan muncul di sini...
                 </div>
 
             </div>
 
-
-            <!-- HASIL RESULT -->
-            <div
-                style="margin-top: 15px; background: #222; padding: 10px; border-radius: 6px; border: 1px solid #444;">
+            <div style="margin-top: 15px; background: #222; padding: 10px; border-radius: 6px; border: 1px solid #444;">
 
                 <button
                     class="btn btn-success"
@@ -565,8 +486,7 @@
                     Urutan Terlama ke Terbaru:
                 </label>
 
-                <div
-                    style="display: flex; gap: 8px; align-items: stretch; margin-top: 5px;">
+                <div style="display: flex; gap: 8px; align-items: stretch; margin-top: 5px;">
 
                     <textarea
                         id="input-hasil-result"
@@ -587,89 +507,31 @@
 
         </div>
 
+        <div class="spinner-box" id="box-iframe">
 
-        <!-- =========================
-             PERALATAN DAN FRAME
-             ========================= -->
-        <div
-            class="spinner-box"
-            id="box-iframe">
-
-            <div
-                style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
                 Peralatan dan Frame
             </div>
 
-
             <div class="row-buttons">
 
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('rm1.html')">
-                    RM1
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('jos2.html')">
-                    JOS
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('top.html')">
-                    TOP
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('vip.html')">
-                    VIP
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('tekstool.html')">
-                    TL3
-                </button>
+                <button class="btn-frame" onclick="loadIframe('rm1.html')">RM1</button>
+                <button class="btn-frame" onclick="loadIframe('jos2.html')">JOS</button>
+                <button class="btn-frame" onclick="loadIframe('top.html')">TOP</button>
+                <button class="btn-frame" onclick="loadIframe('vip.html')">VIP</button>
+                <button class="btn-frame" onclick="loadIframe('tekstool.html')">TL3</button>
 
             </div>
 
-
             <div class="row-buttons">
 
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('vc.html')">
-                    VC
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('rk2.html')">
-                    RK2
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('rk3.html')">
-                    RK3
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('tl1.html')">
-                    TL1
-                </button>
-
-                <button
-                    class="btn-frame"
-                    onclick="loadIframe('tl2.html')">
-                    TL2
-                </button>
+                <button class="btn-frame" onclick="loadIframe('vc.html')">VC</button>
+                <button class="btn-frame" onclick="loadIframe('rk2.html')">RK2</button>
+                <button class="btn-frame" onclick="loadIframe('rk3.html')">RK3</button>
+                <button class="btn-frame" onclick="loadIframe('tl1.html')">TL1</button>
+                <button class="btn-frame" onclick="loadIframe('tl2.html')">TL2</button>
 
             </div>
-
 
             <iframe
                 id="content-iframe"
@@ -679,28 +541,16 @@
 
         </div>
 
-
-        <!-- =====================================================
-             MEM-BIDIK WEB TARGET 1
-             ===================================================== -->
-        <div
-            class="bidik-box"
-            id="box-bidik-web1">
+        <div class="bidik-box" id="box-bidik-web1">
 
             <div class="bidik-title">
                 Mem-bidik Web Target 1
             </div>
 
-
-            <!-- JUMLAH LINE -->
-            <div
-                id="jumlah-line-web1"
-                class="jumlah-line">
+            <div id="jumlah-line-web1" class="jumlah-line">
                 Jumlah Line : 0
             </div>
 
-
-            <!-- TEXT AREA & TOMBOL RESET TARGET 1 -->
             <textarea
                 id="input-bidik-web1"
                 class="bidik-textarea"
@@ -722,19 +572,11 @@ atau:
                 </button>
             </div>
 
+            <div id="status-bidik-web1" class="bidik-status"></div>
 
-            <div
-                id="status-bidik-web1"
-                class="bidik-status">
-            </div>
-
-
-            <!-- HASIL + NILAI -->
             <div class="bidik-calc-row">
 
-                <div
-                    id="hasil-kalkulasi-web1"
-                    class="bidik-hasil">
+                <div id="hasil-kalkulasi-web1" class="bidik-hasil">
                     0
                 </div>
 
@@ -753,8 +595,6 @@ atau:
 
             </div>
 
-
-            <!-- BUTTON 2D 2T 2B 3D 3B -->
             <div class="bidik-buttons">
 
                 <button
@@ -801,61 +641,23 @@ atau:
 
         </div>
 
-
-        <!-- =====================================================
-             MEM-BIDIK WEB TARGET 2
-             ===================================================== -->
-        <div
-            class="bidik-box"
-            id="box-bidik-web2">
+        <div class="bidik-box" id="box-bidik-web2">
 
             <div class="bidik-title">
                 Mem-bidik Web Target 2
             </div>
-			
-		
-<select id="spinnerBos" onchange="sinkronkanData()" style="padding: 5px; font-size: 16px;">
-    <option value="">Memuat data...</option>
-</select>
 
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+            <select
+                id="spinnerBos"
+                onchange="sinkronkanData()"
+                style="padding: 5px; font-size: 16px;">
+                <option value="">Memuat data...</option>
+            </select>
 
-
-            <!-- JUMLAH LINE -->
-            <div
-                id="jumlah-line-web2"
-                class="jumlah-line">
+            <div id="jumlah-line-web2" class="jumlah-line">
                 Jumlah Line : 0
             </div>
 
-
-            <!-- TEXT AREA & TOMBOL RESET TARGET 2 -->
             <textarea
                 id="input-bidik-web2"
                 class="bidik-textarea"
@@ -877,19 +679,11 @@ atau:
                 </button>
             </div>
 
+            <div id="status-bidik-web2" class="bidik-status"></div>
 
-            <div
-                id="status-bidik-web2"
-                class="bidik-status">
-            </div>
-
-
-            <!-- HASIL + NILAI -->
             <div class="bidik-calc-row">
 
-                <div
-                    id="hasil-kalkulasi-web2"
-                    class="bidik-hasil">
+                <div id="hasil-kalkulasi-web2" class="bidik-hasil">
                     0
                 </div>
 
@@ -908,8 +702,6 @@ atau:
 
             </div>
 
-
-            <!-- BUTTON 2D 2T 2B 3D 3B -->
             <div class="bidik-buttons">
 
                 <button
@@ -919,7 +711,6 @@ atau:
                     onclick="aksiTombolBaru2D()">
                     2D
                 </button>
-			
 
                 <button
                     id="btn-2t-web2"
@@ -957,2069 +748,2346 @@ atau:
 
         </div>
 
-    <br><br>
+        <br><br>
 
-
-		
-<!-- TEMPAT LABEL -->		
-	<div id="containerLabelUrl" style="display: none;"margin: 10px 0; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; font-family: sans-serif;">
-	    <div style="margin-bottom: 4px;"><strong>URL 1:</strong> <span id="labelurl1">Loading...</span></div>
-	    <div style="margin-bottom: 4px;"><strong>URL 2:</strong> <span id="labelurl2">Loading...</span></div>
-	    <div><strong>URL 3:</strong> <span id="labelurl3">Loading...</span></div>
-	</div>		
-		
-		
-		
-		
-		
-    <!-- <div id="labelHasil" style="font-size: 18px; font-weight: bold; color: blue;"></div> 		-->	
-	<div id="labelHasil" style="display: none;"></div>	
-		
-		
-	<!-- <div id="cekiddarisheet" style="font-size: 18px; font-weight: bold; color: blue;"></div> 	-->		
-	<div id="cekiddarisheet" style="display: none;"></div>		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
-
-        <!-- LOADER -->
         <div
-            id="loader"
-            class="loader">
+            id="containerLabelUrl"
+            style="display: none; margin: 10px 0; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; font-family: sans-serif;">
+
+            <div style="margin-bottom: 4px;">
+                <strong>URL 1:</strong>
+                <span id="labelurl1">Loading...</span>
+            </div>
+
+            <div style="margin-bottom: 4px;">
+                <strong>URL 2:</strong>
+                <span id="labelurl2">Loading...</span>
+            </div>
+
+            <div>
+                <strong>URL 3:</strong>
+                <span id="labelurl3">Loading...</span>
+            </div>
+
+        </div>
+		
+		
+<!--
+        <div
+            id="labelHasil"
+            style="font-size: 18px; font-weight: bold; color: blue;">
+        </div>
+
+        <div
+            id="cekiddarisheet"
+            style="font-size: 18px; font-weight: bold; color: blue;">
+        </div>
+-->		
+		
+<!-- Style lama untuk debugging:
+style="font-size: 18px; font-weight: bold; color: blue;"
+-->
+
+<div
+    id="labelHasil"
+    style="display: none;">
+</div>
+
+<!-- Style lama untuk debugging:
+style="font-size: 18px; font-weight: bold; color: blue;"
+-->
+
+<div
+    id="cekiddarisheet"
+    style="display: none;">
+</div>		
+		
+		
+		
+		
+		
+		
+		
+
+        <div id="loader" class="loader">
             Sedang memproses request...
         </div>
 
     </div>
 </div>
 
-
 <script>
 
-// ganti yebi
-  let kodebaruListPicker1 = [];
-  let listPicker1baru = [];
-  var pokokyebi3 = "https://suntotopunya.com";
+let kodebaruListPicker1 = [];
+let listPicker1baru = [];
 
-  (async function kodebaruAmbilDataOtomatis() {
-    // PASTIKAN URL DI BAWAH INI SUDAH DIGANTI DENGAN LINK /EXEC ANDA
-    const kodebaruWebAppUrl = "https://script.google.com/macros/s/AKfycbxk63U-hKpBppFotnnzmnjvwXp5C803DKhZaqiXw9_PoL9Yu205ZIDcH18B5ayHqZi7hA/exec"; 
+/*
+ * =========================================================
+ * PERUBAHAN UTAMA
+ * =========================================================
+ *
+ * Jangan lagi hardcode:
+ *
+ * var pokokyebi3 = "https://suntotopunya.com";
+ *
+ * Nilai akan diisi otomatis dari urlweb3 Supabase.
+ */
+var pokokyebi3 = "";
 
-    let kodebaruSelectTag = document.getElementById("spinnerBos");
+
+(async function kodebaruAmbilDataOtomatis() {
+
+    const kodebaruWebAppUrl =
+        "https://script.google.com/macros/s/AKfycbxk63U-hKpBppFotnnzmnjvwXp5C803DKhZaqiXw9_PoL9Yu205ZIDcH18B5ayHqZi7hA/exec";
+
+    let kodebaruSelectTag =
+        document.getElementById("spinnerBos");
 
     try {
-      // Jika URL masih placeholder bawaan, jangan dijalankan agar tidak error macet
-      if (kodebaruWebAppUrl.includes("URL_WEB_APP_ANDA_DISINI")) {
-        console.warn("URL Web App belum diganti!");
-        if (kodebaruSelectTag) {
-          kodebaruSelectTag.innerHTML = '<option value="">URL Belum Dipasang!</option>';
-        }
-        return;
-      }
 
-      let response = await fetch(kodebaruWebAppUrl);
-      let kodebaruDataIkan = await response.json();
+        if (kodebaruWebAppUrl.includes("URL_WEB_APP_ANDA_DISINI")) {
 
-      if (kodebaruSelectTag) {
-        kodebaruSelectTag.innerHTML = '<option value="">PILIH PASARIKAN</option>';
-		kodebaruListPicker1 = []; 
+            console.warn("URL Web App belum diganti!");
 
-        kodebaruDataIkan.forEach((item, index) => {
-          let option = document.createElement("option");
-          option.value = index; 
-          option.textContent = item.nama; 
-          kodebaruSelectTag.appendChild(option);
-
-          kodebaruListPicker1.push(item.id);
-		  listPicker1baru.push(item.id);
-        });
-        console.log("Data sukses dimuat:", kodebaruListPicker1);
-		document.getElementById("cekiddarisheet").textContent ="ID dari Sheet: " + listPicker1baru.join(", ");
-		//document.getElementById("cekiddarisheet").textContent ="ID dari Sheet: " + ["999", ...listPicker1baru].join(", ");
-  
-  console.log("listPicker1baru =", listPicker1baru);
-  listPicker1 = listPicker1baru;
-  console.log("listPicker1 =", listPicker1);
-  
-  
-      }
-    } catch (error) {
-      console.error("Gagal memuat data:", error);
-      if (kodebaruSelectTag) {
-        kodebaruSelectTag.innerHTML = '<option value="">Gagal Memuat Data</option>';
-      }
-    }
-  })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /* =========================================================
-       DATA KONFIGURASI DISKON
-       ========================================================= */
-
-    const DATADISKONWEB1 = "29.59";
-    const DATADISKONWEB2 = "29.59";
-
-
-    /* =========================================================
-       KONFIGURASI SUPABASE
-       ========================================================= */
-
-    const SUPABASE_URL =
-        'https://qhlutwgdpspukgjelzjw.supabase.co';
-
-    const SUPABASE_ANON_KEY =
-        'sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG';
-
-    const GAS_PROXY_URL =
-        'https://script.google.com/macros/s/AKfycbwtZ8k3nfRitPOoJD_0UoEvtg6ScD0dfn51XGkE0UusrKVW_oDrp0A7FitoD_3ZuPcszQ/exec';
-
-
-    const supabaseClient =
-        supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
-        );
-
-
-    let sesiAktif = null;
-    let listPickerData = [];
-
-
-    /* =========================================================
-       FUNGSI KONTROL OVERLAY PROGRESS LOCK
-       ========================================================= */
-
-    function showProgress(pesanText) {
-        const overlay = document.getElementById('global-overlay');
-        const txt = document.getElementById('overlay-text');
-        txt.innerText = pesanText || "Sedang Memproses...";
-        overlay.style.display = 'flex';
-    }
-
-    function hideProgress() {
-        document.getElementById('global-overlay').style.display = 'none';
-    }
-
-
-    /* =========================================================
-       LOGIN
-       ========================================================= */
-
-    async function prosesLoginHtml() {
-
-        const uInput =
-            document.getElementById('input-user').value.trim();
-
-        const pInput =
-            document.getElementById('input-pass').value.trim();
-
-        const errBox =
-            document.getElementById('login-error');
-
-
-        if (!uInput || !pInput) {
-
-            errBox.innerText =
-                "Username dan Password tidak boleh kosong!";
+            if (kodebaruSelectTag) {
+                kodebaruSelectTag.innerHTML =
+                    '<option value="">URL Belum Dipasang!</option>';
+            }
 
             return;
         }
 
+        let response =
+            await fetch(kodebaruWebAppUrl);
+
+        let kodebaruDataIkan =
+            await response.json();
+
+        if (kodebaruSelectTag) {
+
+            kodebaruSelectTag.innerHTML =
+                '<option value="">PILIH PASARIKAN</option>';
+
+            kodebaruListPicker1 = [];
+            listPicker1baru = [];
+
+            kodebaruDataIkan.forEach((item, index) => {
+
+                let option =
+                    document.createElement("option");
+
+                option.value = index;
+                option.textContent = item.nama;
+
+                kodebaruSelectTag.appendChild(option);
+
+                kodebaruListPicker1.push(item.id);
+                listPicker1baru.push(item.id);
+            });
+
+            console.log(
+                "Data sukses dimuat:",
+                kodebaruListPicker1
+            );
+
+            document.getElementById(
+                "cekiddarisheet"
+            ).textContent =
+                "ID dari Sheet: " +
+                listPicker1baru.join(", ");
+
+            console.log(
+                "listPicker1baru =",
+                listPicker1baru
+            );
+
+            listPicker1 = listPicker1baru;
+
+            console.log(
+                "listPicker1 =",
+                listPicker1
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Gagal memuat data:",
+            error
+        );
+
+        if (kodebaruSelectTag) {
+
+            kodebaruSelectTag.innerHTML =
+                '<option value="">Gagal Memuat Data</option>';
+        }
+    }
+
+})();
+
+
+/* =========================================================
+   DATA KONFIGURASI DISKON
+   ========================================================= */
+
+const DATADISKONWEB1 = "29.59";
+const DATADISKONWEB2 = "29.59";
+
+
+/* =========================================================
+   KONFIGURASI SUPABASE
+   ========================================================= */
+
+const SUPABASE_URL =
+    'https://qhlutwgdpspukgjelzjw.supabase.co';
+
+const SUPABASE_ANON_KEY =
+    'sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG';
+
+const GAS_PROXY_URL =
+    'https://script.google.com/macros/s/AKfycbwtZ8k3nfRitPOoJD_0UoEvtg6ScD0dfn51XGkE0UusrKVW_oDrp0A7FitoD_3ZuPcszQ/exec';
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+let sesiAktif = null;
+let listPickerData = [];
+
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+function showProgress(pesanText) {
+
+    const overlay =
+        document.getElementById('global-overlay');
+
+    const txt =
+        document.getElementById('overlay-text');
+
+    txt.innerText =
+        pesanText || "Sedang Memproses...";
+
+    overlay.style.display = 'flex';
+}
+
+
+function hideProgress() {
+
+    document.getElementById(
+        'global-overlay'
+    ).style.display = 'none';
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+async function prosesLoginHtml() {
+
+    const uInput =
+        document.getElementById('input-user').value.trim();
+
+    const pInput =
+        document.getElementById('input-pass').value.trim();
+
+    const errBox =
+        document.getElementById('login-error');
+
+    if (!uInput || !pInput) {
 
         errBox.innerText =
-            "Memeriksa kredensial...";
+            "Username dan Password tidak boleh kosong!";
 
+        return;
+    }
 
-        try {
+    errBox.innerText =
+        "Memeriksa kredensial...";
 
-            let { data, error } =
-                await supabaseClient
-                    .from('users_config')
-                    .select('*')
-                    .eq('user_html', uInput)
-                    .eq('pass_html', pInput)
-                    .limit(1);
+    try {
 
+        let { data, error } =
+            await supabaseClient
+                .from('users_config')
+                .select('*')
+                .eq('user_html', uInput)
+                .eq('pass_html', pInput)
+                .limit(1);
 
-            if (error) throw error;
+        if (error) throw error;
 
+        if (data && data.length > 0) {
 
-            if (data && data.length > 0) {
+            sesiAktif = data[0];
 
-                sesiAktif = data[0];
+            if (
+                !sesiAktif.urlweb1 ||
+                !sesiAktif.urlweb2 ||
+                !sesiAktif.urlweb3
+            ) {
 
+                let { data: masterData } =
+                    await supabaseClient
+                        .from('users_config')
+                        .select('*')
+                        .limit(1);
 
                 if (
-                    !sesiAktif.urlweb1 ||
-                    !sesiAktif.urlweb2 ||
-                    !sesiAktif.urlweb3
+                    masterData &&
+                    masterData.length > 0
                 ) {
 
-                    let { data: masterData } =
-                        await supabaseClient
-                            .from('users_config')
-                            .select('*')
-                            .limit(1);
+                    if (!sesiAktif.urlweb1)
+                        sesiAktif.urlweb1 =
+                            masterData[0].urlweb1;
 
+                    if (!sesiAktif.urlweb2)
+                        sesiAktif.urlweb2 =
+                            masterData[0].urlweb2;
 
-                    if (
-                        masterData &&
-                        masterData.length > 0
-                    ) {
-
-                        if (!sesiAktif.urlweb1)
-                            sesiAktif.urlweb1 =
-                                masterData[0].urlweb1;
-
-                        if (!sesiAktif.urlweb2)
-                            sesiAktif.urlweb2 =
-                                masterData[0].urlweb2;
-
-                        if (!sesiAktif.urlweb3)
-                            sesiAktif.urlweb3 =
-                                masterData[0].urlweb3;
-                    }
+                    if (!sesiAktif.urlweb3)
+                        sesiAktif.urlweb3 =
+                            masterData[0].urlweb3;
                 }
-
-                // EKSKUSI TAMPILKAN DASHBOARD DAN OTOMATISASI LOGIN
-                await tampilkanDashboard();
-
-            } else {
-
-                errBox.innerText =
-                    "Username atau Password salah!";
             }
 
+            /*
+             * =================================================
+             * SET pokokyebi3 DARI urlweb3 SUPABASE
+             * =================================================
+             */
+            setPokokYebi3();
 
-        } catch (err) {
+            await tampilkanDashboard();
+
+        } else {
 
             errBox.innerText =
-                "Error koneksi: " + err.message;
+                "Username atau Password salah!";
         }
+
+    } catch (err) {
+
+        errBox.innerText =
+            "Error koneksi: " + err.message;
+    }
+}
+
+
+/* =========================================================
+   SET pokokyebi3
+   ========================================================= */
+
+function setPokokYebi3() {
+
+    if (
+        !sesiAktif ||
+        !sesiAktif.urlweb3
+    ) {
+
+        pokokyebi3 = "";
+
+        console.log(
+            "urlweb3 tidak tersedia."
+        );
+
+        return;
     }
 
+    let url = String(
+        sesiAktif.urlweb3
+    ).trim();
 
-    /* =========================================================
-       TAMPILKAN DASHBOARD
-       ========================================================= */
+    /*
+     * Hapus protocol
+     */
+    url = url.replace(
+        /^https?:\/\//i,
+        ''
+    );
 
-    async function tampilkanDashboard() {
+    /*
+     * Hapus www.
+     */
+    url = url.replace(
+        /^www\./i,
+        ''
+    );
 
-        document.getElementById('login-area')
-            .style.display = 'none';
+    /*
+     * Hapus /wap, /wap/, /wap.html
+     * dan seluruh path setelah domain.
+     */
+    url = url.split('/')[0];
 
-        document.getElementById('dashboard-area')
-            .style.display = 'block';
+    /*
+     * Hasil akhir selalu https://domain
+     */
+    pokokyebi3 =
+        "https://" + url;
+
+    console.log(
+        "urlweb3 Supabase =",
+        sesiAktif.urlweb3
+    );
+
+    console.log(
+        "pokokyebi3 =",
+        pokokyebi3
+    );
+
+}
 
 
-        document.getElementById('box-web1')
-            .style.display = 'block';
+/* =========================================================
+   TAMPILKAN DASHBOARD
+   ========================================================= */
 
-        document.getElementById('box-web2')
-            .style.display = 'block';
+async function tampilkanDashboard() {
 
+    document.getElementById('login-area')
+        .style.display = 'none';
 
-        const spanSaldo1 =
-            document.getElementById('saldo-web1');
+    document.getElementById('dashboard-area')
+        .style.display = 'block';
 
-        const spanSaldo2 =
-            document.getElementById('saldo-web2');
+    document.getElementById('box-web1')
+        .style.display = 'block';
 
-        const btnCek1 =
-            document.getElementById('btn-cek-web1');
+    document.getElementById('box-web2')
+        .style.display = 'block';
 
-        const btnCek2 =
-            document.getElementById('btn-cek-web2');
+    const spanSaldo1 =
+        document.getElementById('saldo-web1');
 
+    const spanSaldo2 =
+        document.getElementById('saldo-web2');
+
+    const btnCek1 =
+        document.getElementById('btn-cek-web1');
+
+    const btnCek2 =
+        document.getElementById('btn-cek-web2');
+
+    spanSaldo1.innerText =
+        "Belum dicek";
+
+    spanSaldo1.className =
+        "saldo-text";
+
+    spanSaldo2.innerText =
+        "Belum dicek";
+
+    spanSaldo2.className =
+        "saldo-text";
+
+    btnCek1.disabled = false;
+    btnCek2.disabled = false;
+
+    const web1Ada =
+        !!(
+            sesiAktif.userweb1 &&
+            sesiAktif.userweb1.trim() !== "" &&
+            sesiAktif.passweb1 &&
+            sesiAktif.passweb1.trim() !== ""
+        );
+
+    const web2Ada =
+        !!(
+            sesiAktif.userweb2 &&
+            sesiAktif.userweb2.trim() !== "" &&
+            sesiAktif.passweb2 &&
+            sesiAktif.passweb2.trim() !== ""
+        );
+
+    if (!web1Ada) {
 
         spanSaldo1.innerText =
-            "Belum dicek";
+            "Tidak Terdata";
 
         spanSaldo1.className =
-            "saldo-text";
+            "saldo-error";
 
+        btnCek1.disabled = true;
+    }
+
+    if (!web2Ada) {
 
         spanSaldo2.innerText =
-            "Belum dicek";
+            "Tidak Terdata";
 
         spanSaldo2.className =
-            "saldo-text";
+            "saldo-error";
 
+        btnCek2.disabled = true;
+    }
 
-        btnCek1.disabled = false;
-        btnCek2.disabled = false;
+    const userRole =
+        (sesiAktif.role || "").toLowerCase();
 
+    const boxSpinner =
+        document.getElementById('box-spinner');
 
-        /*
-         * WEB TARGET 1
-         */
+    const boxIframe =
+        document.getElementById('box-iframe');
 
-        const web1Ada =
-            !!(
-                sesiAktif.userweb1 &&
-                sesiAktif.userweb1.trim() !== "" &&
-                sesiAktif.passweb1 &&
-                sesiAktif.passweb1.trim() !== ""
-            );
+    const spinnerUtama =
+        document.getElementById(
+            'spinner-pasaran-container'
+        );
 
+    const spinnerUser =
+        document.getElementById(
+            'spinner-user-container'
+        );
 
-        /*
-         * WEB TARGET 2
-         */
+    if (userRole === 'viewer') {
 
-        const web2Ada =
-            !!(
-                sesiAktif.userweb2 &&
-                sesiAktif.userweb2.trim() !== "" &&
-                sesiAktif.passweb2 &&
-                sesiAktif.passweb2.trim() !== ""
-            );
+        boxSpinner.style.display = 'none';
+        boxIframe.style.display = 'none';
 
+    } else {
 
-        /*
-         * Status Web Target 1
-         */
+        boxSpinner.style.display = 'block';
+        boxIframe.style.display = 'block';
 
-        if (!web1Ada) {
+        if (userRole === 'admin') {
 
-            spanSaldo1.innerText =
-                "Tidak Terdata";
-
-            spanSaldo1.className =
-                "saldo-error";
-
-            btnCek1.disabled = true;
-        }
-
-
-        /*
-         * Status Web Target 2
-         */
-
-        if (!web2Ada) {
-
-            spanSaldo2.innerText =
-                "Tidak Terdata";
-
-            spanSaldo2.className =
-                "saldo-error";
-
-            btnCek2.disabled = true;
-        }
-
-
-        /*
-         * ROLE
-         */
-
-        const userRole =
-            (sesiAktif.role || "").toLowerCase();
-
-
-        const boxSpinner =
-            document.getElementById('box-spinner');
-
-        const boxIframe =
-            document.getElementById('box-iframe');
-
-        const spinnerUtama =
-            document.getElementById(
-                'spinner-pasaran-container'
-            );
-
-        const spinnerUser =
-            document.getElementById(
-                'spinner-user-container'
-            );
-
-
-        /*
-         * Viewer tidak melihat Spinner dan Frame
-         */
-
-        if (userRole === 'viewer') {
-
-            boxSpinner.style.display = 'none';
-            boxIframe.style.display = 'none';
+            spinnerUtama.style.display = 'block';
+            spinnerUser.style.display = 'none';
 
         } else {
 
-            boxSpinner.style.display = 'block';
-            boxIframe.style.display = 'block';
-
-
-            if (userRole === 'admin') {
-
-                spinnerUtama.style.display = 'block';
-                spinnerUser.style.display = 'none';
-
-            } else {
-
-                spinnerUtama.style.display = 'none';
-                spinnerUser.style.display = 'block';
-            }
-        }
-
-
-        /*
-         * TAMPILKAN MEM-BIDIK SESUAI DATA SUPABASE
-         */
-
-        const boxBidikWeb1 =
-            document.getElementById(
-                'box-bidik-web1'
-            );
-
-        const boxBidikWeb2 =
-            document.getElementById(
-                'box-bidik-web2'
-            );
-
-
-        boxBidikWeb1.style.display =
-            web1Ada ? 'block' : 'none';
-
-        boxBidikWeb2.style.display =
-            web2Ada ? 'block' : 'none';
-
-
-        /*
-         * RESET TOTAL HALAMAN KEMBALI KE KONDISI AWAL/RELOAD
-         */
-
-        resetBidik('web1');
-        resetBidik('web2');
-        loadIframe('about:blank');
-        document.getElementById('input-hasil-result').value = "";
-
-
-        /*
-         * OTOMATISASI AMBIL DATA + TARIK RESULT SAAT LOGIN BERHASIL
-         */
-
-        if (userRole !== 'viewer') {
-            showProgress("Memuat Data...");
-            let suksesAmbil = await loadPasaranEngine(true);
-            
-            if (suksesAmbil && listPickerData.length > 0) {
-                await loadResultPasaran(true);
-            }
-            hideProgress();
+            spinnerUtama.style.display = 'none';
+            spinnerUser.style.display = 'block';
         }
     }
 
-
-    /* =========================================================
-       1. VALIDASI BIDIK
-       ========================================================= */
-
-    function validasiBidik(web) {
-
-        const textarea =
-            document.getElementById(
-                'input-bidik-' + web
-            );
-
-        const jumlahLine =
-            document.getElementById(
-                'jumlah-line-' + web
-            );
-
-        const hasil =
-            document.getElementById(
-                'hasil-kalkulasi-' + web
-            );
-
-        const text =
-            textarea.value;
-
-
-        /*
-         * KOSONG
-         */
-
-        if (text === "") {
-
-            jumlahLine.innerText =
-                "Jumlah Line : 0";
-
-            jumlahLine.classList.remove('error');
-
-            hasil.innerText = "0";
-            hasil.classList.remove('error');
-
-            setTombolBidik(web, null);
-
-            return;
-        }
-
-
-        /*
-         * Tidak boleh ada spasi,
-         * enter,
-         * tab,
-         * karakter lain,
-         * atau pemisah selain *
-         */
-
-        if (
-            text.indexOf(" ") !== -1 ||
-            text.indexOf("\n") !== -1 ||
-            text.indexOf("\r") !== -1 ||
-            text.indexOf("\t") !== -1
-        ) {
-
-            tampilkanErrorBidik(
-                web,
-                "Format Error"
-            );
-
-            return;
-        }
-
-
-        /*
-         * Tidak boleh diawali atau diakhiri *
-         */
-
-        if (
-            text.startsWith("*") ||
-            text.endsWith("*")
-        ) {
-
-            tampilkanErrorBidik(
-                web,
-                "Format Error"
-            );
-
-            return;
-        }
-
-
-        /*
-         * Hanya boleh angka dan *
-         */
-
-        if (!/^[0-9*]+$/.test(text)) {
-
-            tampilkanErrorBidik(
-                web,
-                "Format Error"
-            );
-
-            return;
-        }
-
-
-        /*
-         * Pecah berdasarkan *
-         */
-
-        const groups =
-            text.split("*");
-
-
-        /*
-         * Tidak boleh ada bagian kosong
-         */
-
-        if (
-            groups.some(
-                function(group) {
-                    return group === "";
-                }
-            )
-        ) {
-
-            tampilkanErrorBidik(
-                web,
-                "Format Error"
-            );
-
-            return;
-        }
-
-
-        /*
-         * Semua harus 2 digit ATAU semua 3 digit.
-         */
-
-        const semua2Digit =
-            groups.every(
-                function(group) {
-                    return /^\d{2}$/.test(group);
-                }
-            );
-
-
-        const semua3Digit =
-            groups.every(
-                function(group) {
-                    return /^\d{3}$/.test(group);
-                }
-            );
-
-
-        if (!semua2Digit && !semua3Digit) {
-
-            tampilkanErrorBidik(
-                web,
-                "Format Error"
-            );
-
-            return;
-        }
-
-
-        /*
-         * VALIDASI LINE BERHASIL
-         */
-
-        const jumlah =
-            groups.length;
-
-
-        jumlahLine.innerText =
-            "Jumlah Line : " + jumlah;
-
-        jumlahLine.classList.remove('error');
-
-
-        /*
-         * Hitung Nilai Bidik (Termasuk cek input >= 100).
-         * Pengaktifan tombol dikontrol langsung dari fungsi hitungBidik
-         */
-
-        hitungBidik(web);
-    }
-
-
-    /* =========================================================
-       2. TAMPILKAN ERROR BIDIK
-       ========================================================= */
-
-    function tampilkanErrorBidik(web, pesan) {
-
-        const jumlahLine =
-            document.getElementById(
-                'jumlah-line-' + web
-            );
-
-        const hasil =
-            document.getElementById(
-                'hasil-kalkulasi-' + web
-            );
-
-
-        jumlahLine.innerText =
-            "Jumlah Line : Error";
-
-        jumlahLine.classList.add('error');
-
-
-        hasil.innerText =
-            "Error";
-
-        hasil.classList.add('error');
-
-
-        /*
-         * Jika error, semua tombol di wadah tsb di-disable
-         */
-
-        setTombolBidik(
-            web,
-            null
+    const boxBidikWeb1 =
+        document.getElementById(
+            'box-bidik-web1'
         );
-    }
 
+    const boxBidikWeb2 =
+        document.getElementById(
+            'box-bidik-web2'
+        );
 
-    /* =========================================================
-       3. HITUNG NILAI BIDIK
-       ========================================================= */
+    boxBidikWeb1.style.display =
+        web1Ada ? 'block' : 'none';
 
-    function hitungBidik(web) {
+    boxBidikWeb2.style.display =
+        web2Ada ? 'block' : 'none';
 
-        const textarea =
-            document.getElementById(
-                'input-bidik-' + web
-            );
+    resetBidik('web1');
+    resetBidik('web2');
 
-        const hasil =
-            document.getElementById(
-                'hasil-kalkulasi-' + web
-            );
+    loadIframe('about:blank');
 
-        const text =
-            textarea.value;
+    document.getElementById(
+        'input-hasil-result'
+    ).value = "";
 
+    if (userRole !== 'viewer') {
 
-        /*
-         * Kalau kosong
-         */
+        showProgress("Memuat Data...");
 
-        if (text === "") {
-
-            hasil.innerText = "0";
-            hasil.classList.remove('error');
-
-            setTombolBidik(web, null);
-
-            return;
-        }
-
-
-        /*
-         * Cek validasi digit
-         */
-
-        const groups =
-            text.split("*");
-
-
-        const semua2Digit =
-            groups.length > 0 &&
-            groups.every(
-                function(group) {
-                    return /^\d{2}$/.test(group);
-                }
-            );
-
-
-        const semua3Digit =
-            groups.length > 0 &&
-            groups.every(
-                function(group) {
-                    return /^\d{3}$/.test(group);
-                }
-            );
-
-
-        if (!semua2Digit && !semua3Digit) {
-
-            hasil.innerText = "Error";
-            hasil.classList.add('error');
-
-            setTombolBidik(web, null);
-
-            return;
-        }
-
-
-        /*
-         * Ambil jumlah line
-         */
-
-        const jumlah =
-            groups.length;
-
-
-        /*
-         * Ambil nilai textbox
-         */
-
-        const inputBox =
-            document.getElementById(
-                'nilai-input-' + web
-            );
-
-
-        let nilaiInput =
-            Number(inputBox.value);
-
-
-        /*
-         * PERBAIKAN: Nilai input Wajib Angka dan MINIMAL 100 (>= 100)
-         */
+        let suksesAmbil =
+            await loadPasaranEngine(true);
 
         if (
-            !Number.isFinite(nilaiInput) ||
-            nilaiInput < 100
+            suksesAmbil &&
+            listPickerData.length > 0
         ) {
 
-            hasil.innerText = "Error";
-            hasil.classList.add('error');
-
-            // Nonaktifkan semua tombol jika kalkulasi error
-            setTombolBidik(web, null);
-
-            return;
+            await loadResultPasaran(true);
         }
 
-
-        /*
-         * Ambil DATA DISKON sesuai WEB
-         */
-
-        const dataDiskon =
-            web === 'web1'
-                ? DATADISKONWEB1
-                : DATADISKONWEB2;
+        hideProgress();
+    }
+}
 
 
-        const bagianDiskon =
-            dataDiskon.split(".");
+/* =========================================================
+   VALIDASI BIDIK
+   ========================================================= */
 
+function validasiBidik(web) {
 
-        /*
-         * Format 2 digit: ambil angka sebelum titik.
-         * Format 3 digit: ambil angka sesudah titik.
-         */
-
-        let nilaiDiskon;
-
-
-        if (semua2Digit) {
-
-            nilaiDiskon =
-                Number(bagianDiskon[0]);
-
-        } else {
-
-            nilaiDiskon =
-                Number(bagianDiskon[1]);
-        }
-
-
-        /*
-         * Rumus:
-         * Jumlah Line x (100 - Nilai Diskon) / 100 x nilai textbox
-         */
-
-        const nilaiMentah =
-            jumlah *
-            (100 - nilaiDiskon) / 100 *
-            nilaiInput;
-
-
-        /*
-         * CEILING
-         */
-
-        const nilaiAkhir =
-            Math.ceil(nilaiMentah);
-
-
-        hasil.innerText =
-            nilaiAkhir.toLocaleString('id-ID');
-
-        hasil.classList.remove('error');
-
-
-        /*
-         * Aktifkan tombol jika Jumlah Line DAN Hasil Kalkulasi valid
-         */
-
-        const digitType =
-            semua2Digit ? 2 : 3;
-
-        setTombolBidik(
-            web,
-            digitType
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
         );
-    }
 
+    const jumlahLine =
+        document.getElementById(
+            'jumlah-line-' + web
+        );
 
-    /* =========================================================
-       4. SET TOMBOL BIDIK
-       ========================================================= */
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
 
-    function setTombolBidik(web, digitType) {
+    const text =
+        textarea.value;
 
-        const btn2D =
-            document.getElementById(
-                'btn-2d-' + web
-            );
-
-        const btn2T =
-            document.getElementById(
-                'btn-2t-' + web
-            );
-
-        const btn2B =
-            document.getElementById(
-                'btn-2b-' + web
-            );
-
-        const btn3D =
-            document.getElementById(
-                'btn-3d-' + web
-            );
-
-        const btn3B =
-            document.getElementById(
-                'btn-3b-' + web
-            );
-
-
-        /*
-         * Default semua disable (Berlaku juga saat digitType === null)
-         */
-
-        btn2D.disabled = true;
-        btn2T.disabled = true;
-        btn2B.disabled = true;
-
-        btn3D.disabled = true;
-        btn3B.disabled = true;
-
-
-        /*
-         * 2 DIGIT (Hanya aktif jika line & kalkulasi valid)
-         */
-
-        if (digitType === 2) {
-
-            btn2D.disabled = false;
-            btn2T.disabled = false;
-            btn2B.disabled = false;
-        }
-
-
-        /*
-         * 3 DIGIT (Hanya aktif jika line & kalkulasi valid)
-         */
-
-        if (digitType === 3) {
-
-            btn3D.disabled = false;
-            btn3B.disabled = false;
-        }
-    }
-
-
-    /* =========================================================
-       5. RESET BIDIK (KEMBALIKAN KE AWAL)
-       ========================================================= */
-
-    function resetBidik(web) {
-
-        const textarea =
-            document.getElementById(
-                'input-bidik-' + web
-            );
-
-        const jumlahLine =
-            document.getElementById(
-                'jumlah-line-' + web
-            );
-
-        const hasil =
-            document.getElementById(
-                'hasil-kalkulasi-' + web
-            );
-
-        const inputBox =
-            document.getElementById(
-                'nilai-input-' + web
-            );
-
-
-        textarea.value = "";
-
-        if (inputBox) {
-            inputBox.value = "100";
-        }
+    if (text === "") {
 
         jumlahLine.innerText =
             "Jumlah Line : 0";
 
         jumlahLine.classList.remove('error');
 
-
-        hasil.innerText =
-            "0";
-
+        hasil.innerText = "0";
         hasil.classList.remove('error');
 
+        setTombolBidik(web, null);
 
-        setTombolBidik(
-            web,
-            null
-        );
+        return;
     }
 
+    if (
+        text.indexOf(" ") !== -1 ||
+        text.indexOf("\n") !== -1 ||
+        text.indexOf("\r") !== -1 ||
+        text.indexOf("\t") !== -1
+    ) {
 
-    /* =========================================================
-       AKSI TOMBOL BIDIK
-       ========================================================= */
-    function aksiBidik(jenis, web) {
-        if (web !== 'web1') return;
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
 
-        const textarea = document.getElementById('input-bidik-' + web);
-        const inputBox = document.getElementById('nilai-input-' + web);
-        
-        const areaText = textarea.value.trim();
-        const nilaiInput = inputBox.value;
+        return;
+    }
 
-        if (!areaText || !nilaiInput) {
-            alert("Harap isi teks bidik dan nilainya!");
-            return;
-        }
+    if (
+        text.startsWith("*") ||
+        text.endsWith("*")
+    ) {
 
-        let finalData = areaText + "#" + nilaiInput;
-        let sekolah="";
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
 
-        const labelUrl = document.getElementById('label-url').innerText;
-        if (!labelUrl || labelUrl.includes("muncul di sini")) {
-            alert("Silakan pilih Data di bagian Pengujian Spinner terlebih dahulu!");
-            return;
-        }
+        return;
+    }
 
-        const baseUrl = "https://engine2s2.engine4d.com/wapsecure/";
-        let targetUrl = "";
-        
-        if (jenis === '2D') targetUrl = baseUrl + "depan2d.html";
-        else if (jenis === '2T') targetUrl = baseUrl + "tengah2d.html";
-        else if (jenis === '2B') targetUrl = baseUrl + "purchase/1.html";
-        else if (jenis === '3D') targetUrl = baseUrl + "depan3d.html";
-        else if (jenis === '3B') targetUrl = baseUrl + "purchase/1.html";
-        
-        // YEBI
-        if (jenis === '2D') sekolah="2ZD";
-        else if (jenis === '2T') sekolah="2ZT";
-        else if (jenis === '2B') sekolah="2ZB";
-        else if (jenis === '3D') sekolah="2ZX";
-        else if (jenis === '3B') sekolah="2ZY"; 
+    if (!/^[0-9*]+$/.test(text)) {
 
-        finalData = sekolah + finalData;
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
 
-        navigator.clipboard.writeText(finalData).catch(() => {});
+        return;
+    }
 
-        const windowName = "TargetBidikPopup";
-        let popupWin = window.open(labelUrl, windowName, "width=600,height=750,scrollbars=yes,resizable=yes");
+    const groups =
+        text.split("*");
 
-        if (!popupWin) {
-            alert("Pop-up diblokir browser! Harap izinkan pop-up.");
-            return;
-        }
+    if (
+        groups.some(
+            function(group) {
+                return group === "";
+            }
+        )
+    ) {
 
-        setTimeout(() => {
-            popupWin.location.href = targetUrl;
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
 
-            let isiOtomatis = setInterval(() => {
+        return;
+    }
+
+    const semua2Digit =
+        groups.every(
+            function(group) {
+                return /^\d{2}$/.test(group);
+            }
+        );
+
+    const semua3Digit =
+        groups.every(
+            function(group) {
+                return /^\d{3}$/.test(group);
+            }
+        );
+
+    if (!semua2Digit && !semua3Digit) {
+
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
+
+        return;
+    }
+
+    const jumlah =
+        groups.length;
+
+    jumlahLine.innerText =
+        "Jumlah Line : " + jumlah;
+
+    jumlahLine.classList.remove('error');
+
+    hitungBidik(web);
+}
+
+
+/* =========================================================
+   ERROR BIDIK
+   ========================================================= */
+
+function tampilkanErrorBidik(web, pesan) {
+
+    const jumlahLine =
+        document.getElementById(
+            'jumlah-line-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    jumlahLine.innerText =
+        "Jumlah Line : Error";
+
+    jumlahLine.classList.add('error');
+
+    hasil.innerText =
+        "Error";
+
+    hasil.classList.add('error');
+
+    setTombolBidik(
+        web,
+        null
+    );
+}
+
+
+/* =========================================================
+   HITUNG BIDIK
+   ========================================================= */
+
+function hitungBidik(web) {
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    const text =
+        textarea.value;
+
+    if (text === "") {
+
+        hasil.innerText = "0";
+        hasil.classList.remove('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    const groups =
+        text.split("*");
+
+    const semua2Digit =
+        groups.length > 0 &&
+        groups.every(
+            function(group) {
+                return /^\d{2}$/.test(group);
+            }
+        );
+
+    const semua3Digit =
+        groups.length > 0 &&
+        groups.every(
+            function(group) {
+                return /^\d{3}$/.test(group);
+            }
+        );
+
+    if (!semua2Digit && !semua3Digit) {
+
+        hasil.innerText = "Error";
+        hasil.classList.add('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    const jumlah =
+        groups.length;
+
+    const inputBox =
+        document.getElementById(
+            'nilai-input-' + web
+        );
+
+    let nilaiInput =
+        Number(inputBox.value);
+
+    if (
+        !Number.isFinite(nilaiInput) ||
+        nilaiInput < 100
+    ) {
+
+        hasil.innerText = "Error";
+        hasil.classList.add('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    const dataDiskon =
+        web === 'web1'
+            ? DATADISKONWEB1
+            : DATADISKONWEB2;
+
+    const bagianDiskon =
+        dataDiskon.split(".");
+
+    let nilaiDiskon;
+
+    if (semua2Digit) {
+
+        nilaiDiskon =
+            Number(bagianDiskon[0]);
+
+    } else {
+
+        nilaiDiskon =
+            Number(bagianDiskon[1]);
+    }
+
+    const nilaiMentah =
+        jumlah *
+        (100 - nilaiDiskon) / 100 *
+        nilaiInput;
+
+    const nilaiAkhir =
+        Math.ceil(nilaiMentah);
+
+    hasil.innerText =
+        nilaiAkhir.toLocaleString('id-ID');
+
+    hasil.classList.remove('error');
+
+    const digitType =
+        semua2Digit ? 2 : 3;
+
+    setTombolBidik(
+        web,
+        digitType
+    );
+}
+
+
+/* =========================================================
+   SET TOMBOL BIDIK
+   ========================================================= */
+
+function setTombolBidik(web, digitType) {
+
+    const btn2D =
+        document.getElementById(
+            'btn-2d-' + web
+        );
+
+    const btn2T =
+        document.getElementById(
+            'btn-2t-' + web
+        );
+
+    const btn2B =
+        document.getElementById(
+            'btn-2b-' + web
+        );
+
+    const btn3D =
+        document.getElementById(
+            'btn-3d-' + web
+        );
+
+    const btn3B =
+        document.getElementById(
+            'btn-3b-' + web
+        );
+
+    btn2D.disabled = true;
+    btn2T.disabled = true;
+    btn2B.disabled = true;
+
+    btn3D.disabled = true;
+    btn3B.disabled = true;
+
+    if (digitType === 2) {
+
+        btn2D.disabled = false;
+        btn2T.disabled = false;
+        btn2B.disabled = false;
+    }
+
+    if (digitType === 3) {
+
+        btn3D.disabled = false;
+        btn3B.disabled = false;
+    }
+}
+
+
+/* =========================================================
+   RESET BIDIK
+   ========================================================= */
+
+function resetBidik(web) {
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const jumlahLine =
+        document.getElementById(
+            'jumlah-line-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    const inputBox =
+        document.getElementById(
+            'nilai-input-' + web
+        );
+
+    if (!textarea || !jumlahLine || !hasil)
+        return;
+
+    textarea.value = "";
+
+    if (inputBox) {
+        inputBox.value = "100";
+    }
+
+    jumlahLine.innerText =
+        "Jumlah Line : 0";
+
+    jumlahLine.classList.remove('error');
+
+    hasil.innerText =
+        "0";
+
+    hasil.classList.remove('error');
+
+    setTombolBidik(
+        web,
+        null
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL BIDIK
+   ========================================================= */
+
+function aksiBidik(jenis, web) {
+
+    if (web !== 'web1') return;
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const inputBox =
+        document.getElementById(
+            'nilai-input-' + web
+        );
+
+    const areaText =
+        textarea.value.trim();
+
+    const nilaiInput =
+        inputBox.value;
+
+    if (!areaText || !nilaiInput) {
+
+        console.log(
+            "Harap isi teks bidik dan nilainya!"
+        );
+
+        return;
+    }
+
+    let finalData =
+        areaText + "#" + nilaiInput;
+
+    let sekolah = "";
+
+    const labelUrl =
+        document.getElementById(
+            'label-url'
+        ).innerText;
+
+    if (
+        !labelUrl ||
+        labelUrl.includes("muncul di sini")
+    ) {
+
+        console.log(
+            "Silakan pilih Data di bagian Pengujian Spinner terlebih dahulu!"
+        );
+
+        return;
+    }
+
+    const baseUrl =
+        "https://engine2s2.engine4d.com/wapsecure/";
+
+    let targetUrl = "";
+
+    if (jenis === '2D')
+        targetUrl =
+            baseUrl + "depan2d.html";
+
+    else if (jenis === '2T')
+        targetUrl =
+            baseUrl + "tengah2d.html";
+
+    else if (jenis === '2B')
+        targetUrl =
+            baseUrl + "purchase/1.html";
+
+    else if (jenis === '3D')
+        targetUrl =
+            baseUrl + "depan3d.html";
+
+    else if (jenis === '3B')
+        targetUrl =
+            baseUrl + "purchase/1.html";
+
+    if (jenis === '2D')
+        sekolah = "2ZD";
+
+    else if (jenis === '2T')
+        sekolah = "2ZT";
+
+    else if (jenis === '2B')
+        sekolah = "2ZB";
+
+    else if (jenis === '3D')
+        sekolah = "2ZX";
+
+    else if (jenis === '3B')
+        sekolah = "2ZY";
+
+    finalData =
+        sekolah + finalData;
+
+    navigator.clipboard
+        .writeText(finalData)
+        .catch(() => {});
+
+    const windowName =
+        "TargetBidikPopup";
+
+    let popupWin =
+        window.open(
+            labelUrl,
+            windowName,
+            "width=600,height=750,scrollbars=yes,resizable=yes"
+        );
+
+    if (!popupWin) {
+
+        console.log(
+            "Pop-up diblokir browser! Harap izinkan pop-up."
+        );
+
+        return;
+    }
+
+    setTimeout(() => {
+
+        popupWin.location.href =
+            targetUrl;
+
+        let isiOtomatis =
+            setInterval(() => {
+
                 try {
+
                     if (popupWin.document) {
-                        let targetArea = popupWin.document.querySelector('textarea.purchaser');
+
+                        let targetArea =
+                            popupWin.document.querySelector(
+                                'textarea.purchaser'
+                            );
+
                         if (targetArea) {
-                            targetArea.value = finalData;
-                            clearInterval(isiOtomatis);
-                            console.log("Berhasil mengisi form sebelum digunakan!");
+
+                            targetArea.value =
+                                finalData;
+
+                            clearInterval(
+                                isiOtomatis
+                            );
+
+                            console.log(
+                                "Berhasil mengisi form sebelum digunakan!"
+                            );
                         }
                     }
+
                 } catch (err) {
-                    clearInterval(isiOtomatis);
+
+                    clearInterval(
+                        isiOtomatis
+                    );
                 }
+
             }, 200);
 
-            setTimeout(() => clearInterval(isiOtomatis), 400);
+        setTimeout(
+            () => clearInterval(isiOtomatis),
+            400
+        );
 
-        }, 1000);
-    }
-
-
-    /* =========================================================
-       CEK SALDO
-       ========================================================= */
-
-    async function cekSaldoTarget(tipe) {
-
-        let targetUrl =
-            (tipe === 'web1')
-                ? sesiAktif.urlweb1
-                : sesiAktif.urlweb3;
-
-        let targetUser =
-            (tipe === 'web1')
-                ? sesiAktif.userweb1
-                : sesiAktif.userweb2;
-
-        let targetPass =
-            (tipe === 'web1')
-                ? sesiAktif.passweb1
-                : sesiAktif.passweb2;
+    }, 1000);
+}
 
 
-        let spanId =
-            (tipe === 'web1')
-                ? 'saldo-web1'
-                : 'saldo-web2';
+/* =========================================================
+   CEK SALDO
+   ========================================================= */
 
+async function cekSaldoTarget(tipe) {
 
-        const spanSaldo =
-            document.getElementById(spanId);
+    let targetUrl =
+        (tipe === 'web1')
+            ? sesiAktif.urlweb1
+            : sesiAktif.urlweb3;
 
-        const loader =
-            document.getElementById('loader');
+    let targetUser =
+        (tipe === 'web1')
+            ? sesiAktif.userweb1
+            : sesiAktif.userweb2;
 
+    let targetPass =
+        (tipe === 'web1')
+            ? sesiAktif.passweb1
+            : sesiAktif.passweb2;
 
-        spanSaldo.innerText =
-            "Memproses...";
+    let spanId =
+        (tipe === 'web1')
+            ? 'saldo-web1'
+            : 'saldo-web2';
 
-        spanSaldo.className =
-            "saldo-text";
+    const spanSaldo =
+        document.getElementById(spanId);
 
+    const loader =
+        document.getElementById('loader');
+
+    spanSaldo.innerText =
+        "Memproses...";
+
+    spanSaldo.className =
+        "saldo-text";
+
+    loader.style.display =
+        'block';
+
+    const urlRequest =
+        `${GAS_PROXY_URL}?action=cekSaldo&url=${encodeURIComponent(targetUrl)}&user=${encodeURIComponent(targetUser)}&pass=${encodeURIComponent(targetPass)}`;
+
+    try {
+
+        let response =
+            await fetch(urlRequest);
+
+        let result =
+            await response.json();
 
         loader.style.display =
-            'block';
+            'none';
 
-
-        const urlRequest =
-            `${GAS_PROXY_URL}?action=cekSaldo&url=${encodeURIComponent(targetUrl)}&user=${encodeURIComponent(targetUser)}&pass=${encodeURIComponent(targetPass)}`;
-
-
-        try {
-
-            let response =
-                await fetch(urlRequest);
-
-            let result =
-                await response.json();
-
-
-            loader.style.display =
-                'none';
-
-
-            if (result.status === 'success') {
-
-                spanSaldo.innerText =
-                    result.saldo;
-
-            } else {
-
-                spanSaldo.innerText =
-                    "Gagal: " +
-                    (
-                        result.message ||
-                        "Kesalahan sistem"
-                    );
-
-                spanSaldo.className =
-                    "saldo-error";
-            }
-
-
-        } catch (err) {
-
-            loader.style.display =
-                'none';
+        if (result.status === 'success') {
 
             spanSaldo.innerText =
-                "Error Jaringan";
+                result.saldo;
+
+        } else {
+
+            spanSaldo.innerText =
+                "Gagal: " +
+                (
+                    result.message ||
+                    "Kesalahan sistem"
+                );
 
             spanSaldo.className =
                 "saldo-error";
         }
-    }
 
-
-    /* =========================================================
-       EXTRACT TIME
-       ========================================================= */
-
-    function extractTime(label) {
-
-        let match =
-            label.match(
-                /(\d{2}:\d{2})\s*WIB/i
-            );
-
-
-        if (match)
-            return match[1];
-
-
-        let allTimes =
-            label.match(
-                /\d{2}:\d{2}/g
-            );
-
-
-        if (
-            allTimes &&
-            allTimes.length > 0
-        )
-            return allTimes[allTimes.length - 1];
-
-
-        return "Jam Tidak Diketahui";
-    }
-
-
-    /* =========================================================
-       LOAD PASARAN ENGINE
-       ========================================================= */
-
-    async function loadPasaranEngine(isAuto = false) {
-
-        if (!isAuto) showProgress("Membaca Data...");
-
-        const loader =
-            document.getElementById('loader');
-
-        const selUtama =
-            document.getElementById(
-                'spinner-pasaran'
-            );
-
-        const selUser =
-            document.getElementById(
-                'spinner-user'
-            );
-
-        const labelUrl =
-            document.getElementById(
-                'label-url'
-            );
-
-
-        loader.innerText =
-            "Melakukan SSO Auto-login & membaca Data...";
+    } catch (err) {
 
         loader.style.display =
-            'block';
+            'none';
+
+        spanSaldo.innerText =
+            "Error Jaringan";
+
+        spanSaldo.className =
+            "saldo-error";
+    }
+}
 
 
-        selUtama.innerHTML =
-            '<option value="">Sedang memuat data...</option>';
+/* =========================================================
+   EXTRACT TIME
+   ========================================================= */
 
-        selUser.innerHTML =
-            '<option value="">Sedang memuat data...</option>';
+function extractTime(label) {
 
-        labelUrl.innerText =
-            "Memuat...";
+    let match =
+        label.match(
+            /(\d{2}:\d{2})\s*WIB/i
+        );
 
+    if (match)
+        return match[1];
 
-        const urlReq =
-            `${GAS_PROXY_URL}?action=getPasaran&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+    let allTimes =
+        label.match(
+            /\d{2}:\d{2}/g
+        );
 
+    if (
+        allTimes &&
+        allTimes.length > 0
+    )
+        return allTimes[allTimes.length - 1];
 
-        try {
-
-            let response =
-                await fetch(urlReq);
-
-            let result =
-                await response.json();
-
-
-            loader.style.display =
-                'none';
-
-
-            if (
-                result.status === 'success' &&
-                result.data &&
-                result.data.length > 0
-            ) {
-
-                const rawKeywords =
-                    "HONGKONG,SYDNEY,SINGAPORE,CALIFORNIA,GERMANY,INDIANA,TENNESSE,TEXAS,KENTUCKY,FLORIDA,ILLINOIS,MICHIGAN,MISSOURI,WASHINGTON,CONNECTICUT,VIRGINIA,NRE YORK,NEW YORK,NORTH CAROLINA,OREGON,GEORGIA,MARYLAND,NEW JERSEY,BULLSEYE,PCSO";
+    return "Jam Tidak Diketahui";
+}
 
 
-                const allowedKeywords =
-                    rawKeywords
-                        .split(',')
-                        .map(
-                            k =>
-                                k.trim().toUpperCase()
-                        );
+/* =========================================================
+   LOAD PASARAN ENGINE
+   ========================================================= */
 
+async function loadPasaranEngine(isAuto = false) {
 
-                listPickerData =
-                    result.data.filter(
-                        item => {
+    if (!isAuto)
+        showProgress("Membaca Data...");
 
-                            let labelUpper =
-                                item.label.toUpperCase();
+    const loader =
+        document.getElementById('loader');
 
-                            return allowedKeywords.some(
-                                keyword =>
-                                    labelUpper.includes(keyword)
-                            );
-                        }
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const selUser =
+        document.getElementById(
+            'spinner-user'
+        );
+
+    const labelUrl =
+        document.getElementById(
+            'label-url'
+        );
+
+    loader.innerText =
+        "Melakukan SSO Auto-login & membaca Data...";
+
+    loader.style.display =
+        'block';
+
+    selUtama.innerHTML =
+        '<option value="">Sedang memuat data...</option>';
+
+    selUser.innerHTML =
+        '<option value="">Sedang memuat data...</option>';
+
+    labelUrl.innerText =
+        "Memuat...";
+
+    const urlReq =
+        `${GAS_PROXY_URL}?action=getPasaran&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+
+    try {
+
+        let response =
+            await fetch(urlReq);
+
+        let result =
+            await response.json();
+
+        loader.style.display =
+            'none';
+
+        if (
+            result.status === 'success' &&
+            result.data &&
+            result.data.length > 0
+        ) {
+
+            const rawKeywords =
+                "HONGKONG,SYDNEY,SINGAPORE,CALIFORNIA,GERMANY,INDIANA,TENNESSE,TEXAS,KENTUCKY,FLORIDA,ILLINOIS,MICHIGAN,MISSOURI,WASHINGTON,CONNECTICUT,VIRGINIA,NRE YORK,NEW YORK,NORTH CAROLINA,OREGON,GEORGIA,MARYLAND,NEW JERSEY,BULLSEYE,PCSO";
+
+            const allowedKeywords =
+                rawKeywords
+                    .split(',')
+                    .map(
+                        k =>
+                            k.trim().toUpperCase()
                     );
 
+            listPickerData =
+                result.data.filter(
+                    item => {
 
-                selUtama.innerHTML = '';
-                selUser.innerHTML = '';
+                        let labelUpper =
+                            item.label.toUpperCase();
 
-
-                if (
-                    listPickerData.length === 0
-                ) {
-
-                    selUtama.innerHTML =
-                        '<option value="">Tidak ada data yang cocok</option>';
-
-                    selUser.innerHTML =
-                        '<option value="">Tidak ada data</option>';
-
-                    labelUrl.innerText =
-                        "Data kosong.";
-
-                    if (!isAuto) hideProgress();
-                    return false;
-                }
-
-
-                listPickerData.forEach(
-                    (item, index) => {
-
-                        let optUtama =
-                            document.createElement(
-                                'option'
-                            );
-
-                        optUtama.value =
-                            index;
-
-                        optUtama.innerText =
-                            `[${index + 1}] ${item.label}`;
-
-                        selUtama.appendChild(
-                            optUtama
-                        );
-
-
-                        let optUser =
-                            document.createElement(
-                                'option'
-                            );
-
-                        optUser.value =
-                            index;
-
-                        optUser.innerText =
-                            extractTime(item.label);
-
-                        selUser.appendChild(
-                            optUser
+                        return allowedKeywords.some(
+                            keyword =>
+                                labelUpper.includes(keyword)
                         );
                     }
                 );
 
+            selUtama.innerHTML = '';
+            selUser.innerHTML = '';
 
-                // SET AUTOMATIS INDEX PERTAMA TERPILIH (INDEX 0)
-                selUtama.selectedIndex = 0;
-                selUser.selectedIndex = 0;
-
-                updateLabelUrlDariUtama();
-
-                if (!isAuto) hideProgress();
-                return true;
-
-            } else {
+            if (
+                listPickerData.length === 0
+            ) {
 
                 selUtama.innerHTML =
-                    '<option value="">Gagal memuat data</option>';
+                    '<option value="">Tidak ada data yang cocok</option>';
 
                 selUser.innerHTML =
-                    '<option value="">Gagal memuat data</option>';
+                    '<option value="">Tidak ada data</option>';
 
                 labelUrl.innerText =
-                    "Error: " +
-                    (
-                        result.message ||
-                        "Tidak ada data."
-                    );
-                if (!isAuto) hideProgress();
+                    "Data kosong.";
+
+                if (!isAuto)
+                    hideProgress();
+
                 return false;
             }
 
+            listPickerData.forEach(
+                (item, index) => {
 
-        } catch (err) {
+                    let optUtama =
+                        document.createElement(
+                            'option'
+                        );
 
-            loader.style.display =
-                'none';
+                    optUtama.value =
+                        index;
+
+                    optUtama.innerText =
+                        `[${index + 1}] ${item.label}`;
+
+                    selUtama.appendChild(
+                        optUtama
+                    );
+
+                    let optUser =
+                        document.createElement(
+                            'option'
+                        );
+
+                    optUser.value =
+                        index;
+
+                    optUser.innerText =
+                        extractTime(item.label);
+
+                    selUser.appendChild(
+                        optUser
+                    );
+                }
+            );
+
+            selUtama.selectedIndex = 0;
+            selUser.selectedIndex = 0;
+
+            updateLabelUrlDariUtama();
+
+            if (!isAuto)
+                hideProgress();
+
+            return true;
+
+        } else {
 
             selUtama.innerHTML =
-                '<option value="">Error Jaringan</option>';
+                '<option value="">Gagal memuat data</option>';
 
             selUser.innerHTML =
-                '<option value="">Error Jaringan</option>';
+                '<option value="">Gagal memuat data</option>';
 
             labelUrl.innerText =
-                "Gagal terhubung ke GAS Proxy.";
-                
-            if (!isAuto) hideProgress();
+                "Error: " +
+                (
+                    result.message ||
+                    "Tidak ada data."
+                );
+
+            if (!isAuto)
+                hideProgress();
+
             return false;
         }
-    }
 
-
-    /* =========================================================
-       SPINNER UTAMA (PERUBAHAN MEMICU RESET & AUTO RESULT)
-       ========================================================= */
-
-    async function onSpinnerUtamaChange() {
-
-        const selUtama =
-            document.getElementById(
-                'spinner-pasaran'
-            );
-
-        const selUser =
-            document.getElementById(
-                'spinner-user'
-            );
-
-
-        selUser.value =
-            selUtama.value;
-
-
-        updateLabelUrlDariUtama();
-
-        // JALANKAN PROSES OTOMATIS SAAT USER GANTI SPINNER
-        await eksekusiGantiSpinner();
-		
-// =========================================================
-        // TAMBAHKAN KODE INI DI SINI (MENGIKUTI SPINNER UTAMA)
-        // =========================================================
-        let spinnerUtama = document.getElementById("spinner-pasaran");
-        
-        if (spinnerUtama && spinnerUtama.selectedIndex !== -1) {
-            let teksPilihanUtama = spinnerUtama.options[spinnerUtama.selectedIndex].text.toLowerCase(); 
-            let spinnerKita = document.getElementById("spinnerBos");
-            let pilihanKita = spinnerKita.options;
-
-            for (let i = 0; i < pilihanKita.length; i++) {
-                let teksElemenKita = pilihanKita[i].text.toLowerCase();
-                if (teksElemenKita.trim() === "") continue;
-
-                // Cek apakah teks Spinner Utama mengandung elemen kita
-                if (teksPilihanUtama.includes(teksElemenKita)) {
-                    spinnerKita.selectedIndex = i;
-                    
-                    // Panggil sinkronkanData agar ListPicker 1 & 2 ikut bergerak
-                    sinkronkanData();
-                    break; 
-                }
-            }
-        }
-        // =========================================================
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-    }
-
-
-    /* =========================================================
-       SPINNER USER (PERUBAHAN PASARAN MEMICU RESET & AUTO RESULT)
-       ========================================================= */
-
-    async function onSpinnerUserChange() {
-
-        const selUtama =
-            document.getElementById(
-                'spinner-pasaran'
-            );
-
-        const selUser =
-            document.getElementById(
-                'spinner-user'
-            );
-
-
-        selUtama.value =
-            selUser.value;
-
-
-        updateLabelUrlDariUtama();
-
-        // JALANKAN PROSES OTOMATIS SAAT USER GANTI SPINNER
-        await eksekusiGantiSpinner();
-
-    }
-
-
-    /* =========================================================
-       EKSEKUSI OTOMATIS SAAT SPINNER DIPINDAHKAN
-       ========================================================= */
-
-    async function eksekusiGantiSpinner() {
-        showProgress("Memproses Data Baru...");
-
-        try {
-            // 1. Tarik urutan hasil result pasaran baru secara otomatis
-            await loadResultPasaran(true);
-
-            // 2. Reset Frame ke about:blank
-            loadIframe('about:blank');
-
-            // 3. Reset total Wadah Mem-bidik Target 1 dan Target 2 ke kondisi awal
-            resetBidik('web1');
-            resetBidik('web2');
-
-        } catch (err) {
-            console.error("Gagal pemrosesan data:", err);
-        } finally {
-            hideProgress();
-        }
-    }
-
-
-    /* =========================================================
-       UPDATE URL
-       ========================================================= */
-
-    function updateLabelUrlDariUtama() {
-
-        const selUtama =
-            document.getElementById(
-                'spinner-pasaran'
-            );
-
-        const labelUrl =
-            document.getElementById(
-                'label-url'
-            );
-
-
-        const selectedIndex =
-            selUtama.value;
-
-
-        if (
-            selectedIndex !== "" &&
-            listPickerData[selectedIndex]
-        ) {
-
-            labelUrl.innerText =
-                listPickerData[
-                    selectedIndex
-                ].url;
-
-        } else {
-
-            labelUrl.innerText =
-                "Tidak ada URL terpilih";
-        }
-    }
-
-
-    /* =========================================================
-       LOAD RESULT PASARAN
-       ========================================================= */
-
-    async function loadResultPasaran(isAuto = false) {
-
-        if (!isAuto) showProgress("Menarik Data...");
-
-        const urlText =
-            document.getElementById(
-                'label-url'
-            ).innerText;
-
-        const loader =
-            document.getElementById('loader');
-
-        const inputHasil =
-            document.getElementById(
-                'input-hasil-result'
-            );
-
-
-        const locMatch =
-            urlText.match(
-                /loc=(\d+)/
-            );
-
-
-        if (
-            !locMatch ||
-            !locMatch[1]
-        ) {
-
-            inputHasil.value =
-                "Error: Harap ambil data dan pilih yang valid.";
-
-            if (!isAuto) hideProgress();
-            return;
-        }
-
-
-        const locID =
-            locMatch[1];
-
-
-        loader.innerText =
-            "Menarik data result...";
+    } catch (err) {
 
         loader.style.display =
-            'block';
+            'none';
 
-        inputHasil.value =
-            "Memuat...";
+        selUtama.innerHTML =
+            '<option value="">Error Jaringan</option>';
+
+        selUser.innerHTML =
+            '<option value="">Error Jaringan</option>';
+
+        labelUrl.innerText =
+            "Gagal terhubung ke GAS Proxy.";
+
+        if (!isAuto)
+            hideProgress();
+
+        return false;
+    }
+}
 
 
-        const urlReq =
-            `${GAS_PROXY_URL}?action=getResult&loc=${locID}&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+/* =========================================================
+   SPINNER UTAMA
+   ========================================================= */
 
+async function onSpinnerUtamaChange() {
 
-        try {
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
 
-            let response =
-                await fetch(urlReq);
+    const selUser =
+        document.getElementById(
+            'spinner-user'
+        );
 
-            let result =
-                await response.json();
+    selUser.value =
+        selUtama.value;
 
+    updateLabelUrlDariUtama();
 
-            loader.style.display =
-                'none';
+    await eksekusiGantiSpinner();
 
+    let spinnerUtama =
+        document.getElementById(
+            "spinner-pasaran"
+        );
+
+    if (
+        spinnerUtama &&
+        spinnerUtama.selectedIndex !== -1
+    ) {
+
+        let teksPilihanUtama =
+            spinnerUtama.options[
+                spinnerUtama.selectedIndex
+            ].text.toLowerCase();
+
+        let spinnerKita =
+            document.getElementById(
+                "spinnerBos"
+            );
+
+        let pilihanKita =
+            spinnerKita.options;
+
+        for (
+            let i = 0;
+            i < pilihanKita.length;
+            i++
+        ) {
+
+            let teksElemenKita =
+                pilihanKita[i].text.toLowerCase();
 
             if (
-                result.status === 'success'
+                teksElemenKita.trim() === ""
+            )
+                continue;
+
+            if (
+                teksPilihanUtama.includes(
+                    teksElemenKita
+                )
             ) {
 
-                inputHasil.value =
-                    result.data;
+                spinnerKita.selectedIndex =
+                    i;
 
-            } else {
+                sinkronkanData();
 
-                inputHasil.value =
-                    "Error: " +
-                    result.message;
+                break;
             }
-
-
-        } catch (err) {
-
-            loader.style.display =
-                'none';
-
-            inputHasil.value =
-                "Gagal terhubung ke server.";
-        } finally {
-            if (!isAuto) hideProgress();
         }
     }
+}
 
 
-    /* =========================================================
-       COPY RESULT
-       ========================================================= */
+/* =========================================================
+   SPINNER USER
+   ========================================================= */
 
-    function copyResultText() {
-        const copyText = document.getElementById("input-hasil-result");
+async function onSpinnerUserChange() {
+
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const selUser =
+        document.getElementById(
+            'spinner-user'
+        );
+
+    selUtama.value =
+        selUser.value;
+
+    updateLabelUrlDariUtama();
+
+    await eksekusiGantiSpinner();
+}
+
+
+/* =========================================================
+   EKSEKUSI GANTI SPINNER
+   ========================================================= */
+
+async function eksekusiGantiSpinner() {
+
+    showProgress(
+        "Memproses Data Baru..."
+    );
+
+    try {
+
+        await loadResultPasaran(true);
+
+        loadIframe(
+            'about:blank'
+        );
+
+        resetBidik('web1');
+        resetBidik('web2');
+
+    } catch (err) {
+
+        console.error(
+            "Gagal pemrosesan data:",
+            err
+        );
+
+    } finally {
+
+        hideProgress();
+    }
+}
+
+
+/* =========================================================
+   UPDATE URL
+   ========================================================= */
+
+function updateLabelUrlDariUtama() {
+
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const labelUrl =
+        document.getElementById(
+            'label-url'
+        );
+
+    const selectedIndex =
+        selUtama.value;
+
+    if (
+        selectedIndex !== "" &&
+        listPickerData[selectedIndex]
+    ) {
+
+        labelUrl.innerText =
+            listPickerData[
+                selectedIndex
+            ].url;
+
+    } else {
+
+        labelUrl.innerText =
+            "Tidak ada URL terpilih";
+    }
+}
+
+
+/* =========================================================
+   LOAD RESULT
+   ========================================================= */
+
+async function loadResultPasaran(isAuto = false) {
+
+    if (!isAuto)
+        showProgress(
+            "Menarik Data..."
+        );
+
+    const urlText =
+        document.getElementById(
+            'label-url'
+        ).innerText;
+
+    const loader =
+        document.getElementById(
+            'loader'
+        );
+
+    const inputHasil =
+        document.getElementById(
+            'input-hasil-result'
+        );
+
+    const locMatch =
+        urlText.match(
+            /loc=(\d+)/
+        );
+
+    if (
+        !locMatch ||
+        !locMatch[1]
+    ) {
+
+        inputHasil.value =
+            "Error: Harap ambil data dan pilih yang valid.";
+
+        if (!isAuto)
+            hideProgress();
+
+        return;
+    }
+
+    const locID =
+        locMatch[1];
+
+    loader.innerText =
+        "Menarik data result...";
+
+    loader.style.display =
+        'block';
+
+    inputHasil.value =
+        "Memuat...";
+
+    const urlReq =
+        `${GAS_PROXY_URL}?action=getResult&loc=${locID}&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+
+    try {
+
+        let response =
+            await fetch(urlReq);
+
+        let result =
+            await response.json();
+
+        loader.style.display =
+            'none';
 
         if (
-            !copyText ||
-            !copyText.value ||
-            copyText.value.includes("Memuat...") ||
-            copyText.value.includes("Error")
+            result.status === 'success'
         ) {
-            console.log("Tidak ada hasil valid untuk di-copy.");
-            return;
-        }
 
-        // Direct copy via Clipboard API
-        navigator.clipboard
-            .writeText(copyText.value)
-            .then(function() {
-                console.log("Hasil berhasil dicopy!");
-            })
-            .catch(function(err) {
-                console.log("Gagal mengcopy teks: ", err);
-            });
-    }
-
-
-    /* =========================================================
-       LOAD IFRAME
-       ========================================================= */
-
-    function loadIframe(fileHtml) {
-
-        document.getElementById(
-            'content-iframe'
-        ).src = fileHtml;
-    }
-	
-	
-	
-	
-	
-        // --- SILAKAN BOS GANTI ISIAN DI BAWAH INI ---
-
-        // Data Pokok
-        let pokok1 = "";
-let listPicker1 = [];
-		
-        const pokok2 = "/wap/user/togel/main/";
-        const pokok3 = "?type=1&sub_type=";
-        const pokok4 = "&category=2";
-
-        // Data ListPicker 1 (Pasangan dari spinner 1,2,3,4,5)
-        //const listPicker1 = ["a", "b", "s", "d", "e"];
-		
-		/*
-		const listPicker1 = ["83","131","98","99","124","132","10","134","11","135","14","15","136","17","18","20","24","137","26","27","28","138","30","32","34","139","35","140","36","37","38","141","39","40","41","44","142","47","48","49","143","50","144","52","53","54","55","56","57","58","59","60","61","145","67","63","64","65","66","68","69","70","71","146","72","73","74","147","75","76","77","81","78","148","79","80","82","149","84","150","85","86","87","88","89","151","90","91","92","93","94","152","96","97","153","100","101","154","102","103","104","106","105","107","108","155","110","109","111","156","112","113","114","115","117","157","118","120","119","121","158","125","126","159","130"];
-		*/
-		
-		
-		
-// Fungsi untuk mengambil data dari Supabase
-async function ambilDataUrl() {
-    try {
-        // Menggunakan .limit(1) tanpa .single() agar tidak crash jika data kosong
-        const { data, error } = await supabaseClient
-            .from('users_config')
-            .select('urlweb1, urlweb2, urlweb3')
-            .limit(1);
-
-        if (error) {
-            console.error('Detail Error Supabase:', error);
-            // Menampilkan pesan error spesifik ke layar
-            document.getElementById('labelurl1').innerText = 'Error: ' + error.message;
-            return;
-        }
-
-        if (data && data.length > 0) {
-            const row = data[0];
-            document.getElementById('labelurl1').innerText = row.urlweb1 || '-';
-            document.getElementById('labelurl2').innerText = row.urlweb2 || '-';
-            document.getElementById('labelurl3').innerText = row.urlweb3 || '-';
+            inputHasil.value =
+                result.data;
 
         } else {
-            document.getElementById('labelurl1').innerText = 'Tabel kosong (0 baris)';
-            document.getElementById('labelurl2').innerText = '-';
-            document.getElementById('labelurl3').innerText = '-';
+
+            inputHasil.value =
+                "Error: " +
+                result.message;
         }
+
     } catch (err) {
-        console.error('Terjadi kesalahan script:', err);
-        document.getElementById('labelurl1').innerText = 'Error Script JS';
+
+        loader.style.display =
+            'none';
+
+        inputHasil.value =
+            "Gagal terhubung ke server.";
+
+    } finally {
+
+        if (!isAuto)
+            hideProgress();
     }
-	
-
-// 1. Ambil teks dari labelurl3 (isinya: "matahari.site/wap")
-let teksUrl = document.getElementById("labelurl3").innerText;
-
-// 2. Ambil kata sebelum tanda '/' saja -> menghasilkan "matahari.site"
-pokok1 = "https://" + teksUrl.split('/')[0];
-//pokok1 = "jajal";
-
-// 3. Panggil fungsi gabungan Anda agar hasilnya langsung terupdate
-sinkronkanData();	
-	
-	
-	
-	
-	
-	
-	
-	
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    ambilDataUrl();
-});
-			
-		
-		
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-        
-        // Data ListPicker 2 (Pasangan dari spinner 1,2,3,4,5)
-        //const listPicker2 = ["v", "w", "x", "y", "z"];
-
-        // ---------------------------------------------
-
-        // Fungsi untuk menggabungkan saat spinner dipilih
-        function sinkronkanData() {
-		
-const index = document.getElementById("spinnerBos").value;
-const wadahID = document.getElementById("cekiddarisheet");
-let wadahID2 = document.getElementById("labelHasil");
-
-
-if (index === "") {
-  wadahID.textContent = "";
-  wadahID2.textContent = "";
-} else {
-  wadahID.textContent = "ID: " + listPicker1baru[Number(index)];
-//  wadahID2.textContent = listPicker1baru[Number(index)];
 }
 
 
+/* =========================================================
+   COPY RESULT
+   ========================================================= */
 
-		
-		
-		
-		
-            // Ambil index/urutan dari spinner yang sedang dipilih
-            let indexPilihan = document.getElementById("spinnerBos").selectedIndex;
+function copyResultText() {
 
-            // Ambil nilai listPicker berdasarkan urutan index yang sama
-            //let isiList1 = listPicker1[indexPilihan];
-			let isiList1 = listPicker1baru[indexPilihan];
-            //let isiList2 = listPicker2[indexPilihan];
+    const copyText =
+        document.getElementById(
+            "input-hasil-result"
+        );
 
-            // Rumus Gabungan (pokok1 + pokok2 + listpicker1 + pokok3 + listpicker2 + pokok4)
-            //let hasilGabungan = pokok1 + pokok2 + isiList1 + pokok3 + isiList2 + pokok4;
-			
-			
-			//let hasilGabungan = pokok1 + pokok2 + isiList1 + pokok3 ;
-			//let hasilGabungan = pokok1 + pokok2 + listPicker1baru[Number(index)] + pokok3 ;
-			let hasilGabungan = pokokyebi3 + pokok2 + listPicker1baru[Number(index)] + pokok3 ;
-			
-			
-			
+    if (
+        !copyText ||
+        !copyText.value ||
+        copyText.value.includes("Memuat...") ||
+        copyText.value.includes("Error")
+    ) {
 
-            // Tampilkan hasil gabungan ke Label di layar
-            document.getElementById("labelHasil").innerText = hasilGabungan;
+        console.log(
+            "Tidak ada hasil valid untuk di-copy."
+        );
+
+        return;
+    }
+
+    navigator.clipboard
+        .writeText(copyText.value)
+        .then(function() {
+
+            console.log(
+                "Hasil berhasil dicopy!"
+            );
+
+        })
+        .catch(function(err) {
+
+            console.log(
+                "Gagal mengcopy teks: ",
+                err
+            );
+        });
+}
+
+
+/* =========================================================
+   LOAD IFRAME
+   ========================================================= */
+
+function loadIframe(fileHtml) {
+
+    document.getElementById(
+        'content-iframe'
+    ).src = fileHtml;
+}
+
+
+/* =========================================================
+   DATA POKOK
+   ========================================================= */
+
+let pokok1 = "";
+let listPicker1 = [];
+
+const pokok2 =
+    "/wap/user/togel/main/";
+
+const pokok3 =
+    "?type=1&sub_type=";
+
+const pokok4 =
+    "&category=2";
+
+
+/* =========================================================
+   AMBIL DATA URL DARI SUPABASE
+   ========================================================= */
+
+async function ambilDataUrl() {
+
+    try {
+
+        /*
+         * Ambil semua baris, bukan limit(1),
+         * supaya tidak salah mengambil baris kosong.
+         */
+        const { data, error } =
+            await supabaseClient
+                .from('users_config')
+                .select(
+                    'urlweb1, urlweb2, urlweb3'
+                );
+
+        if (error) {
+
+            console.error(
+                'Detail Error Supabase:',
+                error
+            );
+
+            document.getElementById(
+                'labelurl1'
+            ).innerText =
+                'Error: ' + error.message;
+
+            return;
         }
 
-        // Jalankan fungsi satu kali saat halaman pertama kali dibuka 
-        // agar label tidak kosong di awal
-        sinkronkanData();	
-	
-	
-	
+        /*
+         * Cari baris yang mempunyai urlweb3.
+         */
+        let row = null;
+
+        if (
+            data &&
+            data.length > 0
+        ) {
+
+            row =
+                data.find(
+                    function(item) {
+
+                        return (
+                            item &&
+                            item.urlweb3
+                        );
+                    }
+                );
+        }
+
+        if (!row) {
+
+            document.getElementById(
+                'labelurl1'
+            ).innerText =
+                'URL tidak ditemukan';
+
+            document.getElementById(
+                'labelurl2'
+            ).innerText =
+                '-';
+
+            document.getElementById(
+                'labelurl3'
+            ).innerText =
+                '-';
+
+            console.log(
+                "Tidak ditemukan baris users_config yang memiliki urlweb3."
+            );
+
+            return;
+        }
+
+        document.getElementById(
+            'labelurl1'
+        ).innerText =
+            row.urlweb1 || '-';
+
+        document.getElementById(
+            'labelurl2'
+        ).innerText =
+            row.urlweb2 || '-';
+
+        document.getElementById(
+            'labelurl3'
+        ).innerText =
+            row.urlweb3 || '-';
+
+
+        /*
+         * =====================================================
+         * INI BAGIAN PENTING
+         * =====================================================
+         *
+         * Contoh:
+         *
+         * row.urlweb3 =
+         * "https://suntotopunya.com/wap"
+         *
+         * menjadi:
+         *
+         * pokokyebi3 =
+         * "https://suntotopunya.com"
+         */
+
+        let teksUrl =
+            String(
+                row.urlweb3 || ""
+            ).trim();
+
+        teksUrl =
+            teksUrl.replace(
+                /^https?:\/\//i,
+                ''
+            );
+
+        teksUrl =
+            teksUrl.replace(
+                /^www\./i,
+                ''
+            );
+
+        /*
+         * Ambil hanya domain sebelum /
+         */
+        teksUrl =
+            teksUrl.split('/')[0];
+
+        /*
+         * Hasil final
+         */
+        pokokyebi3 =
+            teksUrl
+                ? "https://" + teksUrl
+                : "";
+
+        console.log(
+            "urlweb3 Supabase =",
+            row.urlweb3
+        );
+
+        console.log(
+            "pokokyebi3 =",
+            pokokyebi3
+        );
+
+
+        /*
+         * pokok1 tetap mengikuti urlweb3,
+         * sesuai logika sebelumnya.
+         */
+        pokok1 =
+            pokokyebi3;
+
+
+        /*
+         * Setelah URL siap,
+         * sinkronkan data.
+         */
+        sinkronkanData();
+
+    } catch (err) {
+
+        console.error(
+            'Terjadi kesalahan script JS:',
+            err
+        );
+
+        document.getElementById(
+            'labelurl1'
+        ).innerText =
+            'Error Script JS';
+    }
+}
+
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+        ambilDataUrl();
+    }
+);
+
+
+/* =========================================================
+   SINKRONKAN DATA
+   ========================================================= */
+
+function sinkronkanData() {
+
+    const index =
+        document.getElementById(
+            "spinnerBos"
+        ).value;
+
+    const wadahID =
+        document.getElementById(
+            "cekiddarisheet"
+        );
+
+    let wadahID2 =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    if (index === "") {
+
+        wadahID.textContent = "";
+        wadahID2.textContent = "";
+
+    } else {
+
+        wadahID.textContent =
+            "ID: " +
+            listPicker1baru[
+                Number(index)
+            ];
+    }
+
+    let indexPilihan =
+        document.getElementById(
+            "spinnerBos"
+        ).selectedIndex;
+
+    let isiList1 =
+        listPicker1baru[
+            indexPilihan
+        ];
+
+    /*
+     * =====================================================
+     * URL GABUNGAN SEKARANG MENGGUNAKAN pokokyebi3
+     * =====================================================
+     */
+
+    let hasilGabungan =
+        pokokyebi3 +
+        pokok2 +
+        listPicker1baru[
+            Number(index)
+        ] +
+        pokok3;
+
+    document.getElementById(
+        "labelHasil"
+    ).innerText =
+        hasilGabungan;
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 2B
+   ========================================================= */
+
 function aksiTombolBaru2B() {
-    // 1. Ambil isi textarea dan input number
-    let isiTextarea = document.getElementById("input-bidik-web2").value;
-    let isiAngka = document.getElementById("nilai-input-web2").value;
-    
-    // 2. Gabungkan dengan tanda pagar "#"
-    let teksDicopy = isiTextarea + "#" + isiAngka;
 
-    // 3. Lakukan Copy to Clipboard
-    navigator.clipboard.writeText(teksDicopy).then(() => {
-        console.log("Berhasil copy: " + teksDicopy);
-    }).catch(err => {
-        console.error("Gagal copy: ", err);
-    });
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
 
-    // 4. Tambahkan "penambahan1" ke isi labelHasil yang sudah ada
-    let labelElem = document.getElementById("labelHasil");
-	let isiLabelAsli = labelElem.innerText;
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
 
-    // 5. Gabungkan isi label dengan "penambahan1" HANYA untuk URL tujuan (memori saja)
-    let urlTujuan = isiLabelAsli + "1&category=2";
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
 
-    // 6. Buka tab dengan alamat URL gabungan
-    window.open(urlTujuan, 'tab_andalan');
-	
-}	
-	
-	
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "1&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 2D
+   ========================================================= */
+
 function aksiTombolBaru2D() {
-    // 1. Ambil isi textarea dan input number
-    let isiTextarea = document.getElementById("input-bidik-web2").value;
-    let isiAngka = document.getElementById("nilai-input-web2").value;
-    
-    // 2. Gabungkan dengan tanda pagar "#"
-    let teksDicopy = isiTextarea + "#" + isiAngka;
 
-    // 3. Lakukan Copy to Clipboard
-    navigator.clipboard.writeText(teksDicopy).then(() => {
-        console.log("Berhasil copy: " + teksDicopy);
-    }).catch(err => {
-        console.error("Gagal copy: ", err);
-    });
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
 
-    // 4. Tambahkan "penambahan1" ke isi labelHasil yang sudah ada
-    let labelElem = document.getElementById("labelHasil");
-	let isiLabelAsli = labelElem.innerText;
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
 
-    // 5. Gabungkan isi label dengan "penambahan1" HANYA untuk URL tujuan (memori saja)
-    let urlTujuan = isiLabelAsli + "4&category=2";
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
 
-    // 6. Buka tab dengan alamat URL gabungan
-    window.open(urlTujuan, 'tab_andalan');
-}		
-	
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "4&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 2T
+   ========================================================= */
+
 function aksiTombolBaru2T() {
-    // 1. Ambil isi textarea dan input number
-    let isiTextarea = document.getElementById("input-bidik-web2").value;
-    let isiAngka = document.getElementById("nilai-input-web2").value;
-    
-    // 2. Gabungkan dengan tanda pagar "#"
-    let teksDicopy = isiTextarea + "#" + isiAngka;
 
-    // 3. Lakukan Copy to Clipboard
-    navigator.clipboard.writeText(teksDicopy).then(() => {
-        console.log("Berhasil copy: " + teksDicopy);
-    }).catch(err => {
-        console.error("Gagal copy: ", err);
-    });
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
 
-    // 4. Tambahkan "penambahan1" ke isi labelHasil yang sudah ada
-    let labelElem = document.getElementById("labelHasil");
-	let isiLabelAsli = labelElem.innerText;
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
 
-    // 5. Gabungkan isi label dengan "penambahan1" HANYA untuk URL tujuan (memori saja)
-    let urlTujuan = isiLabelAsli + "3&category=2";
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
 
-    // 6. Buka tab dengan alamat URL gabungan
-    window.open(urlTujuan, 'tab_andalan');
-}			
-	
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "3&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 3D
+   ========================================================= */
+
 function aksiTombolBaru3D() {
-    // 1. Ambil isi textarea dan input number
-    let isiTextarea = document.getElementById("input-bidik-web2").value;
-    let isiAngka = document.getElementById("nilai-input-web2").value;
-    
-    // 2. Gabungkan dengan tanda pagar "#"
-    let teksDicopy = isiTextarea + "#" + isiAngka;
 
-    // 3. Lakukan Copy to Clipboard
-    navigator.clipboard.writeText(teksDicopy).then(() => {
-        console.log("Berhasil copy: " + teksDicopy);
-    }).catch(err => {
-        console.error("Gagal copy: ", err);
-    });
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
 
-    // 4. Tambahkan "penambahan1" ke isi labelHasil yang sudah ada
-    let labelElem = document.getElementById("labelHasil");
-	let isiLabelAsli = labelElem.innerText;
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
 
-    // 5. Gabungkan isi label dengan "penambahan1" HANYA untuk URL tujuan (memori saja)
-    let urlTujuan = isiLabelAsli + "2&category=2";
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
 
-    // 6. Buka tab dengan alamat URL gabungan
-    window.open(urlTujuan, 'tab_andalan');
-}		
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
 
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "2&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 3B
+   ========================================================= */
 
 function aksiTombolBaru3B() {
-    // 1. Ambil isi textarea dan input number
-    let isiTextarea = document.getElementById("input-bidik-web2").value;
-    let isiAngka = document.getElementById("nilai-input-web2").value;
-    
-    // 2. Gabungkan dengan tanda pagar "#"
-    let teksDicopy = isiTextarea + "#" + isiAngka;
 
-    // 3. Lakukan Copy to Clipboard
-    navigator.clipboard.writeText(teksDicopy).then(() => {
-        console.log("Berhasil copy: " + teksDicopy);
-    }).catch(err => {
-        console.error("Gagal copy: ", err);
-    });
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
 
-    // 4. Tambahkan "penambahan1" ke isi labelHasil yang sudah ada
-    let labelElem = document.getElementById("labelHasil");
-	let isiLabelAsli = labelElem.innerText;
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
 
-    // 5. Gabungkan isi label dengan "penambahan1" HANYA untuk URL tujuan (memori saja)
-    let urlTujuan = isiLabelAsli + "1&category=2";
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
 
-    // 6. Buka tab dengan alamat URL gabungan
-    window.open(urlTujuan, 'tab_andalan');
-}	
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
 
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
 
+        })
+        .catch(err => {
 
-	
-	
-	
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "1&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
 
 </script>
 
