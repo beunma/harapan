@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Supabase - users_config</title>
+
+<!-- SUPABASE JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 15px;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+}
+
+h2 {
+    margin: 0 0 15px 0;
+}
+
+.panel {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+input[readonly] {
+    background: #e2e8f0;
+}
+
+.button-area {
+    margin-top: 15px;
+}
+
+button {
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+button:hover {
+    opacity: .85;
+}
+
+.btn-save {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-refresh {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-cancel {
+    background: #64748b;
+    color: white;
+}
+
+.btn-edit {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-delete {
+    background: #dc2626;
+    color: white;
+}
+
+.status {
+    margin-top: 12px;
+    padding: 10px;
+    background: #eff6ff;
+    border-radius: 6px;
+    min-height: 38px;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1500px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 8px;
+    font-size: 13px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #e2e8f0;
+    white-space: nowrap;
+}
+
+td {
+    background: white;
+}
+
+.url-cell {
+    min-width: 220px;
+    word-break: break-all;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.mode-edit {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+}
+
+.count {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ================================
+   RESPONSIVE
+   ================================ */
+
+@media (max-width: 900px) {
+
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body {
+        padding: 8px;
+    }
+
+    .panel {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Supabase — users_config</h2>
+
+
+    <!-- =====================================================
+         FORM DATA
+         ===================================================== -->
+
+    <div id="formPanel" class="panel">
+
+        <h3 id="formTitle">Tambah Data</h3>
+
+        <!-- ID disimpan untuk mode EDIT -->
+        <input type="hidden" id="editId">
+
+
+        <div class="form-grid">
+
+            <!-- USER HTML -->
+            <div class="form-group">
+                <label>User HTML</label>
+                <input
+                    type="text"
+                    id="user_html"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- PASSWORD HTML -->
+            <div class="form-group">
+                <label>Password HTML</label>
+                <input
+                    type="text"
+                    id="pass_html"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- USER WEB 1 -->
+            <div class="form-group">
+                <label>User Web 1</label>
+                <input
+                    type="text"
+                    id="userweb1"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- PASSWORD WEB 1 -->
+            <div class="form-group">
+                <label>Password Web 1</label>
+                <input
+                    type="text"
+                    id="passweb1"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- USER WEB 2 -->
+            <div class="form-group">
+                <label>User Web 2</label>
+                <input
+                    type="text"
+                    id="userweb2"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- PASSWORD WEB 2 -->
+            <div class="form-group">
+                <label>Password Web 2</label>
+                <input
+                    type="text"
+                    id="passweb2"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- ROLE -->
+            <div class="form-group">
+                <label>Role</label>
+
+                <select id="role">
+
+                    <option value="user">
+                        user
+                    </option>
+
+                    <option value="viewer">
+                        viewer
+                    </option>
+
+                    <option value="admin">
+                        admin
+                    </option>
+
+                </select>
+            </div>
+
+
+            <!-- URL WEB 1 -->
+            <div class="form-group">
+                <label>URL Web 1</label>
+                <input
+                    type="text"
+                    id="urlweb1"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- URL WEB 2 -->
+            <div class="form-group">
+                <label>URL Web 2</label>
+                <input
+                    type="text"
+                    id="urlweb2"
+                    autocomplete="off">
+            </div>
+
+
+            <!-- URL WEB 3 -->
+            <div class="form-group">
+                <label>URL Web 3</label>
+                <input
+                    type="text"
+                    id="urlweb3"
+                    autocomplete="off">
+            </div>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <div class="button-area">
+
+            <button
+                class="btn-save"
+                onclick="simpanData()">
+                Simpan
+            </button>
+
+
+            <button
+                id="btnCancel"
+                class="btn-cancel hidden"
+                onclick="batalEdit()">
+                Batal Edit
+            </button>
+
+
+            <button
+                class="btn-refresh"
+                onclick="ambilData()">
+                Refresh
+            </button>
+
+        </div>
+
+
+        <!-- STATUS -->
+        <div id="status" class="status">
+            Siap.
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TABEL DATA
+         ===================================================== -->
+
+    <div class="panel">
+
+        <h3>Data dari Supabase</h3>
+
+        <div id="jumlahData" class="count">
+            Data: 0
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Created At</th>
+
+                        <th>User HTML</th>
+
+                        <th>Pass HTML</th>
+
+                        <th>User Web 1</th>
+
+                        <th>Pass Web 1</th>
+
+                        <th>User Web 2</th>
+
+                        <th>Pass Web 2</th>
+
+                        <th>Role</th>
+
+                        <th>URL Web 1</th>
+
+                        <th>URL Web 2</th>
+
+                        <th>URL Web 3</th>
+
+                        <th>Aksi</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="dataTable">
+
+                    <tr>
+
+                        <td colspan="13">
+                            Memuat data...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* ============================================================
+   KONFIGURASI SUPABASE
+   ============================================================
+
+   GANTI BAGIAN DI BAWAH INI DENGAN DATA SUPABASE BOSS.
+
+   Jangan memasukkan password akun Supabase.
+   Yang digunakan di sini adalah Publishable/Anon Key.
+   ============================================================ 
+
+const SUPABASE_URL =
+    "https://qhlutwgdpspukgjelzjw.supabase.co";
+
+const SUPABASE_KEY =
+    "Msb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG"; */
+	
+/* ============================================================
+   KONFIGURASI SUPABASE
+   ============================================================ */
+
+const SUPABASE_URL =
+    "https://qhlutwgdpspukgjelzjw.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG";
+
+
+/* ============================================================
+   NAMA TABEL
+   ============================================================ */
+
+const TABLE_NAME = "users_config";
+
+
+/* ============================================================
+   BUAT CLIENT SUPABASE
+   ============================================================ */
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+function setStatus(pesan) {
+
+    document.getElementById("status").textContent =
+        pesan;
+
+    console.log(pesan);
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+   ============================================================ */
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* ============================================================
+   READ
+   AMBIL SEMUA DATA SUPABASE
+   ============================================================ */
+
+async function ambilData() {
+
+    setStatus("Mengambil data dari Supabase...");
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from(TABLE_NAME)
+        .select("*")
+        .order("id", {
+            ascending: true
+        });
+
+
+    if (error) {
+
+        console.log(error);
+
+        setStatus(
+            "GAGAL mengambil data: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    console.log("Data Supabase:", data);
+
+
+    tampilkanData(data);
+
+
+    setStatus(
+        "Berhasil mengambil " +
+        data.length +
+        " data."
+    );
+}
+
+
+/* ============================================================
+   TAMPILKAN DATA
+   ============================================================ */
+
+function tampilkanData(data) {
+
+    const tbody =
+        document.getElementById("dataTable");
+
+    tbody.innerHTML = "";
+
+
+    document.getElementById("jumlahData")
+        .textContent =
+        "Data: " + data.length;
+
+
+    if (!data || data.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="13">
+                    Tidak ada data.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    data.forEach(function(row) {
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>
+                ${escapeHTML(row.id)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.created_at)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.user_html)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.pass_html)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.userweb1)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.passweb1)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.userweb2)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.passweb2)}
+            </td>
+
+            <td>
+                ${escapeHTML(row.role)}
+            </td>
+
+            <td class="url-cell">
+                ${escapeHTML(row.urlweb1)}
+            </td>
+
+            <td class="url-cell">
+                ${escapeHTML(row.urlweb2)}
+            </td>
+
+            <td class="url-cell">
+                ${escapeHTML(row.urlweb3)}
+            </td>
+
+            <td class="actions">
+
+                <button
+                    class="btn-edit"
+                    onclick='editData(${JSON.stringify(row)})'>
+                    Edit
+                </button>
+
+                <button
+                    class="btn-delete"
+                    onclick="hapusData(${Number(row.id)})">
+                    Hapus
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+}
+
+
+/* ============================================================
+   AMBIL NILAI FORM
+   ============================================================ */
+
+/* ============================================================
+   AMBIL NILAI FORM
+   ============================================================ */
+
+function ambilNilaiForm() {
+
+    return {
+
+        user_html:
+            document.getElementById("user_html").value || null,
+
+        pass_html:
+            document.getElementById("pass_html").value || null,
+
+        userweb1:
+            document.getElementById("userweb1").value || null,
+
+        passweb1:
+            document.getElementById("passweb1").value || null,
+
+        userweb2:
+            document.getElementById("userweb2").value || null,
+
+        passweb2:
+            document.getElementById("passweb2").value || null,
+
+        role:
+            document.getElementById("role").value || null,
+
+        urlweb1:
+            document.getElementById("urlweb1").value || null,
+
+        urlweb2:
+            document.getElementById("urlweb2").value || null,
+
+        urlweb3:
+            document.getElementById("urlweb3").value || null
+
+    };
+}
+
+
+/* ============================================================
+   INSERT / UPDATE
+   ============================================================ */
+
+async function simpanData() {
+
+    const id =
+        document.getElementById("editId").value;
+
+
+    const data =
+        ambilNilaiForm();
+
+
+    /* ========================================================
+       UPDATE
+       ======================================================== */
+
+    if (id) {
+
+        setStatus(
+            "Mengubah data ID " + id + "..."
+        );
+
+
+        const {
+            error
+        } = await db
+            .from(TABLE_NAME)
+            .update(data)
+            .eq("id", id);
+
+
+        if (error) {
+
+            console.log(error);
+
+            setStatus(
+                "GAGAL UPDATE: " +
+                error.message
+            );
+
+            return;
+        }
+
+
+        setStatus(
+            "Data ID " +
+            id +
+            " berhasil diubah."
+        );
+
+    }
+
+
+    /* ========================================================
+       INSERT
+       ======================================================== */
+
+    else {
+
+        setStatus(
+            "Menambahkan data..."
+        );
+
+
+        const {
+            data: hasil,
+            error
+        } = await db
+            .from(TABLE_NAME)
+            .insert([data])
+            .select();
+
+
+        if (error) {
+
+            console.log(error);
+
+            setStatus(
+                "GAGAL INSERT: " +
+                error.message
+            );
+
+            return;
+        }
+
+
+        console.log(
+            "Data baru:",
+            hasil
+        );
+
+
+        setStatus(
+            "Data baru berhasil ditambahkan."
+        );
+    }
+
+
+    kosongkanForm();
+
+    await ambilData();
+}
+
+
+/* ============================================================
+   EDIT DATA
+   ============================================================ */
+
+function editData(row) {
+
+    document.getElementById("editId").value =
+        row.id ?? "";
+
+
+    document.getElementById("user_html").value =
+        row.user_html ?? "";
+
+
+    document.getElementById("pass_html").value =
+        row.pass_html ?? "";
+
+
+    document.getElementById("userweb1").value =
+        row.userweb1 ?? "";
+
+
+    document.getElementById("passweb1").value =
+        row.passweb1 ?? "";
+
+
+    document.getElementById("userweb2").value =
+        row.userweb2 ?? "";
+
+
+    document.getElementById("passweb2").value =
+        row.passweb2 ?? "";
+
+
+    document.getElementById("role").value =
+        row.role ?? "user";
+
+
+    document.getElementById("urlweb1").value =
+        row.urlweb1 ?? "";
+
+
+    document.getElementById("urlweb2").value =
+        row.urlweb2 ?? "";
+
+
+    document.getElementById("urlweb3").value =
+        row.urlweb3 ?? "";
+
+
+    document.getElementById("formTitle").textContent =
+        "EDIT DATA ID " + row.id;
+
+
+    document.getElementById("formPanel")
+        .classList.add("mode-edit");
+
+
+    document.getElementById("btnCancel")
+        .classList.remove("hidden");
+
+
+    setStatus(
+        "Mode EDIT ID " +
+        row.id +
+        ". Silakan ubah data lalu klik Simpan."
+    );
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* ============================================================
+   BATAL EDIT
+   ============================================================ */
+
+function batalEdit() {
+
+    kosongkanForm();
+
+    setStatus(
+        "Mode edit dibatalkan."
+    );
+}
+
+
+/* ============================================================
+   KOSONGKAN FORM
+   ============================================================ */
+
+function kosongkanForm() {
+
+    document.getElementById("editId").value =
+        "";
+
+
+    document.getElementById("user_html").value =
+        "";
+
+
+    document.getElementById("pass_html").value =
+        "";
+
+
+    document.getElementById("userweb1").value =
+        "";
+
+
+    document.getElementById("passweb1").value =
+        "";
+
+
+    document.getElementById("userweb2").value =
+        "";
+
+
+    document.getElementById("passweb2").value =
+        "";
+
+
+    document.getElementById("role").value =
+        "user";
+
+
+    document.getElementById("urlweb1").value =
+        "";
+
+
+    document.getElementById("urlweb2").value =
+        "";
+
+
+    document.getElementById("urlweb3").value =
+        "";
+
+
+    document.getElementById("formTitle").textContent =
+        "Tambah Data";
+
+
+    document.getElementById("formPanel")
+        .classList.remove("mode-edit");
+
+
+    document.getElementById("btnCancel")
+        .classList.add("hidden");
+}
+
+
+/* ============================================================
+   DELETE
+   ============================================================ */
+
+async function hapusData(id) {
+
+    /*
+       Menggunakan confirm bawaan browser untuk
+       memastikan user memang ingin menghapus.
+    */
+
+    const yakin =
+        confirm(
+            "Yakin ingin menghapus data ID " +
+            id +
+            " ?"
+        );
+
+
+    if (!yakin) {
+
+        setStatus(
+            "Penghapusan dibatalkan."
+        );
+
+        return;
+    }
+
+
+    setStatus(
+        "Menghapus data ID " +
+        id +
+        "..."
+    );
+
+
+    const {
+        error
+    } = await db
+        .from(TABLE_NAME)
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+        console.log(error);
+
+        setStatus(
+            "GAGAL DELETE: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    setStatus(
+        "Data ID " +
+        id +
+        " berhasil dihapus."
+    );
+
+
+    await ambilData();
+}
+
+
+/* ============================================================
+   REFRESH OTOMATIS
+   ============================================================ */
+
+async function refreshData() {
+
+    await ambilData();
+}
+
+
+/* ============================================================
+   START
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        console.log(
+            "HTML Supabase CRUD dimulai..."
+        );
+
+        ambilData();
+
+    }
+);
+
+</script>
+
+<button
+    type="button"
+    onclick="window.open('https://linkmasuk.id/', '_blank')">
+    Link Masuk
+</button>
+
+
+</body>
+</html>
