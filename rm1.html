@@ -1,431 +1,2511 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisis</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 1300px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { margin-top: 0; color: #2c3e50; }
-        h3 { color: #2980b9; font-size: 16px; border-bottom: 2px solid #ecf0f1; padding-bottom: 6px; margin-top: 30px; }
-        label { font-weight: bold; display: block; margin-bottom: 8px; }
-        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 14px; box-sizing: border-box; margin-bottom: 10px; height: 100px; resize: vertical; }
-        button { background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button:hover { background-color: #219653; }
-        .col-group { display: flex; gap: 15px; flex-wrap: wrap; }
-        .col { flex: 1; min-width: 300px; }
-        .result-box { background: #ecf0f1; padding: 12px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; line-height: 1.6; font-size: 13px; max-height: 180px; overflow-y: auto; }
-        .panel-engine { border: 1px solid #bdc3c7; border-radius: 6px; padding: 15px; background: #fafbfc; margin-top: 15px; }
-        
-        /* Style Kartu Level Adu Bobot */
-        .card-level { background: #fff; border-left: 5px solid #2980b9; border-top: 1px solid #dcdde1; border-right: 1px solid #dcdde1; border-bottom: 1px solid #dcdde1; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
-        .card-level.rank-p1 { border-left-color: #27ae60; background: #f0fff4; } /* 37% Terlemah x Terkuat */
-        .card-level.rank-p2 { border-left-color: #3498db; background: #f0f8ff; } /* 33% Terlemah x Terlemah */
-        .card-level.rank-p3 { border-left-color: #e67e22; background: #fffaf0; } /* 30% Terkuat x Terkuat */
-        
-        .level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .level-title { font-weight: bold; font-size: 13px; color: #2c3e50; }
-        .tag-col { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #fff; margin-right: 6px; }
-        .tag-c1 { background-color: #e74c3c; }
-        .tag-c2 { background-color: #8e44ad; }
-        .tag-c3 { background-color: #2980b9; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisis RM1 - Backtest HIT FAIL</title>
 
-        .btn-group { display: flex; gap: 5px; }
-        .btn-copy { background-color: #2980b9; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .btn-copy:hover { background-color: #1f618d; }
-        .btn-reset { background-color: #c0392b; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .btn-reset:hover { background-color: #962d22; }
-        #btnProsesKedua { background-color: #2980b9; display: none; width: 100%; margin-top: 20px; }
-        .note { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
-    </style>
+<style>
+body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#f4f6f9;
+    color:#333;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1400px;
+    margin:0 auto;
+    background:#fff;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+
+h2{
+    margin-top:0;
+    color:#2c3e50;
+}
+
+h3{
+    color:#2980b9;
+    font-size:16px;
+    border-bottom:2px solid #ecf0f1;
+    padding-bottom:6px;
+    margin-top:30px;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-bottom:8px;
+}
+
+textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    font-family:monospace;
+    font-size:14px;
+    box-sizing:border-box;
+    margin-bottom:10px;
+    height:100px;
+    resize:vertical;
+}
+
+button{
+    background:#27ae60;
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    font-size:15px;
+    border-radius:4px;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.col-group{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.col{
+    flex:1;
+    min-width:300px;
+}
+
+.note{
+    font-size:12px;
+    color:#7f8c8d;
+    margin-top:5px;
+}
+
+.result-box{
+    background:#ecf0f1;
+    padding:12px;
+    border-radius:4px;
+    font-family:monospace;
+    white-space:pre-wrap;
+    line-height:1.6;
+    font-size:13px;
+    max-height:180px;
+    overflow-y:auto;
+}
+
+.panel{
+    border:1px solid #bdc3c7;
+    border-radius:6px;
+    padding:15px;
+    background:#fafbfc;
+    margin-top:15px;
+}
+
+#btnProsesKedua{
+    background:#2980b9;
+    display:none;
+    width:100%;
+    margin-top:20px;
+}
+
+/* =========================
+   AM TAMBAHAN
+========================= */
+
+.am-panel{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.am-card{
+    background:#fff;
+    border:1px solid #dcdde1;
+    border-left:5px solid #8e44ad;
+    border-radius:6px;
+    padding:12px;
+}
+
+.am-title{
+    font-weight:bold;
+    color:#2c3e50;
+    margin-bottom:8px;
+}
+
+.am-source{
+    font-family:monospace;
+    font-size:12px;
+    margin-bottom:8px;
+    color:#555;
+}
+
+.am-value{
+    font-family:monospace;
+    font-size:16px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+/* =========================
+   BACKTEST
+========================= */
+
+.backtest-summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:15px;
+}
+
+.stat-card{
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:12px;
+    text-align:center;
+}
+
+.stat-title{
+    font-size:12px;
+    color:#777;
+}
+
+.stat-value{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+.stat-hit{
+    color:#27ae60;
+}
+
+.stat-fail{
+    color:#c0392b;
+}
+
+.stat-rate{
+    color:#2980b9;
+}
+
+/* =========================
+   RANKING
+========================= */
+
+.rank-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.rank-column{
+    border:1px solid #ddd;
+    border-radius:7px;
+    overflow:hidden;
+    background:#fff;
+}
+
+.rank-header{
+    background:#34495e;
+    color:#fff;
+    padding:12px;
+    font-weight:bold;
+}
+
+.rank-item{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+.rank-item:last-child{
+    border-bottom:none;
+}
+
+.rank-number{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.rank-p1{
+    color:#d4ac0d;
+}
+
+.rank-p2{
+    color:#7f8c8d;
+}
+
+.rank-p3{
+    color:#cd7f32;
+}
+
+.pair-big{
+    font-family:monospace;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.rank-meta{
+    font-size:12px;
+    line-height:1.6;
+    margin-top:5px;
+}
+
+.progress{
+    height:8px;
+    background:#eee;
+    border-radius:5px;
+    overflow:hidden;
+    margin-top:5px;
+}
+
+.progress-bar{
+    height:100%;
+    background:#27ae60;
+}
+
+/* =========================
+   ENGINE
+========================= */
+
+.card-level{
+    background:#fff;
+    border-left:5px solid #2980b9;
+    border-top:1px solid #dcdde1;
+    border-right:1px solid #dcdde1;
+    border-bottom:1px solid #dcdde1;
+    padding:10px 14px;
+    border-radius:6px;
+    margin-bottom:12px;
+    box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+
+.tag-col{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:12px;
+    font-size:11px;
+    font-weight:bold;
+    color:#fff;
+    margin-right:6px;
+}
+
+.tag-c1{background:#e74c3c;}
+.tag-c2{background:#8e44ad;}
+.tag-c3{background:#2980b9;}
+
+.level-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+}
+
+.level-title{
+    font-weight:bold;
+    font-size:13px;
+    color:#2c3e50;
+}
+
+.btn-group{
+    display:flex;
+    gap:5px;
+}
+
+.btn-copy{
+    background:#2980b9;
+    color:#fff;
+    border:none;
+    padding:5px 12px;
+    border-radius:3px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:bold;
+    margin-top:0;
+}
+
+.btn-reset{
+    background:#c0392b;
+    color:#fff;
+    border:none;
+    padding:5px 12px;
+    border-radius:3px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:bold;
+    margin-top:0;
+}
+
+/* =========================
+   WADAH
+========================= */
+
+.wadah-row{
+    margin-top:10px;
+}
+
+@media(max-width:900px){
+    .am-panel,
+    .rank-grid,
+    .backtest-summary{
+        grid-template-columns:1fr;
+    }
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <!-- <h2>Dashboard Analisis Lanjutan (Asimetris Cross Engine 37%-33%-30%)</h2> -->
-    
-    <label for="inputData">Masukkan Data RM1 :</label>
-    <textarea id="inputData" placeholder="Contoh: 3256, 4578, 3283, 0545"></textarea>
-    <div id="infoInput" class="note">Jumlah Input: 0</div>
-    
-    <button onclick="prosesPertama()">Proses 1</button>
 
-    <h3>1. Hasil Brute Force (Bisa Diedit Manual)</h3>
-    <div class="col-group">
-        <div class="col">
-            <label>Kolom 1 :</label>
-            <textarea id="bfCol1" class="result-box" style="height: 130px;"></textarea>
-        </div>
-        <div class="col">
-            <label>Kolom 2 :</label>
-            <textarea id="bfCol2" class="result-box" style="height: 130px;"></textarea>
-        </div>
-        <div class="col">
-            <label>Kolom 3 :</label>
-            <textarea id="bfCol3" class="result-box" style="height: 130px;"></textarea>
-        </div>
-    </div>
+<!-- <h2>Analisis RM1 — Backtest HIT/FAIL</h2> -->
 
-    <button id="btnProsesKedua" onclick="prosesKedua()">Proses 2</button>
+<label for="inputData">Masukkan Data RM1 :</label>
 
-    <!-- BAGIAN 2: ADU ENGINE LEVEL GLOBAL -->
-    <div id="areaLevel" style="display:none;">
-        <h3>2. Engine Level</h3>
-        <!-- <div class="note" style="margin-bottom:10px;">* Diurutkan berdasarkan statistik dominasi: Silang Terlemah x Terkuat (37%), Terlemah x Terlemah (33%), dan Terkuat x Terkuat (30%).</div> -->
-        
-        <div id="globalEngineContainer"></div>
+<textarea
+id="inputData"
+placeholder=""></textarea>
 
-        <!-- 3. WADAH SALINAN DENGAN TOMBOL RESET -->
-        <h3>3. Wadah Salinan</h3>
-        <div class="panel-engine">
-            <div class="level-header">
-                <span id="lblWadahDD" class="level-title">Wadah Kolom 1 (0 LN)</span>
-                <div class="btn-group">
-                    <button class="btn-reset" onclick="resetWadah('DD')">Reset</button>
-                    <button class="btn-copy" onclick="copyWadah('wadahBoxDD', this)">Copy</button>
-                </div>
-            </div>
-            <div id="wadahBoxDD" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
-
-            <div class="level-header" style="margin-top:10px;">
-                <span id="lblWadahDT" class="level-title">Wadah Kolom 2 (0 LN)</span>
-                <div class="btn-group">
-                    <button class="btn-reset" onclick="resetWadah('DT')">Reset</button>
-                    <button class="btn-copy" onclick="copyWadah('wadahBoxDT', this)">Copy</button>
-                </div>
-            </div>
-            <div id="wadahBoxDT" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
-
-            <div class="level-header" style="margin-top:10px;">
-                <span id="lblWadahDB" class="level-title">Wadah Kolom 3 (0 LN)</span>
-                <div class="btn-group">
-                    <button class="btn-reset" onclick="resetWadah('DB')">Reset</button>
-                    <button class="btn-copy" onclick="copyWadah('wadahBoxDB', this)">Copy</button>
-                </div>
-            </div>
-            <div id="wadahBoxDB" class="result-box" style="max-height: 80px; margin-top:4px;">-</div>
-
-            <div class="level-header" style="margin-top:15px;">
-                <span id="lbl3DD" class="level-title">3DD = 0 LN</span>
-                <button class="btn-copy" onclick="copyWadah('box3DD', this)">Copy</button>
-            </div>
-            <div id="box3DD" class="result-box" style="max-height: 90px; margin-top:4px;">-</div>
-
-            <div class="level-header" style="margin-top:15px;">
-                <span id="lbl3DB" class="level-title">3DB = 0 LN</span>
-                <button class="btn-copy" onclick="copyWadah('box3DB', this)">Copy</button>
-            </div>
-            <div id="box3DB" class="result-box" style="max-height: 90px; margin-top:4px;">-</div>
-        </div>
-    </div>
+<div id="infoInput" class="note">
+Jumlah Input: 0
 </div>
 
+<button onclick="prosesPertama()">Proses 1</button>
+
+
+<!-- =========================================================
+     1. BRUTE FORCE / AM UTAMA
+========================================================= -->
+
+<h3>1. Hasil Utama</h3>
+
+<div class="col-group">
+
+<div class="col">
+<label>Kolom 1 :</label>
+<textarea id="bfCol1" style="height:130px;"></textarea>
+</div>
+
+<div class="col">
+<label>Kolom 2 :</label>
+<textarea id="bfCol2" style="height:130px;"></textarea>
+</div>
+
+<div class="col">
+<label>Kolom 3 :</label>
+<textarea id="bfCol3" style="height:130px;"></textarea>
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     AM TAMBAHAN
+========================================================= -->
+
+<h3>2. 3 Tambahan</h3>
+
+<div class="am-panel">
+
+<div class="am-card">
+<div class="am-title">Kolom 1</div>
+<div id="amSource1" class="am-source">-</div>
+<div id="amExtra1" class="am-value">-</div>
+</div>
+
+<div class="am-card">
+<div class="am-title">Kolom 2</div>
+<div id="amSource2" class="am-source">-</div>
+<div id="amExtra2" class="am-value">-</div>
+</div>
+
+<div class="am-card">
+<div class="am-title">Kolom 3</div>
+<div id="amSource3" class="am-source">-</div>
+<div id="amExtra3" class="am-value">-</div>
+</div>
+
+</div>
+
+
+<button id="btnProsesKedua" onclick="prosesKedua()">
+Proses 2
+</button>
+
+
+<!-- =========================================================
+     BACKTEST
+========================================================= -->
+
+<div id="areaBacktest" style="display:none;">
+
+<h3>3. Backtest HIT / FAIL</h3>
+
+<div class="note">
+Backtest berjalan secara walk-forward. Setiap hasil hanya diuji
+menggunakan data yang sudah tersedia sebelum hasil tersebut muncul.
+</div>
+
+<div class="backtest-summary">
+
+<div class="stat-card">
+<div class="stat-title">Total Test</div>
+<div id="totalTest" class="stat-value">0</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">Top 1 HIT</div>
+<div id="top1Hit" class="stat-value stat-hit">0</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">Top 3 HIT</div>
+<div id="top3Hit" class="stat-value stat-hit">0</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">Top 3 Hit Rate</div>
+<div id="top3Rate" class="stat-value stat-rate">0%</div>
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="level-title">
+Ringkasan Backtest
+</div>
+
+<div id="backtestDetail" class="result-box" style="max-height:220px;">
+-
+</div>
+
+</div>
+
+
+<h3>Ranking Berdasarkan Backtest</h3>
+
+<div class="rank-grid">
+
+<div class="rank-column">
+<div class="rank-header">
+Kolom 1
+</div>
+<div id="rankCol1">-</div>
+</div>
+
+<div class="rank-column">
+<div class="rank-header">
+Kolom 2
+</div>
+<div id="rankCol2">-</div>
+</div>
+
+<div class="rank-column">
+<div class="rank-header">
+Kolom 3
+</div>
+<div id="rankCol3">-</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     ENGINE LEVEL
+========================================================= -->
+
+<div id="areaLevel" style="display:none;">
+
+<h3>4. Engine Level</h3>
+
+<div id="globalEngineContainer"></div>
+
+
+<!-- =========================================================
+     WADAH
+========================================================= -->
+
+<h3>5. Wadah Salinan</h3>
+
+<div class="panel">
+
+<div class="level-header">
+<span id="lblWadahDD" class="level-title">
+Wadah Kolom 1 (0 LN)
+</span>
+
+<div class="btn-group">
+<button class="btn-reset" onclick="resetWadah('DD')">
+Reset
+</button>
+
+<button class="btn-copy" onclick="copyWadah('wadahBoxDD',this)">
+Copy
+</button>
+</div>
+</div>
+
+<div id="wadahBoxDD" class="result-box"
+style="max-height:80px;margin-top:4px;">
+-
+</div>
+
+
+<div class="level-header wadah-row">
+<span id="lblWadahDT" class="level-title">
+Wadah Kolom 2 (0 LN)
+</span>
+
+<div class="btn-group">
+<button class="btn-reset" onclick="resetWadah('DT')">
+Reset
+</button>
+
+<button class="btn-copy" onclick="copyWadah('wadahBoxDT',this)">
+Copy
+</button>
+</div>
+</div>
+
+<div id="wadahBoxDT" class="result-box"
+style="max-height:80px;margin-top:4px;">
+-
+</div>
+
+
+<div class="level-header wadah-row">
+<span id="lblWadahDB" class="level-title">
+Wadah Kolom 3 (0 LN)
+</span>
+
+<div class="btn-group">
+<button class="btn-reset" onclick="resetWadah('DB')">
+Reset
+</button>
+
+<button class="btn-copy" onclick="copyWadah('wadahBoxDB',this)">
+Copy
+</button>
+</div>
+</div>
+
+<div id="wadahBoxDB" class="result-box"
+style="max-height:80px;margin-top:4px;">
+-
+</div>
+
+
+<div class="level-header" style="margin-top:15px;">
+<span id="lbl3DD" class="level-title">
+3DD = 0 LN
+</span>
+
+<button class="btn-copy" onclick="copyWadah('box3DD',this)">
+Copy
+</button>
+</div>
+
+<div id="box3DD" class="result-box"
+style="max-height:90px;margin-top:4px;">
+-
+</div>
+
+
+<div class="level-header" style="margin-top:15px;">
+<span id="lbl3DB" class="level-title">
+3DB = 0 LN
+</span>
+
+<button class="btn-copy" onclick="copyWadah('box3DB',this)">
+Copy
+</button>
+</div>
+
+<div id="box3DB" class="result-box"
+style="max-height:90px;margin-top:4px;">
+-
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
+
+/* ============================================================
+   DATA GLOBAL
+============================================================ */
+
 let globalProcessedData = [];
+
 let wadahData = {
-    DD: new Set(),
-    DT: new Set(),
-    DB: new Set()
+    DD:new Set(),
+    DT:new Set(),
+    DB:new Set()
 };
 
-function getCombinations(arr, k) {
-    if (k === 0) return [[]];
-    if (arr.length === 0) return [];
-    let head = arr[0];
-    let tail = arr.slice(1);
-    return [...getCombinations(tail, k - 1).map(c => [head, ...c]), ...getCombinations(tail, k)];
-}
+let currentRanking = {
+    C1:[],
+    C2:[],
+    C3:[]
+};
 
-function getMultipleAdaptiveAM(rowsData, extractorFunc) {
-    let candidateSet = new Set();
-    for (let i = 0; i < rowsData.length - 1; i++) {
-        let val = extractorFunc(rowsData[i + 1]);
-        if (val) { for (let char of val) candidateSet.add(char); }
-    }
-    let candidateArray = Array.from(candidateSet).sort();
-    if (candidateArray.length === 0) return [];
 
-    let validResults = [];
-    let maxLen = Math.min(5, candidateArray.length);
-    for (let len = 3; len <= maxLen; len++) {
-        let combos = getCombinations(candidateArray, len);
-        for (let combo of combos) {
-            let comboSet = new Set(combo);
-            let isValid = true;
-            for (let i = 0; i < rowsData.length - 1; i++) {
-                let targetVal = extractorFunc(rowsData[i + 1]);
-                let matchCount = 0;
-                if (targetVal) {
-                    for (let char of targetVal) { if (comboSet.has(char)) matchCount++; }
-                }
-                if (matchCount === 0) { isValid = false; break; }
-            }
-            if (isValid) {
-                validResults.push(combo.join(''));
-            }
+/* ============================================================
+   PARSE DATA
+============================================================ */
+
+function parseData(){
+
+    let raw=document.getElementById('inputData').value;
+
+    let arr=raw
+        .split(/[\n,]+/)
+        .map(x=>x.trim())
+        .filter(x=>x.length>0);
+
+    return arr.map(x=>{
+
+        let cleaned=x.replace(/\D/g,'');
+
+        if(cleaned.length<4){
+            cleaned=cleaned.padStart(4,'0');
         }
-    }
-    return validResults;
+
+        if(cleaned.length>4){
+            cleaned=cleaned.slice(-4);
+        }
+
+        return {
+            original:cleaned,
+            digits:[
+                Number(cleaned[0]),
+                Number(cleaned[1]),
+                Number(cleaned[2]),
+                Number(cleaned[3])
+            ]
+        };
+
+    });
+
 }
 
-function prosesPertama() {
-    let raw = document.getElementById('inputData').value;
-    let dataArray = raw.split(/[\n,]+/).map(i => i.trim()).filter(i => i.length > 0);
-    
-    if (dataArray.length < 2) {
-        alert("Masukkan minimal 2 data angka untuk dianalisis!");
+
+/* ============================================================
+   KOMBINASI
+============================================================ */
+
+function getCombinations(arr,k){
+
+    if(k===0)return [[]];
+
+    if(arr.length===0)return [];
+
+    let head=arr[0];
+    let tail=arr.slice(1);
+
+    return [
+        ...getCombinations(tail,k-1)
+        .map(c=>[head,...c]),
+
+        ...getCombinations(tail,k)
+    ];
+}
+
+
+/* ============================================================
+   AM UTAMA
+============================================================ */
+
+function getMultipleAdaptiveAM(rowsData,extractorFunc){
+
+    let candidateSet=new Set();
+
+    for(let i=0;i<rowsData.length-1;i++){
+
+        let val=extractorFunc(rowsData[i+1]);
+
+        if(val){
+
+            for(let char of val){
+                candidateSet.add(char);
+            }
+
+        }
+
+    }
+
+    let candidateArray=
+        Array.from(candidateSet).sort();
+
+    if(candidateArray.length===0)return [];
+
+    let validResults=[];
+
+    let maxLen=
+        Math.min(5,candidateArray.length);
+
+    for(let len=3;len<=maxLen;len++){
+
+        let combos=
+            getCombinations(candidateArray,len);
+
+        for(let combo of combos){
+
+            let comboSet=new Set(combo);
+
+            let isValid=true;
+
+            for(let i=0;i<rowsData.length-1;i++){
+
+                let targetVal=
+                    extractorFunc(rowsData[i+1]);
+
+                let matchCount=0;
+
+                if(targetVal){
+
+                    for(let char of targetVal){
+
+                        if(comboSet.has(char)){
+                            matchCount++;
+                        }
+
+                    }
+
+                }
+
+                if(matchCount===0){
+
+                    isValid=false;
+                    break;
+
+                }
+
+            }
+
+            if(isValid){
+
+                validResults.push(
+                    combo.join('')
+                );
+
+            }
+
+        }
+
+    }
+
+    return validResults;
+
+}
+
+
+/* ============================================================
+   EXPAND 1 ANGKA -> ±1 ±2 ±3
+============================================================ */
+
+function expandSeed(seed){
+
+    seed=((seed%10)+10)%10;
+
+    let result=[];
+
+    [-3,-2,-1,1,2,3].forEach(offset=>{
+
+        let d=(seed+offset+10)%10;
+
+        result.push(String(d));
+
+    });
+
+    return [...new Set(result)];
+
+}
+
+
+/* ============================================================
+   3 AM TAMBAHAN
+============================================================ */
+
+function buatTambahanAM(latest,previous,p1,p2){
+
+    let seed1=
+        (latest.digits[p1]+latest.digits[p2])%10;
+
+    let seed2=
+        (latest.digits[p1]+previous.digits[p1])%10;
+
+    let seed3=
+        (latest.digits[p2]+previous.digits[p2])%10;
+
+    return {
+
+        seed1,
+        seed2,
+        seed3,
+
+        am1:expandSeed(seed1),
+
+        am2:expandSeed(seed2),
+
+        am3:expandSeed(seed3)
+
+    };
+
+}
+
+
+/* ============================================================
+   TAMPILKAN AM TAMBAHAN
+============================================================ */
+
+function tampilkanTambahanAM(){
+
+    if(globalProcessedData.length<2)return;
+
+    let latest=
+        globalProcessedData[
+            globalProcessedData.length-1
+        ];
+
+    let previous=
+        globalProcessedData[
+            globalProcessedData.length-2
+        ];
+
+    let configs=[
+        [0,1,'amSource1','amExtra1'],
+        [1,2,'amSource2','amExtra2'],
+        [2,3,'amSource3','amExtra3']
+    ];
+
+    configs.forEach(cfg=>{
+
+        let p1=cfg[0];
+        let p2=cfg[1];
+
+        let am=
+            buatTambahanAM(
+                latest,
+                previous,
+                p1,
+                p2
+            );
+
+        let source=
+            `Terbaru ${latest.original} | Sebelumnya ${previous.original}`;
+
+        let text=
+            `AM1(seed ${am.seed1}) = ${am.am1.join('')}\n`+
+            `AM2(seed ${am.seed2}) = ${am.am2.join('')}\n`+
+            `AM3(seed ${am.seed3}) = ${am.am3.join('')}`;
+
+        document.getElementById(cfg[2])
+            .textContent=source;
+
+        document.getElementById(cfg[3])
+            .textContent=text;
+
+    });
+
+}
+
+
+/* ============================================================
+   AM SET DARI SEMUA TAMBAHAN
+============================================================ */
+
+function getAdditionalDigitSet(rows,p1,p2){
+
+    if(rows.length<2)return new Set();
+
+    let latest=rows[rows.length-1];
+
+    let previous=rows[rows.length-2];
+
+    let am=
+        buatTambahanAM(
+            latest,
+            previous,
+            p1,
+            p2
+        );
+
+    return new Set([
+        ...am.am1,
+        ...am.am2,
+        ...am.am3
+    ]);
+
+}
+
+
+/* ============================================================
+   AM UTAMA -> DIGIT SET
+============================================================ */
+
+function getMainDigitSet(text){
+
+    let set=new Set();
+
+    text.split(/\s+/)
+        .forEach(line=>{
+
+            for(let c of line){
+
+                if(/[0-9]/.test(c)){
+                    set.add(c);
+                }
+
+            }
+
+        });
+
+    return set;
+
+}
+
+
+/* ============================================================
+   SCORE SATU PASANGAN
+============================================================ */
+
+function scorePair(
+    pair,
+    rows,
+    p1,
+    p2,
+    mainSet,
+    additionalSet
+){
+
+    let score=0;
+
+    let a=pair[0];
+    let b=pair[1];
+
+    /* ---------------------------------
+       1. FREKUENSI HISTORIS
+    --------------------------------- */
+
+    let frequency=0;
+
+    rows.forEach(row=>{
+
+        let actual=
+            ''+
+            row.digits[p1]+
+            row.digits[p2];
+
+        if(actual===pair){
+            frequency++;
+        }
+
+    });
+
+    score+=Math.min(frequency*5,25);
+
+
+    /* ---------------------------------
+       2. FREKUENSI DIGIT
+    --------------------------------- */
+
+    let digitFreq={};
+
+    for(let d=0;d<=9;d++){
+        digitFreq[d]=0;
+    }
+
+    rows.forEach(row=>{
+
+        digitFreq[row.digits[p1]]++;
+        digitFreq[row.digits[p2]]++;
+
+    });
+
+    score+=
+        Math.min(
+            digitFreq[Number(a)] +
+            digitFreq[Number(b)],
+            20
+        );
+
+
+    /* ---------------------------------
+       3. AM UTAMA
+    --------------------------------- */
+
+    if(mainSet.has(a))score+=15;
+
+    if(mainSet.has(b))score+=15;
+
+
+    /* ---------------------------------
+       4. 3 AM TAMBAHAN
+    --------------------------------- */
+
+    if(additionalSet.has(a))score+=12;
+
+    if(additionalSet.has(b))score+=12;
+
+
+    /* ---------------------------------
+       5. KEKUATAN RECENCY
+    --------------------------------- */
+
+    if(rows.length>=1){
+
+        let latest=
+            rows[rows.length-1];
+
+        let la=
+            String(latest.digits[p1]);
+
+        let lb=
+            String(latest.digits[p2]);
+
+        if(a===la)score+=6;
+
+        if(b===lb)score+=6;
+
+    }
+
+
+    return score;
+
+}
+
+
+/* ============================================================
+   RANKING CURRENT
+============================================================ */
+
+function buatCurrentScores(p1,p2,mainText){
+
+    let rows=
+        globalProcessedData;
+
+    let mainSet=
+        getMainDigitSet(mainText);
+
+    let additionalSet=
+        getAdditionalDigitSet(rows,p1,p2);
+
+    let result=[];
+
+    for(let i=0;i<100;i++){
+
+        let pair=
+            String(i).padStart(2,'0');
+
+        let score=
+            scorePair(
+                pair,
+                rows,
+                p1,
+                p2,
+                mainSet,
+                additionalSet
+            );
+
+        result.push({
+            pair,
+            score,
+            frequency:countPair(
+                pair,
+                rows,
+                p1,
+                p2
+            )
+        });
+
+    }
+
+    return result;
+
+}
+
+
+/* ============================================================
+   COUNT PAIR
+============================================================ */
+
+function countPair(pair,rows,p1,p2){
+
+    let count=0;
+
+    rows.forEach(row=>{
+
+        let actual=
+            ''+
+            row.digits[p1]+
+            row.digits[p2];
+
+        if(actual===pair)count++;
+
+    });
+
+    return count;
+
+}
+
+
+/* ============================================================
+   WALK FORWARD BACKTEST
+============================================================ */
+
+function backtestColumn(p1,p2,mainText){
+
+    let rows=
+        globalProcessedData;
+
+    let total=0;
+
+    let top1Hit=0;
+
+    let top3Hit=0;
+
+    let detail=[];
+
+    /*
+       candidateStats menyimpan:
+
+       berapa kali pasangan masuk TOP 3
+       berapa kali pasangan tersebut benar-benar
+       menjadi hasil aktual.
+    */
+
+    let candidateStats={};
+
+    for(let n=0;n<100;n++){
+
+        let pair=
+            String(n).padStart(2,'0');
+
+        candidateStats[pair]={
+            selected:0,
+            hit:0
+        };
+
+    }
+
+
+    /*
+       Mulai dari index 2 karena kita membutuhkan
+       minimal dua hasil sebelumnya untuk AM tambahan.
+    */
+
+    for(let t=2;t<rows.length;t++){
+
+        let training=
+            rows.slice(0,t);
+
+        let previous=
+            training[training.length-2];
+
+        let latest=
+            training[training.length-1];
+
+        let am=
+            buatTambahanAM(
+                latest,
+                previous,
+                p1,
+                p2
+            );
+
+        let additionalSet=
+            new Set([
+                ...am.am1,
+                ...am.am2,
+                ...am.am3
+            ]);
+
+        /*
+           Untuk backtest kita buat AM utama
+           hanya dari TRAINING DATA.
+        */
+
+        let trainMain=
+            getMultipleAdaptiveAM(
+                training,
+                row=>
+                    row.digits[p1]+
+                    ''+
+                    row.digits[p2]
+            );
+
+        let mainSet=
+            getMainDigitSet(
+                trainMain.join('\n')
+            );
+
+        let scores=[];
+
+        for(let n=0;n<100;n++){
+
+            let pair=
+                String(n).padStart(2,'0');
+
+            scores.push({
+
+                pair,
+
+                score:
+                    scorePair(
+                        pair,
+                        training,
+                        p1,
+                        p2,
+                        mainSet,
+                        additionalSet
+                    )
+
+            });
+
+        }
+
+        scores.sort(
+            (a,b)=>
+                b.score-a.score ||
+                a.pair.localeCompare(b.pair)
+        );
+
+        let top1=scores[0].pair;
+
+        let top3=
+            scores.slice(0,3)
+            .map(x=>x.pair);
+
+        let actual=
+            ''+
+            rows[t].digits[p1]+
+            rows[t].digits[p2];
+
+        total++;
+
+        let hit1=
+            actual===top1;
+
+        let hit3=
+            top3.includes(actual);
+
+        if(hit1)top1Hit++;
+
+        if(hit3)top3Hit++;
+
+
+        top3.forEach(pair=>{
+
+            candidateStats[pair].selected++;
+
+            if(pair===actual){
+                candidateStats[pair].hit++;
+            }
+
+        });
+
+
+        detail.push(
+            `${total}. `+
+            `Prediksi TOP3 [${top3.join(', ')}] `+
+            `| Aktual ${actual} `+
+            `| ${hit3?'HIT':'FAIL'}`
+        );
+
+    }
+
+
+    let rate1=
+        total?
+        (top1Hit/total*100):
+        0;
+
+    let rate3=
+        total?
+        (top3Hit/total*100):
+        0;
+
+
+    /*
+       Hit rate kandidat menggunakan Laplace smoothing:
+
+       (HIT + 1) / (dipilih + 2)
+
+       Ini mencegah pasangan yang baru sekali
+       terpilih dan kebetulan HIT menjadi terlalu tinggi.
+    */
+
+    Object.keys(candidateStats)
+        .forEach(pair=>{
+
+            let s=
+                candidateStats[pair];
+
+            s.rate=
+                ((s.hit+1)/
+                (s.selected+2))*100;
+
+        });
+
+
+    return {
+
+        total,
+        top1Hit,
+        top3Hit,
+        rate1,
+        rate3,
+        detail,
+        candidateStats
+
+    };
+
+}
+
+
+/* ============================================================
+   RANKING FINAL
+============================================================ */
+
+function finalRanking(
+    p1,
+    p2,
+    mainText
+){
+
+    let current=
+        buatCurrentScores(
+            p1,
+            p2,
+            mainText
+        );
+
+    let bt=
+        backtestColumn(
+            p1,
+            p2,
+            mainText
+        );
+
+
+    current.forEach(item=>{
+
+        let stat=
+            bt.candidateStats[item.pair];
+
+
+        /*
+           BACKTEST menjadi bobot paling besar.
+
+           score:
+           - score kondisi sekarang
+           - hit rate historis kandidat
+           - bonus bila pernah HIT
+        */
+
+        let backtestScore=
+            stat.rate*2;
+
+        let hitBonus=
+            stat.hit*8;
+
+        item.backtestRate=
+            stat.rate;
+
+        item.backtestHit=
+            stat.hit;
+
+        item.backtestSelected=
+            stat.selected;
+
+        item.finalScore=
+            item.score+
+            backtestScore+
+            hitBonus;
+
+    });
+
+
+    current.sort(
+        (a,b)=>
+            b.finalScore-a.finalScore ||
+            b.backtestRate-a.backtestRate ||
+            b.frequency-a.frequency
+    );
+
+
+    return {
+        ranking:current,
+        backtest:bt
+    };
+
+}
+
+
+/* ============================================================
+   TAMPIL RANKING
+============================================================ */
+
+function tampilRankingBox(
+    elementId,
+    result
+){
+
+    let html='';
+
+    result.ranking
+        .slice(0,10)
+        .forEach((item,index)=>{
+
+            let rank=index+1;
+
+            let rankClass=
+                rank===1?
+                'rank-p1':
+                rank===2?
+                'rank-p2':
+                'rank-p3';
+
+            let rate=
+                item.backtestRate;
+
+            html+=`
+
+            <div class="rank-item">
+
+                <div>
+                    <span class="rank-number ${rankClass}">
+                        #${rank}
+                    </span>
+
+                    &nbsp;
+
+                    <span class="pair-big">
+                        ${item.pair}
+                    </span>
+                </div>
+
+                <div class="rank-meta">
+
+                    Final Score:
+                    <b>${item.finalScore.toFixed(2)}</b>
+                    <br>
+
+                    Backtest HIT:
+                    <b>${item.backtestHit}</b>
+                    /
+                    ${item.backtestSelected}
+                    <br>
+
+                    Hit Rate Kandidat:
+                    <b>${rate.toFixed(2)}%</b>
+                    <br>
+
+                    Frekuensi:
+                    <b>${item.frequency}</b>
+
+                    <div class="progress">
+                        <div
+                            class="progress-bar"
+                            style="width:${Math.min(rate,100)}%">
+                        </div>
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn-copy"
+                    onclick="copyText('${item.pair}',this)">
+                    Copy ${item.pair}
+                </button>
+
+            </div>
+
+            `;
+
+        });
+
+    document.getElementById(elementId)
+        .innerHTML=html;
+
+}
+
+
+/* ============================================================
+   TAMPIL BACKTEST
+============================================================ */
+
+function tampilBacktest(){
+
+    let configs=[
+
+        {
+            p1:0,
+            p2:1,
+            text:document.getElementById('bfCol1').value,
+            rank:'rankCol1',
+            detail:'C1'
+        },
+
+        {
+            p1:1,
+            p2:2,
+            text:document.getElementById('bfCol2').value,
+            rank:'rankCol2',
+            detail:'C2'
+        },
+
+        {
+            p1:2,
+            p2:3,
+            text:document.getElementById('bfCol3').value,
+            rank:'rankCol3',
+            detail:'C3'
+        }
+
+    ];
+
+
+    let semuaBacktest=[];
+
+    configs.forEach(cfg=>{
+
+        let result=
+            finalRanking(
+                cfg.p1,
+                cfg.p2,
+                cfg.text
+            );
+
+        currentRanking[
+            cfg.detail
+        ]=result.ranking;
+
+        tampilRankingBox(
+            cfg.rank,
+            result
+        );
+
+        semuaBacktest.push(result.backtest);
+
+    });
+
+
+    /*
+       Statistik gabungan 3 kolom
+    */
+
+    let total=
+        semuaBacktest.reduce(
+            (sum,x)=>sum+x.total,
+            0
+        );
+
+    let hit1=
+        semuaBacktest.reduce(
+            (sum,x)=>sum+x.top1Hit,
+            0
+        );
+
+    let hit3=
+        semuaBacktest.reduce(
+            (sum,x)=>sum+x.top3Hit,
+            0
+        );
+
+    let rate3=
+        total?
+        hit3/total*100:
+        0;
+
+    document.getElementById('totalTest')
+        .textContent=total;
+
+    document.getElementById('top1Hit')
+        .textContent=
+        hit1;
+
+    document.getElementById('top3Hit')
+        .textContent=
+        hit3;
+
+    document.getElementById('top3Rate')
+        .textContent=
+        rate3.toFixed(2)+'%';
+
+
+    let detail=[];
+
+    ['C1','C2','C3'].forEach((name,i)=>{
+
+        let bt=semuaBacktest[i];
+
+        detail.push(
+            `${name} : `+
+            `Test ${bt.total} | `+
+            `Top1 HIT ${bt.top1Hit} `+
+            `(${bt.rate1.toFixed(2)}%) | `+
+            `Top3 HIT ${bt.top3Hit} `+
+            `(${bt.rate3.toFixed(2)}%)`
+        );
+
+    });
+
+    document.getElementById('backtestDetail')
+        .textContent=
+        detail.join('\n');
+
+}
+
+
+/* ============================================================
+   PROSES 1
+============================================================ */
+
+function prosesPertama(){
+
+    let dataArray=
+        document.getElementById('inputData')
+        .value
+        .split(/[\n,]+/)
+        .map(i=>i.trim())
+        .filter(i=>i.length>0);
+
+
+    if(dataArray.length<3){
+
+        console.log(
+            'Masukkan minimal 3 data RM1.'
+        );
+
+        document.getElementById('infoInput')
+            .textContent=
+            'Minimal 3 data diperlukan untuk backtest.';
+
+        return;
+
+    }
+
+
+    document.getElementById('inputData')
+        .value=
+        dataArray.join(',');
+
+
+    globalProcessedData=
+        dataArray.map(item=>{
+
+            let cleaned=
+                item.replace(/\D/g,'');
+
+            if(cleaned.length<4){
+                cleaned=
+                    cleaned.padStart(4,'0');
+            }
+
+            if(cleaned.length>4){
+                cleaned=
+                    cleaned.slice(-4);
+            }
+
+            return {
+
+                original:cleaned,
+
+                digits:[
+                    Number(cleaned.charAt(0)),
+                    Number(cleaned.charAt(1)),
+                    Number(cleaned.charAt(2)),
+                    Number(cleaned.charAt(3))
+                ]
+
+            };
+
+        });
+
+
+    document.getElementById('infoInput')
+        .textContent=
+        'Jumlah Input: '+
+        globalProcessedData.length;
+
+
+    /*
+       AM utama
+    */
+
+    let amCol1=
+        getMultipleAdaptiveAM(
+            globalProcessedData,
+            row=>
+                ''+
+                row.digits[0]+
+                row.digits[1]
+        );
+
+
+    let amCol2=
+        getMultipleAdaptiveAM(
+            globalProcessedData,
+            row=>
+                ''+
+                row.digits[1]+
+                row.digits[2]
+        );
+
+
+    let amCol3=
+        getMultipleAdaptiveAM(
+            globalProcessedData,
+            row=>
+                ''+
+                row.digits[2]+
+                row.digits[3]
+        );
+
+
+    document.getElementById('bfCol1')
+        .value=
+        amCol1.join('\n');
+
+
+    document.getElementById('bfCol2')
+        .value=
+        amCol2.join('\n');
+
+
+    document.getElementById('bfCol3')
+        .value=
+        amCol3.join('\n');
+
+
+    tampilkanTambahanAM();
+
+
+    document.getElementById('btnProsesKedua')
+        .style.display='block';
+
+
+    document.getElementById('areaBacktest')
+        .style.display='none';
+
+
+    document.getElementById('areaLevel')
+        .style.display='none';
+
+
+    console.log(
+        'Proses 1 selesai.'
+    );
+
+}
+
+
+/* ============================================================
+   ENGINE LEVEL
+============================================================ */
+
+function prosesKedua(){
+
+    if(globalProcessedData.length<3){
+
+        console.log(
+            'Data belum cukup.'
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById('areaBacktest')
+        .style.display='block';
+
+
+    document.getElementById('areaLevel')
+        .style.display='block';
+
+
+    /*
+       BACKTEST NYATA
+    */
+
+    tampilBacktest();
+
+
+    /*
+       ENGINE LEVEL LAMA TETAP DIPERTAHANKAN
+       agar workflow Wadah tidak hilang.
+    */
+
+    let r1=
+        analyzeColumnWeightAsymmetric(
+            'bfCol1',
+            'Kolom 1',
+            'DD',
+            'tag-c1'
+        );
+
+
+    let r2=
+        analyzeColumnWeightAsymmetric(
+            'bfCol2',
+            'Kolom 2',
+            'DT',
+            'tag-c2'
+        );
+
+
+    let r3=
+        analyzeColumnWeightAsymmetric(
+            'bfCol3',
+            'Kolom 3',
+            'DB',
+            'tag-c3'
+        );
+
+
+    let allLevels=[
+        ...r1,
+        ...r2,
+        ...r3
+    ];
+
+
+    allLevels.sort(
+        (a,b)=>
+            a.prioRank-b.prioRank ||
+            b.scoreWeight-a.scoreWeight
+    );
+
+
+    let container=
+        document.getElementById(
+            'globalEngineContainer'
+        );
+
+
+    container.innerHTML='';
+
+
+    allLevels.forEach(
+        (item,index)=>{
+
+            let cardDiv=
+                document.createElement('div');
+
+            cardDiv.className=
+                `card-level ${item.rankClass}`;
+
+
+            let rawItemsString=
+                item.items.join('*');
+
+
+            cardDiv.innerHTML=`
+
+                <div class="level-header">
+
+                    <div>
+
+                        <span class="tag-col ${item.tagClass}">
+                            ${item.colName}
+                        </span>
+
+                        <span class="level-title">
+                            #${index+1} :
+                            ${item.items.length} LN
+                        </span>
+
+                    </div>
+
+                    <button class="btn-copy">
+                        Copy ${item.targetType}
+                    </button>
+
+                </div>
+
+                <div
+                    class="result-box"
+                    style="max-height:60px;">
+                    ${rawItemsString}
+                </div>
+
+            `;
+
+
+            let btnCopy=
+                cardDiv.querySelector('.btn-copy');
+
+
+            btnCopy.addEventListener(
+                'click',
+                function(){
+
+                    copyArrayToWadah(
+                        item.items,
+                        item.targetType,
+                        this,
+                        rawItemsString
+                    );
+
+                }
+            );
+
+
+            container.appendChild(
+                cardDiv
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   ENGINE ASYMMETRIC LAMA
+============================================================ */
+
+function analyzeColumnWeightAsymmetric(
+    colTextareaId,
+    colName,
+    targetType,
+    tagClass
+){
+
+    let rawLines=
+        document.getElementById(
+            colTextareaId
+        )
+        .value
+        .split('\n')
+        .map(s=>s.trim())
+        .filter(s=>s.length>0);
+
+
+    let leftFreq={};
+    let rightFreq={};
+
+
+    for(let d=0;d<=9;d++){
+
+        leftFreq[d]=0;
+        rightFreq[d]=0;
+
+    }
+
+
+    rawLines.forEach(line=>{
+
+        for(let i=0;i<line.length;i++){
+
+            let char=line.charAt(i);
+
+            if(!/[0-9]/.test(char))continue;
+
+            if(i===0)
+                leftFreq[char]++;
+            else
+                rightFreq[char]++;
+
+        }
+
+    });
+
+
+    let totalLeft=
+        Object.values(leftFreq)
+        .reduce((a,b)=>a+b,0);
+
+
+    let totalRight=
+        Object.values(rightFreq)
+        .reduce((a,b)=>a+b,0);
+
+
+    let avgLeft=
+        totalLeft/10;
+
+
+    let avgRight=
+        totalRight/10;
+
+
+    let leftT=new Set();
+    let leftL=new Set();
+
+    let rightT=new Set();
+    let rightL=new Set();
+
+
+    for(let d=0;d<=9;d++){
+
+        if(leftFreq[d]>avgLeft)
+            leftT.add(String(d));
+        else
+            leftL.add(String(d));
+
+
+        if(rightFreq[d]>avgRight)
+            rightT.add(String(d));
+        else
+            rightL.add(String(d));
+
+    }
+
+
+    let catLxT=[];
+    let catLxL=[];
+    let catTxT=[];
+
+
+    for(let i=0;i<=99;i++){
+
+        let pair=
+            String(i).padStart(2,'0');
+
+        let dLeft=pair.charAt(0);
+        let dRight=pair.charAt(1);
+
+
+        if(
+            (leftL.has(dLeft)&&rightT.has(dRight)) ||
+            (leftT.has(dLeft)&&rightL.has(dRight))
+        ){
+
+            catLxT.push(pair);
+
+        }
+        else if(
+            leftL.has(dLeft)&&
+            rightL.has(dRight)
+        ){
+
+            catLxL.push(pair);
+
+        }
+        else if(
+            leftT.has(dLeft)&&
+            rightT.has(dRight)
+        ){
+
+            catTxT.push(pair);
+
+        }
+
+    }
+
+
+    let levelResults=[];
+
+
+    if(catLxT.length){
+
+        levelResults.push({
+
+            prioRank:1,
+            rankClass:'rank-p1',
+            colName,
+            targetType,
+            tagClass,
+            items:catLxT,
+            scoreWeight:
+                100-catLxT.length
+
+        });
+
+    }
+
+
+    if(catLxL.length){
+
+        levelResults.push({
+
+            prioRank:2,
+            rankClass:'rank-p2',
+            colName,
+            targetType,
+            tagClass,
+            items:catLxL,
+            scoreWeight:
+                80-catLxL.length
+
+        });
+
+    }
+
+
+    if(catTxT.length){
+
+        levelResults.push({
+
+            prioRank:3,
+            rankClass:'rank-p3',
+            colName,
+            targetType,
+            tagClass,
+            items:catTxT,
+            scoreWeight:
+                60-catTxT.length
+
+        });
+
+    }
+
+
+    return levelResults;
+
+}
+
+
+/* ============================================================
+   COPY RANKING
+============================================================ */
+
+function copyText(text,btn){
+
+    if(!text)return;
+
+    navigator.clipboard
+        .writeText(text)
+        .then(()=>{
+
+            let old=btn.textContent;
+
+            btn.textContent='Copied!';
+
+            setTimeout(()=>{
+
+                btn.textContent=old;
+
+            },1000);
+
+        })
+        .catch(err=>{
+
+            console.log(
+                'Clipboard error:',
+                err
+            );
+
+        });
+
+}
+
+
+/* ============================================================
+   COPY KE WADAH
+============================================================ */
+
+function copyArrayToWadah(
+    arr,
+    type,
+    btnElement,
+    rawText
+){
+
+    if(!arr||!arr.length)return;
+
+
+    arr.forEach(
+        item=>
+            wadahData[type].add(item)
+    );
+
+
+    updateWadahUI();
+
+
+    if(
+        navigator.clipboard&&
+        rawText
+    ){
+
+        navigator.clipboard
+            .writeText(rawText)
+            .catch(err=>
+                console.log(
+                    'Clipboard error:',
+                    err
+                )
+            );
+
+    }
+
+
+    let originalText=
+        `Copy ${type}`;
+
+
+    btnElement.textContent=
+        'Copied!';
+
+
+    setTimeout(()=>{
+
+        btnElement.textContent=
+            originalText;
+
+    },1000);
+
+}
+
+
+/* ============================================================
+   WADAH UI
+============================================================ */
+
+function updateWadahUI(){
+
+    let arrDD=
+        Array.from(wadahData.DD);
+
+    document.getElementById(
+        'wadahBoxDD'
+    ).textContent=
+        arrDD.length?
+        arrDD.join('*'):
+        '-';
+
+
+    document.getElementById(
+        'lblWadahDD'
+    ).textContent=
+        `Wadah Kolom 1 (${arrDD.length} LN)`;
+
+
+    let arrDT=
+        Array.from(wadahData.DT);
+
+    document.getElementById(
+        'wadahBoxDT'
+    ).textContent=
+        arrDT.length?
+        arrDT.join('*'):
+        '-';
+
+
+    document.getElementById(
+        'lblWadahDT'
+    ).textContent=
+        `Wadah Kolom 2 (${arrDT.length} LN)`;
+
+
+    let arrDB=
+        Array.from(wadahData.DB);
+
+    document.getElementById(
+        'wadahBoxDB'
+    ).textContent=
+        arrDB.length?
+        arrDB.join('*'):
+        '-';
+
+
+    document.getElementById(
+        'lblWadahDB'
+    ).textContent=
+        `Wadah Kolom 3 (${arrDB.length} LN)`;
+
+
+    /*
+       3DD
+    */
+
+    let set3DD=new Set();
+
+
+    if(
+        arrDD.length&&
+        arrDT.length
+    ){
+
+        for(let a of arrDD){
+
+            for(let b of arrDT){
+
+                if(
+                    a.charAt(1)===
+                    b.charAt(0)
+                ){
+
+                    set3DD.add(
+                        a+
+                        b.charAt(1)
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    let res3DD=
+        Array.from(set3DD);
+
+
+    document.getElementById(
+        'box3DD'
+    ).textContent=
+        res3DD.length?
+        res3DD.join('*'):
+        '-';
+
+
+    document.getElementById(
+        'lbl3DD'
+    ).textContent=
+        `3DD = ${res3DD.length} LN`;
+
+
+    /*
+       3DB
+    */
+
+    let set3DB=new Set();
+
+
+    if(
+        arrDT.length&&
+        arrDB.length
+    ){
+
+        for(let b of arrDT){
+
+            for(let c of arrDB){
+
+                if(
+                    b.charAt(1)===
+                    c.charAt(0)
+                ){
+
+                    set3DB.add(
+                        b+
+                        c.charAt(1)
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    let res3DB=
+        Array.from(set3DB);
+
+
+    document.getElementById(
+        'box3DB'
+    ).textContent=
+        res3DB.length?
+        res3DB.join('*'):
+        '-';
+
+
+    document.getElementById(
+        'lbl3DB'
+    ).textContent=
+        `3DB = ${res3DB.length} LN`;
+
+}
+
+
+/* ============================================================
+   RESET WADAH
+============================================================ */
+
+function resetWadah(type){
+
+    wadahData[type].clear();
+
+    updateWadahUI();
+
+}
+
+
+/* ============================================================
+   COPY WADAH
+============================================================ */
+
+function copyWadah(boxId,btn){
+
+    let box=
+        document.getElementById(boxId);
+
+
+    if(
+        !box||
+        !box.textContent||
+        box.textContent==='-'
+    ){
         return;
     }
 
-    document.getElementById('inputData').value = dataArray.join(',');
-    document.getElementById('infoInput').textContent = "Jumlah Input: " + dataArray.length;
 
-    globalProcessedData = dataArray.map(item => {
-        let cleaned = item.replace(/\D/g, '');
-        if (cleaned.length < 4) cleaned = cleaned.padStart(4, '0');
-        return {
-            original: cleaned,
-            digits: [cleaned.charAt(0), cleaned.charAt(1), cleaned.charAt(2), cleaned.charAt(3)]
-        };
-    });
+    navigator.clipboard
+        .writeText(box.textContent)
+        .then(()=>{
 
-    let amCol1 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[0] + row.digits[1]);
-    let amCol2 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[1] + row.digits[2]);
-    let amCol3 = getMultipleAdaptiveAM(globalProcessedData, row => row.digits[2] + row.digits[3]);
+            let old=
+                btn.textContent;
 
-    document.getElementById('bfCol1').value = amCol1.join('\n');
-    document.getElementById('bfCol2').value = amCol2.join('\n');
-    document.getElementById('bfCol3').value = amCol3.join('\n');
+            btn.textContent=
+                'Copied!';
 
-    document.getElementById('btnProsesKedua').style.display = 'block';
-}
 
-// PEMBOBOTAN BARU PER KOLOM (T, M, L) BASED ON POSITIONAL FREQUENCY & CROSS COMBINATION
-function analyzeColumnWeightAsymmetric(colTextareaId, colName, targetType, tagClass) {
-    let rawLines = document.getElementById(colTextareaId).value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-    
-    let leftFreq = {};  
-    let rightFreq = {}; 
-    
-    for (let d = 0; d <= 9; d++) {
-        leftFreq[d.toString()] = 0;
-        rightFreq[d.toString()] = 0;
-    }
+            setTimeout(()=>{
 
-    rawLines.forEach(line => {
-        for (let i = 0; i < line.length; i++) {
-            let char = line.charAt(i);
-            if (i === 0) leftFreq[char] = (leftFreq[char] || 0) + 1;
-            else rightFreq[char] = (rightFreq[char] || 0) + 1;
-        }
-    });
+                btn.textContent=
+                    old;
 
-    // Hitung Rata-Rata Frekuensi Kemunculan Digit Kiri & Kanan
-    let totalLeft = Object.values(leftFreq).reduce((a, b) => a + b, 0);
-    let totalRight = Object.values(rightFreq).reduce((a, b) => a + b, 0);
-    let avgLeft = totalLeft / 10;
-    let avgRight = totalRight / 10;
+            },1200);
 
-    let leftT = new Set(), leftL = new Set();
-    let rightT = new Set(), rightL = new Set();
+        })
+        .catch(err=>{
 
-    // Klasifikasi DINAMIS berdasarkan Rata-Rata Kemunculan Real
-    for (let d = 0; d <= 9; d++) {
-        let key = d.toString();
-        
-        // Digit Kiri
-        if (leftFreq[key] > avgLeft) leftT.add(key);      // Di atas rata-rata = Terkuat (T)
-        else if (leftFreq[key] <= avgLeft) leftL.add(key); // Di bawah / sama rata-rata = Terlemah (L)
+            console.log(
+                'Clipboard error:',
+                err
+            );
 
-        // Digit Kanan
-        if (rightFreq[key] > avgRight) rightT.add(key);    // Di atas rata-rata = Terkuat (T)
-        else if (rightFreq[key] <= avgRight) rightL.add(key);// Di bawah / sama rata-rata = Terlemah (L)
-    }
-
-    let catLxT = [], catLxL = [], catTxT = [];
-
-    for (let i = 0; i <= 99; i++) {
-        let pair = i.toString().padStart(2, '0');
-        let dLeft = pair.charAt(0);
-        let dRight = pair.charAt(1);
-
-        if ((leftL.has(dLeft) && rightT.has(dRight)) || (leftT.has(dLeft) && rightL.has(dRight))) {
-            catLxT.push(pair);
-        }
-        else if (leftL.has(dLeft) && rightL.has(dRight)) {
-            catLxL.push(pair);
-        }
-        else if (leftT.has(dLeft) && rightT.has(dRight)) {
-            catTxT.push(pair);
-        }
-    }
-
-    let levelResults = [];
-
-    if (catLxT.length > 0) {
-        levelResults.push({
-            prioRank: 1,
-            ratioLabel: "",
-            levelName: "",
-            rankClass: "rank-p1",
-            colName: colName,
-            targetType: targetType,
-            tagClass: tagClass,
-            items: catLxT,
-            scoreWeight: 100 - catLxT.length
-        });
-    }
-
-    if (catLxL.length > 0) {
-        levelResults.push({
-            prioRank: 2,
-            ratioLabel: "",
-            levelName: "",
-            rankClass: "rank-p2",
-            colName: colName,
-            targetType: targetType,
-            tagClass: tagClass,
-            items: catLxL,
-            scoreWeight: 80 - catLxL.length
-        });
-    }
-
-    if (catTxT.length > 0) {
-        levelResults.push({
-            prioRank: 3,
-            ratioLabel: "",
-            levelName: "",
-            rankClass: "rank-p3",
-            colName: colName,
-            targetType: targetType,
-            tagClass: tagClass,
-            items: catTxT,
-            scoreWeight: 60 - catTxT.length
-        });
-    }
-
-    return levelResults;
-}
-function prosesKedua() {
-    document.getElementById('areaLevel').style.display = 'block';
-
-    let r1 = analyzeColumnWeightAsymmetric('bfCol1', 'Kolom 1', 'DD', 'tag-c1');
-    let r2 = analyzeColumnWeightAsymmetric('bfCol2', 'Kolom 2', 'DT', 'tag-c2');
-    let r3 = analyzeColumnWeightAsymmetric('bfCol3', 'Kolom 3', 'DB', 'tag-c3');
-
-    let allLevels = [...r1, ...r2, ...r3];
-
-    // Urutkan berdasarkan Prioritas Rasio (Prio 1 -> Prio 2 -> Prio 3) lalu LN Terramping
-    allLevels.sort((a, b) => {
-        if (a.prioRank !== b.prioRank) return a.prioRank - b.prioRank;
-        return b.scoreWeight - a.scoreWeight;
-    });
-
-    let container = document.getElementById('globalEngineContainer');
-    container.innerHTML = '';
-
-    allLevels.forEach((item, index) => {
-        let cardDiv = document.createElement('div');
-        cardDiv.className = `card-level ${item.rankClass}`;
-        
-        let rawItemsString = item.items.join('*');
-
-        cardDiv.innerHTML = `
-            <div class="level-header">
-                <div>
-                    <span class="tag-col ${item.tagClass}">${item.colName}</span>
-                    <span class="level-title">#${index + 1} : [${item.ratioLabel}] ${item.levelName} = ${item.items.length} LN</span>
-                </div>
-                <button class="btn-copy">Copy ${item.targetType}</button>
-            </div>
-            <div class="result-box" style="max-height: 60px;">${rawItemsString}</div>
-        `;
-
-        let btnCopy = cardDiv.querySelector('.btn-copy');
-        btnCopy.addEventListener('click', function() {
-            copyArrayToWadah(item.items, item.targetType, this, rawItemsString);
         });
 
-        container.appendChild(cardDiv);
-    });
 }
 
-function copyArrayToWadah(arr, type, btnElement, rawText) {
-    if (!arr || arr.length === 0) return;
-    
-    arr.forEach(item => wadahData[type].add(item));
-    updateWadahUI();
 
-    if (navigator.clipboard && rawText) {
-        navigator.clipboard.writeText(rawText);
-    }
+/* ============================================================
+   INIT
+============================================================ */
 
-    let originalText = `Copy ${type}`;
-    btnElement.textContent = 'Copied!';
-    btnElement.style.backgroundColor = '#27ae60';
-    btnElement.disabled = true; 
+updateWadahUI();
 
-    setTimeout(() => {
-        btnElement.textContent = originalText;
-        btnElement.style.backgroundColor = '#2980b9';
-        btnElement.disabled = false;
-    }, 1000);
-}
-
-function updateWadahUI() {
-    let arrDD = Array.from(wadahData.DD);
-    document.getElementById('wadahBoxDD').textContent = arrDD.length ? arrDD.join('*') : "-";
-    document.getElementById('lblWadahDD').textContent = `Wadah Kolom 1 (${arrDD.length} LN)`;
-
-    let arrDT = Array.from(wadahData.DT);
-    document.getElementById('wadahBoxDT').textContent = arrDT.length ? arrDT.join('*') : "-";
-    document.getElementById('lblWadahDT').textContent = `Wadah Kolom 2 (${arrDT.length} LN)`;
-
-    let arrDB = Array.from(wadahData.DB);
-    document.getElementById('wadahBoxDB').textContent = arrDB.length ? arrDB.join('*') : "-";
-    document.getElementById('lblWadahDB').textContent = `Wadah Kolom 3 (${arrDB.length} LN)`;
-
-    let set3DD = new Set();
-    if (arrDD.length > 0 && arrDT.length > 0) {
-        for (let a of arrDD) {
-            for (let b of arrDT) {
-                if (a.charAt(1) === b.charAt(0)) set3DD.add(a + b.charAt(1));
-            }
-        }
-    }
-    let res3DD = Array.from(set3DD);
-    document.getElementById('box3DD').textContent = res3DD.length ? res3DD.join('*') : "-";
-    document.getElementById('lbl3DD').textContent = `3DD = ${res3DD.length} LN`;
-
-    let set3DB = new Set();
-    if (arrDT.length > 0 && arrDB.length > 0) {
-        for (let b of arrDT) {
-            for (let c of arrDB) {
-                if (b.charAt(1) === c.charAt(0)) set3DB.add(b + c.charAt(1));
-            }
-        }
-    }
-    let res3DB = Array.from(set3DB);
-    document.getElementById('box3DB').textContent = res3DB.length ? res3DB.join('*') : "-";
-    document.getElementById('lbl3DB').textContent = `3DB = ${res3DB.length} LN`;
-}
-
-function resetWadah(type) {
-    wadahData[type].clear();
-    updateWadahUI();
-}
-
-function copyWadah(boxId, btn) {
-    let box = document.getElementById(boxId);
-    if (!box || !box.textContent || box.textContent === "-") return;
-    navigator.clipboard.writeText(box.textContent).then(() => {
-        let old = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.style.backgroundColor = '#27ae60';
-        setTimeout(() => { btn.textContent = old; btn.style.backgroundColor = '#2980b9'; }, 1200);
-    });
-}
 </script>
 
 </body>
