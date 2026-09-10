@@ -202,6 +202,67 @@ td {
         padding: 12px;
     }
 }
+
+/* =========================================================
+   LAYOUT AMBIL - TEXTAREA - COPY
+   ========================================================= */
+
+.ambil-container {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 30px;
+	
+	margin-bottom: 30px;
+
+    box-sizing: border-box;
+}
+
+
+.ambil-container button {
+
+    height: 40px;
+
+    padding: 0 16px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+
+.ambil-container textarea {
+
+    flex: 1;
+
+    height: 40px;
+
+    box-sizing: border-box;
+
+    resize: none;
+
+    padding: 8px;
+
+    font-size: 14px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 </style>
 </head>
 
@@ -446,6 +507,78 @@ td {
     </div>
 
 </div>
+
+
+
+
+<!-- =====================================================
+     BAGIAN PALING BAWAH
+     
+     AMBIL | TEXTAREA | COPY
+     ===================================================== -->
+
+<div class="ambil-container">
+
+
+    <!-- TOMBOL AMBIL -->
+
+    <button
+        type="button"
+        onclick="ambilLink()">
+
+        Ambil WLA
+
+    </button>
+
+
+
+    <!-- TEXTAREA HASIL -->
+
+    <textarea
+        id="hasilambil"
+        readonly
+        placeholder="Hasil akan muncul di sini..."></textarea>
+
+
+
+    <!-- TOMBOL COPY -->
+
+    <button
+        type="button"
+        onclick="copyHasil()">
+
+        Copy
+
+    </button>
+
+
+</div>
+
+<!-- =====================================================
+     TOMBOL LINK MASUK
+     ===================================================== -->
+
+<button
+    type="button"
+    onclick="window.open('https://linkmasuk.id/', '_blank')">
+
+    Link Masuk
+
+</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1089,13 +1222,195 @@ document.addEventListener(
     }
 );
 
+
+
+
+/* =========================================================
+   TOMBOL AMBIL
+   ========================================================= */
+
+async function ambilLink() {
+
+
+    const textarea =
+        document.getElementById("hasilambil");
+
+
+    // -----------------------------------------------------
+    // KOSONGKAN HASIL SEBELUMNYA
+    // -----------------------------------------------------
+
+    textarea.value = "";
+
+
+    try {
+
+
+        // =================================================
+        // URL WEB APP GOOGLE APPS SCRIPT
+        //
+        // GANTI HANYA BAGIAN INI
+        // =================================================
+
+        const urlGAS =
+            "https://script.google.com/macros/s/AKfycbwtZ8k3nfRitPOoJD_0UoEvtg6ScD0dfn51XGkE0UusrKVW_oDrp0A7FitoD_3ZuPcszQ/exec?action=ambilLink";
+
+
+
+        // =================================================
+        // MINTA GAS MENGAMBIL DATA
+        // =================================================
+
+        const response =
+            await fetch(urlGAS);
+
+
+
+        // =================================================
+        // BACA RESPONSE JSON DARI GAS
+        // =================================================
+
+        const data =
+            await response.json();
+
+
+
+        // =================================================
+        // PERIKSA HASIL
+        // =================================================
+
+        if (!data.sukses) {
+
+            throw new Error(
+                data.error || "Gagal mengambil data"
+            );
+
+        }
+
+
+
+        // =================================================
+        // MASUKKAN HASIL KE TEXTAREA
+        // =================================================
+
+        textarea.value =
+            data.hasil;
+
+
+        console.log(
+            "Hasil:",
+            data.hasil
+        );
+
+
+    }
+    catch (error) {
+
+
+        console.log(
+            "Gagal mengambil data:",
+            error
+        );
+
+
+        textarea.value =
+            "Gagal mengambil data";
+
+
+    }
+
+}
+
+
+
+/* =========================================================
+   TOMBOL COPY
+   ========================================================= */
+
+async function copyHasil() {
+
+
+    const textarea =
+        document.getElementById("hasilambil");
+
+
+    const teks =
+        textarea.value.trim();
+
+
+
+    // =====================================================
+    // TEXTAREA WAJIB ADA ISINYA
+    // =====================================================
+
+    if (!teks) {
+
+        console.log(
+            "Textarea masih kosong."
+        );
+
+        return;
+
+    }
+
+
+
+    // =====================================================
+    // COPY KE CLIPBOARD
+    // =====================================================
+
+    try {
+
+
+        await navigator.clipboard.writeText(
+            teks
+        );
+
+
+        console.log(
+            "Berhasil copy:",
+            teks
+        );
+
+
+    }
+    catch (error) {
+
+
+        console.log(
+            "Gagal copy ke clipboard:",
+            error
+        );
+
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
-<button
-    type="button"
-    onclick="window.open('https://linkmasuk.id/', '_blank')">
-    Link Masuk
-</button>
 
 
 </body>
