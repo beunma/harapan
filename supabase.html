@@ -227,7 +227,7 @@ td {
 
 .ambil-container button {
 
-    height: 40px;
+    height: 60px;
 
     padding: 0 16px;
 
@@ -241,7 +241,7 @@ td {
 
     flex: 1;
 
-    height: 40px;
+    height: 60px;
 
     box-sizing: border-box;
 
@@ -526,7 +526,7 @@ td {
         type="button"
         onclick="ambilLink()">
 
-        Ambil WLA
+        WLA
 
     </button>
 
@@ -562,7 +562,7 @@ td {
     type="button"
     onclick="window.open('https://linkmasuk.id/', '_blank')">
 
-    Link Masuk
+    SUN
 
 </button>
 
@@ -1293,8 +1293,13 @@ async function ambilLink() {
         // MASUKKAN HASIL KE TEXTAREA
         // =================================================
 
-        textarea.value =
-            data.hasil;
+        //textarea.value =
+        //    data.hasil;
+			
+textarea.value = data.hasil
+    .replace(/https?:\/\/www\./g, "")
+    //.replace(/_/g, " ");
+	.replace(/_/g, "\n");
 
 
         console.log(
