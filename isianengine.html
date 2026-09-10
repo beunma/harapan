@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>SDN 10 Mampang</title>
+
+<style>
+	/* Pengaturan untuk Textarea */
+	.purchaser.form-control {
+		width: 100%;
+		box-sizing: border-box;
+		height: 150px;
+		padding: 10px;
+		font-family: Arial, sans-serif;
+	}
+
+	/* Pengaturan untuk Label Sukses */
+	#pesanSukses {
+		display: none;
+		color: #28a745; /* Warna hijau */
+		font-weight: bold;
+		margin-top: 10px;
+	}
+
+	/* Pengaturan untuk Label Info IP & Lokasi */
+	#infoLokasi {
+		display: none;
+		color: #555555; /* Warna abu-abu agar tidak terlalu mencolok */
+		font-size: 14px;
+		margin-top: 5px;
+		background-color: #f9f9f9;
+		padding: 8px;
+		border-radius: 4px;
+		border: 1px solid #ddd;
+	}
+</style>
+
+</head>
+<body>
+
+<div id="myContainer" class="my-content">
+	<div class="r-content pro-1">
+		
+		<form action="https://sdn10mampang.com/purchase/product/1.html" id="vcontactform" method="post">
+			
+			<p><h3>Saran dan Kritik</h3></p>	
+			<br/>
+			
+			<textarea name="PurchaserContainer[]" class="purchaser form-control" placeholder="Tulis saran Anda di sini..."></textarea>
+			<input type="hidden" name="PCProductID[]" value="1" />
+					
+			<div class="respon" style="display: none"></div>
+			
+			<p>
+				<button class="ui btn" id="kirimBtn" type="button" name="button" value="1" onclick="tampilkanPesan()">Kirim</button>
+				<input type="hidden" name="wap" value="1" />
+			</p>
+			
+			<!-- Label Sukses -->
+			<div id="pesanSukses">Sudah Terkirim, Terima kasih atas Sarannya</div>
+			
+			<!-- Label Baru untuk IP dan Negara -->
+			<div id="infoLokasi">Sedang melacak lokasi...</div>
+			
+			<div style="margin-bottom: 15px;" class="totalinfo"></div>
+			
+		</form>
+
+	</div>
+</div>
+
+<div class="footer"></div>
+
+<script>
+	function tampilkanPesan() {
+		// Ambil elemen textarea
+		let elemenArea = document.querySelector(".purchaser.form-control");
+		
+		// Ambil isi pesannya dan hilangkan spasi kosong di awal/akhir
+		let isiPesan = elemenArea.value.trim();
+
+		// Jika teks area kosong, hentikan proses (tidak ada reaksi apapun)
+		if (isiPesan === "") {
+			return; 
+		}
+
+		// 1. Tampilkan pesan sukses
+		document.getElementById("pesanSukses").style.display = "block";
+		
+		// 2. Kosongkan isi textarea setelah dipastikan ada isinya
+		elemenArea.value = "";
+
+		// 3. Siapkan kotak info lokasi
+		let elemenLokasi = document.getElementById("infoLokasi");
+		elemenLokasi.style.display = "block";
+		
+		// Buat format tampilan pesan yang tadi dikirim
+		let teksYangDikirim = "<b>Pesan yang dikirim:</b><br><i>\"" + isiPesan + "\"</i><br><hr style='border: 0; border-top: 1px solid #ccc; margin: 8px 0;'>";
+
+		// Tampilkan pesan kiriman + status loading IP
+		elemenLokasi.innerHTML = teksYangDikirim + "Mengambil data IP dan lokasi...";
+
+		// 4. Proses mengambil IP 
+		fetch('https://ipwho.is/')
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					elemenLokasi.innerHTML = teksYangDikirim + "IP Pengirim: <b>" + data.ip + "</b><br>Lokasi: <b>" + data.city + ", " + data.country + "</b>";
+				} else {
+					elemenLokasi.innerHTML = teksYangDikirim + "Gagal membaca lokasi. Pastikan koneksi stabil.";
+				}
+			})
+			.catch(error => {
+				// Coba layanan cadangan jika yang pertama gagal/diblokir
+				fetch('https://ipinfo.io/json')
+					.then(res => res.json())
+					.then(dataInfo => {
+						elemenLokasi.innerHTML = teksYangDikirim + "IP Pengirim: <b>" + dataInfo.ip + "</b><br>Lokasi: <b>" + dataInfo.city + ", " + dataInfo.country + "</b>";
+					})
+					.catch(err => {
+						elemenLokasi.innerHTML = teksYangDikirim + "Gagal mengambil data IP/Lokasi. (Diblokir browser/Adblocker)";
+					});
+			});
+	}
+</script>
+</body>
+</html>
