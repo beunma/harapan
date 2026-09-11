@@ -1,0 +1,2792 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analisa Engine VIP</title>
+
+    <style>
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 6px;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #34495e;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .input-error {
+            background-color: #e74c3c !important;
+            color: #fff !important;
+            font-weight: bold !important;
+            border-color: #c0392b !important;
+        }
+
+        .panel-config {
+            display: flex;
+            gap: 15px;
+            background: #e8f4f8;
+            border: 1px solid #3498db;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .panel-config div {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .panel-config input {
+            margin-bottom: 0;
+            border: 1px solid #2980b9;
+        }
+
+        button.btn-main {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        button.btn-main:hover {
+            background-color: #219653;
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        .result-box {
+            margin-top: 6px;
+            background: #ecf0f1;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            font-size: 13px;
+            max-height: 150px;
+            overflow-y: auto;
+            overflow-x: auto;
+            word-break: break-all;
+        }
+
+        .panel-engine {
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            padding: 12px;
+            background: #fafbfc;
+            margin-top: 10px;
+        }
+
+        .patah-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #dcdde1;
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .patah-title {
+            font-weight: bold;
+            font-size: 12px;
+            color: #2c3e50;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .btn-copy {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            width: auto !important;
+            transition: 0.2s;
+        }
+
+        .btn-copy:hover {
+            background-color: #1f618d;
+        }
+
+        .btn-reset {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            width: auto !important;
+        }
+
+        .btn-reset:hover {
+            background-color: #962d22;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+
+    <!-- =====================================================
+         PANEL CONFIG
+    ====================================================== -->
+
+    <div class="panel-config">
+
+        <div>
+
+            <label title="Berapa baris data ke belakang yang akan dianalisa">
+                Backtest:
+            </label>
+
+            <input
+                type="number"
+                id="inpBacktest"
+                value="5"
+                min="2"
+                onchange="prosesSemuaLayout()"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INPUT DATA
+    ====================================================== -->
+
+    <label for="inputData">
+        Masukkan Data JOS :
+    </label>
+
+    <textarea
+        id="inputData"
+        placeholder=""
+    ></textarea>
+
+
+    <button
+        class="btn-main"
+        onclick="prosesSemuaLayout()"
+    >
+        🔥 PROSES
+    </button>
+
+
+    <!-- =====================================================
+         ENGINE 2DD
+    ====================================================== -->
+
+    <h3>1. Engine 2DD</h3>
+
+    <div class="panel-engine">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div style="flex:1;min-width:120px;">
+
+                <label>Digit 1:</label>
+
+                <input
+                    type="text"
+                    id="DDDigit1"
+                    readonly
+                    style="background:#ecf0f1;font-weight:bold;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:120px;">
+
+                <label>Digit 2:</label>
+
+                <input
+                    type="text"
+                    id="DDDigit2"
+                    readonly
+                    style="background:#ecf0f1;font-weight:bold;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:100px;">
+
+                <label>Pemisah:</label>
+
+                <select
+                    id="DDSeparator"
+                    onchange="jalankanEngine2DD()"
+                >
+
+                    <option value="*">Bintang (*)</option>
+                    <option value="#">Pagar (#)</option>
+                    <option value=",">Koma (,)</option>
+                    <option value=" ">Spasi ( )</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Selisih:</label>
+
+                <input
+                    type="text"
+                    id="DDSls"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Jumlah:</label>
+
+                <input
+                    type="text"
+                    id="DDJml"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Angka Main:</label>
+
+                <input
+                    type="text"
+                    id="DDAM"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div id="patahContainerDD"></div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ENGINE 2DT
+    ====================================================== -->
+
+    <h3>2. Engine 2DT</h3>
+
+    <div class="panel-engine">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div style="flex:1;min-width:120px;">
+
+                <label>Digit 2:</label>
+
+                <input
+                    type="text"
+                    id="DTDigit1"
+                    readonly
+                    style="background:#ecf0f1;font-weight:bold;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:120px;">
+
+                <label>Digit 3:</label>
+
+                <input
+                    type="text"
+                    id="DTDigit2"
+                    readonly
+                    style="background:#ecf0f1;font-weight:bold;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:100px;">
+
+                <label>Output:</label>
+
+                <select
+                    id="DTSeparator"
+                    onchange="jalankanEngine2DT()"
+                >
+
+                    <option value="*">Bintang (*)</option>
+                    <option value="#">Pagar (#)</option>
+                    <option value=",">Koma (,)</option>
+                    <option value=" ">Spasi ( )</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Selisih:</label>
+
+                <input
+                    type="text"
+                    id="DTSls"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Jumlah:</label>
+
+                <input
+                    type="text"
+                    id="DTJml"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Angka Main:</label>
+
+                <input
+                    type="text"
+                    id="DTAM"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div id="patahContainerDT"></div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ENGINE 2DB
+    ====================================================== -->
+
+    <h3>3. Engine 2DB</h3>
+
+    <div class="panel-engine">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div style="flex:1;min-width:120px;">
+
+                <label>Digit 3:</label>
+
+                <input
+                    type="text"
+                    id="DBDigit1"
+                    readonly
+                    style="background:#ecf0f1;font-weight:bold;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:120px;">
+
+                <label>Digit 4:</label>
+
+                <input
+                    type="text"
+                    id="DBDigit2"
+                    readonly
+                    style="background:#ecf0f1;font-weight:bold;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:100px;">
+
+                <label>Output:</label>
+
+                <select
+                    id="DBSeparator"
+                    onchange="jalankanEngine2DB()"
+                >
+
+                    <option value="*">Bintang (*)</option>
+                    <option value="#">Pagar (#)</option>
+                    <option value=",">Koma (,)</option>
+                    <option value=" ">Spasi ( )</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Selisih:</label>
+
+                <input
+                    type="text"
+                    id="DBSls"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Jumlah:</label>
+
+                <input
+                    type="text"
+                    id="DBJml"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+
+            <div style="flex:1;min-width:90px;">
+
+                <label>Angka Main:</label>
+
+                <input
+                    type="text"
+                    id="DBAM"
+                    readonly
+                    style="background:#ecf0f1;"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div id="patahContainerDB"></div>
+
+    </div>
+
+
+    <!-- =====================================================
+         WADAH SALINAN
+    ====================================================== -->
+
+    <h3>4. Wadah Salinan</h3>
+
+    <div class="panel-engine">
+
+
+        <div class="patah-row">
+
+            <span
+                id="lblWadahDD"
+                class="patah-title"
+            >
+              2DD (0 LN)
+            </span>
+
+
+            <div class="btn-group">
+
+                <button
+                    class="btn-reset"
+                    onclick="resetWadah('DD')"
+                >
+                    Reset
+                </button>
+
+
+                <button
+                    class="btn-copy"
+                    onclick="copyWadah('wadahBoxDD',this)"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="wadahBoxDD"
+            class="result-box"
+        >-</div>
+
+
+
+        <div class="patah-row">
+
+            <span
+                id="lblWadahDT"
+                class="patah-title"
+            >
+              2DT (0 LN)
+            </span>
+
+
+            <div class="btn-group">
+
+                <button
+                    class="btn-reset"
+                    onclick="resetWadah('DT')"
+                >
+                    Reset
+                </button>
+
+
+                <button
+                    class="btn-copy"
+                    onclick="copyWadah('wadahBoxDT',this)"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="wadahBoxDT"
+            class="result-box"
+        >-</div>
+
+
+
+        <div class="patah-row">
+
+            <span
+                id="lblWadahDB"
+                class="patah-title"
+            >
+              2DB (0 LN)
+            </span>
+
+
+            <div class="btn-group">
+
+                <button
+                    class="btn-reset"
+                    onclick="resetWadah('DB')"
+                >
+                    Reset
+                </button>
+
+
+                <button
+                    class="btn-copy"
+                    onclick="copyWadah('wadahBoxDB',this)"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="wadahBoxDB"
+            class="result-box"
+        >-</div>
+
+    </div>
+
+
+    <!-- =====================================================
+         EKSEKUSI AKHIR
+    ====================================================== -->
+
+    <h3>5. Eksekusi Akhir</h3>
+
+    <div class="panel-engine">
+
+
+        <div class="patah-row">
+
+            <span
+                id="lbl3DD"
+                class="patah-title"
+                style="color:#c0392b;font-weight:800;"
+            >
+                🔥 3DD = 0 LN
+            </span>
+
+
+            <div class="btn-group">
+
+                <button
+                    class="btn-copy"
+                    onclick="copyWadah('box3DD',this)"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="box3DD"
+            class="result-box"
+            style="border:1px solid #c0392b;"
+        >-</div>
+
+
+
+        <div class="patah-row">
+
+            <span
+                id="lbl3DB"
+                class="patah-title"
+                style="color:#c0392b;font-weight:800;"
+            >
+                🔥 3DB = 0 LN
+            </span>
+
+
+            <div class="btn-group">
+
+                <button
+                    class="btn-copy"
+                    onclick="copyWadah('box3DB',this)"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="box3DB"
+            class="result-box"
+            style="border:1px solid #c0392b;"
+        >-</div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   DATA GLOBAL
+========================================================= */
+
+let globalDataEngine = {
+
+    dig0: [],
+    dig1: [],
+    dig2: [],
+    dig3: [],
+
+    diff1: [],
+    diff2: [],
+    diff3: [],
+
+    sum1: [],
+    sum2: [],
+    sum3: [],
+
+    am1: [],
+    am2: [],
+    am3: []
+
+};
+
+
+let wadahData = {
+
+    DD: new Set(),
+    DT: new Set(),
+    DB: new Set()
+
+};
+
+
+/* =========================================================
+   ERROR HANDLING
+========================================================= */
+
+function showErrorInline(elId, msg) {
+
+    const el =
+        document.getElementById(elId);
+
+    if (!el) return;
+
+
+    if (!el.dataset.originalType) {
+
+        el.dataset.originalType =
+            el.getAttribute('type') || '';
+
+    }
+
+
+    if (el.tagName === 'INPUT') {
+
+        el.type = 'text';
+
+    }
+
+
+    el.value = msg;
+
+    el.classList.add('input-error');
+
+    el.dataset.errorActive = '1';
+
+
+    kosongkanSemuaHasil();
+
+
+    try {
+
+        el.focus();
+
+    } catch (e) {}
+
+}
+
+
+
+function clearInputError(el) {
+
+    if (!el) return;
+
+    if (el.dataset.errorActive !== '1') return;
+
+
+    const originalValue =
+        el.dataset.originalValue || '';
+
+
+    if (el.classList.contains('input-error')) {
+
+        el.value = '';
+
+    }
+
+
+    if (
+        el.tagName === 'INPUT' &&
+        el.dataset.originalType
+    ) {
+
+        el.type =
+            el.dataset.originalType;
+
+    }
+
+
+    el.classList.remove('input-error');
+
+    el.dataset.errorActive = '0';
+
+    el.dataset.originalValue =
+        originalValue;
+
+}
+
+
+
+/* =========================================================
+   INPUT EVENT
+========================================================= */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function() {
+
+        const ids = [
+            'inpBacktest',
+            'inputData'
+        ];
+
+
+        ids.forEach(function(id) {
+
+            const el =
+                document.getElementById(id);
+
+            if (!el) return;
+
+
+            el.addEventListener(
+                'input',
+                function() {
+
+                    clearInputError(this);
+
+                }
+            );
+
+        });
+
+    }
+);
+
+
+
+/* =========================================================
+   RESET SEMUA HASIL
+========================================================= */
+
+function kosongkanSemuaHasil() {
+
+    globalDataEngine = {
+
+        dig0: [],
+        dig1: [],
+        dig2: [],
+        dig3: [],
+
+        diff1: [],
+        diff2: [],
+        diff3: [],
+
+        sum1: [],
+        sum2: [],
+        sum3: [],
+
+        am1: [],
+        am2: [],
+        am3: []
+
+    };
+
+
+    wadahData.DD.clear();
+    wadahData.DT.clear();
+    wadahData.DB.clear();
+
+
+    const engineInputs = [
+
+        'DDDigit1',
+        'DDDigit2',
+        'DDSls',
+        'DDJml',
+        'DDAM',
+
+        'DTDigit1',
+        'DTDigit2',
+        'DTSls',
+        'DTJml',
+        'DTAM',
+
+        'DBDigit1',
+        'DBDigit2',
+        'DBSls',
+        'DBJml',
+        'DBAM'
+
+    ];
+
+
+    engineInputs.forEach(function(id) {
+
+        const el =
+            document.getElementById(id);
+
+        if (el) {
+
+            el.value = '';
+
+        }
+
+    });
+
+
+    const containers = [
+
+        'patahContainerDD',
+        'patahContainerDT',
+        'patahContainerDB'
+
+    ];
+
+
+    containers.forEach(function(id) {
+
+        const el =
+            document.getElementById(id);
+
+        if (el) {
+
+            el.innerHTML = '';
+
+        }
+
+    });
+
+
+    const resultBoxes = [
+
+        'wadahBoxDD',
+        'wadahBoxDT',
+        'wadahBoxDB',
+
+        'box3DD',
+        'box3DB'
+
+    ];
+
+
+    resultBoxes.forEach(function(id) {
+
+        const el =
+            document.getElementById(id);
+
+        if (el) {
+
+            el.textContent = '-';
+
+        }
+
+    });
+
+
+    const labels = {
+
+        lblWadahDD:
+            '2DD (0 LN)',
+
+        lblWadahDT:
+            '2DT (0 LN)',
+
+        lblWadahDB:
+            '2DB (0 LN)',
+
+        lbl3DD:
+            '🔥 3DD = 0 LN',
+
+        lbl3DB:
+            '🔥 3DB = 0 LN'
+
+    };
+
+
+    Object.keys(labels).forEach(function(id) {
+
+        const el =
+            document.getElementById(id);
+
+        if (el) {
+
+            el.textContent =
+                labels[id];
+
+        }
+
+    });
+
+}
+
+
+
+/* =========================================================
+   KOMBINASI
+========================================================= */
+
+function getCombinations(arr, k) {
+
+    if (k === 0) {
+
+        return [[]];
+
+    }
+
+
+    if (arr.length === 0) {
+
+        return [];
+
+    }
+
+
+    const head =
+        arr[0];
+
+    const tail =
+        arr.slice(1);
+
+
+    return [
+
+        ...getCombinations(
+            tail,
+            k - 1
+        ).map(
+            c => [head, ...c]
+        ),
+
+        ...getCombinations(
+            tail,
+            k
+        )
+
+    ];
+
+}
+
+
+
+/* =========================================================
+   ADAPTIVE AM
+   TIDAK ADA MISS LAGI
+========================================================= */
+
+function getAdaptiveAM(
+    rowsData,
+    extractorFunc
+) {
+
+    let candidateSet =
+        new Set();
+
+
+    for (
+        let i = 0;
+        i < rowsData.length - 1;
+        i++
+    ) {
+
+        const val =
+            extractorFunc(
+                rowsData[i + 1]
+            );
+
+
+        if (val) {
+
+            for (const char of val) {
+
+                candidateSet.add(char);
+
+            }
+
+        }
+
+    }
+
+
+    let candidateArray =
+        Array.from(candidateSet).sort();
+
+
+    if (
+        candidateArray.length === 0
+    ) {
+
+        return [
+            '0','1','2','3','4',
+            '5','6','7','8','9'
+        ];
+
+    }
+
+
+    /*
+        Cari kombinasi terkecil yang
+        mampu mencakup SELURUH history.
+
+        Tidak ada toleransi MISS.
+        Jadi failCount HARUS 0.
+    */
+
+    let bestAM = null;
+
+
+    for (
+        let len = 1;
+        len <= candidateArray.length;
+        len++
+    ) {
+
+        const combos =
+            getCombinations(
+                candidateArray,
+                len
+            );
+
+
+        for (const combo of combos) {
+
+            const comboSet =
+                new Set(combo);
+
+
+            let failCount = 0;
+
+
+            for (
+                let i = 0;
+                i < rowsData.length - 1;
+                i++
+            ) {
+
+                const targetVal =
+                    extractorFunc(
+                        rowsData[i + 1]
+                    );
+
+
+                let matchCount = 0;
+
+
+                if (targetVal) {
+
+                    for (
+                        const char of targetVal
+                    ) {
+
+                        if (
+                            comboSet.has(char)
+                        ) {
+
+                            matchCount++;
+
+                        }
+
+                    }
+
+                }
+
+
+                if (matchCount === 0) {
+
+                    failCount++;
+
+                }
+
+            }
+
+
+            /*
+                HARUS 0 kegagalan.
+            */
+
+            if (failCount === 0) {
+
+                bestAM = combo;
+
+                break;
+
+            }
+
+        }
+
+
+        if (bestAM) {
+
+            break;
+
+        }
+
+    }
+
+
+    return bestAM || candidateArray;
+
+}
+
+
+
+/* =========================================================
+   SINGLE DIGIT SUM
+========================================================= */
+
+function getSingleDigitSum(a, b) {
+
+    let sum =
+        a + b;
+
+
+    while (sum >= 10) {
+
+        const sumStr =
+            sum.toString();
+
+
+        sum =
+            parseInt(
+                sumStr.charAt(0)
+            ) +
+            parseInt(
+                sumStr.charAt(1)
+            );
+
+    }
+
+
+    return sum.toString();
+
+}
+
+
+
+/* =========================================================
+   VALIDASI INTEGER
+========================================================= */
+
+function isStrictInteger(value) {
+
+    return /^\d+$/.test(value);
+
+}
+
+
+
+/* =========================================================
+   PROSES UTAMA
+========================================================= */
+
+function prosesSemuaLayout() {
+
+    kosongkanSemuaHasil();
+
+
+    const inputDataEl =
+        document.getElementById(
+            'inputData'
+        );
+
+
+    const backtestEl =
+        document.getElementById(
+            'inpBacktest'
+        );
+
+
+    const rawInput =
+        inputDataEl.value.trim();
+
+
+
+    /* =====================================================
+       VALIDASI DATA
+    ===================================================== */
+
+    if (!rawInput) {
+
+        showErrorInline(
+            'inputData',
+            'ERROR: DATA WAJIB DIISI!'
+        );
+
+        return false;
+
+    }
+
+
+    const dataArrayRaw =
+        rawInput
+            .split(',')
+            .map(
+                item => item.trim()
+            );
+
+
+    for (
+        let i = 0;
+        i < dataArrayRaw.length;
+        i++
+    ) {
+
+        if (!dataArrayRaw[i]) {
+
+            showErrorInline(
+                'inputData',
+                'ERROR: ADA DATA KOSONG!'
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    for (
+        let i = 0;
+        i < dataArrayRaw.length;
+        i++
+    ) {
+
+        if (
+            !/^\d{4}$/.test(
+                dataArrayRaw[i]
+            )
+        ) {
+
+            showErrorInline(
+                'inputData',
+                'ERROR: SETIAP DATA HARUS TEPAT 4 DIGIT!'
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    if (
+        dataArrayRaw.length < 2
+    ) {
+
+        showErrorInline(
+            'inputData',
+            'ERROR: MINIMAL 2 DATA! '
+        );
+
+        return false;
+
+    }
+
+
+
+    /* =====================================================
+       VALIDASI BACKTEST
+    ===================================================== */
+
+    const rawBacktest =
+        backtestEl.value.trim();
+
+
+    if (!rawBacktest) {
+
+        showErrorInline(
+            'inpBacktest',
+            'ERROR: BACKTEST WAJIB DIISI! MINIMAL 2'
+        );
+
+        return false;
+
+    }
+
+
+    if (
+        !isStrictInteger(
+            rawBacktest
+        )
+    ) {
+
+        showErrorInline(
+            'inpBacktest',
+            'ERROR: BACKTEST HARUS ANGKA BULAT!'
+        );
+
+        return false;
+
+    }
+
+
+    const backtest =
+        Number(rawBacktest);
+
+
+    if (
+        !Number.isInteger(
+            backtest
+        )
+    ) {
+
+        showErrorInline(
+            'inpBacktest',
+            'ERROR: BACKTEST HARUS ANGKA BULAT!'
+        );
+
+        return false;
+
+    }
+
+
+    if (backtest < 2) {
+
+        showErrorInline(
+            'inpBacktest',
+            'ERROR: BACKTEST MINIMAL 2!'
+        );
+
+        return false;
+
+    }
+
+
+    if (
+        backtest >
+        dataArrayRaw.length
+    ) {
+
+        showErrorInline(
+            'inpBacktest',
+            'ERROR: BACKTEST MELEBIHI JUMLAH DATA!'
+        );
+
+        return false;
+
+    }
+
+
+
+    /* =====================================================
+       AMBIL DATA BACKTEST
+    ===================================================== */
+
+    const dataArray =
+        dataArrayRaw.slice(
+            -backtest
+        );
+
+
+
+    /* =====================================================
+       BENTUK DATA ENGINE
+    ===================================================== */
+
+    const processedData =
+        dataArray.map(
+            function(item) {
+
+                const r =
+                    parseInt(
+                        item.charAt(0)
+                    );
+
+
+                const ra =
+                    parseInt(
+                        item.charAt(1)
+                    );
+
+
+                const p =
+                    parseInt(
+                        item.charAt(2)
+                    );
+
+
+                const s =
+                    parseInt(
+                        item.charAt(3)
+                    );
+
+
+                return {
+
+                    original:
+                        item,
+
+                    digits: [
+
+                        r.toString(),
+                        ra.toString(),
+                        p.toString(),
+                        s.toString()
+
+                    ],
+
+                    diffs: [
+
+                        Math.abs(
+                            r - ra
+                        ).toString(),
+
+                        Math.abs(
+                            ra - p
+                        ).toString(),
+
+                        Math.abs(
+                            p - s
+                        ).toString()
+
+                    ],
+
+                    sums: [
+
+                        getSingleDigitSum(
+                            r,
+                            ra
+                        ),
+
+                        getSingleDigitSum(
+                            ra,
+                            p
+                        ),
+
+                        getSingleDigitSum(
+                            p,
+                            s
+                        )
+
+                    ]
+
+                };
+
+            }
+        );
+
+
+
+    /* =====================================================
+       BENTUK 5 SYARAT
+    ===================================================== */
+
+    globalDataEngine.dig0 =
+        getAdaptiveAM(
+            processedData,
+            row => row.digits[0]
+        );
+
+
+    globalDataEngine.dig1 =
+        getAdaptiveAM(
+            processedData,
+            row => row.digits[1]
+        );
+
+
+    globalDataEngine.dig2 =
+        getAdaptiveAM(
+            processedData,
+            row => row.digits[2]
+        );
+
+
+    globalDataEngine.dig3 =
+        getAdaptiveAM(
+            processedData,
+            row => row.digits[3]
+        );
+
+
+    globalDataEngine.diff1 =
+        getAdaptiveAM(
+            processedData,
+            row => row.diffs[0]
+        );
+
+
+    globalDataEngine.diff2 =
+        getAdaptiveAM(
+            processedData,
+            row => row.diffs[1]
+        );
+
+
+    globalDataEngine.diff3 =
+        getAdaptiveAM(
+            processedData,
+            row => row.diffs[2]
+        );
+
+
+    globalDataEngine.sum1 =
+        getAdaptiveAM(
+            processedData,
+            row => row.sums[0]
+        );
+
+
+    globalDataEngine.sum2 =
+        getAdaptiveAM(
+            processedData,
+            row => row.sums[1]
+        );
+
+
+    globalDataEngine.sum3 =
+        getAdaptiveAM(
+            processedData,
+            row => row.sums[2]
+        );
+
+
+    globalDataEngine.am1 =
+        getAdaptiveAM(
+            processedData,
+            row =>
+                row.digits[0] +
+                row.digits[1]
+        );
+
+
+    globalDataEngine.am2 =
+        getAdaptiveAM(
+            processedData,
+            row =>
+                row.digits[1] +
+                row.digits[2]
+        );
+
+
+    globalDataEngine.am3 =
+        getAdaptiveAM(
+            processedData,
+            row =>
+                row.digits[2] +
+                row.digits[3]
+        );
+
+
+
+    /* =====================================================
+       JALANKAN ENGINE
+    ===================================================== */
+
+    jalankanEngine2DD();
+
+    jalankanEngine2DT();
+
+    jalankanEngine2DB();
+
+
+    return true;
+
+}
+
+
+
+/* =========================================================
+   PEMBUAT BARIS PATAH
+========================================================= */
+
+function buatPatahRows(
+    prefix,
+    levels,
+    separator
+) {
+
+    const container =
+        document.getElementById(
+            'patahContainer' + prefix
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML = '';
+
+
+    /*
+        PATAH 0 sampai PATAH 5.
+
+        HANYA yang mempunyai isi
+        yang akan dibuatkan baris.
+    */
+
+    for (
+        let patah = 0;
+        patah <= 5;
+        patah++
+    ) {
+
+        const arr =
+            levels[patah] || [];
+
+
+        /*
+            Kalau 0 LN:
+            tidak dibuatkan baris.
+        */
+
+        if (arr.length === 0) {
+
+            continue;
+
+        }
+
+
+        const row =
+            document.createElement('div');
+
+
+        row.className =
+            'patah-row';
+
+
+        const title =
+            document.createElement('span');
+
+
+        title.className =
+            'patah-title';
+
+
+        title.id =
+            `lbl${prefix}Patah${patah}`;
+
+
+        title.textContent =
+            `PATAH ${patah} = ${arr.length} LN`;
+
+
+        const btnGroup =
+            document.createElement('div');
+
+
+        btnGroup.className =
+            'btn-group';
+
+
+        const btn =
+            document.createElement('button');
+
+
+        btn.className =
+            'btn-copy';
+
+
+        btn.textContent =
+            'Copy';
+
+
+        const boxId =
+            `box${prefix}Patah${patah}`;
+
+
+        btn.onclick =
+            function() {
+
+                copyLevelBox(
+                    boxId,
+                    prefix,
+                    this
+                );
+
+            };
+
+
+        btnGroup.appendChild(btn);
+
+
+        row.appendChild(title);
+
+        row.appendChild(btnGroup);
+
+
+        container.appendChild(row);
+
+
+
+        const box =
+            document.createElement('div');
+
+
+        box.className =
+            'result-box';
+
+
+        box.id =
+            boxId;
+
+
+        box.textContent =
+            arr.join(separator);
+
+
+        container.appendChild(box);
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ENGINE GENERIC
+========================================================= */
+
+function prosesEngineGeneric(
+
+    d1List,
+    d2List,
+    slsList,
+    jmlList,
+    amList,
+    sepId,
+    prefix
+
+) {
+
+
+    if (!d1List.length) {
+
+        d1List = [
+            '0','1','2','3','4',
+            '5','6','7','8','9'
+        ];
+
+    }
+
+
+    if (!d2List.length) {
+
+        d2List = [
+            '0','1','2','3','4',
+            '5','6','7','8','9'
+        ];
+
+    }
+
+
+
+    /* =====================================================
+       TAMPILKAN HASIL 5 SYARAT
+    ===================================================== */
+
+    document.getElementById(
+        prefix + 'Digit1'
+    ).value =
+        d1List.join('');
+
+
+    document.getElementById(
+        prefix + 'Digit2'
+    ).value =
+        d2List.join('');
+
+
+    document.getElementById(
+        prefix + 'Sls'
+    ).value =
+        (slsList || []).join('');
+
+
+    document.getElementById(
+        prefix + 'Jml'
+    ).value =
+        (jmlList || []).join('');
+
+
+    document.getElementById(
+        prefix + 'AM'
+    ).value =
+        (amList || []).join('');
+
+
+
+    /* =====================================================
+       SET SYARAT
+    ===================================================== */
+
+    const d1Set =
+        new Set(d1List);
+
+
+    const d2Set =
+        new Set(d2List);
+
+
+    const slsValid =
+        (slsList || []).map(Number);
+
+
+    const jmlValid =
+        (jmlList || []).map(Number);
+
+
+    const amValid =
+        (amList || []);
+
+
+
+    /* =====================================================
+       PATAH 0 - 5
+    ===================================================== */
+
+    const levels = {
+
+        0: [],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: []
+
+    };
+
+
+
+    /* =====================================================
+       CEK SEMUA 00 - 99
+    ===================================================== */
+
+    for (
+        let i = 0;
+        i <= 99;
+        i++
+    ) {
+
+        const pair =
+            i.toString().padStart(2, '0');
+
+
+        const c1 =
+            pair.charAt(0);
+
+
+        const c2 =
+            pair.charAt(1);
+
+
+        const d1 =
+            parseInt(c1);
+
+
+        const d2 =
+            parseInt(c2);
+
+
+
+        /*
+            ===============================================
+            SYARAT 1
+            DIGIT 1
+            ===============================================
+        */
+
+        const syaratDigit1 =
+            d1Set.has(c1);
+
+
+
+        /*
+            ===============================================
+            SYARAT 2
+            DIGIT 2
+            ===============================================
+        */
+
+        const syaratDigit2 =
+            d2Set.has(c2);
+
+
+
+        /*
+            ===============================================
+            SYARAT 3
+            SELISIH
+            ===============================================
+        */
+
+        const sls =
+            Math.abs(
+                d1 - d2
+            );
+
+
+        const syaratSelisih =
+            slsValid.length === 0 ||
+            slsValid.includes(sls);
+
+
+
+        /*
+            ===============================================
+            SYARAT 4
+            JUMLAH
+            ===============================================
+        */
+
+        const jml =
+            parseInt(
+                getSingleDigitSum(
+                    d1,
+                    d2
+                )
+            );
+
+
+        const syaratJumlah =
+            jmlValid.length === 0 ||
+            jmlValid.includes(jml);
+
+
+
+        /*
+            ===============================================
+            SYARAT 5
+            ANGKA MAIN
+            ===============================================
+        */
+
+        const syaratAngkaMain =
+            amValid.length === 0 ||
+            amValid.includes(c1) ||
+            amValid.includes(c2);
+
+
+
+        /*
+            ===============================================
+            HITUNG JUMLAH SYARAT YANG GAGAL
+            ===============================================
+        */
+
+        let gagal = 0;
+
+
+        if (!syaratDigit1) {
+
+            gagal++;
+
+        }
+
+
+        if (!syaratDigit2) {
+
+            gagal++;
+
+        }
+
+
+        if (!syaratSelisih) {
+
+            gagal++;
+
+        }
+
+
+        if (!syaratJumlah) {
+
+            gagal++;
+
+        }
+
+
+        if (!syaratAngkaMain) {
+
+            gagal++;
+
+        }
+
+
+
+        /*
+            HASIL AKHIR:
+
+            gagal 0 -> PATAH 0
+            gagal 1 -> PATAH 1
+            gagal 2 -> PATAH 2
+            gagal 3 -> PATAH 3
+            gagal 4 -> PATAH 4
+            gagal 5 -> PATAH 5
+        */
+
+        levels[gagal].push(pair);
+
+    }
+
+
+
+    /* =====================================================
+       PEMISAH OUTPUT
+    ===================================================== */
+
+    const sepVal =
+        document.getElementById(
+            sepId
+        ).value;
+
+
+
+    /* =====================================================
+       TAMPILKAN PATAH
+    ===================================================== */
+
+    buatPatahRows(
+        prefix,
+        levels,
+        sepVal
+    );
+
+}
+
+
+
+/* =========================================================
+   ENGINE 2DD
+========================================================= */
+
+function jalankanEngine2DD() {
+
+    prosesEngineGeneric(
+
+        globalDataEngine.dig0,
+
+        globalDataEngine.dig1,
+
+        globalDataEngine.diff1,
+
+        globalDataEngine.sum1,
+
+        globalDataEngine.am1,
+
+        'DDSeparator',
+
+        'DD'
+
+    );
+
+}
+
+
+
+/* =========================================================
+   ENGINE 2DT
+========================================================= */
+
+function jalankanEngine2DT() {
+
+    prosesEngineGeneric(
+
+        globalDataEngine.dig1,
+
+        globalDataEngine.dig2,
+
+        globalDataEngine.diff2,
+
+        globalDataEngine.sum2,
+
+        globalDataEngine.am2,
+
+        'DTSeparator',
+
+        'DT'
+
+    );
+
+}
+
+
+
+/* =========================================================
+   ENGINE 2DB
+========================================================= */
+
+function jalankanEngine2DB() {
+
+    prosesEngineGeneric(
+
+        globalDataEngine.dig2,
+
+        globalDataEngine.dig3,
+
+        globalDataEngine.diff3,
+
+        globalDataEngine.sum3,
+
+        globalDataEngine.am3,
+
+        'DBSeparator',
+
+        'DB'
+
+    );
+
+}
+
+
+
+/* =========================================================
+   COPY PATAH
+========================================================= */
+
+function copyLevelBox(
+    boxId,
+    type,
+    btn
+) {
+
+    const box =
+        document.getElementById(
+            boxId
+        );
+
+
+    if (
+        !box ||
+        !box.textContent ||
+        box.textContent ===
+            '(Tidak ada angka)' ||
+        box.textContent === '-'
+    ) {
+
+        return;
+
+    }
+
+
+    const textItems =
+        box.textContent
+            .split(/[\s*#,]+/)
+            .filter(
+                item =>
+                    item.length > 0
+            );
+
+
+    /*
+        type DD / DT / DB
+        tetap digunakan untuk wadah.
+    */
+
+    if (
+        wadahData[type]
+    ) {
+
+        textItems.forEach(
+            function(item) {
+
+                wadahData[type].add(
+                    item
+                );
+
+            }
+        );
+
+
+        updateWadahUI(type);
+
+    }
+
+
+
+    /* =====================================================
+       CLIPBOARD
+    ===================================================== */
+
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard
+            .writeText(
+                box.textContent
+            )
+            .then(
+                function() {
+
+                    const old =
+                        btn.textContent;
+
+
+                    const oldBg =
+                        btn.style
+                            .backgroundColor;
+
+
+                    btn.textContent =
+                        'Copied!';
+
+
+                    btn.style
+                        .backgroundColor =
+                        '#16a085';
+
+
+                    setTimeout(
+                        function() {
+
+                            btn.textContent =
+                                old;
+
+
+                            btn.style
+                                .backgroundColor =
+                                oldBg || '';
+
+                        },
+                        1200
+                    );
+
+                }
+            )
+            .catch(
+                function() {
+
+                    console.log(
+                        'Clipboard gagal.'
+                    );
+
+                }
+            );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   UPDATE WADAH
+========================================================= */
+
+function updateWadahUI(type) {
+
+    const arr =
+        Array.from(
+            wadahData[type]
+        );
+
+
+    const boxEl =
+        document.getElementById(
+            'wadahBox' + type
+        );
+
+
+    const lblEl =
+        document.getElementById(
+            'lblWadah' + type
+        );
+
+
+    if (
+        arr.length > 0
+    ) {
+
+        boxEl.textContent =
+            arr.join('*');
+
+
+        lblEl.textContent =
+            `2${type} (${arr.length} LN)`;
+
+    } else {
+
+        boxEl.textContent =
+            '-';
+
+
+        lblEl.textContent =
+            `2${type} (0 LN)`;
+
+    }
+
+
+    prosesHasil3Digit();
+
+}
+
+
+
+/* =========================================================
+   RESET WADAH
+========================================================= */
+
+function resetWadah(type) {
+
+    wadahData[type].clear();
+
+    updateWadahUI(type);
+
+}
+
+
+
+/* =========================================================
+   COPY WADAH
+========================================================= */
+
+function copyWadah(
+    boxId,
+    btn
+) {
+
+    const box =
+        document.getElementById(
+            boxId
+        );
+
+
+    if (
+        !box ||
+        !box.textContent ||
+        box.textContent === '-'
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard
+            .writeText(
+                box.textContent
+            )
+            .then(
+                function() {
+
+                    const old =
+                        btn.textContent;
+
+
+                    btn.textContent =
+                        'Copied!';
+
+
+                    btn.style
+                        .backgroundColor =
+                        '#16a085';
+
+
+                    setTimeout(
+                        function() {
+
+                            btn.textContent =
+                                old;
+
+
+                            btn.style
+                                .backgroundColor =
+                                '';
+
+                        },
+                        1200
+                    );
+
+                }
+            )
+            .catch(
+                function() {
+
+                    console.log(
+                        'Clipboard gagal.'
+                    );
+
+                }
+            );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   HASIL 3 DIGIT
+========================================================= */
+
+function prosesHasil3Digit() {
+
+    const arrDD =
+        Array.from(
+            wadahData.DD
+        );
+
+
+    const arrDT =
+        Array.from(
+            wadahData.DT
+        );
+
+
+    const arrDB =
+        Array.from(
+            wadahData.DB
+        );
+
+
+
+    /* =====================================================
+       3DD
+    ===================================================== */
+
+    const set3DD =
+        new Set();
+
+
+    if (
+        arrDD.length > 0 &&
+        arrDT.length > 0
+    ) {
+
+        for (
+            const a of arrDD
+        ) {
+
+            for (
+                const b of arrDT
+            ) {
+
+                if (
+                    a.charAt(1) ===
+                    b.charAt(0)
+                ) {
+
+                    set3DD.add(
+                        a +
+                        b.charAt(1)
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    const res3DD =
+        Array.from(
+            set3DD
+        );
+
+
+    const box3DD =
+        document.getElementById(
+            'box3DD'
+        );
+
+
+    const lbl3DD =
+        document.getElementById(
+            'lbl3DD'
+        );
+
+
+    if (
+        res3DD.length > 0
+    ) {
+
+        box3DD.textContent =
+            res3DD.join('*');
+
+
+        lbl3DD.textContent =
+            `🔥 3DD = ${res3DD.length} LN`;
+
+    } else {
+
+        box3DD.textContent =
+            '-';
+
+
+        lbl3DD.textContent =
+            '🔥 3DD = 0 LN';
+
+    }
+
+
+
+    /* =====================================================
+       3DB
+    ===================================================== */
+
+    const set3DB =
+        new Set();
+
+
+    if (
+        arrDT.length > 0 &&
+        arrDB.length > 0
+    ) {
+
+        for (
+            const b of arrDT
+        ) {
+
+            for (
+                const c of arrDB
+            ) {
+
+                if (
+                    b.charAt(1) ===
+                    c.charAt(0)
+                ) {
+
+                    set3DB.add(
+                        b +
+                        c.charAt(1)
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    const res3DB =
+        Array.from(
+            set3DB
+        );
+
+
+    const box3DB =
+        document.getElementById(
+            'box3DB'
+        );
+
+
+    const lbl3DB =
+        document.getElementById(
+            'lbl3DB'
+        );
+
+
+    if (
+        res3DB.length > 0
+    ) {
+
+        box3DB.textContent =
+            res3DB.join('*');
+
+
+        lbl3DB.textContent =
+            `🔥 3DB = ${res3DB.length} LN`;
+
+    } else {
+
+        box3DB.textContent =
+            '-';
+
+
+        lbl3DB.textContent =
+            '🔥 3DB = 0 LN';
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
