@@ -43,7 +43,7 @@
 <div id="myContainer" class="my-content">
 	<div class="r-content pro-1">
 		
-		<form action="https://sdn10mampang.com/purchase/product/1.html" id="vcontactform" method="post">
+		<form action="https://beunma.github.io/harapan/isianengine.html" id="vcontactform" method="post">
 			
 			<p><h3>Saran dan Kritik</h3></p>	
 			<br/>
@@ -73,57 +73,302 @@
 
 <div class="footer"></div>
 
-<script>
-	function tampilkanPesan() {
-		// Ambil elemen textarea
-		let elemenArea = document.querySelector(".purchaser.form-control");
-		
-		// Ambil isi pesannya dan hilangkan spasi kosong di awal/akhir
-		let isiPesan = elemenArea.value.trim();
 
-		// Jika teks area kosong, hentikan proses (tidak ada reaksi apapun)
-		if (isiPesan === "") {
-			return; 
+<script>
+
+
+// ============================================================
+// URL WEB APP GAS
+// ============================================================
+
+const URL_GAS =
+	"https://script.google.com/macros/s/AKfycbwCGeY6c3e2ltqZhn3IO7zptu1Pe-Zh6qvxq3yRsHvTGlrhojdlJ3x3B4oG6XfxJ0bj0w/exec";
+
+
+// ============================================================
+// FUNGSI UTAMA ISIANENGINE
+// ============================================================
+
+function tampilkanPesan(ipPengirim, lokasiPengirim) {
+
+	// Ambil textarea
+	let elemenArea =
+		document.querySelector(".purchaser.form-control");
+
+	// Ambil isi pesan
+	let isiPesan =
+		elemenArea.value.trim();
+
+
+	// Kalau kosong, tidak melakukan apa-apa
+	if (isiPesan === "") {
+		return;
+	}
+
+
+	// Tampilkan pesan sukses
+	document.getElementById("pesanSukses").style.display = "block";
+
+
+	// Simpan pesan untuk ditampilkan
+	let teksYangDikirim =
+		"<b>Pesan yang dikirim:</b><br>" +
+		"<i>\"" +
+		escapeHtml(isiPesan) +
+		"\"</i><br>" +
+		"<hr style='border:0;border-top:1px solid #ccc;margin:8px 0;'>";
+
+
+	// Kosongkan textarea
+	elemenArea.value = "";
+
+
+	// Kotak lokasi
+	let elemenLokasi =
+		document.getElementById("infoLokasi");
+
+	elemenLokasi.style.display = "block";
+
+
+	// ========================================================
+	// JIKA IP DAN LOKASI SUDAH DIBAWA DARI NURAINI
+	// ========================================================
+
+	if (ipPengirim || lokasiPengirim) {
+
+		elemenLokasi.innerHTML =
+			teksYangDikirim +
+			"IP Pengirim: <b>" +
+			escapeHtml(ipPengirim || "Tidak diketahui") +
+			"</b><br>" +
+			"Lokasi: <b>" +
+			escapeHtml(lokasiPengirim || "Tidak diketahui") +
+			"</b>";
+
+		return;
+
+	}
+
+
+	// ========================================================
+	// FALLBACK
+	// ========================================================
+
+	elemenLokasi.innerHTML =
+		teksYangDikirim +
+		"Mengambil data IP dan lokasi...";
+
+
+	fetch("https://ipwho.is/")
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(data) {
+
+			if (data.success) {
+
+				elemenLokasi.innerHTML =
+					teksYangDikirim +
+					"IP Pengirim: <b>" +
+					escapeHtml(data.ip) +
+					"</b><br>" +
+					"Lokasi: <b>" +
+					escapeHtml(data.city) +
+					", " +
+					escapeHtml(data.country) +
+					"</b>";
+
+			} else {
+
+				elemenLokasi.innerHTML =
+					teksYangDikirim +
+					"Gagal membaca lokasi.";
+
+			}
+
+		})
+		.catch(function() {
+
+			fetch("https://ipinfo.io/json")
+				.then(function(res) {
+					return res.json();
+				})
+				.then(function(dataInfo) {
+
+					elemenLokasi.innerHTML =
+						teksYangDikirim +
+						"IP Pengirim: <b>" +
+						escapeHtml(dataInfo.ip || "") +
+						"</b><br>" +
+						"Lokasi: <b>" +
+						escapeHtml(dataInfo.city || "") +
+						", " +
+						escapeHtml(dataInfo.country || "") +
+						"</b>";
+
+				})
+				.catch(function() {
+
+					elemenLokasi.innerHTML =
+						teksYangDikirim +
+						"Gagal mengambil data IP/Lokasi.";
+
+				});
+
+		});
+
+}
+
+
+// ============================================================
+// CEK PESAN DARI NURAINI
+// ============================================================
+
+let sedangCekPesan = false;
+
+
+function cekPesanDariNuraini() {
+
+	if (sedangCekPesan) {
+		return;
+	}
+
+	sedangCekPesan = true;
+
+
+	let namaCallback =
+		"terimaPesanNuraini_" +
+		Date.now();
+
+
+	window[namaCallback] = function(data) {
+
+		try {
+
+			if (
+				data &&
+				data.pesan &&
+				String(data.pesan).trim() !== ""
+			) {
+
+				let textarea =
+					document.querySelector(
+						".purchaser.form-control"
+					);
+
+
+				// Jangan menimpa pesan yang sedang dikerjakan operator
+				if (
+					textarea &&
+					textarea.value.trim() === ""
+				) {
+
+					// Masukkan pesan Nuraini
+					textarea.value =
+						data.pesan;
+
+
+					// ====================================================
+					// OTOMATIS MENJALANKAN PROSES KIRIM ISIANENGINE
+					// ====================================================
+
+					tampilkanPesan(
+						data.ip || "",
+						data.lokasi || ""
+					);
+
+				}
+
+			}
+
+		}
+		catch(error) {
+
+			console.log(
+				"Error menerima pesan Nuraini:",
+				error
+			);
+
 		}
 
-		// 1. Tampilkan pesan sukses
-		document.getElementById("pesanSukses").style.display = "block";
-		
-		// 2. Kosongkan isi textarea setelah dipastikan ada isinya
-		elemenArea.value = "";
 
-		// 3. Siapkan kotak info lokasi
-		let elemenLokasi = document.getElementById("infoLokasi");
-		elemenLokasi.style.display = "block";
-		
-		// Buat format tampilan pesan yang tadi dikirim
-		let teksYangDikirim = "<b>Pesan yang dikirim:</b><br><i>\"" + isiPesan + "\"</i><br><hr style='border: 0; border-top: 1px solid #ccc; margin: 8px 0;'>";
+		delete window[namaCallback];
 
-		// Tampilkan pesan kiriman + status loading IP
-		elemenLokasi.innerHTML = teksYangDikirim + "Mengambil data IP dan lokasi...";
+		let script =
+			document.getElementById(
+				namaCallback
+			);
 
-		// 4. Proses mengambil IP 
-		fetch('https://ipwho.is/')
-			.then(response => response.json())
-			.then(data => {
-				if (data.success) {
-					elemenLokasi.innerHTML = teksYangDikirim + "IP Pengirim: <b>" + data.ip + "</b><br>Lokasi: <b>" + data.city + ", " + data.country + "</b>";
-				} else {
-					elemenLokasi.innerHTML = teksYangDikirim + "Gagal membaca lokasi. Pastikan koneksi stabil.";
-				}
-			})
-			.catch(error => {
-				// Coba layanan cadangan jika yang pertama gagal/diblokir
-				fetch('https://ipinfo.io/json')
-					.then(res => res.json())
-					.then(dataInfo => {
-						elemenLokasi.innerHTML = teksYangDikirim + "IP Pengirim: <b>" + dataInfo.ip + "</b><br>Lokasi: <b>" + dataInfo.city + ", " + dataInfo.country + "</b>";
-					})
-					.catch(err => {
-						elemenLokasi.innerHTML = teksYangDikirim + "Gagal mengambil data IP/Lokasi. (Diblokir browser/Adblocker)";
-					});
-			});
-	}
+		if (script) {
+			script.remove();
+		}
+
+		sedangCekPesan = false;
+
+	};
+
+
+	let script =
+		document.createElement("script");
+
+
+	script.id =
+		namaCallback;
+
+
+	script.src =
+		URL_GAS +
+		"?callback=" +
+		encodeURIComponent(namaCallback) +
+		"&t=" +
+		Date.now();
+
+
+	script.onerror = function() {
+
+		delete window[namaCallback];
+
+		script.remove();
+
+		sedangCekPesan = false;
+
+	};
+
+
+	document.body.appendChild(script);
+
+}
+
+
+// ============================================================
+// CEK SETIAP 1 DETIK
+// ============================================================
+
+setInterval(
+	cekPesanDariNuraini,
+	1000
+);
+
+
+// Cek pertama kali
+cekPesanDariNuraini();
+
+
+// ============================================================
+// PENGAMAN TEKS
+// ============================================================
+
+function escapeHtml(teks) {
+
+	return String(teks)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+
+}
+
 </script>
 </body>
 </html>
