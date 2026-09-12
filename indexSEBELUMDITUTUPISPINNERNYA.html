@@ -41,76 +41,19 @@
             font-size: 14px;
             color: #b0b0b0;
         }
-/* YEBI SET SPINNER */
-/*        input,*/
-/*        select,*/
-input {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            background: #2d2d2d;
-            border: 1px solid #444;
-			color: #2d2d2d;
-            border-radius: 6px;
-            font-size: 14px;
-}
 
-select {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            background: #2d2d2d;
-            border: 1px solid #444;
-			color: #2d2d2d;
-            border-radius: 6px;
-            font-size: 14px;
-}
-
-
-
+        input,
+        select,
         textarea {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
             background: #2d2d2d;
             border: 1px solid #444;
-			color: #2d2d2d;
+            color: #fff;
             border-radius: 6px;
             font-size: 14px;
         }
-		
-		
-		
-		
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         .btn {
             background: #007bff;
@@ -479,36 +422,12 @@ select {
                 Pengujian Spinner
             </div>
 
-
-<!-- yebi button long klik
             <button
                 class="btn"
                 style="background: #17a2b8; font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 12px;"
                 onclick="loadPasaranEngine()">
                 Ambil Data
             </button>
-			
-lalu di bawahnya 
-onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"			
-			
--->
-<button
-    class="btn"
-    style="background: #17a2b8; font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 12px;"
-    onclick="jalankanKlik()"
-	
-    onmousedown="mulaiLongClick(this)"
-    onmouseup="batalLongClick()"
-    onmouseleave="batalLongClick()"
-    ontouchstart="mulaiLongClick(this)"
-    ontouchend="batalLongClick()"
-    ontouchcancel="batalLongClick()">
-    Ambil Data
-</button>
-
-
-
-			
 
             <div id="spinner-pasaran-container" style="margin-bottom: 10px;">
 
@@ -573,7 +492,7 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
                         id="input-hasil-result"
                         rows="2"
                         style="flex: 1; resize: vertical; font-family: monospace;"
-                        placeholder="Hasil akan muncul di sini..."readonly></textarea>
+                        placeholder="Hasil akan muncul di sini..."></textarea>
 
                     <button
                         class="btn"
@@ -588,10 +507,7 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
 
         </div>
 
- <!--       <div class="spinner-box" id="box-iframe" style="display: none;"> -->
-		
-		
-		<div class="spinner-box" id="box-iframe">
+        <div class="spinner-box" id="box-iframe">
 
             <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
                 Peralatan dan Frame
@@ -638,9 +554,14 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
             <textarea
                 id="input-bidik-web1"
                 class="bidik-textarea"
-                placeholder=""
+                placeholder="Contoh:
+01*02*03
+
+atau:
+
+102*111*009"
                 spellcheck="false"
-                oninput="validasiBidik('web1')"readonly></textarea>
+                oninput="validasiBidik('web1')"></textarea>
 
             <div class="bidik-action-row">
                 <button
@@ -740,9 +661,14 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
             <textarea
                 id="input-bidik-web2"
                 class="bidik-textarea"
-                placeholder=""
+                placeholder="Contoh:
+01*02*03
+
+atau:
+
+102*111*009"
                 spellcheck="false"
-                oninput="validasiBidik('web2')"readonly></textarea>
+                oninput="validasiBidik('web2')"></textarea>
 
             <div class="bidik-action-row">
                 <button
@@ -1327,9 +1253,9 @@ async function tampilkanDashboard() {
         boxIframe.style.display = 'none';
 
     } else {
-// yebi perbaiki ini dari block dan block jadi block dan none
+
         boxSpinner.style.display = 'block';
-        boxIframe.style.display = 'none';
+        boxIframe.style.display = 'block';
 
         if (userRole === 'admin') {
 
@@ -3161,145 +3087,6 @@ function aksiTombolBaru3B() {
         urlTujuan,
         'tab_andalan'
     );
-}
-
-
-// tambahan untuk button yebi long klik
-let timerLongClick = null;
-let sedangLongClick = false;
-/*
-function mulaiLongClick(button) {
-    sedangLongClick = false;
-
-    timerLongClick = setTimeout(() => {
-        sedangLongClick = true;
-
-        const elemen = document.querySelectorAll('input, select, textarea');
-
-        elemen.forEach(el => {
-            const warnaBackground = getComputedStyle(el).backgroundColor;
-            const warnaTeks = getComputedStyle(el).color;
-
-            if (warnaTeks === warnaBackground) {
-                el.style.color = '#fff';
-            } else {
-                el.style.color = warnaBackground;
-            }
-        });
-    }, 700);
-}
-
-akan diganti sehingga text area readly atau Tidak
-*/
-
-
-/*
-function mulaiLongClick(button) {
-    sedangLongClick = false;
-
-    timerLongClick = setTimeout(() => {
-        sedangLongClick = true;
-
-        const elemen = document.querySelectorAll('input, select, textarea');
-
-        elemen.forEach(el => {
-            const warnaBackground = getComputedStyle(el).backgroundColor;
-            const warnaTeks = getComputedStyle(el).color;
-
-            if (warnaTeks === warnaBackground) {
-                el.style.color = '#fff';
-            } else {
-                el.style.color = warnaBackground;
-            }
-
-            if (el.tagName === 'TEXTAREA') {
-                el.readOnly = !el.readOnly;
-            }
-        });
-    }, 700);
-}
-
-ini diubah lagi untuk menyembunyikan wadah peralatan dan ftame 
-
-*/
-
-function mulaiLongClick(event) {
-    sedangLongClick = false;
-
-    clearTimeout(timerLongClick);
-
-    timerLongClick = setTimeout(() => {
-        sedangLongClick = true;
-
-        const elemen = document.querySelectorAll(
-            'input, select, textarea'
-        );
-
-        elemen.forEach(el => {
-            const warnaBackground =
-                getComputedStyle(el).backgroundColor;
-
-            const warnaTeks =
-                getComputedStyle(el).color;
-
-            if (warnaTeks === warnaBackground) {
-                el.style.color = '#fff';
-            } else {
-                el.style.color = warnaBackground;
-            }
-
-            if (el.tagName === 'TEXTAREA') {
-                el.readOnly = !el.readOnly;
-            }
-        });
-
-        const boxSpinner =
-            document.getElementById('box-spinner');
-
-        const boxIframe =
-            document.getElementById('box-iframe');
-
-        // Viewer tidak boleh membuka Peralatan dan Frame
-        if (getComputedStyle(boxSpinner).display !== 'none') {
-
-            if (getComputedStyle(boxIframe).display === 'none') {
-                boxIframe.style.display = 'block';
-            } else {
-                boxIframe.style.display = 'none';
-            }
-        }
-
-    }, 700);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function batalLongClick() {
-    if (timerLongClick) {
-        clearTimeout(timerLongClick);
-        timerLongClick = null;
-    }
-}
-
-function jalankanKlik() {
-    if (sedangLongClick) {
-        sedangLongClick = false;
-        return;
-    }
-
-    loadPasaranEngine();
 }
 
 </script>
