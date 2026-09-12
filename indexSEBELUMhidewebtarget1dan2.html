@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1311,27 +1310,6 @@ async function tampilkanDashboard() {
 
     const boxIframe =
         document.getElementById('box-iframe');
-		
-		// yebi tambahin
-        const web1yebi =
-            document.getElementById('box-bidik-web1');		
-			
-        const web2yebi =
-            document.getElementById('box-bidik-web2');		
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
     const spinnerUtama =
         document.getElementById(
@@ -1374,12 +1352,12 @@ async function tampilkanDashboard() {
         document.getElementById(
             'box-bidik-web2'
         );
-// YEBI GANTI KEDUA BAGIAN DI BAWAH AWALNYA 'block' : 'none'; JADI 'none' : 'none';
+
     boxBidikWeb1.style.display =
-        web1Ada ? 'none' : 'none';
+        web1Ada ? 'block' : 'none';
 
     boxBidikWeb2.style.display =
-        web2Ada ? 'none' : 'none';
+        web2Ada ? 'block' : 'none';
 
     resetBidik('web1');
     resetBidik('web2');
@@ -3280,29 +3258,14 @@ function mulaiLongClick(event) {
 
         const boxIframe =
             document.getElementById('box-iframe');
-			
-		// yebi tambahin
-        const web1yebi =
-            document.getElementById('box-bidik-web1');		
-			
-        const web2yebi =
-            document.getElementById('box-bidik-web2');			
-			
-			
-			
 
         // Viewer tidak boleh membuka Peralatan dan Frame
         if (getComputedStyle(boxSpinner).display !== 'none') {
 
             if (getComputedStyle(boxIframe).display === 'none') {
                 boxIframe.style.display = 'block';
-				web1yebi.style.display = 'block';
-				web2yebi.style.display = 'block';
             } else {
                 boxIframe.style.display = 'none';
-				web1yebi.style.display = 'none';
-				web2yebi.style.display = 'none';		
-				
             }
         }
 
