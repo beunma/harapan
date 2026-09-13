@@ -4014,12 +4014,6 @@ let wakeLock = null;
 let loopAudio = null;
 let audioSafetyTimer = null;
 
-
-// Nilai hasil pemeriksaan pertama yang belum mencapai target
-let nilaiAwal = null;
-
-
-
 const loopHeading =
     document.querySelector('.judul-ai');
 
@@ -4286,15 +4280,12 @@ async function tungguHasilSaldo() {
 // SATU KALI CEK
 // ==========================================
 
-// ==========================================
-// SATU KALI CEK
-// ==========================================
-
 async function lakukanCek() {
 
     if (!loopRunning) {
         return false;
     }
+
 
     if (!btnCekWeb1 || !saldoWeb1) {
 
@@ -4305,18 +4296,23 @@ async function lakukanCek() {
         return false;
     }
 
+
     console.log('Klik Cek Web 1');
+
 
     // Klik tombol asli
     btnCekWeb1.click();
+
 
     // Tunggu hasil
     const hasil =
         await tungguHasilSaldo();
 
+
     if (!loopRunning) {
         return false;
     }
+
 
     if (hasil === null) {
 
@@ -4327,10 +4323,12 @@ async function lakukanCek() {
         return false;
     }
 
+
     console.log(
         'Hasil saldo:',
         hasil
     );
+
 
     // Hanya angka murni yang diterima
     if (!/^\d+$/.test(hasil)) {
@@ -4342,80 +4340,27 @@ async function lakukanCek() {
         return false;
     }
 
+
     const saldo =
         Number(hasil);
+
 
     console.log(
         'Saldo:',
         saldo,
         '| Target:',
-        window.loopTargetValue,
-        '| Nilai Awal:',
-        nilaiAwal
+        window.loopTargetValue
     );
 
 
-    // ==========================================
-    // KONDISI 1
-    // TARGET SUDAH TERCAPAI
-    // ==========================================
-
+    // TARGET TERCAPAI
     if (
         saldo >= window.loopTargetValue
     ) {
 
-        console.log(
-            'TARGET TERCAPAI → putar.mp3'
-        );
-
-        return 'PUTAR';
+        return true;
     }
 
-
-    // ==========================================
-    // PEMERIKSAAN PERTAMA
-    // ==========================================
-
-    if (nilaiAwal === null) {
-
-        nilaiAwal = saldo;
-
-        console.log(
-            'Nilai awal disimpan:',
-            nilaiAwal
-        );
-
-        return false;
-    }
-
-
-    // ==========================================
-    // KONDISI 2
-    // NILAI NAIK / SAMA DENGAN NILAI AWAL
-    // TETAPI BELUM MENCAPAI TARGET
-    // ==========================================
-
-    if (
-        saldo >= (nilaiAwal + 5000) &&
-        saldo < window.loopTargetValue
-    ) {
-
-        console.log(
-            'Nilai >= nilai awal + 5000 dan < target → naik.mp3'
-        );
-
-        return 'NAIK';
-    }
-
-
-    // ==========================================
-    // MASIH DI BAWAH NILAI AWAL
-    // LANJUTKAN LOOPING
-    // ==========================================
-
-    console.log(
-        'Nilai masih di bawah nilai awal → lanjut.'
-    );
 
     return false;
 }
@@ -4425,11 +4370,7 @@ async function lakukanCek() {
 // PUTAR AUDIO
 // ==========================================
 
-// ==========================================
-// PUTAR AUDIO
-// ==========================================
-
-async function jalankanAudio(namaAudio) {
+async function jalankanAudio() {
 
     loopRunning = false;
 
@@ -4444,8 +4385,8 @@ async function jalankanAudio(namaAudio) {
     // Control disembunyikan selama MP3
     loopControlBox.style.display = 'none';
 
-    // Buat audio sesuai hasil pemeriksaan
-    loopAudio = new Audio(namaAudio);
+    // Buat audio
+    loopAudio = new Audio('putar.mp3');
     loopAudio.currentTime = 0;
 
     let selesai = false;
@@ -4472,9 +4413,7 @@ async function jalankanAudio(namaAudio) {
 
         loopGoBtn.textContent = 'GO';
 
-        console.log(
-            namaAudio + ' selesai → GO muncul.'
-        );
+        console.log('MP3 selesai → GO muncul.');
 
         // Lepaskan Wake Lock setelah tampilan dikembalikan
         lepaskanWakeLock();
@@ -4492,9 +4431,7 @@ async function jalankanAudio(namaAudio) {
     // Pengaman maksimal
     audioSafetyTimer = setTimeout(() => {
 
-        console.log(
-            'Safety timer audio tercapai.'
-        );
+        console.log('Safety timer audio tercapai.');
 
         selesaiAudio();
 
@@ -4504,9 +4441,7 @@ async function jalankanAudio(namaAudio) {
 
         await loopAudio.play();
 
-        console.log(
-            namaAudio + ' mulai diputar.'
-        );
+        console.log('MP3 mulai diputar.');
 
     } catch (error) {
 
@@ -4523,15 +4458,12 @@ async function jalankanAudio(namaAudio) {
 // SATU SIKLUS LOOP
 // ==========================================
 
-// ==========================================
-// SATU SIKLUS LOOP
-// ==========================================
-
 async function jalankanSiklus() {
 
     if (!loopRunning) {
         return;
     }
+
 
     // TIMER DULU
     console.log(
@@ -4540,57 +4472,40 @@ async function jalankanSiklus() {
         'ms'
     );
 
+
     await tunggu(
         window.loopIntervalMs
     );
 
+
     if (!loopRunning) {
         return;
     }
+
 
     // CEK
-    const hasilCek =
+    const targetTercapai =
         await lakukanCek();
+
 
     if (!loopRunning) {
         return;
     }
 
 
-    // ==========================================
-    // TARGET TERCAPAI
-    // ==========================================
-
-    if (hasilCek === 'PUTAR') {
+    // Kalau target tercapai
+    if (targetTercapai) {
 
         await aktifkanWakeLock();
 
-        await jalankanAudio('putar.mp3');
+        await jalankanAudio();
 
         return;
     }
 
 
-    // ==========================================
-    // NILAI NAIK / >= NILAI AWAL
-    // TAPI < TARGET
-    // ==========================================
-
-    if (hasilCek === 'NAIK') {
-
-        await aktifkanWakeLock();
-
-        await jalankanAudio('naik.mp3');
-
-        return;
-    }
-
-
-    // ==========================================
-    // BELUM MEMENUHI KONDISI
-    // LANJUTKAN
-    // ==========================================
-
+    // Belum tercapai
+    // Mulai timer berikutnya
     if (loopRunning) {
 
         jalankanSiklus();
@@ -4682,14 +4597,6 @@ async function mulaiLooping() {
 
     window.loopIntervalMs =
         Number(nilaiTimer);
-		
-		
-	// Reset nilai awal untuk sesi looping baru
-nilaiAwal = null;	
-		
-		
-		
-		
 
 
     loopRunning = true;
