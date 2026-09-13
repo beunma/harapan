@@ -1280,7 +1280,6 @@ async function tampilkanDashboard() {
             sesiAktif.passweb2.trim() !== ""
         );
 
-//yebi hide pada kasus tidak terdata
     if (!web1Ada) {
 
         spanSaldo1.innerText =
@@ -1290,8 +1289,6 @@ async function tampilkanDashboard() {
             "saldo-error";
 
         btnCek1.disabled = true;
-		
-		document.getElementById("box-web1").style.display = "none";
     }
 
     if (!web2Ada) {
@@ -1303,8 +1300,6 @@ async function tampilkanDashboard() {
             "saldo-error";
 
         btnCek2.disabled = true;
-		
-		document.getElementById("box-web2").style.display = "none";
     }
 
     const userRole =
@@ -3296,7 +3291,7 @@ function mulaiLongClick(event) {
 			
 
         // Viewer tidak boleh membuka Peralatan dan Frame
-/*        if (getComputedStyle(boxSpinner).display !== 'none') {
+        if (getComputedStyle(boxSpinner).display !== 'none') {
 
             if (getComputedStyle(boxIframe).display === 'none') {
                 boxIframe.style.display = 'block';
@@ -3309,44 +3304,6 @@ function mulaiLongClick(event) {
 				
             }
         }
-		
- ubah hide saat tidak terdata				
-		
-*/
-		
-		
-if (getComputedStyle(boxSpinner).display !== 'none') {
-
-    if (getComputedStyle(boxIframe).display === 'none') {
-        boxIframe.style.display = 'block';
-       // web1yebi.style.display = 'block';
-
-        if (getComputedStyle(document.getElementById("box-web1")).display !== 'none') {
-            web1yebi.style.display = 'block';
-        }
-		
-        if (getComputedStyle(document.getElementById("box-web2")).display !== 'none') {
-            web2yebi.style.display = 'block';
-        }		
-		
-
-    } else {
-        boxIframe.style.display = 'none';
-        web1yebi.style.display = 'none';
-        web2yebi.style.display = 'none';
-    }
-}		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
     }, 700);
 }
