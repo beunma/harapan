@@ -391,6 +391,34 @@ select {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+		
+		
+		
+.judul-ai {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 32px;
+}
+
+.judul-ai .pink {
+  color: #ff69b4;
+}
+
+.judul-ai .ungu {
+  color: #c8a2ff;
+}
+
+.judul-ai .cyan {
+  color: #00ffff;
+}		
+		
+		
+		
+		
+		
+		
+		
+		
     </style>
 </head>
 
@@ -400,6 +428,19 @@ select {
     <div class="spinner-ring"></div>
     <div id="overlay-text">Memproses Data...</div>
 </div>
+
+<h2 class="judul-ai">
+  <span class="pink">Uji</span>
+  <span class="ungu">Kecerdasan</span>
+  <span class="cyan">AI</span>
+</h2>
+
+
+
+
+
+
+
 
 <div class="container">
 
@@ -2518,7 +2559,7 @@ async function loadResultPasaran(isAuto = false) {
         locMatch[1];
 
     loader.innerText =
-        "Menarik data result...";
+        "Menarik data...";
 
     loader.style.display =
         'block';
