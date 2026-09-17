@@ -1,0 +1,3933 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Analisa Generator</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #111;
+        color: #eee;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    h1 {
+        text-align: center;
+        margin: 0 0 20px 0;
+        font-size: 28px;
+        color: #00eaff;
+    }
+
+    .box {
+        background: #1c1c1c;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 18px;
+    }
+
+    .judul {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffd54a;
+        margin-bottom: 10px;
+    }
+
+    textarea {
+        width: 100%;
+        resize: vertical;
+        min-height: 150px;
+        background: #090909;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 7px;
+        padding: 12px;
+        font-size: 17px;
+        line-height: 1.5;
+        outline: none;
+    }
+
+    textarea:focus {
+        border-color: #00eaff;
+    }
+
+    #dataInput {
+        min-height: 180px;
+    }
+
+    .textarea-wrap {
+        position: relative;
+    }
+
+    .textarea-buttons {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        display: flex;
+        gap: 6px;
+    }
+
+    button {
+        border: none;
+        border-radius: 6px;
+        padding: 9px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .btn-reset {
+        background: #d32f2f;
+        color: white;
+    }
+
+    .btn-paste {
+        background: #1976d2;
+        color: white;
+    }
+
+    .btn-proses {
+        width: 100%;
+        margin-top: 12px;
+        background: #00a884;
+        color: white;
+        font-size: 18px;
+        padding: 13px;
+    }
+
+    .btn-stop {
+        background: #ff9800;
+        color: #111;
+        font-size: 15px;
+        min-width: 90px;
+    }
+
+    .status-valid {
+        margin-top: 8px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .valid {
+        color: #00e676;
+    }
+
+    .invalid {
+        color: #ff5252;
+    }
+
+    .setting-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .setting-item label {
+        display: block;
+        margin-bottom: 6px;
+        color: #bbb;
+        font-weight: bold;
+    }
+
+    .setting-item input {
+        width: 100%;
+        padding: 11px;
+        border-radius: 6px;
+        border: 1px solid #555;
+        background: #090909;
+        color: white;
+        font-size: 17px;
+        outline: none;
+    }
+
+    .setting-item input:focus {
+        border-color: #00eaff;
+    }
+
+    .hasil-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .hasil-box {
+        position: relative;
+    }
+
+    .hasil-title {
+        color: #00eaff;
+        font-size: 19px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .hasil-textarea {
+        min-height: 180px;
+        padding-bottom: 45px;
+        font-family: Consolas, monospace;
+        font-size: 15px;
+    }
+
+    .btn-copy {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        background: #1976d2;
+        color: white;
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+
+    .btn-contra {
+        position: absolute;
+        left: 8px;
+        bottom: 8px;
+        background: #7b1fa2;
+        color: white;
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+
+    #progressOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.78);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        padding: 20px;
+    }
+
+    #progressDialog {
+        width: 100%;
+        max-width: 650px;
+        background: #202020;
+        border: 1px solid #555;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .progress-title {
+        font-size: 21px;
+        font-weight: bold;
+        color: #00eaff;
+    }
+
+    .progress-info {
+        background: #090909;
+        border: 1px solid #444;
+        border-radius: 7px;
+        padding: 12px;
+        min-height: 150px;
+        font-family: Consolas, monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        overflow-y: auto;
+        max-height: 300px;
+    }
+
+    .progress-bar-bg {
+        width: 100%;
+        height: 15px;
+        background: #080808;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 15px 0;
+        border: 1px solid #444;
+    }
+
+    #progressBar {
+        width: 0%;
+        height: 100%;
+        background: #00c853;
+        transition: width 0.05s linear;
+    }
+
+    .progress-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #progressPercent {
+        color: #00e676;
+        font-weight: bold;
+    }
+
+    .done-message {
+        color: #00e676;
+        font-weight: bold;
+    }
+
+    .break-message {
+        color: #ffb300;
+        font-weight: bold;
+    }
+
+    @media (max-width: 800px) {
+
+        .hasil-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .setting-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* =========================================================
+       BACKTEST
+       ========================================================= */
+
+    .backtest-box {
+        overflow-x: auto;
+    }
+
+    .backtest-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #444;
+        border-radius: 8px;
+    }
+
+    .backtest-table {
+        width: 100%;
+        min-width: 560px;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .backtest-table th,
+    .backtest-table td {
+        border: 1px solid #444;
+        padding: 10px 12px;
+        text-align: center;
+        font-family: Consolas, monospace;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .backtest-table th {
+        background: #090909;
+        color: #ffd54a;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+    }
+
+    .backtest-table th:first-child,
+    .backtest-table td:first-child {
+        width: 25%;
+    }
+
+    .backtest-hit {
+        background: #00a651;
+        color: #000;
+    }
+
+    .backtest-null {
+        background: #5b0000;
+        color: #fff;
+    }
+
+    .backtest-empty {
+        color: #777;
+        padding: 20px !important;
+        font-family: Arial, Helvetica, sans-serif !important;
+        font-weight: normal !important;
+    }
+
+    @media (max-width: 800px) {
+        .backtest-table {
+            min-width: 500px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- <h1>Analisa Generator 2D</h1> -->
+
+    <div class="box">
+
+        <div class="judul">Data VIP</div>
+
+        <div class="textarea-wrap">
+
+            <textarea
+                id="dataInput"
+                placeholder=""></textarea>
+
+            <div class="textarea-buttons">
+
+                <button
+                    type="button"
+                    class="btn-reset"
+                    id="btnReset">
+                    Reset
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-paste"
+                    id="btnPaste">
+                    Paste
+                </button>
+
+            </div>
+
+        </div>
+
+        <div id="inputStatus" class="status-valid invalid">
+            Data belum valid
+        </div>
+
+    </div>
+
+
+    <div class="box">
+
+        <div class="judul">Pengaturan Analisa</div>
+
+        <div class="setting-grid">
+
+            <div class="setting-item">
+
+                <label for="minHit">
+                    Minimal Hit
+                </label>
+
+                <input
+                    type="number"
+                    id="minHit"
+                    min="1"
+                    step="1"
+                    value="12">
+
+            </div>
+
+            <div class="setting-item">
+
+                <label for="maxGen">
+                    Maksimal GEN
+                </label>
+
+                <input
+                    type="number"
+                    id="maxGen"
+                    min="1"
+                    step="1"
+                    value="1000">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="box">
+
+        <button
+            type="button"
+            id="btnProses"
+            class="btn-proses"
+            disabled>
+            PROSES ANALISA
+        </button>
+
+    </div>
+
+
+    <div class="box">
+
+        <div class="judul">Hasil Analisa</div>
+
+        <div class="hasil-grid">
+
+            <div class="hasil-box">
+
+                <div
+                    id="title2DD"
+                    class="hasil-title">
+                    2DD
+                </div>
+
+                <textarea
+                    id="hasil2DD"
+                    class="hasil-textarea"
+                    readonly></textarea>
+
+                <button
+                    type="button"
+                    class="btn-contra"
+                    data-contra="hasil2DD"
+                    disabled>
+                    Contra
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-copy"
+                    data-copy="hasil2DD">
+                    Copy
+                </button>
+
+            </div>
+
+
+            <div class="hasil-box">
+
+                <div
+                    id="title2DT"
+                    class="hasil-title">
+                    2DT
+                </div>
+
+                <textarea
+                    id="hasil2DT"
+                    class="hasil-textarea"
+                    readonly></textarea>
+
+                <button
+                    type="button"
+                    class="btn-contra"
+                    data-contra="hasil2DT"
+                    disabled>
+                    Contra
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-copy"
+                    data-copy="hasil2DT">
+                    Copy
+                </button>
+
+            </div>
+
+
+            <div class="hasil-box">
+
+                <div
+                    id="title2DB"
+                    class="hasil-title">
+                    2DB
+                </div>
+
+                <textarea
+                    id="hasil2DB"
+                    class="hasil-textarea"
+                    readonly></textarea>
+
+                <button
+                    type="button"
+                    class="btn-contra"
+                    data-contra="hasil2DB"
+                    disabled>
+                    Contra
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-copy"
+                    data-copy="hasil2DB">
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         BACKTEST
+         Dibuat setelah Hasil Analisa.
+         Proses memakai salinan data di memori sehingga
+         tidak mengubah Data VIP maupun Hasil Analisa utama.
+         ===================================================== -->
+
+    <div class="box backtest-box">
+
+        <div class="judul">BackTest</div>
+
+        <div class="backtest-wrap">
+
+            <table class="backtest-table">
+
+                <thead>
+                    <tr>
+                        <th>Target</th>
+                        <th>2DD</th>
+                        <th>2DT</th>
+                        <th>2DB</th>
+                    </tr>
+                </thead>
+
+                <tbody id="backtestBody">
+
+                    <tr>
+                        <td
+                            colspan="4"
+                            class="backtest-empty">
+                            Belum ada hasil BackTest
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<div id="progressOverlay">
+
+    <div id="progressDialog">
+
+        <div class="progress-header">
+
+            <div class="progress-title">
+                Proses Analisa
+            </div>
+
+            <button
+                type="button"
+                id="btnStop"
+                class="btn-stop">
+                STOP
+            </button>
+
+        </div>
+
+        <div
+            id="progressInfo"
+            class="progress-info"></div>
+
+        <div class="progress-bar-bg">
+
+            <div id="progressBar"></div>
+
+        </div>
+
+        <div class="progress-footer">
+
+            <span id="progressPercent">
+                0%
+            </span>
+
+            <span id="progressState">
+                Memulai...
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const dataInput       = document.getElementById("dataInput");
+const inputStatus     = document.getElementById("inputStatus");
+
+const minHitInput     = document.getElementById("minHit");
+const maxGenInput     = document.getElementById("maxGen");
+
+const btnProses       = document.getElementById("btnProses");
+const btnReset        = document.getElementById("btnReset");
+const btnPaste        = document.getElementById("btnPaste");
+
+const hasil2DD        = document.getElementById("hasil2DD");
+const hasil2DT        = document.getElementById("hasil2DT");
+const hasil2DB        = document.getElementById("hasil2DB");
+
+const backtestBody    = document.getElementById("backtestBody");
+
+const title2DD        = document.getElementById("title2DD");
+const title2DT        = document.getElementById("title2DT");
+const title2DB        = document.getElementById("title2DB");
+
+const progressOverlay = document.getElementById("progressOverlay");
+const progressInfo    = document.getElementById("progressInfo");
+const progressBar     = document.getElementById("progressBar");
+const progressPercent = document.getElementById("progressPercent");
+const progressState   = document.getElementById("progressState");
+const btnStop         = document.getElementById("btnStop");
+
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+function setDefaultMinHit() {
+    if (!minHitInput.value) {
+        minHitInput.value = 5;
+    }
+}
+
+
+function parseInputData() {
+
+    const raw = dataInput.value.trim();
+
+    if (raw === "") {
+
+        return {
+            valid: false,
+            data: [],
+            reason: "Kosong"
+        };
+    }
+
+    const parts = raw.split(",");
+
+    const data = [];
+
+    for (let i = 0; i < parts.length; i++) {
+
+        const value = parts[i].trim();
+
+        if (!/^\d{4}$/.test(value)) {
+
+            return {
+                valid: false,
+                data: [],
+                reason:
+                    "Data ke-" +
+                    (i + 1) +
+                    " harus tepat 4 digit"
+            };
+        }
+
+        data.push(value);
+    }
+
+    if (data.length < 2) {
+
+        return {
+            valid: false,
+            data: data,
+            reason: "Minimal 2 data 4D"
+        };
+    }
+
+    return {
+        valid: true,
+        data: data,
+        reason: ""
+    };
+}
+
+
+function validateAll() {
+
+    const parsed = parseInputData();
+
+    const minHit = Number(minHitInput.value);
+    const maxGen = Number(maxGenInput.value);
+
+    const settingsValid =
+        Number.isInteger(minHit) &&
+        minHit >= 1 &&
+        Number.isInteger(maxGen) &&
+        maxGen >= 1;
+
+    if (!parsed.valid) {
+
+        inputStatus.textContent =
+            "✖ " + parsed.reason;
+
+        inputStatus.className =
+            "status-valid invalid";
+
+        btnProses.disabled = true;
+
+        return false;
+    }
+
+    if (!settingsValid) {
+
+        inputStatus.textContent =
+            "✖ Pengaturan belum valid";
+
+        inputStatus.className =
+            "status-valid invalid";
+
+        btnProses.disabled = true;
+
+        return false;
+    }
+
+    const jumlahPasangan =
+        parsed.data.length - 1;
+
+    if (minHit > jumlahPasangan) {
+
+        inputStatus.textContent =
+            "✖ Minimal hit tidak boleh lebih dari " +
+            jumlahPasangan;
+
+        inputStatus.className =
+            "status-valid invalid";
+
+        btnProses.disabled = true;
+
+        return false;
+    }
+
+    inputStatus.textContent =
+        "✔ Data valid: " +
+        parsed.data.length +
+        " data 4D / " +
+        jumlahPasangan +
+        " pasangan";
+
+    inputStatus.className =
+        "status-valid valid";
+
+    btnProses.disabled = false;
+
+    return true;
+}
+
+
+dataInput.addEventListener("input", function() {
+
+    const parsed = parseInputData();
+
+    validateAll();
+});
+
+
+minHitInput.addEventListener(
+    "input",
+    validateAll
+);
+
+maxGenInput.addEventListener(
+    "input",
+    validateAll
+);
+
+
+btnReset.addEventListener("click", function() {
+
+    dataInput.value = "";
+
+    minHitInput.value = "5";
+
+    hasil2DD.value = "";
+    hasil2DT.value = "";
+    hasil2DB.value = "";
+
+    clearBacktestTable();
+
+    resetResultStates();
+
+    title2DD.textContent = "2DD";
+    title2DT.textContent = "2DT";
+    title2DB.textContent = "2DB";
+
+    inputStatus.textContent =
+        "Data belum valid";
+
+    inputStatus.className =
+        "status-valid invalid";
+
+    btnProses.disabled = true;
+});
+
+
+btnPaste.addEventListener(
+    "click",
+    async function() {
+
+        try {
+
+            const text =
+                await navigator.clipboard.readText();
+
+            dataInput.value = text;
+
+            const parsed =
+                parseInputData();
+
+            validateAll();
+
+        } catch (error) {
+
+            console.log(
+                "Clipboard tidak dapat dibaca: " +
+                error.message
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   COPY + CONTRA
+   =========================================================
+
+   CONTRA = semua 2D dari 00 sampai 99 yang TIDAK ADA
+   di textarea hasil saat ini.
+
+   Perilaku:
+   - Hasil kosong -> Contra disabled.
+   - Klik Contra -> textarea diganti dengan angka yang tidak ada,
+     format dipisah "*" dan langsung dicopy ke clipboard.
+   - Setelah Contra aktif, klik Copy -> textarea kembali ke hasil
+     awal dan hasil awal langsung dicopy.
+   - Klik Copy saat mode normal -> hanya copy hasil yang sedang tampil.
+   - Setiap hasil analisa menyimpan hasil awalnya sendiri.
+   ========================================================= */
+
+const resultStates = {
+    hasil2DD: { original: "", contraActive: false },
+    hasil2DT: { original: "", contraActive: false },
+    hasil2DB: { original: "", contraActive: false }
+};
+
+function normalize2DList(text) {
+    return text
+        .split(/[*\s,;]+/)
+        .map(function (item) {
+            return item.trim();
+        })
+        .filter(function (item) {
+            return /^\d{2}$/.test(item);
+        });
+}
+
+function buildContraText(text) {
+    const present = new Set(normalize2DList(text));
+
+    const missing = [];
+
+    for (let n = 0; n <= 99; n++) {
+        const value = String(n).padStart(2, "0");
+
+        if (!present.has(value)) {
+            missing.push(value);
+        }
+    }
+
+    return missing.join("*");
+}
+
+function syncResultState(id) {
+    const textarea = document.getElementById(id);
+    const contraButton =
+        document.querySelector(
+            '.btn-contra[data-contra="' + id + '"]'
+        );
+
+    if (!textarea || !contraButton) {
+        return;
+    }
+
+    const state = resultStates[id];
+
+    if (!state.contraActive) {
+        state.original = textarea.value;
+    }
+
+    contraButton.disabled = textarea.value.trim() === "";
+}
+
+function resetResultStates() {
+    Object.keys(resultStates).forEach(function (id) {
+        resultStates[id].original = "";
+        resultStates[id].contraActive = false;
+    });
+
+    document
+        .querySelectorAll(".btn-contra")
+        .forEach(function (button) {
+            button.disabled = true;
+        });
+}
+
+async function copyText(text) {
+    if (!text) {
+        return false;
+    }
+
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch (error) {
+        console.log(
+            "Gagal copy: " + error.message
+        );
+        return false;
+    }
+}
+
+/* Tombol CONTRA */
+document
+    .querySelectorAll(".btn-contra")
+    .forEach(function (button) {
+
+        button.addEventListener(
+            "click",
+            async function () {
+
+                const id =
+                    button.getAttribute(
+                        "data-contra"
+                    );
+
+                const textarea =
+                    document.getElementById(id);
+
+                if (!textarea) {
+                    return;
+                }
+
+                const state = resultStates[id];
+
+                if (
+                    !state.original &&
+                    textarea.value.trim()
+                ) {
+                    state.original = textarea.value;
+                }
+
+                if (!state.original.trim()) {
+                    button.disabled = true;
+                    return;
+                }
+
+                const contraText =
+                    buildContraText(
+                        state.original
+                    );
+
+                textarea.value = contraText;
+                state.contraActive = true;
+
+                button.disabled =
+                    contraText.trim() === "";
+
+                await copyText(contraText);
+            }
+        );
+    });
+
+/* Tombol COPY */
+document
+    .querySelectorAll(".btn-copy")
+    .forEach(function (button) {
+
+        button.addEventListener(
+            "click",
+            async function () {
+
+                const id =
+                    button.getAttribute(
+                        "data-copy"
+                    );
+
+                const textarea =
+                    document.getElementById(id);
+
+                if (!textarea) {
+                    return;
+                }
+
+                const state = resultStates[id];
+
+                /*
+                   Jika sedang menampilkan CONTRA,
+                   klik COPY mengembalikan hasil awal.
+                */
+                if (state.contraActive) {
+
+                    textarea.value =
+                        state.original;
+
+                    state.contraActive = false;
+
+                    syncResultState(id);
+
+                    await copyText(
+                        state.original
+                    );
+
+                    return;
+                }
+
+                /* Mode normal: copy hasil yang sedang tampil. */
+                await copyText(
+                    textarea.value
+                );
+            }
+        );
+    });
+
+/* =========================================================
+   STOP
+   ========================================================= */
+
+let stopRequested = false;
+
+btnStop.addEventListener(
+    "click",
+    function() {
+
+        stopRequested = true;
+
+        progressState.textContent =
+            "Menghentikan proses...";
+    }
+);
+
+
+/* =========================================================
+   UTILITAS DIGIT
+   ========================================================= */
+
+function cyclicDigit(digit, offset) {
+
+    return (
+        (Number(digit) +
+            offset +
+            10) % 10
+    );
+}
+
+
+function generate49(seed) {
+
+    seed =
+        String(seed)
+        .padStart(2, "0")
+        .slice(-2);
+
+    const d1 = Number(seed[0]);
+    const d2 = Number(seed[1]);
+
+    const list1 = [];
+    const list2 = [];
+
+    for (
+        let offset = -3;
+        offset <= 3;
+        offset++
+    ) {
+
+        list1.push(
+            cyclicDigit(
+                d1,
+                offset
+            )
+        );
+
+        list2.push(
+            cyclicDigit(
+                d2,
+                offset
+            )
+        );
+    }
+
+    const result = [];
+
+    for (
+        let i = 0;
+        i < list1.length;
+        i++
+    ) {
+
+        for (
+            let j = 0;
+            j < list2.length;
+            j++
+        ) {
+
+            result.push(
+                String(list1[i]) +
+                String(list2[j])
+            );
+        }
+    }
+
+    return {
+        digit1: list1.join(""),
+        digit2: list2.join(""),
+        combinations: result
+    };
+}
+
+
+function isHit(seed, target) {
+
+    seed =
+        String(seed)
+        .padStart(2, "0");
+
+    target =
+        String(target)
+        .padStart(2, "0");
+
+    return generate49(seed)
+        .combinations
+        .includes(target);
+}
+
+
+/* =========================================================
+   EKSPRESI MATEMATIKA
+   =========================================================
+
+   Variabel:
+
+   A = digit pertama data sekarang
+   B = digit kedua data sekarang
+
+   P = digit pertama pasangan data sebelumnya
+   Q = digit kedua pasangan data sebelumnya
+
+   Formula TIDAK menggunakan target.
+
+   Formula TIDAK menggunakan pairIndex.
+
+   Formula yang sama dipakai pada semua pasangan.
+   ========================================================= */
+
+const UNARY_OPS = [
+    "abs",
+    "sq",
+    "sum",
+    "prod",
+    "rev",
+    "first",
+    "last",
+    "root"
+];
+
+const BINARY_OPS = [
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "abs-"
+];
+
+
+const expressions = [];
+const expressionMap = new Map();
+
+
+function addExpression(expr) {
+
+    if (expressionMap.has(expr.text)) {
+
+        return expressionMap.get(
+            expr.text
+        );
+    }
+
+    const id =
+        expressions.length;
+
+    expr.id = id;
+
+    expressions.push(expr);
+
+    expressionMap.set(
+        expr.text,
+        id
+    );
+
+    return id;
+}
+
+
+function addAtom(name, index) {
+
+    return addExpression({
+
+        type: "atom",
+
+        index: index,
+
+        text: name,
+
+        cost: 0
+    });
+}
+
+
+function unaryText(op, childText) {
+
+    if (op === "abs")
+        return "ABS(" + childText + ")";
+
+    if (op === "sq")
+        return "SQ(" + childText + ")";
+
+    if (op === "sum")
+        return "DS(" + childText + ")";
+
+    if (op === "prod")
+        return "DP(" + childText + ")";
+
+    if (op === "rev")
+        return "REV(" + childText + ")";
+
+    if (op === "first")
+        return "FST(" + childText + ")";
+
+    if (op === "last")
+        return "LST(" + childText + ")";
+
+    if (op === "root")
+        return "ROOT(" + childText + ")";
+
+    return op + "(" + childText + ")";
+}
+
+
+function binaryText(
+    op,
+    leftText,
+    rightText
+) {
+
+    if (op === "abs-") {
+
+        return (
+            "ABS(" +
+            leftText +
+            "-" +
+            rightText +
+            ")"
+        );
+    }
+
+    if (op === "/") {
+
+        return (
+            "DIV(" +
+            leftText +
+            "," +
+            rightText +
+            ")"
+        );
+    }
+
+    if (op === "%") {
+
+        return (
+            "MOD(" +
+            leftText +
+            "," +
+            rightText +
+            ")"
+        );
+    }
+
+    return (
+        "(" +
+        leftText +
+        op +
+        rightText +
+        ")"
+    );
+}
+
+
+function addUnary(
+    op,
+    childId
+) {
+
+    const child =
+        expressions[childId];
+
+    return addExpression({
+
+        type: "unary",
+
+        op: op,
+
+        child: childId,
+
+        text:
+            unaryText(
+                op,
+                child.text
+            ),
+
+        cost:
+            child.cost + 1
+    });
+}
+
+
+function addBinary(
+    op,
+    leftId,
+    rightId
+) {
+
+    let left =
+        expressions[leftId];
+
+    let right =
+        expressions[rightId];
+
+    /*
+       Operasi komutatif dibuat satu bentuk
+       supaya GEN tidak membuang waktu pada
+       A+B dan B+A yang sama secara matematis.
+    */
+
+    if (
+        op === "+" ||
+        op === "*" ||
+        op === "abs-"
+    ) {
+
+        if (
+            left.text >
+            right.text
+        ) {
+
+            const temp =
+                leftId;
+
+            leftId =
+                rightId;
+
+            rightId =
+                temp;
+
+            left =
+                expressions[leftId];
+
+            right =
+                expressions[rightId];
+        }
+    }
+
+    return addExpression({
+
+        type: "binary",
+
+        op: op,
+
+        left: leftId,
+
+        right: rightId,
+
+        text:
+            binaryText(
+                op,
+                left.text,
+                right.text
+            ),
+
+        cost:
+            left.cost +
+            right.cost +
+            1
+    });
+}
+
+
+/* =========================================================
+   MEMBANGUN PERPUSTAKAAN FORMULA
+   ========================================================= */
+
+function buildExpressionLibrary() {
+
+    expressions.length = 0;
+
+    expressionMap.clear();
+
+    const atoms = [];
+
+    atoms.push(
+        addAtom("A", 0)
+    );
+
+    atoms.push(
+        addAtom("B", 1)
+    );
+
+    atoms.push(
+        addAtom("P", 2)
+    );
+
+    atoms.push(
+        addAtom("Q", 3)
+    );
+
+
+    /*
+       LEVEL 1:
+       unary(atom)
+       binary(atom,atom)
+    */
+
+    const unaryAtoms = [];
+
+    for (
+        let i = 0;
+        i < atoms.length;
+        i++
+    ) {
+
+        for (
+            let u = 0;
+            u < UNARY_OPS.length;
+            u++
+        ) {
+
+            unaryAtoms.push(
+                addUnary(
+                    UNARY_OPS[u],
+                    atoms[i]
+                )
+            );
+        }
+    }
+
+
+    for (
+        let b = 0;
+        b < BINARY_OPS.length;
+        b++
+    ) {
+
+        for (
+            let i = 0;
+            i < atoms.length;
+            i++
+        ) {
+
+            for (
+                let j = 0;
+                j < atoms.length;
+                j++
+            ) {
+
+                addBinary(
+                    BINARY_OPS[b],
+                    atoms[i],
+                    atoms[j]
+                );
+            }
+        }
+    }
+
+
+    /*
+       NESTED:
+       unary(binary(atom,atom))
+    */
+
+    const firstLevelBinary = [];
+
+    for (
+        let i = 0;
+        i < expressions.length;
+        i++
+    ) {
+
+        if (
+            expressions[i].type ===
+            "binary"
+        ) {
+
+            const left =
+                expressions[
+                    expressions[i].left
+                ];
+
+            const right =
+                expressions[
+                    expressions[i].right
+                ];
+
+            if (
+                left.cost === 0 &&
+                right.cost === 0
+            ) {
+
+                firstLevelBinary.push(
+                    expressions[i].id
+                );
+            }
+        }
+    }
+
+
+    for (
+        let i = 0;
+        i < firstLevelBinary.length;
+        i++
+    ) {
+
+        for (
+            let u = 0;
+            u < UNARY_OPS.length;
+            u++
+        ) {
+
+            addUnary(
+                UNARY_OPS[u],
+                firstLevelBinary[i]
+            );
+        }
+    }
+
+
+    /*
+       NESTED:
+       binary(unary(atom),atom)
+       binary(atom,unary(atom))
+    */
+
+    for (
+        let b = 0;
+        b < BINARY_OPS.length;
+        b++
+    ) {
+
+        for (
+            let u = 0;
+            u < unaryAtoms.length;
+            u++
+        ) {
+
+            for (
+                let a = 0;
+                a < atoms.length;
+                a++
+            ) {
+
+                addBinary(
+                    BINARY_OPS[b],
+                    unaryAtoms[u],
+                    atoms[a]
+                );
+
+                addBinary(
+                    BINARY_OPS[b],
+                    atoms[a],
+                    unaryAtoms[u]
+                );
+            }
+        }
+    }
+
+
+    /*
+       NESTED:
+       unary(unary(atom))
+
+       Contoh:
+
+       SQ(DS(A))
+       DS(SQ(A))
+       DP(ABS(B))
+       ROOT(SQ(P))
+    */
+
+    for (
+        let i = 0;
+        i < unaryAtoms.length;
+        i++
+    ) {
+
+        for (
+            let u = 0;
+            u < UNARY_OPS.length;
+            u++
+        ) {
+
+            addUnary(
+                UNARY_OPS[u],
+                unaryAtoms[i]
+            );
+        }
+    }
+
+    return expressions.length;
+}
+
+
+const EXPRESSION_COUNT =
+    buildExpressionLibrary();
+
+
+/*
+   Setiap dua expression membentuk satu
+   formula dasar.
+
+   Lalu ada 8 mode output.
+*/
+
+const OUTPUT_MODES = 8;
+
+const TOTAL_FORMULAS =
+    EXPRESSION_COUNT *
+    EXPRESSION_COUNT *
+    OUTPUT_MODES;
+
+
+/* =========================================================
+   EVALUASI EKSPRESI
+   ========================================================= */
+
+function digitSum(value) {
+
+    value =
+        Math.abs(
+            Math.trunc(value)
+        );
+
+    const text =
+        String(value);
+
+    let total = 0;
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        total +=
+            Number(text[i]);
+    }
+
+    return total;
+}
+
+
+function digitProduct(value) {
+
+    value =
+        Math.abs(
+            Math.trunc(value)
+        );
+
+    const text =
+        String(value);
+
+    let total = 1;
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        total *=
+            Number(text[i]);
+    }
+
+    return total;
+}
+
+
+function reverseNumber(value) {
+
+    value =
+        Math.abs(
+            Math.trunc(value)
+        );
+
+    const text =
+        String(value);
+
+    return Number(
+        text
+        .split("")
+        .reverse()
+        .join("")
+    );
+}
+
+
+function firstDigit(value) {
+
+    value =
+        Math.abs(
+            Math.trunc(value)
+        );
+
+    return Number(
+        String(value)[0]
+    );
+}
+
+
+function lastDigit(value) {
+
+    return (
+        Math.abs(
+            Math.trunc(value)
+        ) % 10
+    );
+}
+
+
+function digitalRoot(value) {
+
+    value =
+        Math.abs(
+            Math.trunc(value)
+        );
+
+    if (value === 0) {
+        return 0;
+    }
+
+    while (value >= 10) {
+
+        value =
+            digitSum(value);
+    }
+
+    return value;
+}
+
+
+function evalUnary(
+    op,
+    value
+) {
+
+    if (op === "abs")
+        return Math.abs(value);
+
+    if (op === "sq")
+        return value * value;
+
+    if (op === "sum")
+        return digitSum(value);
+
+    if (op === "prod")
+        return digitProduct(value);
+
+    if (op === "rev")
+        return reverseNumber(value);
+
+    if (op === "first")
+        return firstDigit(value);
+
+    if (op === "last")
+        return lastDigit(value);
+
+    if (op === "root")
+        return digitalRoot(value);
+
+    return 0;
+}
+
+
+function evalBinary(
+    op,
+    left,
+    right
+) {
+
+    if (op === "+")
+        return left + right;
+
+    if (op === "-")
+        return left - right;
+
+    if (op === "*")
+        return left * right;
+
+    if (op === "abs-")
+        return Math.abs(
+            left - right
+        );
+
+    if (op === "/") {
+
+        if (right === 0)
+            return 0;
+
+        return Math.trunc(
+            left / right
+        );
+    }
+
+    if (op === "%") {
+
+        if (right === 0)
+            return 0;
+
+        const divisor =
+            Math.abs(
+                Math.trunc(right)
+            );
+
+        if (divisor === 0)
+            return 0;
+
+        return (
+            (
+                Math.trunc(left) %
+                divisor
+            ) +
+            divisor
+        ) % divisor;
+    }
+
+    return 0;
+}
+
+
+/* =========================================================
+   MEMBUAT VALUE TABLE
+   =========================================================
+
+   Semua expression dihitung SATU KALI untuk
+   setiap pasangan data.
+
+   Jadi saat GEN berjalan, engine tidak perlu
+   menghitung ulang formula dari nol.
+   ========================================================= */
+
+function evaluateExpression(
+    expr,
+    vars,
+    cache
+) {
+
+    if (
+        cache[expr.id] !== undefined
+    ) {
+
+        return cache[expr.id];
+    }
+
+    let value = 0;
+
+    if (expr.type === "atom") {
+
+        value =
+            vars[expr.index];
+    }
+
+    else if (
+        expr.type === "unary"
+    ) {
+
+        const childValue =
+            evaluateExpression(
+                expressions[
+                    expr.child
+                ],
+                vars,
+                cache
+            );
+
+        value =
+            evalUnary(
+                expr.op,
+                childValue
+            );
+    }
+
+    else if (
+        expr.type === "binary"
+    ) {
+
+        const leftValue =
+            evaluateExpression(
+                expressions[
+                    expr.left
+                ],
+                vars,
+                cache
+            );
+
+        const rightValue =
+            evaluateExpression(
+                expressions[
+                    expr.right
+                ],
+                vars,
+                cache
+            );
+
+        value =
+            evalBinary(
+                expr.op,
+                leftValue,
+                rightValue
+            );
+    }
+
+    if (
+        !Number.isFinite(value)
+    ) {
+
+        value = 0;
+    }
+
+    value =
+        Math.trunc(value);
+
+    cache[expr.id] =
+        value;
+
+    return value;
+}
+
+
+function getGroupValue(
+    value,
+    group
+) {
+
+    if (group === "2DD") {
+
+        return value.substring(
+            0,
+            2
+        );
+    }
+
+    if (group === "2DT") {
+
+        return value.substring(
+            1,
+            3
+        );
+    }
+
+    if (group === "2DB") {
+
+        return value.substring(
+            2,
+            4
+        );
+    }
+
+    return "";
+}
+
+
+function buildValueTable(
+    data,
+    group
+) {
+
+    const pairCount =
+        data.length - 1;
+
+    const table =
+        new Array(pairCount);
+
+
+    for (
+        let pairIndex = 0;
+        pairIndex < pairCount;
+        pairIndex++
+    ) {
+
+        const current =
+            getGroupValue(
+                data[pairIndex],
+                group
+            );
+
+        /*
+           Data sebelumnya.
+
+           Pada pasangan pertama,
+           data sebelumnya dibuat sama
+           dengan data sekarang.
+        */
+
+        const previous =
+            pairIndex > 0
+                ? getGroupValue(
+                    data[pairIndex - 1],
+                    group
+                )
+                : current;
+
+
+        const vars = [
+
+            Number(current[0]),
+            Number(current[1]),
+
+            Number(previous[0]),
+            Number(previous[1])
+        ];
+
+
+        const cache =
+            new Array(
+                EXPRESSION_COUNT
+            );
+
+
+        for (
+            let e = 0;
+            e < EXPRESSION_COUNT;
+            e++
+        ) {
+
+            evaluateExpression(
+                expressions[e],
+                vars,
+                cache
+            );
+        }
+
+
+        table[pairIndex] =
+            cache;
+    }
+
+    return table;
+}
+
+
+/* =========================================================
+   DECODER GEN
+   =========================================================
+
+   Formula GEN dibangun dengan cara sistematis.
+
+   Urutan pasangan expression menggunakan
+   diagonal sehingga formula sederhana
+   diperiksa lebih dahulu.
+
+   GEN 1:
+       expression 0 + expression 0
+
+   kemudian kombinasi berikutnya.
+
+   Tidak ada random.
+   Tidak ada pairIndex.
+   Tidak ada target dalam formula.
+   ========================================================= */
+
+const diagonalCumulative = [];
+
+(function buildDiagonalTable() {
+
+    let total = 0;
+
+    for (
+        let s = 0;
+        s <=
+        (EXPRESSION_COUNT * 2 - 2);
+        s++
+    ) {
+
+        const count =
+            s <
+            EXPRESSION_COUNT
+                ? s + 1
+                : (
+                    2 *
+                    EXPRESSION_COUNT -
+                    1 -
+                    s
+                );
+
+        total += count;
+
+        diagonalCumulative.push(
+            total
+        );
+    }
+
+})();
+
+
+function decodeFormula(
+    gen
+) {
+    let safeGen = gen;
+    if (safeGen > TOTAL_FORMULAS) {
+        safeGen = ((safeGen - 1) % TOTAL_FORMULAS) + 1;
+    }
+
+    const zeroBased =
+        safeGen - 1;
+
+    const mode =
+        zeroBased %
+        OUTPUT_MODES;
+
+    const pairNumber =
+        Math.floor(
+            zeroBased /
+            OUTPUT_MODES
+        );
+
+
+    /*
+       Cari diagonal.
+    */
+
+    let low = 0;
+    let high =
+        diagonalCumulative.length - 1;
+
+    while (low < high) {
+
+        const mid =
+            Math.floor(
+                (low + high) / 2
+            );
+
+        if (
+            diagonalCumulative[mid] >
+            pairNumber
+        ) {
+
+            high = mid;
+
+        } else {
+
+            low = mid + 1;
+        }
+    }
+
+    const diagonal =
+        low;
+
+    const previousTotal =
+        diagonal === 0
+            ? 0
+            : diagonalCumulative[
+                diagonal - 1
+            ];
+
+    const offset =
+        pairNumber -
+        previousTotal;
+
+
+    let e1;
+    let e2;
+
+
+    if (
+        diagonal <
+        EXPRESSION_COUNT
+    ) {
+
+        e1 = offset;
+
+        e2 =
+            diagonal -
+            offset;
+
+    } else {
+
+        e1 =
+            EXPRESSION_COUNT -
+            1 -
+            offset;
+
+        e2 =
+            diagonal -
+            e1;
+    }
+
+
+    return {
+        e1: e1,
+        e2: e2,
+        mode: mode
+    };
+}
+
+
+/* =========================================================
+   OUTPUT FORMULA
+   ========================================================= */
+
+function normalizeDigit(value) {
+
+    return (
+        Math.abs(
+            Math.trunc(value)
+        ) % 10
+    );
+}
+
+
+function makeSeed(
+    value1,
+    value2,
+    mode
+) {
+
+    let d1 =
+        normalizeDigit(
+            value1
+        );
+
+    let d2 =
+        normalizeDigit(
+            value2
+        );
+
+
+    switch (mode) {
+
+        case 0:
+
+            return (
+                String(d1) +
+                String(d2)
+            );
+
+
+        case 1:
+
+            return (
+                String(d2) +
+                String(d1)
+            );
+
+
+        case 2:
+
+            return (
+                String(
+                    (d1 + d2) % 10
+                ) +
+                String(d2)
+            );
+
+
+        case 3:
+
+            return (
+                String(d1) +
+                String(
+                    (d1 + d2) % 10
+                )
+            );
+
+
+        case 4:
+
+            return (
+                String(
+                    (d1 * d2) % 10
+                ) +
+                String(d2)
+            );
+
+
+        case 5:
+
+            return (
+                String(d1) +
+                String(
+                    (d1 * d2) % 10
+                )
+            );
+
+
+        case 6:
+
+            return (
+                String(
+                    Math.abs(
+                        d1 - d2
+                    )
+                ) +
+                String(
+                    (d1 + d2) % 10
+                )
+            );
+
+
+        case 7:
+
+            return (
+                String(
+                    (d1 + d2) % 10
+                ) +
+                String(
+                    Math.abs(
+                        d1 - d2
+                    )
+                )
+            );
+    }
+
+    return (
+        String(d1) +
+        String(d2)
+    );
+}
+
+
+function getOutputModeText(
+    mode
+) {
+
+    switch (mode) {
+
+        case 0:
+            return "[X,Y]";
+
+        case 1:
+            return "[Y,X]";
+
+        case 2:
+            return "[X+Y,Y]";
+
+        case 3:
+            return "[X,X+Y]";
+
+        case 4:
+            return "[X×Y,Y]";
+
+        case 5:
+            return "[X,X×Y]";
+
+        case 6:
+            return "[|X-Y|,X+Y]";
+
+        case 7:
+            return "[X+Y,|X-Y|]";
+    }
+
+    return "[X,Y]";
+}
+
+
+function getFormulaText(
+    formula
+) {
+
+    const e1 =
+        expressions[
+            formula.e1
+        ];
+
+    const e2 =
+        expressions[
+            formula.e2
+        ];
+
+    return (
+        "X = " +
+        e1.text +
+        "\n" +
+        "Y = " +
+        e2.text +
+        "\n" +
+        "OUT = " +
+        getOutputModeText(
+            formula.mode
+        )
+    );
+}
+
+
+/* =========================================================
+   TEST SATU FORMULA
+   ========================================================= */
+
+function testFormula(
+    formula,
+    valueTable,
+    targets
+) {
+    const pairCount = targets.length;
+
+    let totalHit = 0;
+
+    /*
+       PENTING:
+       Urutan kalkulasi pasangan TETAP dari data terlama -> terbaru.
+
+       Tetapi syarat "Hit berurutan" dihitung dari pasangan PALING
+       BELAKANG (target terbaru) mundur ke belakang.
+
+       Jadi yang dinilai bukan longest run di tengah data.
+       Yang dinilai adalah SUFFIX HIT:
+           ... -> target lama -> target terbaru
+                         ↑
+                    harus nyambung
+                    sampai target terbaru
+
+       Dampaknya:
+       - menghapus data TERLAMA tidak mengubah hasil selama
+         rangkaian terbaru yang menjadi acuan masih sama.
+       - menghapus data TERBARU memang boleh mengubah hasil,
+         karena target terbaru memang berubah.
+    */
+
+    let trailingConsecutive = 0;
+
+    for (let i = 0; i < pairCount; i++) {
+        const values = valueTable[i];
+
+        const x = values[formula.e1];
+        const y = values[formula.e2];
+
+        const seed = makeSeed(
+            x,
+            y,
+            formula.mode
+        );
+
+        if (isHit(seed, targets[i])) {
+            totalHit++;
+        }
+    }
+
+    /*
+       Hit berurutan WAJIB dimulai dari target paling baru.
+       Begitu menemukan satu miss, rangkaian berhenti.
+    */
+    for (let i = pairCount - 1; i >= 0; i--) {
+        const values = valueTable[i];
+
+        const x = values[formula.e1];
+        const y = values[formula.e2];
+
+        const seed = makeSeed(
+            x,
+            y,
+            formula.mode
+        );
+
+        if (!isHit(seed, targets[i])) {
+            break;
+        }
+
+        trailingConsecutive++;
+    }
+
+    /*
+       Seed keluaran harus berasal dari pasangan TERBARU,
+       karena formula ini dipakai untuk menghasilkan kandidat
+       setelah data terbaru.
+    */
+    const latestValues = valueTable[pairCount - 1];
+
+    const latestX =
+        latestValues[formula.e1];
+
+    const latestY =
+        latestValues[formula.e2];
+
+    const latestSeed =
+        makeSeed(
+            latestX,
+            latestY,
+            formula.mode
+        );
+
+    return {
+        seed: latestSeed,
+        totalHit: totalHit,
+        longestConsecutive: trailingConsecutive,
+        trailingConsecutive: trailingConsecutive,
+        pairCount: pairCount
+    };
+}
+
+
+/* =========================================================
+   TARGET TABLE
+   ========================================================= */
+
+function buildTargets(
+    data,
+    group
+) {
+
+    const pairCount =
+        data.length - 1;
+
+    const targets =
+        new Array(pairCount);
+
+    for (
+        let i = 0;
+        i < pairCount;
+        i++
+    ) {
+
+        targets[i] =
+            getGroupValue(
+                data[i + 1],
+                group
+            );
+    }
+
+    return targets;
+}
+
+
+/* =========================================================
+   ANALISA GROUP
+   ========================================================= */
+
+async function analyzeGroup(
+    data,
+    group,
+    minHit,
+    maxGen
+) {
+    const pairCount =
+        data.length - 1;
+
+    const valueTable =
+        buildValueTable(
+            data,
+            group
+        );
+
+    const targets =
+        buildTargets(
+            data,
+            group
+        );
+
+    let best = null;
+    let bestGen = 1;
+
+    const actualMaxGen =
+        Math.min(
+            Math.max(1, Math.trunc(maxGen)),
+            TOTAL_FORMULAS
+        );
+
+    /*
+       LOGIKA BARU:
+
+       1. Semua pasangan dihitung deterministik dari TERLAMA -> TERBARU.
+       2. Untuk setiap GEN, formula diuji ke semua pasangan.
+       3. "Hit berurutan" BUKAN longest run di seluruh data.
+          Yang dihitung hanya rangkaian yang MENYAMBUNG DARI DATA
+          PALING BARU KE BELAKANG.
+       4. Begitu suffix hit >= minHit, formula langsung dikunci.
+          Tidak diteruskan mencari formula lain.
+       5. Jika sampai actualMaxGen tidak ada yang memenuhi,
+          dipilih formula dengan suffix hit terbesar.
+       6. Jika suffix sama, total hit menjadi tie-breaker.
+       7. Jika masih sama, GEN terkecil menang.
+
+       Dengan aturan ini tidak ada random dan tidak ada hasil
+       yang berubah hanya karena data lama dihapus, selama
+       rangkaian target terbaru yang diuji tetap sama.
+    */
+
+    for (
+        let gen = 1;
+        gen <= actualMaxGen;
+        gen++
+    ) {
+        if (stopRequested) {
+            if (!best) {
+                const fallback =
+                    decodeFormula(1);
+
+                const fallbackScore =
+                    testFormula(
+                        fallback,
+                        valueTable,
+                        targets
+                    );
+
+                best = {
+                    formula: fallback,
+                    score: fallbackScore
+                };
+
+                bestGen = 1;
+            }
+
+            return {
+                stopped: true,
+                group: group,
+                gen: bestGen,
+                formula: best.formula,
+                seed: best.score.seed,
+                hit: best.score.totalHit,
+                longest: best.score.trailingConsecutive,
+                total: pairCount,
+                totalFormulas: TOTAL_FORMULAS,
+                finishedBy: "STOP"
+            };
+        }
+
+        const formula =
+            decodeFormula(gen);
+
+        const score =
+            testFormula(
+                formula,
+                valueTable,
+                targets
+            );
+
+        /*
+           Simpan formula terbaik yang ditemukan sampai sekarang.
+           Prioritas MUTLAK:
+           1. Hit berurutan dari belakang
+           2. Total hit
+           3. GEN terkecil
+        */
+        let isBetter = false;
+
+        if (!best) {
+            isBetter = true;
+        }
+        else if (
+            score.trailingConsecutive >
+            best.score.trailingConsecutive
+        ) {
+            isBetter = true;
+        }
+        else if (
+            score.trailingConsecutive ===
+            best.score.trailingConsecutive &&
+            score.totalHit >
+            best.score.totalHit
+        ) {
+            isBetter = true;
+        }
+
+        if (isBetter) {
+            best = {
+                formula: formula,
+                score: score
+            };
+
+            bestGen = gen;
+        }
+
+        /*
+           EARLY STOP YANG BENAR:
+           Jika permintaan hit berurutan sudah tercapai,
+           proses group ini SELESAI.
+
+           Tidak ada alasan mencari GEN berikutnya karena user
+           meminta target berurutan, bukan longest hit di seluruh
+           histori.
+        */
+        if (
+            score.trailingConsecutive >= minHit
+        ) {
+            setProgress(
+                (gen / actualMaxGen) * 100,
+                group +
+                " | GEN " +
+                gen +
+                "/" +
+                actualMaxGen +
+                " | HIT BELAKANG " +
+                score.trailingConsecutive +
+                "/" +
+                minHit +
+                " | TARGET TERCAPAI"
+            );
+
+            progressInfo.textContent =
+                "KELOMPOK       : " +
+                group +
+                "\n\n" +
+
+                "STATUS         : TARGET TERCAPAI\n" +
+
+                "GEN            : " +
+                gen +
+                "/" +
+                actualMaxGen +
+                "\n" +
+
+                "Hit berurutan\n" +
+                "dari belakang : " +
+                score.trailingConsecutive +
+                "/" +
+                minHit +
+                "\n" +
+
+                "Total hit      : " +
+                score.totalHit +
+                "/" +
+                pairCount +
+                "\n" +
+
+                "Seed terbaru   : " +
+                score.seed +
+                "\n\n" +
+
+                "Formula GEN    :\n" +
+                getFormulaText(formula) +
+                "\n\n" +
+
+                "Aturan         :\n" +
+                "Data dihitung dari terlama → terbaru.\n" +
+                "Hit berurutan dihitung dari target terbaru → mundur.\n" +
+                "Proses berhenti segera saat target berurutan tercapai.";
+
+            return {
+                stopped: false,
+                group: group,
+                gen: gen,
+                formula: formula,
+                seed: score.seed,
+                hit: score.totalHit,
+                longest: score.trailingConsecutive,
+                total: pairCount,
+                totalFormulas: TOTAL_FORMULAS,
+                finishedBy: "HIT"
+            };
+        }
+
+        /*
+           Jika target belum tercapai, lanjut GEN berikutnya.
+           Sampai maxGen tercapai.
+        */
+        if (
+            gen % 10 === 0 ||
+            gen === actualMaxGen
+        ) {
+            const percentage =
+                (gen / actualMaxGen) * 100;
+
+            setProgress(
+                percentage,
+                group +
+                " | GEN " +
+                gen +
+                "/" +
+                actualMaxGen +
+                " | HIT BELAKANG TERBAIK " +
+                best.score.trailingConsecutive +
+                "/" +
+                minHit
+            );
+
+            progressInfo.textContent =
+                "Kelompok       : " +
+                group +
+                "\n" +
+
+                "GEN sekarang   : " +
+                gen +
+                "/" +
+                actualMaxGen +
+                "\n\n" +
+
+                "BEST GEN       : " +
+                bestGen +
+                "\n" +
+
+                "Hit berurutan\n" +
+                "dari belakang  : " +
+                best.score.trailingConsecutive +
+                "/" +
+                minHit +
+                "\n" +
+
+                "Total hit      : " +
+                best.score.totalHit +
+                "/" +
+                pairCount +
+                "\n" +
+
+                "Seed terbaru   : " +
+                best.score.seed +
+                "\n\n" +
+
+                "Formula GEN saat ini:\n" +
+                getFormulaText(formula) +
+                "\n\n" +
+
+                "Formula terbaik:\n" +
+                getFormulaText(best.formula) +
+                "\n\n" +
+
+                "Aturan         :\n" +
+                "Pasangan dihitung dari terlama → terbaru.\n" +
+                "Hit berurutan hanya dihitung dari target paling baru ke belakang.\n" +
+                "Tidak ada random dan tidak mencari longest run di tengah data.";
+        }
+
+        if (gen % 50 === 0) {
+            await sleep(0);
+        }
+    }
+
+    /*
+       MAX GEN TERCAPAI lebih dahulu.
+       Kalau target hit berurutan tidak pernah tercapai,
+       kembalikan best suffix yang paling tinggi.
+    */
+    return {
+        stopped: false,
+        group: group,
+        gen: bestGen,
+        formula: best.formula,
+        seed: best.score.seed,
+        hit: best.score.totalHit,
+        longest: best.score.trailingConsecutive,
+        total: pairCount,
+        finishedBy: "GEN",
+        totalFormulas: TOTAL_FORMULAS
+    };
+}
+
+
+/* =========================================================
+   HASIL
+   ========================================================= */
+
+function buildResultText(
+    result
+) {
+
+    if (!result) {
+        return "";
+    }
+
+    const generated =
+        generate49(
+            result.seed
+        );
+
+    return generated
+        .combinations
+        .join("*");
+}
+
+
+function buildTitle(
+    group,
+    result
+) {
+
+    if (!result) {
+        return group;
+    }
+
+    return (
+        group +
+        " Gen:" +
+        result.gen +
+        " Belakang:" +
+        result.longest +
+        "/" +
+        result.total +
+        " Seed:" +
+        result.seed
+    );
+}
+
+
+/* =========================================================
+   BACKTEST
+   =========================================================
+
+   LOGIKA:
+   - BackTest baru berjalan SETELAH 2DD, 2DT, dan 2DB utama selesai.
+   - Target pertama = data paling belakang.
+   - Data VIP untuk target tersebut = semua data sebelum target.
+   - Target TIDAK dimasukkan ke mesin analisa. Target hanya
+     dipakai setelah analisa selesai untuk mengecek apakah
+     2D target muncul di hasil generator.
+   - Target berikutnya bergerak satu posisi ke belakang.
+   - Jumlah target yang diuji = nilai Minimal Hit.
+   - Setting Minimal Hit dan Maksimal GEN diambil SEKALI sebelum
+     Proses Analisa dimulai, lalu dipakai sama untuk semua BackTest.
+   - Hasil formula BackTest tidak ditampilkan di textarea utama.
+   - Yang dimasukkan ke tabel hanya 2D target yang memang muncul
+     di hasil generator masing-masing kelompok.
+   ========================================================= */
+
+function target2DFrom4D(
+    target4D,
+    group
+) {
+    return getGroupValue(
+        target4D,
+        group
+    );
+}
+
+
+function resultContainsTarget(
+    resultText,
+    target4D,
+    group
+) {
+    const target2D =
+        target2DFrom4D(
+            target4D,
+            group
+        );
+
+    if (!/^\d{2}$/.test(target2D)) {
+        return false;
+    }
+
+    return normalize2DList(resultText)
+        .includes(target2D);
+}
+
+
+function setBacktestCell(
+    cell,
+    value
+) {
+    cell.textContent = value;
+
+    if (value === "NULL") {
+        cell.className = "backtest-null";
+    }
+    else {
+        cell.className = "backtest-hit";
+    }
+}
+
+
+function clearBacktestTable() {
+    backtestBody.innerHTML = "";
+
+    const row =
+        document.createElement("tr");
+
+    const cell =
+        document.createElement("td");
+
+    cell.colSpan = 4;
+    cell.className = "backtest-empty";
+    cell.textContent =
+        "Menunggu proses BackTest...";
+
+    row.appendChild(cell);
+    backtestBody.appendChild(row);
+}
+
+
+function addBacktestRow(
+    target,
+    values
+) {
+    /*
+       values:
+       {
+           "2DD": "18" / "NULL",
+           "2DT": "35" / "NULL",
+           "2DB": "59" / "NULL"
+       }
+    */
+
+    let existingEmpty =
+        backtestBody.querySelector(
+            ".backtest-empty"
+        );
+
+    if (existingEmpty) {
+        backtestBody.innerHTML = "";
+    }
+
+    const row =
+        document.createElement("tr");
+
+    const targetCell =
+        document.createElement("td");
+
+    targetCell.textContent =
+        target;
+
+    targetCell.style.background =
+        "#090909";
+
+    targetCell.style.color =
+        "#00eaff";
+
+    row.appendChild(targetCell);
+
+    ["2DD", "2DT", "2DB"]
+        .forEach(function(group) {
+
+            const cell =
+                document.createElement("td");
+
+            setBacktestCell(
+                cell,
+                values[group]
+            );
+
+            row.appendChild(cell);
+        });
+
+    backtestBody.appendChild(row);
+}
+
+
+async function runBackTest(
+    data,
+    minHit,
+    maxGen
+) {
+    clearBacktestTable();
+
+    /*
+       Tidak mengubah:
+       - dataInput
+       - hasil2DD
+       - hasil2DT
+       - hasil2DB
+       - title hasil utama
+
+       Semua data BackTest dibuat sebagai array baru.
+    */
+
+    const totalTarget =
+        Math.min(
+            Math.trunc(minHit),
+            data.length - 1
+        );
+
+    const groups =
+        ["2DD", "2DT", "2DB"];
+
+    for (
+        let step = 0;
+        step < totalTarget;
+        step++
+    ) {
+
+        if (stopRequested) {
+            progressState.textContent =
+                "BackTest di-STOP";
+
+            progressInfo.textContent =
+                "BackTest dihentikan pada target ke-" +
+                step +
+                " dari " +
+                totalTarget +
+                ".";
+
+            return {
+                stopped: true
+            };
+        }
+
+        /*
+           targetIndex:
+           0 = data paling belakang
+           1 = satu posisi sebelum data paling belakang
+           dst.
+        */
+        const targetIndex =
+            data.length -
+            1 -
+            step;
+
+        const target =
+            data[targetIndex];
+
+        /*
+           VIP sementara hanya data SEBELUM target.
+           Lalu target ditambahkan sebagai target proses.
+
+           Contoh:
+           Data:
+           A,B,C,D
+
+           BackTest pertama:
+           VIP = A,B,C
+           Target = D
+           data untuk mesin = A,B,C,D
+
+           BackTest kedua:
+           VIP = A,B
+           Target = C
+           data untuk mesin = A,B,C
+        */
+        const vipBeforeTarget =
+            data.slice(
+                0,
+                targetIndex
+            );
+
+        /*
+           PENTING:
+           Target TIDAK boleh dimasukkan ke data analisa.
+
+           BackTest harus benar-benar mensimulasikan kondisi
+           saat target tersebut BELUM diketahui: target dihapus
+           dari ujung belakang, lalu proses analisa dijalankan
+           pada data yang tersisa. Setelah hasil analisa keluar,
+           barulah hasil itu dibandingkan dengan target yang
+           tadi dihapus.
+
+           Kalau target ikut dimasukkan ke analyzeGroup(), mesin
+           justru memakai target itu sendiri sebagai target
+           terbaru saat memilih formula. Itu yang membuat hasil
+           BackTest cenderung selalu hijau.
+        */
+        const testData =
+            vipBeforeTarget.slice();
+
+        /*
+           Tampilkan hanya status proses pada overlay.
+           Wadah Hasil Analisa utama tidak disentuh.
+        */
+        setProgress(
+            (
+                step /
+                totalTarget
+            ) * 100,
+            "BackTest " +
+            (step + 1) +
+            "/" +
+            totalTarget +
+            " | Target " +
+            target
+        );
+
+        progressInfo.textContent =
+            "BACKTEST\n\n" +
+
+            "Target       : " +
+            target +
+            "\n" +
+
+            "Target ke    : " +
+            (step + 1) +
+            "/" +
+            totalTarget +
+            "\n\n" +
+
+            "VIP sementara:\n" +
+            vipBeforeTarget.join(", ") +
+            "\n\n" +
+
+            "Setting sama dengan analisa utama:\n" +
+            "Minimal Hit  : " +
+            minHit +
+            "\n" +
+            "Maksimal GEN : " +
+            maxGen +
+            "\n\n" +
+
+            "Menjalankan 2DD, 2DT, 2DB di memori...";
+
+        const rowValues = {};
+
+        for (
+            let g = 0;
+            g < groups.length;
+            g++
+        ) {
+
+            if (stopRequested) {
+                progressState.textContent =
+                    "BackTest di-STOP";
+
+                return {
+                    stopped: true
+                };
+            }
+
+            const group =
+                groups[g];
+
+            /*
+               analyzeGroup menerima data dengan target
+               sebagai elemen terakhir, persis seperti analisa
+               utama. Hasilnya hanya disimpan dalam variabel lokal.
+            */
+            const result =
+                await analyzeGroup(
+                    testData,
+                    group,
+                    minHit,
+                    maxGen
+                );
+
+            const resultText =
+                buildResultText(
+                    result
+                );
+
+            const hit =
+                resultContainsTarget(
+                    resultText,
+                    target,
+                    group
+                );
+
+            rowValues[group] =
+                hit
+                    ? target2DFrom4D(
+                        target,
+                        group
+                    )
+                    : "NULL";
+        }
+
+        /*
+           Setelah ketiga group selesai, baru satu baris
+           dimasukkan ke tabel BackTest.
+        */
+        addBacktestRow(
+            target,
+            rowValues
+        );
+
+        /*
+           Beri kesempatan browser menggambar tabel sebelum
+           lanjut ke target berikutnya.
+        */
+        await sleep(0);
+    }
+
+    setProgress(
+        100,
+        "BackTest selesai"
+    );
+
+    progressInfo.textContent =
+        "BACKTEST SELESAI\n\n" +
+
+        "Jumlah target diuji : " +
+        totalTarget +
+        "\n" +
+
+        "Minimal Hit          : " +
+        minHit +
+        "\n" +
+
+        "Maksimal GEN         : " +
+        maxGen +
+        "\n\n" +
+
+        "Setiap target diuji mundur dari data paling belakang.\n" +
+        "Hasil utama 2DD / 2DT / 2DB tidak diubah.";
+
+    return {
+        stopped: false,
+        total: totalTarget
+    };
+}
+
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+function setProgress(
+    percent,
+    state
+) {
+
+    progressBar.style.width =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                percent
+            )
+        ) + "%";
+
+    progressPercent.textContent =
+        Math.round(percent) +
+        "%";
+
+    progressState.textContent =
+        state;
+}
+
+
+function sleep(ms) {
+
+    return new Promise(
+        function(resolve) {
+
+            setTimeout(
+                resolve,
+                ms
+            );
+        }
+    );
+}
+
+
+function showPairInfo(
+    data,
+    group
+) {
+
+    const jumlahPasangan =
+        data.length - 1;
+
+    let text =
+        "Kelompok : " +
+        group +
+        "\n\n";
+
+    for (
+        let i = 0;
+        i < jumlahPasangan;
+        i++
+    ) {
+
+        const source =
+            getGroupValue(
+                data[i],
+                group
+            );
+
+        const target =
+            getGroupValue(
+                data[i + 1],
+                group
+            );
+
+        text +=
+            (i + 1) +
+            ". " +
+            source +
+            " → " +
+            target +
+            "\n";
+    }
+
+    progressInfo.textContent =
+        text;
+}
+
+
+/* =========================================================
+   PROSES UTAMA
+   ========================================================= */
+
+btnProses.addEventListener(
+    "click",
+    async function() {
+
+        if (!validateAll()) {
+            return;
+        }
+
+
+        const parsed =
+            parseInputData();
+
+        const data =
+            parsed.data;
+
+        const minHit =
+            Number(
+                minHitInput.value
+            );
+
+        const maxGen =
+            Number(
+                maxGenInput.value
+            );
+
+
+        hasil2DD.value = "";
+        hasil2DT.value = "";
+        hasil2DB.value = "";
+
+        resetResultStates();
+
+        title2DD.textContent =
+            "2DD";
+
+        title2DT.textContent =
+            "2DT";
+
+        title2DB.textContent =
+            "2DB";
+
+
+        stopRequested = false;
+
+
+        progressOverlay.style.display =
+            "flex";
+
+
+        setProgress(
+            0,
+            "Mempersiapkan mesin formula..."
+        );
+
+
+        progressInfo.textContent =
+
+            "MESIN FORMULA MATEMATIS\n\n" +
+
+            "Expression : " +
+            EXPRESSION_COUNT +
+            "\n" +
+
+            "Mode output : " +
+            OUTPUT_MODES +
+            "\n" +
+
+            "Total ruang GEN : " +
+            TOTAL_FORMULAS.toLocaleString() +
+            "\n\n" +
+
+            "Operasi yang digunakan:\n" +
+
+            "+  -  ×  ÷  MOD\n" +
+            "ABS / selisih absolut\n" +
+            "SQ / kuadrat\n" +
+            "DS / jumlah digit\n" +
+            "DP / perkalian digit\n" +
+            "REV / reverse digit\n" +
+            "FST / digit pertama\n" +
+            "LST / digit terakhir\n" +
+            "ROOT / digital root\n" +
+            "Nested operation\n" +
+            "Data pasangan sebelumnya\n" +
+            "Swap / kombinasi output\n\n" +
+
+            "Setiap GEN adalah satu formula\n" +
+            "yang sama untuk seluruh pasangan.";
+
+
+        await sleep(300);
+
+
+        /* =================================================
+           2DD
+           ================================================= */
+
+        progressState.textContent =
+            "Memulai analisa 2DD";
+
+        showPairInfo(
+            data,
+            "2DD"
+        );
+
+        await sleep(150);
+
+
+        const result2DD =
+            await analyzeGroup(
+                data,
+                "2DD",
+                minHit,
+                maxGen
+            );
+
+
+        title2DD.textContent =
+            buildTitle(
+                "2DD",
+                result2DD
+            );
+
+        hasil2DD.value =
+            buildResultText(
+                result2DD
+            );
+
+        resultStates["hasil2DD"].original =
+            hasil2DD.value;
+        resultStates["hasil2DD"].contraActive = false;
+        syncResultState("hasil2DD");
+
+
+        if (result2DD.stopped) {
+
+            progressState.textContent =
+                "PROSES DI-STOP";
+
+            progressInfo.textContent =
+
+                "2DD DI-STOP\n\n" +
+
+                "GEN terbaik : " +
+                result2DD.gen +
+                "\n" +
+
+                "Seed : " +
+                result2DD.seed +
+                "\n" +
+
+                "Total hit : " +
+                result2DD.hit +
+                "/" +
+                result2DD.total +
+                "\n" +
+
+                "Hit berurutan : " +
+                result2DD.longest +
+                "\n\n" +
+
+                getFormulaText(
+                    result2DD.formula
+                );
+
+            return;
+        }
+
+
+        if (stopRequested) {
+
+            progressState.textContent =
+                "PROSES DI-STOP";
+
+            return;
+        }
+
+
+        /* =================================================
+           2DT
+           ================================================= */
+
+        progressState.textContent =
+            "Pindah ke analisa 2DT";
+
+        showPairInfo(
+            data,
+            "2DT"
+        );
+
+        await sleep(150);
+
+
+        const result2DT =
+            await analyzeGroup(
+                data,
+                "2DT",
+                minHit,
+                maxGen
+            );
+
+
+        title2DT.textContent =
+            buildTitle(
+                "2DT",
+                result2DT
+            );
+
+        hasil2DT.value =
+            buildResultText(
+                result2DT
+            );
+
+        resultStates["hasil2DT"].original =
+            hasil2DT.value;
+        resultStates["hasil2DT"].contraActive = false;
+        syncResultState("hasil2DT");
+
+
+        if (result2DT.stopped) {
+
+            progressState.textContent =
+                "PROSES DI-STOP";
+
+            progressInfo.textContent =
+
+                "2DT DI-STOP\n\n" +
+
+                "GEN terbaik : " +
+                result2DT.gen +
+                "\n" +
+
+                "Seed : " +
+                result2DT.seed +
+                "\n" +
+
+                "Total hit : " +
+                result2DT.hit +
+                "/" +
+                result2DT.total +
+                "\n" +
+
+                "Hit berurutan : " +
+                result2DT.longest +
+                "\n\n" +
+
+                getFormulaText(
+                    result2DT.formula
+                );
+
+            return;
+        }
+
+
+        if (stopRequested) {
+
+            progressState.textContent =
+                "PROSES DI-STOP";
+
+            return;
+        }
+
+
+        /* =================================================
+           2DB
+           ================================================= */
+
+        progressState.textContent =
+            "Pindah ke analisa 2DB";
+
+        showPairInfo(
+            data,
+            "2DB"
+        );
+
+        await sleep(150);
+
+
+        const result2DB =
+            await analyzeGroup(
+                data,
+                "2DB",
+                minHit,
+                maxGen
+            );
+
+
+        title2DB.textContent =
+            buildTitle(
+                "2DB",
+                result2DB
+            );
+
+        hasil2DB.value =
+            buildResultText(
+                result2DB
+            );
+
+        resultStates["hasil2DB"].original =
+            hasil2DB.value;
+        resultStates["hasil2DB"].contraActive = false;
+        syncResultState("hasil2DB");
+
+
+        if (result2DB.stopped) {
+
+            progressState.textContent =
+                "PROSES DI-STOP";
+
+            progressInfo.textContent =
+
+                "2DB DI-STOP\n\n" +
+
+                "GEN terbaik : " +
+                result2DB.gen +
+                "\n" +
+
+                "Seed : " +
+                result2DB.seed +
+                "\n" +
+
+                "Total hit : " +
+                result2DB.hit +
+                "/" +
+                result2DB.total +
+                "\n" +
+
+                "Hit berurutan : " +
+                result2DB.longest +
+                "\n\n" +
+
+                getFormulaText(
+                    result2DB.formula
+                );
+
+            return;
+        }
+
+
+        /* =================================================
+           SELESAI
+           ================================================= */
+
+        setProgress(
+            100,
+            "Analisa selesai"
+        );
+
+
+        progressInfo.textContent =
+
+            "ANALISA SELESAI\n\n" +
+
+            "RUANG FORMULA : " +
+            TOTAL_FORMULAS.toLocaleString() +
+            "\n\n" +
+
+            "2DD\n" +
+            "GEN : " +
+            result2DD.gen +
+            "\n" +
+            "Total hit : " +
+            result2DD.hit +
+            "/" +
+            result2DD.total +
+            "\n" +
+            "Hit berurutan : " +
+            result2DD.longest +
+            "\n" +
+            "Seed : " +
+            result2DD.seed +
+            "\n" +
+            getFormulaText(
+                result2DD.formula
+            ) +
+
+            "\n\n" +
+
+            "2DT\n" +
+            "GEN : " +
+            result2DT.gen +
+            "\n" +
+            "Total hit : " +
+            result2DT.hit +
+            "/" +
+            result2DT.total +
+            "\n" +
+            "Hit berurutan : " +
+            result2DT.longest +
+            "\n" +
+            "Seed : " +
+            result2DT.seed +
+            "\n" +
+            getFormulaText(
+                result2DT.formula
+            ) +
+
+            "\n\n" +
+
+            "2DB\n" +
+            "GEN : " +
+            result2DB.gen +
+            "\n" +
+            "Total hit : " +
+            result2DB.hit +
+            "/" +
+            result2DB.total +
+            "\n" +
+            "Hit berurutan : " +
+            result2DB.longest +
+            "\n" +
+            "Seed : " +
+            result2DB.seed +
+            "\n" +
+            getFormulaText(
+                result2DB.formula
+            );
+
+
+        progressState.textContent =
+            "ANALISA UTAMA SELESAI — MEMULAI BACKTEST";
+
+        /*
+           =====================================================
+           BACKTEST
+           =====================================================
+           Baru dijalankan setelah ketiga Hasil Analisa utama
+           sudah terisi. Nilai minHit dan maxGen adalah snapshot
+           setting yang sama dengan proses utama.
+        */
+
+        const backtestResult =
+            await runBackTest(
+                data,
+                minHit,
+                maxGen
+            );
+
+        if (backtestResult.stopped) {
+            progressState.textContent =
+                "BackTest di-STOP";
+        }
+        else {
+            progressState.textContent =
+                "SELESAI";
+        }
+
+        await sleep(700);
+
+        progressOverlay.style.display =
+            "none";
+
+    }
+);
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+validateAll();
+
+</script>
+
+</body>
+</html>
