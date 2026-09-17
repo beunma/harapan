@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wadah Pemisahan</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  h1 {
+    margin: 0 0 18px;
+    font-size: 24px;
+  }
+  .input-card, .section-card {
+    background: #fff;
+    border: 1px solid #d8dde3;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .topbar .actual {
+    font-weight: 700;
+  }
+  textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 130px;
+    border: 1px solid #aeb7c2;
+    border-radius: 7px;
+    padding: 12px;
+    font-family: Consolas, monospace;
+    font-size: 16px;
+    line-height: 1.5;
+    outline: none;
+  }
+  textarea:focus {
+    border-color: #6b7cff;
+  }
+  .input-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  button {
+    border: 0;
+    border-radius: 6px;
+    padding: 9px 16px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .paste { background: #2563eb; color: #fff; }
+  .reset { background: #6b7280; color: #fff; }
+  .copy { background: #16a34a; color: #fff; }
+  .copy:active, .paste:active, .reset:active { transform: translateY(1px); }
+
+  .error {
+    color: #dc2626;
+  }
+
+  .separator-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+
+  .group {
+    margin-bottom: 14px;
+  }
+  .group:last-child { margin-bottom: 0; }
+
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .group-header .ln {
+    font-weight: 700;
+  }
+  .group textarea {
+    min-height: 75px;
+    height: 75px;
+  }
+  .group-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 7px;
+  }
+  .copy-small {
+    background: #16a34a;
+    color: #fff;
+  }
+
+  .status {
+    margin-top: 7px;
+    font-size: 13px;
+    min-height: 16px;
+  }
+
+  @media (max-width: 650px) {
+    body { padding: 12px; }
+    .topbar, .group-header { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Data Input SMG</h1>
+
+  <div class="input-card">
+    <div class="topbar">
+      <div>Jumlah LN: <span id="jumlahLN">0</span></div>
+      <div class="actual">Actual LN: <span id="actualLN">0</span></div>
+    </div>
+
+    <textarea id="inputData" placeholder="Masukkan data, contoh: 23*45*56"></textarea>
+
+    <div class="input-actions">
+      <button class="paste" id="pasteBtn">Paste from Clipboard</button>
+      <button class="reset" id="resetBtn">Reset</button>
+    </div>
+    <div class="status" id="inputStatus"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="separator-title">Wadah Pemisahan</div>
+  </div>
+
+<script>
+(() => {
+  const input = document.getElementById('inputData');
+  const jumlahLN = document.getElementById('jumlahLN');
+  const actualLN = document.getElementById('actualLN');
+  const status = document.getElementById('inputStatus');
+  const wadah = document.querySelector('.section-card');
+
+  function getItems(text) {
+    return text.split('*').map(x => x.trim()).filter(x => x !== '');
+  }
+
+  function getType(items) {
+    if (!items.length) return null;
+    const lengths = new Set(items.map(x => x.length));
+    if (lengths.size !== 1) return 'ERROR';
+
+    const len = items[0].length;
+    if (![2, 3, 4].includes(len)) return 'ERROR';
+    if (!items.every(x => /^\d+$/.test(x))) return 'ERROR';
+    return len;
+  }
+
+  // Hanya merapikan spasi di sekitar *, tanpa menghapus "*" terakhir
+  // yang sedang diketik secara manual.
+  function cleanInput(text) {
+    return text.replace(/\s*\*\s*/g, '*');
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    temp.style.position = 'fixed';
+    temp.style.opacity = '0';
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    temp.remove();
+    return Promise.resolve();
+  }
+
+  function renderGroup(freq, values) {
+    const group = document.createElement('div');
+    group.className = 'group dynamic-group';
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+
+    const title = document.createElement('span');
+    title.textContent = freq === 0 ? 'Kesamaan 0' : `Kesamaan ${freq}`;
+
+    const ln = document.createElement('span');
+    ln.className = 'ln';
+    ln.innerHTML = `Jumlah LN: <span>${values.length}</span>`;
+
+    header.appendChild(title);
+    header.appendChild(ln);
+
+    const textarea = document.createElement('textarea');
+    textarea.readOnly = true;
+    textarea.value = values.join('*');
+
+    const footer = document.createElement('div');
+    footer.className = 'group-footer';
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-small';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', async () => {
+      try {
+        await copyText(textarea.value);
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 900);
+      } catch (_) {
+        btn.textContent = 'Gagal';
+        setTimeout(() => btn.textContent = 'Copy', 900);
+      }
+    });
+
+    footer.appendChild(btn);
+    group.appendChild(header);
+    group.appendChild(textarea);
+    group.appendChild(footer);
+    return group;
+  }
+
+  function clearGroups() {
+    wadah.querySelectorAll('.dynamic-group').forEach(el => el.remove());
+  }
+
+  function update() {
+    const before = input.value;
+    const after = cleanInput(before);
+
+    if (after !== before) {
+      const pos = input.selectionStart;
+      input.value = after;
+      try {
+        input.selectionStart = input.selectionEnd =
+          Math.min(pos, input.value.length);
+      } catch (_) {}
+    }
+
+    const items = getItems(input.value);
+    jumlahLN.textContent = items.length;
+
+    clearGroups();
+
+    if (!items.length) {
+      actualLN.textContent = '0';
+      actualLN.classList.remove('error');
+      status.textContent = '';
+      return;
+    }
+
+    const type = getType(items);
+
+    if (type === 'ERROR') {
+      actualLN.textContent = 'ERROR';
+      actualLN.classList.add('error');
+      status.textContent =
+        'ERROR: semua data harus berupa kelompok 2 digit, 3 digit, atau 4 digit yang sama.';
+      return;
+    }
+
+    actualLN.classList.remove('error');
+    status.textContent = '';
+
+    const counts = new Map();
+    items.forEach(item => {
+      counts.set(item, (counts.get(item) || 0) + 1);
+    });
+
+    actualLN.textContent = counts.size;
+
+    // Dinamis: Kesamaan 4, 5, 6, dst otomatis dibuat bila memang ada.
+    const groups = new Map();
+
+    counts.forEach((count, value) => {
+      if (!groups.has(count)) groups.set(count, []);
+      groups.get(count).push(value);
+    });
+
+    // Kesamaan 0 = semua kemungkinan yang tidak muncul.
+    const missing = [];
+    const max = Math.pow(10, type);
+
+    for (let n = 0; n < max; n++) {
+      const value = String(n).padStart(type, '0');
+      if (!counts.has(value)) missing.push(value);
+    }
+
+    // Hanya tampilkan wadah yang memiliki isi.
+    [...groups.keys()].sort((a, b) => b - a).forEach(freq => {
+      const values = groups.get(freq).sort((a, b) => Number(a) - Number(b));
+      wadah.appendChild(renderGroup(freq, values));
+    });
+
+    if (missing.length > 0) {
+      wadah.appendChild(renderGroup(0, missing));
+    }
+  }
+
+  document.getElementById('pasteBtn').addEventListener('click', async () => {
+    try {
+      const clip = await navigator.clipboard.readText();
+      if (!clip) return;
+
+      const oldText = input.value;
+      const oldItems = getItems(oldText);
+      const newItems = getItems(clip);
+
+      if (!oldText.trim()) {
+        input.value = clip.trim();
+      } else if (newItems.length) {
+        const oldType = getType(oldItems);
+        const newType = getType(newItems);
+
+        if (
+          oldType !== 'ERROR' &&
+          newType !== 'ERROR' &&
+          oldType === newType
+        ) {
+          input.value = oldItems.join('*') + '*' + newItems.join('*');
+        } else {
+          // Tetap masukkan data. Jika akhirnya campur digit, tampil ERROR.
+          input.value =
+            oldText.replace(/\*+$/, '') +
+            '*' +
+            clip.trim().replace(/^\*+/, '');
+        }
+      }
+
+      update();
+      input.focus();
+      input.selectionStart = input.selectionEnd = input.value.length;
+    } catch (_) {
+      status.textContent =
+        'Clipboard tidak dapat dibaca. Izinkan akses clipboard pada browser.';
+    }
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    input.value = '';
+    update();
+    input.focus();
+  });
+
+  input.addEventListener('input', update);
+  update();
+})();
+</script>
+</body>
+</html>
