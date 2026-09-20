@@ -1,0 +1,2587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisa Gabungan</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f4f6f9;color:#333;margin:0;padding:20px}
+.container{max-width:1450px;margin:0 auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.10)}
+h2{margin-top:0;color:#2c3e50}
+h3{color:#2980b9;font-size:17px;border-bottom:2px solid #ecf0f1;padding-bottom:7px;margin-top:28px}
+h4{margin:0 0 8px;color:#2c3e50}
+label{font-weight:700;display:block;margin-bottom:8px}
+textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;font-family:monospace;font-size:14px;line-height:1.55;resize:vertical;min-height:100px}
+.input-area{min-height:150px}
+button{background:#27ae60;color:#fff;border:0;padding:10px 20px;font-size:15px;border-radius:5px;cursor:pointer;font-weight:700;margin-top:10px}
+button:hover{opacity:.9}
+.note{font-size:12px;color:#7f8c8d;margin-top:5px;line-height:1.5}
+.learning-grid,.cross-grid,.conclusion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.cross-grid{grid-template-columns:repeat(3,1fr)}
+.card{border:1px solid #d9dde3;border-radius:8px;padding:13px;background:#fff}
+.version-card{border-top:5px solid #2980b9}
+.version-b{border-top-color:#8e44ad}
+.result-title{font-weight:700;margin-bottom:8px;color:#2c3e50}
+.learning-result{min-height:130px;font-family:monospace;background:#f7f8fa}
+.reason{font-size:12px;color:#666;line-height:1.5;margin-top:7px}
+.cross-card{border-top:5px solid #16a085}
+.cross-card h4{color:#167a68}
+.cross-box{min-height:190px;background:#f8fbfa}
+.cross-subtitle{font-size:12px;color:#666;margin-bottom:7px}
+.conclusion-card{border-top:5px solid #34495e}
+.conclusion-card textarea{min-height:220px}
+.copy-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.copy-btn{background:#2980b9;padding:7px 13px;font-size:12px;margin-top:0}
+.count{font-size:12px;color:#555;font-weight:700}
+.status{margin-top:10px;padding:10px;border-radius:5px;background:#f1f8ff;border:1px solid #cfe5ff;font-family:monospace;font-size:12px}
+@media(max-width:1000px){.learning-grid,.cross-grid,.conclusion-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- <h2>Analisa Gabungan</h2> -->
+
+<label for="inputData">Masukkan Data RM9 :</label>
+<textarea id="inputData" class="input-area" placeholder=""></textarea>
+<div id="infoInput" class="note">Jumlah Input: 0</div>
+<button onclick="proses()">Proses</button>
+<div id="status" class="status">Belum diproses.</div>
+
+<h3>SELF LEARNING ADAPTIF</h3>
+<div class="note"></div>
+
+<div class="learning-grid">
+<div class="card version-card">
+<div class="result-title">VERSI A</div>
+<div class="note">2DD <span id="aInfoDD">0</span> ronde historis.</div>
+<textarea id="aDD" class="learning-result" readonly></textarea><div id="aReasonDD" class="reason">-</div>
+<div class="note" style="margin-top:12px">2DT <span id="aInfoDT">0</span> ronde historis.</div>
+<textarea id="aDT" class="learning-result" readonly></textarea><div id="aReasonDT" class="reason">-</div>
+<div class="note" style="margin-top:12px">2DB <span id="aInfoDB">0</span> ronde historis.</div>
+<textarea id="aDB" class="learning-result" readonly></textarea><div id="aReasonDB" class="reason">-</div>
+</div>
+
+<div class="card version-card version-b">
+<div class="result-title">VERSI B</div>
+<div class="note">2DD <span id="bInfoDD">0</span> ronde historis.</div>
+<textarea id="bDD" class="learning-result" readonly></textarea><div id="bReasonDD" class="reason">-</div>
+<div class="note" style="margin-top:12px">2DT <span id="bInfoDT">0</span> ronde historis.</div>
+<textarea id="bDT" class="learning-result" readonly></textarea><div id="bReasonDT" class="reason">-</div>
+<div class="note" style="margin-top:12px">2DB <span id="bInfoDB">0</span> ronde historis.</div>
+<textarea id="bDB" class="learning-result" readonly></textarea><div id="bReasonDB" class="reason">-</div>
+</div>
+</div>
+
+<h3>ANALISA SILANG</h3>
+<div class="note"></div>
+<div class="cross-grid">
+<div class="card cross-card"><h4>2DD — VERSI A</h4><div class="cross-subtitle"></div><textarea id="crossDDA" class="cross-box" readonly></textarea><div id="crossInfoDDA" class="count">0 LN</div></div>
+<div class="card cross-card"><h4>2DD — VERSI B</h4><div class="cross-subtitle"></div><textarea id="crossDDB" class="cross-box" readonly></textarea><div id="crossInfoDDB" class="count">0 LN</div></div>
+<div class="card cross-card"><h4>2DT — VERSI A</h4><div class="cross-subtitle"></div><textarea id="crossDTA" class="cross-box" readonly></textarea><div id="crossInfoDTA" class="count">0 LN</div></div>
+<div class="card cross-card"><h4>2DT — VERSI B</h4><div class="cross-subtitle"></div><textarea id="crossDTB" class="cross-box" readonly></textarea><div id="crossInfoDTB" class="count">0 LN</div></div>
+<div class="card cross-card"><h4>2DB — VERSI A</h4><div class="cross-subtitle"></div><textarea id="crossDBA" class="cross-box" readonly></textarea><div id="crossInfoDBA" class="count">0 LN</div></div>
+<div class="card cross-card"><h4>2DB — VERSI B</h4><div class="cross-subtitle"></div><textarea id="crossDBB" class="cross-box" readonly></textarea><div id="crossInfoDBB" class="count">0 LN</div></div>
+</div>
+
+<h3>KESIMPULAN</h3>
+<div class="note"></div>
+
+<div class="conclusion-grid">
+
+<div class="card conclusion-card">
+<div class="copy-row"><h4>KESIMPULAN 2DD</h4><span class="count">Total: 100 LN</span></div>
+<label>LEVEL 2</label>
+<textarea id="bothDD" readonly></textarea>
+<div class="copy-row"><span id="bothDDCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('bothDD',this)">Copy</button></div>
+<label style="margin-top:12px">LEVEL 1</label>
+<textarea id="oneDD" readonly></textarea>
+<div class="copy-row"><span id="oneDDCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('oneDD',this)">Copy</button></div>
+<label style="margin-top:12px">LEVEL 0</label>
+<textarea id="noneDD" readonly></textarea>
+<div class="copy-row"><span id="noneDDCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('noneDD',this)">Copy</button></div>
+</div>
+
+<div class="card conclusion-card">
+<div class="copy-row"><h4>KESIMPULAN 2DT</h4><span class="count">Total: 100 LN</span></div>
+<label>LEVEL 2</label>
+<textarea id="bothDT" readonly></textarea>
+<div class="copy-row"><span id="bothDTCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('bothDT',this)">Copy</button></div>
+<label style="margin-top:12px">LEVEL 1</label>
+<textarea id="oneDT" readonly></textarea>
+<div class="copy-row"><span id="oneDTCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('oneDT',this)">Copy</button></div>
+<label style="margin-top:12px">LEVEL 0</label>
+<textarea id="noneDT" readonly></textarea>
+<div class="copy-row"><span id="noneDTCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('noneDT',this)">Copy</button></div>
+</div>
+
+<div class="card conclusion-card">
+<div class="copy-row"><h4>KESIMPULAN 2DB</h4><span class="count">Total: 100 LN</span></div>
+<label>LEVEL 2</label>
+<textarea id="bothDB" readonly></textarea>
+<div class="copy-row"><span id="bothDBCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('bothDB',this)">Copy</button></div>
+<label style="margin-top:12px">LEVEL 1</label>
+<textarea id="oneDB" readonly></textarea>
+<div class="copy-row"><span id="oneDBCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('oneDB',this)">Copy</button></div>
+<label style="margin-top:12px">LEVEL 0</label>
+<textarea id="noneDB" readonly></textarea>
+<div class="copy-row"><span id="noneDBCount" class="count">0 LN</span><button class="copy-btn" onclick="copyArea('noneDB',this)">Copy</button></div>
+</div>
+
+</div>
+</div>
+
+<script>
+/* ============================================================
+   GLOBAL
+============================================================ */
+
+/* ============================================================
+   FORMAT PASANGAN 2D
+   PENTING:
+   digit digabung, BUKAN dijumlahkan
+============================================================ */
+
+function makePair(row,p1,p2){
+
+    return String(row.digits[p1])+
+           String(row.digits[p2]);
+
+}
+
+
+/* ============================================================
+   PARSE DATA
+============================================================ */
+
+function parseData(){
+
+    let raw=
+        document.getElementById('inputData').value;
+
+    /*
+       Separator sengaja fleksibel:
+       Enter / spasi / koma / titik koma / *
+       supaya input manual dan paste sama-sama aman.
+    */
+    let arr=
+        raw
+        .split(/[\s,;*]+/)
+        .map(x=>x.trim())
+        .filter(x=>x.length>0);
+
+    return arr.map(x=>{
+
+        let cleaned=
+            x.replace(/\D/g,'');
+
+        if(cleaned.length<4){
+            cleaned=cleaned.padStart(4,'0');
+        }
+
+        if(cleaned.length>4){
+            cleaned=cleaned.slice(-4);
+        }
+
+        return {
+            original:cleaned,
+            digits:[
+                Number(cleaned[0]),
+                Number(cleaned[1]),
+                Number(cleaned[2]),
+                Number(cleaned[3])
+            ]
+        };
+
+    });
+
+}
+
+
+/* ============================================================
+   KOMBINASI
+============================================================ */
+
+function getCombinations(arr,k){
+
+    if(k===0)return [[]];
+
+    if(arr.length===0)return [];
+
+    let head=arr[0];
+
+    let tail=arr.slice(1);
+
+
+    return [
+
+        ...getCombinations(
+            tail,
+            k-1
+        ).map(c=>[
+            head,
+            ...c
+        ]),
+
+        ...getCombinations(
+            tail,
+            k
+        )
+
+    ];
+
+}
+
+
+/* ============================================================
+   AM UTAMA
+============================================================ */
+
+function getMultipleAdaptiveAM(
+    rowsData,
+    extractorFunc
+){
+
+    let candidateSet=new Set();
+
+
+    for(
+        let i=0;
+        i<rowsData.length-1;
+        i++
+    ){
+
+        let val=
+            extractorFunc(
+                rowsData[i+1]
+            );
+
+
+        if(val){
+
+            for(let char of val){
+
+                candidateSet.add(char);
+
+            }
+
+        }
+
+    }
+
+
+    let candidateArray=
+        Array.from(candidateSet).sort();
+
+
+    if(candidateArray.length===0){
+        return [];
+    }
+
+
+    let validResults=[];
+
+    let maxLen=
+        Math.min(
+            5,
+            candidateArray.length
+        );
+
+
+    for(
+        let len=3;
+        len<=maxLen;
+        len++
+    ){
+
+        let combos=
+            getCombinations(
+                candidateArray,
+                len
+            );
+
+
+        for(let combo of combos){
+
+            let comboSet=
+                new Set(combo);
+
+            let isValid=true;
+
+
+            for(
+                let i=0;
+                i<rowsData.length-1;
+                i++
+            ){
+
+                let targetVal=
+                    extractorFunc(
+                        rowsData[i+1]
+                    );
+
+
+                let matchCount=0;
+
+
+                if(targetVal){
+
+                    for(
+                        let char of targetVal
+                    ){
+
+                        if(
+                            comboSet.has(char)
+                        ){
+
+                            matchCount++;
+
+                        }
+
+                    }
+
+                }
+
+
+                if(matchCount===0){
+
+                    isValid=false;
+
+                    break;
+
+                }
+
+            }
+
+
+            if(isValid){
+
+                validResults.push(
+                    combo.join('')
+                );
+
+            }
+
+        }
+
+    }
+
+
+    return validResults;
+
+}
+
+
+/* ============================================================
+   EXPAND SEED ±1 ±2 ±3
+============================================================ */
+
+function expandSeed(seed){
+
+    seed=
+        ((seed%10)+10)%10;
+
+
+    let result=[];
+
+
+    [-3,-2,-1,1,2,3]
+    .forEach(offset=>{
+
+        let d=
+            (seed+offset+10)%10;
+
+        result.push(
+            String(d)
+        );
+
+    });
+
+
+    return [
+        ...new Set(result)
+    ];
+
+}
+
+
+/* ============================================================
+   BUAT 3 AM TAMBAHAN
+============================================================ */
+
+function buatTambahanAM(
+    latest,
+    previous,
+    p1,
+    p2
+){
+
+    /*
+       AM tambahan 1:
+       digit terbaru kiri + digit terbaru kanan
+    */
+
+    let seed1=
+        (
+            latest.digits[p1]+
+            latest.digits[p2]
+        )%10;
+
+
+    /*
+       AM tambahan 2:
+       digit kiri terbaru +
+       digit kiri sebelumnya
+    */
+
+    let seed2=
+        (
+            latest.digits[p1]+
+            previous.digits[p1]
+        )%10;
+
+
+    /*
+       AM tambahan 3:
+       digit kanan terbaru +
+       digit kanan sebelumnya
+    */
+
+    let seed3=
+        (
+            latest.digits[p2]+
+            previous.digits[p2]
+        )%10;
+
+
+    return {
+
+        seed1,
+        seed2,
+        seed3,
+
+        am1:expandSeed(seed1),
+
+        am2:expandSeed(seed2),
+
+        am3:expandSeed(seed3)
+
+    };
+
+}
+
+
+/* ============================================================
+   TAMPILKAN AM TAMBAHAN
+============================================================ */
+
+function tampilkanTambahanAM(){
+
+    if(globalProcessedData.length<2){
+        return;
+    }
+
+
+    let latest=
+        globalProcessedData[
+            globalProcessedData.length-1
+        ];
+
+
+    let previous=
+        globalProcessedData[
+            globalProcessedData.length-2
+        ];
+
+
+    let configs=[
+
+        {
+            p1:0,
+            p2:1,
+            source:'amSource1',
+            target:'amExtra1'
+        },
+
+        {
+            p1:1,
+            p2:2,
+            source:'amSource2',
+            target:'amExtra2'
+        },
+
+        {
+            p1:2,
+            p2:3,
+            source:'amSource3',
+            target:'amExtra3'
+        }
+
+    ];
+
+
+    configs.forEach(cfg=>{
+
+        let am=
+            buatTambahanAM(
+                latest,
+                previous,
+                cfg.p1,
+                cfg.p2
+            );
+
+
+        let latestPair=
+            makePair(
+                latest,
+                cfg.p1,
+                cfg.p2
+            );
+
+
+        let previousPair=
+            makePair(
+                previous,
+                cfg.p1,
+                cfg.p2
+            );
+
+
+        document.getElementById(
+            cfg.source
+        ).textContent=
+            `Sebelumnya ${previousPair} → Terbaru ${latestPair}`;
+
+
+        document.getElementById(
+            cfg.target
+        ).textContent=
+            `AM1 [${am.seed1}] : ${am.am1.join('')}\n`+
+            `AM2 [${am.seed2}] : ${am.am2.join('')}\n`+
+            `AM3 [${am.seed3}] : ${am.am3.join('')}`;
+
+    });
+
+}
+
+
+/* ============================================================
+   SET DIGIT AM TAMBAHAN
+============================================================ */
+
+function getAdditionalDigitSet(
+    rows,
+    p1,
+    p2
+){
+
+    if(rows.length<2){
+        return new Set();
+    }
+
+
+    let latest=
+        rows[rows.length-1];
+
+
+    let previous=
+        rows[rows.length-2];
+
+
+    let am=
+        buatTambahanAM(
+            latest,
+            previous,
+            p1,
+            p2
+        );
+
+
+    return new Set([
+
+        ...am.am1,
+        ...am.am2,
+        ...am.am3
+
+    ]);
+
+}
+
+
+/* ============================================================
+   SET DIGIT AM UTAMA
+============================================================ */
+
+function getMainDigitSet(text){
+
+    let set=new Set();
+
+
+    text
+    .split(/\s+/)
+    .forEach(line=>{
+
+        for(let c of line){
+
+            if(/[0-9]/.test(c)){
+
+                set.add(c);
+
+            }
+
+        }
+
+    });
+
+
+    return set;
+
+}
+
+
+/* ============================================================
+   HITUNG FREKUENSI PAIR
+============================================================ */
+
+function countPair(
+    pair,
+    rows,
+    p1,
+    p2
+){
+
+    let count=0;
+
+
+    rows.forEach(row=>{
+
+        /*
+           FIX PENTING:
+           gunakan makePair()
+           bukan penjumlahan digit
+        */
+
+        let actual=
+            makePair(
+                row,
+                p1,
+                p2
+            );
+
+
+        if(actual===pair){
+
+            count++;
+
+        }
+
+    });
+
+
+    return count;
+
+}
+
+
+/* ============================================================
+   SCORE PAIR
+============================================================ */
+
+
+
+
+
+const SELF_LEARNING_A = (() => {
+    let globalProcessedData = [];
+    /* ============================================================
+   FEATURE ENGINE
+   Semua fitur dihitung dari training rows saja.
+============================================================ */
+
+const LEARN_FEATURE_NAMES=[
+    'Frekuensi Pair',
+    'Frekuensi Digit',
+    'AM Utama',
+    'AM Tambahan',
+    'Recency',
+    'Transisi',
+    'Kesamaan',
+    'Jumlah',
+    'Selisih',
+    'Index',
+    'Engine Level'
+];
+
+function clamp01(v){
+    return Math.max(0,Math.min(1,Number(v)||0));
+}
+
+function normalizedCount(map,key,total){
+    return total>0 ? clamp01((map[key]||0)/total) : 0;
+}
+
+function buildFeatureContext(rows,p1,p2,mainText){
+
+    let pairFreq={};
+    let leftFreq={};
+    let rightFreq={};
+    let sumFreq={};
+    let diffFreq={};
+    let indexFreq={};
+    let transitionFreq={};
+
+    for(let n=0;n<100;n++){
+        let p=String(n).padStart(2,'0');
+        pairFreq[p]=0;
+        sumFreq[p]=0;
+        diffFreq[p]=0;
+        indexFreq[p]=0;
+        transitionFreq[p]=0;
+    }
+
+    for(let d=0;d<=9;d++){
+        leftFreq[d]=0;
+        rightFreq[d]=0;
+    }
+
+    for(let i=0;i<rows.length;i++){
+
+        let pair=makePair(rows[i],p1,p2);
+        let a=Number(pair[0]);
+        let b=Number(pair[1]);
+
+        pairFreq[pair]++;
+        leftFreq[a]++;
+        rightFreq[b]++;
+
+        sumFreq[String((a+b)%10).padStart(2,'0')]++;
+        diffFreq[String((Math.abs(a-b))%10).padStart(2,'0')]++;
+        indexFreq[String(((a*10+b)%10)).padStart(2,'0')]++;
+
+        if(i>0){
+            let prev=makePair(rows[i-1],p1,p2);
+            transitionFreq[pair]=
+                (transitionFreq[pair]||0)+
+                (Number(prev[0])===a ? 0.5 : 0)+
+                (Number(prev[1])===b ? 0.5 : 0);
+        }
+    }
+
+    let latest=rows.length?rows[rows.length-1]:null;
+    let previous=rows.length>1?rows[rows.length-2]:null;
+
+    let mainSet=getMainDigitSet(mainText||'');
+
+    if(!mainSet.size && rows.length){
+        let generated=getMultipleAdaptiveAM(
+            rows,
+            row=>makePair(row,p1,p2)
+        );
+        mainSet=getMainDigitSet(generated.join('\n'));
+    }
+
+    let additionalSet=getAdditionalDigitSet(rows,p1,p2);
+
+    /*
+       Engine Level dihitung dengan aturan asli:
+       rata-rata frekuensi kiri/kanan -> L/T -> kategori.
+    */
+    let avgLeft=rows.length ? rows.length/10 : 0;
+    let avgRight=rows.length ? rows.length/10 : 0;
+
+    let engineLevel={};
+
+    for(let n=0;n<100;n++){
+
+        let pair=String(n).padStart(2,'0');
+        let a=pair[0], b=pair[1];
+
+        let lT=leftFreq[Number(a)]>avgLeft;
+        let rT=rightFreq[Number(b)]>avgRight;
+
+        if(!lT && rT) engineLevel[pair]=1;
+        else if(!lT && !rT) engineLevel[pair]=2;
+        else if(lT && rT) engineLevel[pair]=3;
+        else engineLevel[pair]=0;
+    }
+
+    return {
+        rows,
+        p1,
+        p2,
+        pairFreq,
+        leftFreq,
+        rightFreq,
+        sumFreq,
+        diffFreq,
+        indexFreq,
+        transitionFreq,
+        mainSet,
+        additionalSet,
+        latest,
+        previous,
+        engineLevel
+    };
+}
+
+function featureVector(pair,ctx){
+
+    let a=Number(pair[0]);
+    let b=Number(pair[1]);
+
+    let total=ctx.rows.length || 1;
+
+    let pairRate=normalizedCount(
+        ctx.pairFreq,pair,total
+    );
+
+    let digitRate=clamp01(
+        (
+            (ctx.leftFreq[a]||0)+
+            (ctx.rightFreq[b]||0)
+        )/(total*2)
+    );
+
+    let amMain=
+        (ctx.mainSet.has(pair[0])?0.5:0)+
+        (ctx.mainSet.has(pair[1])?0.5:0);
+
+    let amExtra=
+        (ctx.additionalSet.has(pair[0])?0.5:0)+
+        (ctx.additionalSet.has(pair[1])?0.5:0);
+
+    let recency=0;
+
+    if(ctx.latest){
+        let lp=makePair(ctx.latest,ctx.p1,ctx.p2);
+        recency=
+            (pair[0]===lp[0]?0.5:0)+
+            (pair[1]===lp[1]?0.5:0);
+    }
+
+    let transition=clamp01(
+        (ctx.transitionFreq[pair]||0)/2
+    );
+
+    let similarity=0;
+
+    if(ctx.latest){
+        let lp=makePair(ctx.latest,ctx.p1,ctx.p2);
+        similarity+=pair[0]===lp[0]?0.5:0;
+        similarity+=pair[1]===lp[1]?0.5:0;
+    }
+
+    if(ctx.previous){
+        let pp=makePair(ctx.previous,ctx.p1,ctx.p2);
+        similarity+=pair[0]===pp[0]?0.25:0;
+        similarity+=pair[1]===pp[1]?0.25:0;
+    }
+
+    let sum=(a+b)%10;
+    let diff=Math.abs(a-b)%10;
+
+    let sumRate=normalizedCount(
+        ctx.sumFreq,
+        String(sum).padStart(2,'0'),
+        total
+    );
+
+    let diffRate=normalizedCount(
+        ctx.diffFreq,
+        String(diff).padStart(2,'0'),
+        total
+    );
+
+    let indexValue=(a*10+b)%10;
+    let indexRate=normalizedCount(
+        ctx.indexFreq,
+        String(indexValue).padStart(2,'0'),
+        total
+    );
+
+    let level=ctx.engineLevel[pair]||0;
+    let levelScore=level===1?1:
+                   level===2?0.66:
+                   level===3?0.42:0;
+
+    return [
+        clamp01(pairRate*4),
+        digitRate,
+        clamp01(amMain),
+        clamp01(amExtra),
+        clamp01(recency),
+        transition,
+        clamp01(similarity),
+        sumRate,
+        diffRate,
+        indexRate,
+        levelScore
+    ];
+}
+
+function defaultLearnWeights(){
+    return [
+        1.25, 1.00, 1.10, 0.90,
+        0.70, 0.80, 0.85, 0.85,
+        0.90, 0.65, 1.10
+    ];
+}
+
+function dotFeatures(vec,weights){
+    let score=0;
+    for(let i=0;i<vec.length;i++){
+        score+=vec[i]*(weights[i]||0);
+    }
+    return score;
+}
+
+function learnWeightsFromRound(
+    weights,
+    actualVec,
+    predictedVec,
+    actualWasTop3,
+    lr
+){
+
+    /*
+       Update online:
+       fitur yang mendukung actual dinaikkan,
+       fitur yang dominan pada prediksi salah diturunkan.
+       Jika actual sudah masuk Top 3, update dibuat lebih kecil
+       agar model tidak over-correct.
+    */
+    let factor=actualWasTop3 ? lr*0.35 : lr;
+
+    for(let i=0;i<weights.length;i++){
+
+        let delta=
+            (actualVec[i]-predictedVec[i])*factor;
+
+        weights[i]=Math.max(
+            0.05,
+            Math.min(
+                3.5,
+                weights[i]+delta
+            )
+        );
+    }
+
+    return weights;
+}
+
+function featureReason(pair,ctx,weights){
+
+    let vec=featureVector(pair,ctx);
+    let parts=[];
+
+    vec.forEach((v,i)=>{
+
+        if(v>=0.55){
+
+            parts.push({
+                name:LEARN_FEATURE_NAMES[i],
+                value:v*(weights[i]||0)
+            });
+
+        }
+
+    });
+
+    parts.sort((a,b)=>b.value-a.value);
+
+    return parts
+        .slice(0,4)
+        .map(x=>x.name)
+        .join(', ') || 'bukti fitur masih tipis';
+}
+
+function rankWithLearnedModel(
+    rows,p1,p2,mainText,weights
+){
+
+    let ctx=buildFeatureContext(
+        rows,p1,p2,mainText
+    );
+
+    let result=[];
+
+    for(let n=0;n<100;n++){
+
+        let pair=String(n).padStart(2,'0');
+        let vec=featureVector(pair,ctx);
+
+        result.push({
+            pair,
+            features:vec,
+            modelScore:dotFeatures(vec,weights),
+            frequency:ctx.pairFreq[pair]||0,
+            reason:featureReason(pair,ctx,weights)
+        });
+    }
+
+    result.sort((a,b)=>
+        b.modelScore-a.modelScore ||
+        b.frequency-a.frequency ||
+        a.pair.localeCompare(b.pair)
+    );
+
+    return {
+        ranking:result,
+        context:ctx
+    };
+}
+
+function scorePair(
+    pair,
+    rows,
+    p1,
+    p2,
+    mainSet,
+    additionalSet
+){
+
+    let score=0;
+
+
+    let a=pair.charAt(0);
+    let b=pair.charAt(1);
+
+
+    /* --------------------------------
+       FREKUENSI PAIR
+    -------------------------------- */
+
+    let frequency=
+        countPair(
+            pair,
+            rows,
+            p1,
+            p2
+        );
+
+
+    score+=
+        Math.min(
+            frequency*5,
+            25
+        );
+
+
+    /* --------------------------------
+       FREKUENSI DIGIT
+    -------------------------------- */
+
+    let digitFreq={};
+
+    for(let d=0;d<=9;d++){
+
+        digitFreq[d]=0;
+
+    }
+
+
+    rows.forEach(row=>{
+
+        digitFreq[
+            row.digits[p1]
+        ]++;
+
+
+        digitFreq[
+            row.digits[p2]
+        ]++;
+
+    });
+
+
+    score+=
+        Math.min(
+            digitFreq[Number(a)]+
+            digitFreq[Number(b)],
+            20
+        );
+
+
+    /* --------------------------------
+       AM UTAMA
+    -------------------------------- */
+
+    if(mainSet.has(a)){
+        score+=15;
+    }
+
+
+    if(mainSet.has(b)){
+        score+=15;
+    }
+
+
+    /* --------------------------------
+       3 AM TAMBAHAN
+    -------------------------------- */
+
+    if(additionalSet.has(a)){
+        score+=12;
+    }
+
+
+    if(additionalSet.has(b)){
+        score+=12;
+    }
+
+
+    /* --------------------------------
+       RECENCY
+    -------------------------------- */
+
+    if(rows.length>0){
+
+        let latest=
+            rows[rows.length-1];
+
+
+        let latestPair=
+            makePair(
+                latest,
+                p1,
+                p2
+            );
+
+
+        if(pair.charAt(0)===
+           latestPair.charAt(0)){
+
+            score+=6;
+
+        }
+
+
+        if(pair.charAt(1)===
+           latestPair.charAt(1)){
+
+            score+=6;
+
+        }
+
+    }
+
+
+    return score;
+
+}
+
+
+/* ============================================================
+   BUAT SCORE CURRENT
+============================================================ */
+
+function buatCurrentScores(
+    p1,
+    p2,
+    mainText
+){
+
+    let rows=
+        globalProcessedData;
+
+
+    let mainSet=
+        getMainDigitSet(
+            mainText
+        );
+
+
+    let additionalSet=
+        getAdditionalDigitSet(
+            rows,
+            p1,
+            p2
+        );
+
+
+    let result=[];
+
+
+    for(let i=0;i<100;i++){
+
+        let pair=
+            String(i).padStart(2,'0');
+
+
+        let score=
+            scorePair(
+                pair,
+                rows,
+                p1,
+                p2,
+                mainSet,
+                additionalSet
+            );
+
+
+        result.push({
+
+            pair,
+
+            score,
+
+            frequency:
+                countPair(
+                    pair,
+                    rows,
+                    p1,
+                    p2
+                )
+
+        });
+
+    }
+
+
+    return result;
+
+}
+
+
+/* ============================================================
+   WALK FORWARD BACKTEST
+============================================================ */
+
+function backtestColumn(
+    p1,
+    p2
+){
+
+    let rows=globalProcessedData;
+
+    let total=0;
+    let top1Hit=0;
+    let top3Hit=0;
+
+    let audit=[];
+    let candidateStats={};
+
+    for(let n=0;n<100;n++){
+
+        let pair=String(n).padStart(2,'0');
+
+        candidateStats[pair]={
+            selected:0,
+            hit:0,
+            top1:0
+        };
+    }
+
+    let weights=defaultLearnWeights();
+
+    let baselineTop1=0;
+    let baselineTop3=0;
+
+    /*
+       Feature support:
+       dihitung dari ronde-ronde sebelumnya.
+       Tidak ada target leakage.
+    */
+    let featureSupport=
+        LEARN_FEATURE_NAMES.map(()=>({
+            exposure:0,
+            support:0
+        }));
+
+    for(let t=2;t<rows.length;t++){
+
+        let training=rows.slice(0,t);
+        let actual=makePair(rows[t],p1,p2);
+
+        /*
+           AM utama pada titik waktu ini juga hanya berasal
+           dari training.
+        */
+        let trainMain=getMultipleAdaptiveAM(
+            training,
+            row=>makePair(row,p1,p2)
+        );
+
+        let mainText=trainMain.join('\n');
+
+        let model=
+            rankWithLearnedModel(
+                training,
+                p1,
+                p2,
+                mainText,
+                weights
+            );
+
+        let scores=model.ranking;
+
+        let top1=scores[0].pair;
+        let top3=scores.slice(0,3).map(x=>x.pair);
+
+        /*
+           Baseline:
+           scorePair lama, sehingga BackTest dapat
+           membandingkan engine lama vs engine belajar.
+        */
+        let additionalSet=
+            getAdditionalDigitSet(
+                training,p1,p2
+            );
+
+        let mainSet=
+            getMainDigitSet(mainText);
+
+        let baseline=scores.map(item=>({
+            pair:item.pair,
+            score:scorePair(
+                item.pair,
+                training,
+                p1,
+                p2,
+                mainSet,
+                additionalSet
+            )
+        })).sort((a,b)=>
+            b.score-a.score ||
+            a.pair.localeCompare(b.pair)
+        );
+
+        if(baseline[0].pair===actual){
+            baselineTop1++;
+        }
+
+        if(
+            baseline.slice(0,3)
+            .some(x=>x.pair===actual)
+        ){
+            baselineTop3++;
+        }
+
+        total++;
+
+        let hit1=actual===top1;
+        let hit3=top3.includes(actual);
+
+        if(hit1) top1Hit++;
+        if(hit3) top3Hit++;
+
+        /*
+           Candidate statistics.
+        */
+        top3.forEach(pair=>{
+            candidateStats[pair].selected++;
+
+            if(pair===actual){
+                candidateStats[pair].hit++;
+            }
+        });
+
+        if(candidateStats[top1]){
+            candidateStats[top1].top1++;
+        }
+
+        /*
+           Online learning update.
+        */
+        let actualVec=
+            featureVector(
+                actual,
+                model.context
+            );
+
+        let predictedVec=
+            featureVector(
+                top1,
+                model.context
+            );
+
+        weights=learnWeightsFromRound(
+            weights,
+            actualVec,
+            predictedVec,
+            hit3,
+            0.22
+        );
+
+        actualVec.forEach((v,i)=>{
+            featureSupport[i].exposure++;
+            if(v>=0.55 && actual===top1){
+                featureSupport[i].support++;
+            }
+        });
+
+        audit.push({
+            nomor:total,
+            targetIndex:t,
+            hasilSebelumnya:
+                training[training.length-1].original,
+            prediksi:top3.join(', '),
+            top1,
+            actual,
+            hit:hit3,
+            hit1,
+            baselineTop1:
+                baseline[0].pair===actual,
+            baselineTop3:
+                baseline.slice(0,3)
+                .some(x=>x.pair===actual),
+            alasan:featureReason(
+                top1,
+                model.context,
+                weights
+            )
+        });
+    }
+
+    Object.keys(candidateStats).forEach(pair=>{
+
+        let st=candidateStats[pair];
+
+        /*
+           Statistik kandidat tidak boleh memberi
+           rate ekstrem karena sample kecil.
+        */
+        st.rate=
+            ((st.hit+1)/(st.selected+2))*100;
+    });
+
+    let featureStats=
+        LEARN_FEATURE_NAMES.map((name,i)=>({
+            name,
+            weight:weights[i],
+            exposure:featureSupport[i].exposure,
+            support:featureSupport[i].support,
+            supportRate:
+                featureSupport[i].exposure ?
+                featureSupport[i].support/
+                featureSupport[i].exposure*100 :
+                0
+        }));
+
+    return {
+        total,
+        top1Hit,
+        top3Hit,
+        rate1:total?top1Hit/total*100:0,
+        rate3:total?top3Hit/total*100:0,
+        candidateStats,
+        audit,
+        learnedWeights:weights,
+        featureStats,
+        baselineTop1,
+        baselineTop3,
+        baselineRate1:
+            total?baselineTop1/total*100:0,
+        baselineRate3:
+            total?baselineTop3/total*100:0
+    };
+}
+
+
+/* ============================================================
+   FINAL RANKING
+============================================================ */
+
+function finalRanking(
+    p1,
+    p2,
+    mainText
+){
+
+    let bt=backtestColumn(p1,p2);
+
+    /*
+       Setelah seluruh ronde historis selesai,
+       bobot final baru dipakai untuk data TERKINI.
+    */
+    let learned=
+        rankWithLearnedModel(
+            globalProcessedData,
+            p1,
+            p2,
+            mainText,
+            bt.learnedWeights
+        );
+
+    let current=buatCurrentScores(
+        p1,
+        p2,
+        mainText
+    );
+
+    let currentMap={};
+    current.forEach(x=>currentMap[x.pair]=x);
+
+    learned.ranking.forEach(item=>{
+
+        let stat=bt.candidateStats[item.pair]||{
+            hit:0,
+            selected:0,
+            rate:50,
+            top1:0
+        };
+
+        let old=currentMap[item.pair];
+
+        /*
+           Final score menggabungkan:
+           - model self-learning
+           - hasil BackTest kandidat
+           - score AM lama
+           Tidak hanya frekuensi angka.
+        */
+        item.backtestHit=stat.hit;
+        item.backtestSelected=stat.selected;
+        item.backtestRate=stat.rate;
+        item.frequency=old?old.frequency:item.frequency;
+
+        item.finalScore=
+            item.modelScore*30+
+            item.backtestRate*0.75+
+            Math.min(stat.hit,10)*1.5+
+            (old?old.score:0)*0.35;
+
+        item.reason=featureReason(
+            item.pair,
+            learned.context,
+            bt.learnedWeights
+        );
+    });
+
+    learned.ranking.sort((a,b)=>
+        b.finalScore-a.finalScore ||
+        b.backtestRate-a.backtestRate ||
+        b.frequency-a.frequency ||
+        a.pair.localeCompare(b.pair)
+    );
+
+    return {
+        ranking:learned.ranking,
+        backtest:bt
+    };
+}
+
+
+
+    function run(rows, p1, p2, mainText) {
+        globalProcessedData = rows || [];
+        return finalRanking(p1, p2, mainText || '');
+    }
+    return { run };
+})();
+
+
+
+const SELF_LEARNING_B = (() => {
+    let globalProcessedData = [];
+    /* ============================================================
+   FEATURE ENGINE
+   Semua fitur dihitung dari training rows saja.
+============================================================ */
+
+const LEARN_FEATURE_NAMES=[
+    'pairFreq','digitFreq','recency','sum','diff','index',
+    'transition','position','engineLevel',
+    'mistikLama','mistikBaru','similarity'
+];
+
+function clamp01(v){
+    return Math.max(0,Math.min(1,Number(v)||0));
+}
+
+function normalizedCount(map,key,total){
+    return total>0 ? clamp01((map[key]||0)/total) : 0;
+}
+
+function buildFeatureContext(rows,p1,p2,mainText){
+
+    let pairFreq={};
+    let leftFreq={};
+    let rightFreq={};
+    let sumFreq={};
+    let diffFreq={};
+    let indexFreq={};
+    let transitionFreq={};
+
+    for(let n=0;n<100;n++){
+        let p=String(n).padStart(2,'0');
+        pairFreq[p]=0;
+        sumFreq[p]=0;
+        diffFreq[p]=0;
+        indexFreq[p]=0;
+        transitionFreq[p]=0;
+    }
+
+    for(let d=0;d<=9;d++){
+        leftFreq[d]=0;
+        rightFreq[d]=0;
+    }
+
+    for(let i=0;i<rows.length;i++){
+
+        let pair=makePair(rows[i],p1,p2);
+        let a=Number(pair[0]);
+        let b=Number(pair[1]);
+
+        pairFreq[pair]++;
+        leftFreq[a]++;
+        rightFreq[b]++;
+
+        sumFreq[String((a+b)%10).padStart(2,'0')]++;
+        diffFreq[String((Math.abs(a-b))%10).padStart(2,'0')]++;
+        indexFreq[String(((a*10+b)%10)).padStart(2,'0')]++;
+
+        if(i>0){
+            let prev=makePair(rows[i-1],p1,p2);
+            transitionFreq[pair]=
+                (transitionFreq[pair]||0)+
+                (Number(prev[0])===a ? 0.5 : 0)+
+                (Number(prev[1])===b ? 0.5 : 0);
+        }
+    }
+
+    let latest=rows.length?rows[rows.length-1]:null;
+    let previous=rows.length>1?rows[rows.length-2]:null;
+
+    let mainSet=getMainDigitSet(mainText||'');
+
+    if(!mainSet.size && rows.length){
+        let generated=getMultipleAdaptiveAM(
+            rows,
+            row=>makePair(row,p1,p2)
+        );
+        mainSet=getMainDigitSet(generated.join('\n'));
+    }
+
+    let additionalSet=getAdditionalDigitSet(rows,p1,p2);
+
+    /*
+       Engine Level dihitung dengan aturan asli:
+       rata-rata frekuensi kiri/kanan -> L/T -> kategori.
+    */
+    let avgLeft=rows.length ? rows.length/10 : 0;
+    let avgRight=rows.length ? rows.length/10 : 0;
+
+    let engineLevel={};
+
+    for(let n=0;n<100;n++){
+
+        let pair=String(n).padStart(2,'0');
+        let a=pair[0], b=pair[1];
+
+        let lT=leftFreq[Number(a)]>avgLeft;
+        let rT=rightFreq[Number(b)]>avgRight;
+
+        if(!lT && rT) engineLevel[pair]=1;
+        else if(!lT && !rT) engineLevel[pair]=2;
+        else if(lT && rT) engineLevel[pair]=3;
+        else engineLevel[pair]=0;
+    }
+
+    return {
+        rows,
+        p1,
+        p2,
+        pairFreq,
+        leftFreq,
+        rightFreq,
+        sumFreq,
+        diffFreq,
+        indexFreq,
+        transitionFreq,
+        mainSet,
+        additionalSet,
+        latest,
+        previous,
+        engineLevel
+    };
+}
+
+
+/* ============================================================
+   FEATURE TRANSFORMASI DIGIT
+   Mistik Lama / Mistik Baru / Index / Jumlah / Selisih
+   ============================================================ */
+
+const ML_MAP={0:1,1:0,2:5,3:8,4:7,5:2,6:9,7:4,8:3,9:6};
+const MB_MAP={0:8,1:7,2:6,3:9,4:5,5:4,6:2,7:1,8:0,9:3};
+const IDX_MAP={0:5,1:6,2:7,3:8,4:9,5:0,6:1,7:2,8:3,9:4};
+
+function transformPair(pair,map){
+    pair=String(pair).padStart(2,'0');
+    return String(map[+pair[0]])+String(map[+pair[1]]);
+}
+function pairSum(pair){
+    pair=String(pair).padStart(2,'0');
+    return (+pair[0])+(+pair[1]);
+}
+function pairDiff(pair){
+    pair=String(pair).padStart(2,'0');
+    return Math.abs((+pair[0])-(+pair[1]));
+}
+function digitOverlap(a,b){
+    a=String(a).padStart(2,'0');
+    b=String(b).padStart(2,'0');
+    return (a[0]===b[0]?1:0)+(a[1]===b[1]?1:0);
+}
+function featureSimilarity(candidate,target){
+    return Math.max(
+        digitOverlap(transformPair(candidate,ML_MAP),target),
+        digitOverlap(transformPair(candidate,MB_MAP),target),
+        digitOverlap(transformPair(candidate,IDX_MAP),target)
+    );
+}
+
+function featureVector(pair,context){
+
+    context=context||{};
+
+    const base=[
+        context.pairFreq?.[pair]||0,
+        context.digitFreq?.[pair[0]]||0,
+        context.recency?.[pair]||0,
+        context.sumScore?.[pair]||0,
+        context.diffScore?.[pair]||0,
+        context.indexScore?.[pair]||0,
+        context.transition?.[pair]||0,
+        context.position?.[pair]||0,
+        context.engineLevel?.[pair]||0,
+        context.mistikLama?.[pair]||0,
+        context.mistikBaru?.[pair]||0,
+        context.similarity?.[pair]||0
+    ];
+
+    return base.map(v=>{
+        v=Number(v);
+        return Number.isFinite(v)?Math.max(0,Math.min(1,v)):0;
+    });
+}
+
+function defaultLearnWeights(){
+    return LEARN_FEATURE_NAMES.map(()=>1);
+}
+
+function dotFeatures(vec,weights){
+    let score=0;
+    for(let i=0;i<vec.length;i++){
+        score+=vec[i]*(weights[i]||0);
+    }
+    return score;
+}
+
+function learnWeightsFromRound(
+    weights,
+    actualVec,
+    predictedVec,
+    actualWasTop3,
+    lr
+){
+
+    /*
+       Update online:
+       fitur yang mendukung actual dinaikkan,
+       fitur yang dominan pada prediksi salah diturunkan.
+       Jika actual sudah masuk Top 3, update dibuat lebih kecil
+       agar model tidak over-correct.
+    */
+    let factor=actualWasTop3 ? lr*0.35 : lr;
+
+    for(let i=0;i<weights.length;i++){
+
+        let delta=
+            (actualVec[i]-predictedVec[i])*factor;
+
+        weights[i]=Math.max(
+            0.05,
+            Math.min(
+                3.5,
+                weights[i]+delta
+            )
+        );
+    }
+
+    return weights;
+}
+
+function featureReason(pair,context,weights){
+
+    const v=featureVector(pair,context);
+    const labels=[
+        'PairFreq','DigitFreq','Recency','Jumlah','Selisih',
+        'Index','Transisi','Posisi','Engine Level',
+        'Mistik Lama','Mistik Baru','Kesamaan'
+    ];
+
+    return v.map((x,i)=>({
+        name:labels[i],
+        value:x*(weights[i]||1)
+    }))
+    .filter(x=>x.value>0.05)
+    .sort((a,b)=>b.value-a.value)
+    .slice(0,4)
+    .map(x=>x.name)
+    .join(' + ')||'data historis';
+}
+
+function rankWithLearnedModel(
+    rows,p1,p2,mainText,weights
+){
+
+    /*
+       SEMUA feature dihitung dari rows (training) saja.
+       Tidak ada target ronde berjalan di sini.
+    */
+    let ctx=buildFeatureContext(
+        rows,p1,p2,mainText
+    );
+
+    ctx.mistikLama={};
+    ctx.mistikBaru={};
+    ctx.indexScore={};
+    ctx.sumScore={};
+    ctx.diffScore={};
+    ctx.similarity={};
+
+    const hist=rows||[];
+    const hn=hist.length;
+
+    for(let z=0;z<100;z++){
+
+        const candidate=String(z).padStart(2,'0');
+
+        let ml=0,mb=0,ix=0,sm=0,df=0,sim=0;
+
+        hist.forEach(row=>{
+
+            const actual=makePair(row,p1,p2);
+
+            if(transformPair(actual,ML_MAP)===candidate) ml++;
+            if(transformPair(actual,MB_MAP)===candidate) mb++;
+            if(transformPair(actual,IDX_MAP)===candidate) ix++;
+
+            if(pairSum(actual)===pairSum(candidate)) sm++;
+            if(pairDiff(actual)===pairDiff(candidate)) df++;
+
+            sim+=featureSimilarity(candidate,actual);
+        });
+
+        ctx.mistikLama[candidate]=hn?ml/hn:0;
+        ctx.mistikBaru[candidate]=hn?mb/hn:0;
+        ctx.indexScore[candidate]=hn?ix/hn:0;
+        ctx.sumScore[candidate]=hn?sm/hn:0;
+        ctx.diffScore[candidate]=hn?df/hn:0;
+        ctx.similarity[candidate]=hn?sim/(hn*2):0;
+    }
+
+    let result=[];
+
+    for(let n=0;n<100;n++){
+
+        let pair=String(n).padStart(2,'0');
+        let vec=featureVector(pair,ctx);
+
+        result.push({
+            pair,
+            features:vec,
+            modelScore:dotFeatures(vec,weights),
+            frequency:ctx.pairFreq[pair]||0,
+            reason:featureReason(pair,ctx,weights)
+        });
+    }
+
+    result.sort((a,b)=>
+        b.modelScore-a.modelScore ||
+        b.frequency-a.frequency ||
+        a.pair.localeCompare(b.pair)
+    );
+
+    return {
+        ranking:result,
+        context:ctx
+    };
+}
+
+function scorePair(
+    pair,
+    rows,
+    p1,
+    p2,
+    mainSet,
+    additionalSet
+){
+
+    let score=0;
+
+
+    let a=pair.charAt(0);
+    let b=pair.charAt(1);
+
+
+    /* --------------------------------
+       FREKUENSI PAIR
+    -------------------------------- */
+
+    let frequency=
+        countPair(
+            pair,
+            rows,
+            p1,
+            p2
+        );
+
+
+    score+=
+        Math.min(
+            frequency*5,
+            25
+        );
+
+
+    /* --------------------------------
+       FREKUENSI DIGIT
+    -------------------------------- */
+
+    let digitFreq={};
+
+    for(let d=0;d<=9;d++){
+
+        digitFreq[d]=0;
+
+    }
+
+
+    rows.forEach(row=>{
+
+        digitFreq[
+            row.digits[p1]
+        ]++;
+
+
+        digitFreq[
+            row.digits[p2]
+        ]++;
+
+    });
+
+
+    score+=
+        Math.min(
+            digitFreq[Number(a)]+
+            digitFreq[Number(b)],
+            20
+        );
+
+
+    /* --------------------------------
+       AM UTAMA
+    -------------------------------- */
+
+    if(mainSet.has(a)){
+        score+=15;
+    }
+
+
+    if(mainSet.has(b)){
+        score+=15;
+    }
+
+
+    /* --------------------------------
+       3 AM TAMBAHAN
+    -------------------------------- */
+
+    if(additionalSet.has(a)){
+        score+=12;
+    }
+
+
+    if(additionalSet.has(b)){
+        score+=12;
+    }
+
+
+    /* --------------------------------
+       RECENCY
+    -------------------------------- */
+
+    if(rows.length>0){
+
+        let latest=
+            rows[rows.length-1];
+
+
+        let latestPair=
+            makePair(
+                latest,
+                p1,
+                p2
+            );
+
+
+        if(pair.charAt(0)===
+           latestPair.charAt(0)){
+
+            score+=6;
+
+        }
+
+
+        if(pair.charAt(1)===
+           latestPair.charAt(1)){
+
+            score+=6;
+
+        }
+
+    }
+
+
+    return score;
+
+}
+
+
+/* ============================================================
+   BUAT SCORE CURRENT
+============================================================ */
+
+function buatCurrentScores(
+    p1,
+    p2,
+    mainText
+){
+
+    let rows=
+        globalProcessedData;
+
+
+    let mainSet=
+        getMainDigitSet(
+            mainText
+        );
+
+
+    let additionalSet=
+        getAdditionalDigitSet(
+            rows,
+            p1,
+            p2
+        );
+
+
+    let result=[];
+
+
+    for(let i=0;i<100;i++){
+
+        let pair=
+            String(i).padStart(2,'0');
+
+
+        let score=
+            scorePair(
+                pair,
+                rows,
+                p1,
+                p2,
+                mainSet,
+                additionalSet
+            );
+
+
+        result.push({
+
+            pair,
+
+            score,
+
+            frequency:
+                countPair(
+                    pair,
+                    rows,
+                    p1,
+                    p2
+                )
+
+        });
+
+    }
+
+
+    return result;
+
+}
+
+
+/* ============================================================
+   WALK FORWARD BACKTEST
+============================================================ */
+
+function backtestColumn(
+    p1,
+    p2
+){
+
+    let rows=globalProcessedData;
+
+    let total=0;
+    let top1Hit=0;
+    let top3Hit=0;
+
+    let audit=[];
+    let candidateStats={};
+
+    for(let n=0;n<100;n++){
+
+        let pair=String(n).padStart(2,'0');
+
+        candidateStats[pair]={
+            selected:0,
+            hit:0,
+            top1:0
+        };
+    }
+
+    let weights=defaultLearnWeights();
+
+    let baselineTop1=0;
+    let baselineTop3=0;
+
+    /*
+       Feature support:
+       dihitung dari ronde-ronde sebelumnya.
+       Tidak ada target leakage.
+    */
+    let featureSupport=
+        LEARN_FEATURE_NAMES.map(()=>({
+            exposure:0,
+            support:0
+        }));
+
+    for(let t=2;t<rows.length;t++){
+
+        let training=rows.slice(0,t);
+        let actual=makePair(rows[t],p1,p2);
+
+        /*
+           AM utama pada titik waktu ini juga hanya berasal
+           dari training.
+        */
+        let trainMain=getMultipleAdaptiveAM(
+            training,
+            row=>makePair(row,p1,p2)
+        );
+
+        let mainText=trainMain.join('\n');
+
+        let model=
+            rankWithLearnedModel(
+                training,
+                p1,
+                p2,
+                mainText,
+                weights
+            );
+
+        let scores=model.ranking;
+
+        let top1=scores[0].pair;
+        let top3=scores.slice(0,3).map(x=>x.pair);
+
+        /*
+           Baseline:
+           scorePair lama, sehingga BackTest dapat
+           membandingkan engine lama vs engine belajar.
+        */
+        let additionalSet=
+            getAdditionalDigitSet(
+                training,p1,p2
+            );
+
+        let mainSet=
+            getMainDigitSet(mainText);
+
+        let baseline=scores.map(item=>({
+            pair:item.pair,
+            score:scorePair(
+                item.pair,
+                training,
+                p1,
+                p2,
+                mainSet,
+                additionalSet
+            )
+        })).sort((a,b)=>
+            b.score-a.score ||
+            a.pair.localeCompare(b.pair)
+        );
+
+        if(baseline[0].pair===actual){
+            baselineTop1++;
+        }
+
+        if(
+            baseline.slice(0,3)
+            .some(x=>x.pair===actual)
+        ){
+            baselineTop3++;
+        }
+
+        total++;
+
+        let hit1=actual===top1;
+        let hit3=top3.includes(actual);
+
+        if(hit1) top1Hit++;
+        if(hit3) top3Hit++;
+
+        /*
+           Candidate statistics.
+        */
+        top3.forEach(pair=>{
+            candidateStats[pair].selected++;
+
+            if(pair===actual){
+                candidateStats[pair].hit++;
+            }
+        });
+
+        if(candidateStats[top1]){
+            candidateStats[top1].top1++;
+        }
+
+        /*
+           Online learning update.
+        */
+        let actualVec=
+            featureVector(
+                actual,
+                model.context
+            );
+
+        let predictedVec=
+            featureVector(
+                top1,
+                model.context
+            );
+
+        weights=learnWeightsFromRound(
+            weights,
+            actualVec,
+            predictedVec,
+            hit3,
+            0.22
+        );
+
+        actualVec.forEach((v,i)=>{
+            featureSupport[i].exposure++;
+            if(v>=0.55 && actual===top1){
+                featureSupport[i].support++;
+            }
+        });
+
+        audit.push({
+            nomor:total,
+            targetIndex:t,
+            hasilSebelumnya:
+                training[training.length-1].original,
+            prediksi:top3.join(', '),
+            top1,
+            actual,
+            hit:hit3,
+            hit1,
+            baselineTop1:
+                baseline[0].pair===actual,
+            baselineTop3:
+                baseline.slice(0,3)
+                .some(x=>x.pair===actual),
+            alasan:featureReason(
+                top1,
+                model.context,
+                weights
+            )
+        });
+    }
+
+    Object.keys(candidateStats).forEach(pair=>{
+
+        let st=candidateStats[pair];
+
+        /*
+           Statistik kandidat tidak boleh memberi
+           rate ekstrem karena sample kecil.
+        */
+        st.rate=
+            ((st.hit+1)/(st.selected+2))*100;
+    });
+
+    let featureStats=
+        LEARN_FEATURE_NAMES.map((name,i)=>({
+            name,
+            weight:weights[i],
+            exposure:featureSupport[i].exposure,
+            support:featureSupport[i].support,
+            supportRate:
+                featureSupport[i].exposure ?
+                featureSupport[i].support/
+                featureSupport[i].exposure*100 :
+                0
+        }));
+
+    return {
+        total,
+        top1Hit,
+        top3Hit,
+        rate1:total?top1Hit/total*100:0,
+        rate3:total?top3Hit/total*100:0,
+        candidateStats,
+        audit,
+        learnedWeights:weights,
+        featureStats,
+        baselineTop1,
+        baselineTop3,
+        baselineRate1:
+            total?baselineTop1/total*100:0,
+        baselineRate3:
+            total?baselineTop3/total*100:0
+    };
+}
+
+
+/* ============================================================
+   FINAL RANKING
+============================================================ */
+
+function finalRanking(
+    p1,
+    p2,
+    mainText
+){
+
+    let bt=backtestColumn(p1,p2);
+
+    /*
+       Setelah seluruh ronde historis selesai,
+       bobot final baru dipakai untuk data TERKINI.
+    */
+    let learned=
+        rankWithLearnedModel(
+            globalProcessedData,
+            p1,
+            p2,
+            mainText,
+            bt.learnedWeights
+        );
+
+    let current=buatCurrentScores(
+        p1,
+        p2,
+        mainText
+    );
+
+    let currentMap={};
+    current.forEach(x=>currentMap[x.pair]=x);
+
+    learned.ranking.forEach(item=>{
+
+        let stat=bt.candidateStats[item.pair]||{
+            hit:0,
+            selected:0,
+            rate:50,
+            top1:0
+        };
+
+        let old=currentMap[item.pair];
+
+        /*
+           Final score menggabungkan:
+           - model self-learning
+           - hasil BackTest kandidat
+           - score AM lama
+           Tidak hanya frekuensi angka.
+        */
+        item.backtestHit=stat.hit;
+        item.backtestSelected=stat.selected;
+        item.backtestRate=stat.rate;
+        item.frequency=old?old.frequency:item.frequency;
+
+        item.finalScore=
+            item.modelScore*30+
+            item.backtestRate*0.75+
+            Math.min(stat.hit,10)*1.5+
+            (old?old.score:0)*0.35;
+
+        item.reason=featureReason(
+            item.pair,
+            learned.context,
+            bt.learnedWeights
+        );
+    });
+
+    learned.ranking.sort((a,b)=>
+        b.finalScore-a.finalScore ||
+        b.backtestRate-a.backtestRate ||
+        b.frequency-a.frequency ||
+        a.pair.localeCompare(b.pair)
+    );
+
+    return {
+        ranking:learned.ranking,
+        backtest:bt
+    };
+}
+
+
+
+    function run(rows, p1, p2, mainText) {
+        globalProcessedData = rows || [];
+        return finalRanking(p1, p2, mainText || '');
+    }
+    return { run };
+})();
+
+
+let globalProcessedData = [];
+
+function parseInputForPage() {
+    const raw = document.getElementById('inputData').value || '';
+    const arr = raw.split(/[\s,;*]+/).map(x=>x.trim()).filter(Boolean);
+    return arr.map(x=>{
+        let cleaned=x.replace(/\D/g,'');
+        if(cleaned.length<4) cleaned=cleaned.padStart(4,'0');
+        if(cleaned.length>4) cleaned=cleaned.slice(-4);
+        return {original:cleaned,digits:[0,1,2,3].map(i=>Number(cleaned[i]))};
+    });
+}
+
+function topFive(engine,p1,p2){
+    const result=engine.run(globalProcessedData,p1,p2,'');
+    return {pairs:result.ranking.slice(0,5).map(x=>x.pair),backtest:result.backtest,ranking:result.ranking};
+}
+
+function showVersion(prefix,engine){
+    const configs=[{key:'DD',p1:0,p2:1},{key:'DT',p1:1,p2:2},{key:'DB',p1:2,p2:3}];
+    const out={};
+    configs.forEach(c=>{
+        const r=topFive(engine,c.p1,c.p2);
+        out[c.key]=r;
+        document.getElementById(prefix+c.key).value=r.pairs.join('*');
+        document.getElementById(prefix+'Info'+c.key).textContent=r.backtest.total;
+        const fs=(r.backtest.featureStats||[]).slice().sort((a,b)=>b.weight-a.weight).slice(0,4);
+        document.getElementById(prefix+'Reason'+c.key).textContent=fs.length
+            ? 'Fitur belajar utama: '+fs.map(x=>x.name+'='+Number(x.weight).toFixed(2)).join(' | ')
+            : 'Belum ada ronde backtest; ranking current tetap dihitung dari data input.';
+    });
+    return out;
+}
+
+function circularDigit(d){return ((Number(d)%10)+10)%10}
+function normalDigitRange(seed,radius=3){
+    const s=circularDigit(seed),arr=[];
+    for(let k=-radius;k<=radius;k++) arr.push(circularDigit(s+k));
+    return [...new Set(arr)];
+}
+
+function specialRepeatedRange(seed){
+    const s=circularDigit(seed),base=[];
+    for(let k=-2;k<=2;k++) base.push(circularDigit(s+k));
+    const extra=[circularDigit(s+4),circularDigit(s+5),circularDigit(s+6)];
+    return [...new Set([...base,...extra])].sort((a,b)=>a-b);
+}
+
+/* Analisa silang PER VERSI.
+   Setiap pasangan normal = 7 x 7 = 49 kombinasi.
+   Lima pasangan dalam satu versi dihitung frekuensinya sendiri.
+   Yang muncul >= 3 kali menjadi hasil analisa versi tersebut. */
+function crossVersion(pairs){
+    const clean=(pairs||[]).filter(x=>/^\d{2}$/.test(x)).slice(0,5);
+    const counter=new Map();
+    if(!clean.length) return new Set();
+
+    const freq0={},freq1={};
+    clean.forEach(x=>{
+        freq0[x[0]]=(freq0[x[0]]||0)+1;
+        freq1[x[1]]=(freq1[x[1]]||0)+1;
+    });
+    const repeated0=Object.keys(freq0).find(k=>freq0[k]>=3);
+    const repeated1=Object.keys(freq1).find(k=>freq1[k]>=3);
+
+    clean.forEach(pair=>{
+        const tens=repeated0 ? specialRepeatedRange(repeated0) : normalDigitRange(pair[0],3);
+        const units=repeated1 ? specialRepeatedRange(repeated1) : normalDigitRange(pair[1],3);
+        tens.forEach(a=>units.forEach(b=>{
+            const p=String(a)+String(b);
+            counter.set(p,(counter.get(p)||0)+1);
+        }));
+    });
+
+    return new Set(
+        [...counter.entries()]
+            .filter(([,n])=>n>=3)
+            .sort((a,b)=>a[0].localeCompare(b[0]))
+            .map(([p])=>p)
+    );
+}
+
+function writeCross(type,version,pairs){
+    const set=crossVersion(pairs);
+    const suffix=version==='A'?'A':'B';
+    const arr=[...set].sort((a,b)=>a.localeCompare(b));
+    document.getElementById('cross'+type+suffix).value=arr.join('*');
+    document.getElementById('crossInfo'+type+suffix).textContent=arr.length+' LN (muncul >= 3 kali)';
+    return set;
+}
+
+function makeConclusion(type,aSet,bSet){
+    const both=[],one=[],none=[];
+    for(let i=0;i<100;i++){
+        const p=String(i).padStart(2,'0'),a=aSet.has(p),b=bSet.has(p);
+        if(a&&b) both.push(p); else if(a||b) one.push(p); else none.push(p);
+    }
+    document.getElementById('both'+type).value=both.join('*');
+    document.getElementById('one'+type).value=one.join('*');
+    document.getElementById('none'+type).value=none.join('*');
+    document.getElementById('both'+type+'Count').textContent=both.length+' LN';
+    document.getElementById('one'+type+'Count').textContent=one.length+' LN';
+    document.getElementById('none'+type+'Count').textContent=none.length+' LN';
+    return {both,one,none,total:both.length+one.length+none.length};
+}
+
+function copyArea(id,btn){
+    const text=document.getElementById(id).value||'';
+    navigator.clipboard.writeText(text).then(()=>{
+        const old=btn.textContent;btn.textContent='Copied!';
+        setTimeout(()=>btn.textContent=old,1000);
+    }).catch(()=>{
+        const el=document.getElementById(id);el.select();document.execCommand('copy');
+    });
+}
+
+function proses(){
+    try{
+        globalProcessedData=parseInputForPage();
+        if(globalProcessedData.length<1){
+            document.getElementById('infoInput').textContent='Jumlah Input: 0';
+            document.getElementById('status').textContent='Masukkan minimal 1 data 4 digit.';
+            return;
+        }
+        document.getElementById('infoInput').textContent='Jumlah Input: '+globalProcessedData.length;
+        const A=showVersion('a',SELF_LEARNING_A);
+        const B=showVersion('b',SELF_LEARNING_B);
+
+        ['DD','DT','DB'].forEach(type=>{
+            const aSet=writeCross(type,'A',A[type].pairs);
+            const bSet=writeCross(type,'B',B[type].pairs);
+            makeConclusion(type,aSet,bSet);
+        });
+
+        document.getElementById('status').textContent='Selesai. 1 input sudah dipakai untuk Versi A, Versi B, Analisa Silang, dan Kesimpulan.';
+    }catch(err){
+        console.error(err);
+        document.getElementById('status').textContent='Terjadi error: '+(err&&err.message?err.message:err);
+    }
+}
+</script>
+</body>
+</html>
