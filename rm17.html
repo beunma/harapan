@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptive Self Learning 4D</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17202a}
+  .wrap{max-width:1200px;margin:auto;padding:18px}
+  h1{margin:0 0 6px;font-size:24px}
+  h2{margin:0 0 12px;font-size:19px}
+  h3{margin:0 0 8px;font-size:16px}
+  .muted{color:#68737d;font-size:13px}
+  .card{background:#fff;border:1px solid #d9dee3;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  textarea{width:100%;min-height:130px;border:1px solid #cbd2d8;border-radius:8px;padding:10px;font:14px/1.45 monospace;resize:vertical}
+  button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:#1f6feb;color:white;font-weight:600}
+  button.secondary{background:#59636e}
+  button.success{background:#16833b}
+  button.danger{background:#b42318}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+  .stat{background:#f8fafb;border:1px solid #e0e5e9;border-radius:9px;padding:10px}
+  .stat b{display:block;font-size:19px;margin-top:4px}
+  .rank{border:1px solid #d8dee4;border-radius:10px;padding:12px;margin-top:10px;background:#fff}
+  .rankhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+  .badge{display:inline-block;border-radius:999px;padding:4px 8px;background:#eef3f8;font-size:12px;font-weight:bold}
+  .score{font-weight:bold}
+  .candidateBox{margin-top:9px}
+  .candidateBox textarea{min-height:100px}
+  .count{font-size:12px;color:#59636e;margin:5px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border-bottom:1px solid #e4e7ea;padding:8px;text-align:left;vertical-align:top}
+  th{background:#f7f9fa}
+  .ok{color:#16833b;font-weight:bold}
+  .warn{color:#a15c00;font-weight:bold}
+  .err{color:#b42318;font-weight:bold}
+  .small{font-size:12px}
+  .settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  label{font-size:12px;color:#59636e;display:block;margin-bottom:5px}
+  input,select{width:100%;padding:9px;border:1px solid #cbd2d8;border-radius:7px;background:#fff}
+  .progress{height:8px;background:#e8edf1;border-radius:99px;overflow:hidden;margin-top:8px}
+  .progress>div{height:100%;width:0;background:#1f6feb;transition:width .1s}
+  .hidden{display:none}
+  .note{background:#fff8e6;border:1px solid #f0d58a;padding:10px;border-radius:8px;font-size:13px}
+  @media(max-width:650px){.wrap{padding:10px}.card{padding:12px}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>SELF LEARNING ADAPTIF — 4 DIGIT</h1>
+    <div class="muted">Learning hubungan data lama → target berikutnya, multi-level prediction, penyimpangan, dan rolling backtest.</div>
+  </div>
+
+  <div class="card">
+    <h2>1. Masukkan Data</h2>
+    <div class="muted" style="margin-bottom:8px">
+      Format: 4 digit dipisahkan koma. Data paling kiri = data terlama, data paling kanan = data terbaru.
+    </div>
+    <textarea id="dataInput" placeholder="1234,0998,5356,...."></textarea>
+    <div class="count">Jumlah data: <span id="inputCount">0</span></div>
+    <div class="row">
+      <button id="processBtn">PROSES LEARNING</button>
+      <button class="secondary" id="sampleBtn">Isi Contoh</button>
+      <button class="danger" id="clearBtn">Kosongkan</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Pengaturan Learning</h2>
+    <div class="settings">
+      <div><label>Minimum sampel pola</label><input id="minSamples" type="number" min="1" value="2"></div>
+      <div><label>Backtest maksimum</label><input id="maxBacktest" type="number" min="20" value="300"></div>
+      <div><label>Top ranking</label><input id="topRanks" type="number" min="1" max="10" value="10"></div>
+      <div><label>Max kandidat 1 digit</label><input id="max1D" type="number" min="1" max="10" value="6"></div>
+      <div><label>Max kandidat 2 digit</label><input id="max2D" type="number" min="1" max="100" value="36"></div>
+      <div><label>Max kandidat 3 digit</label><input id="max3D" type="number" min="1" max="1000" value="324"></div>
+      <div><label>Max kandidat 4 digit</label><input id="max4D" type="number" min="1" max="10000" value="324"></div>
+      <div>
+        <label>Minimum confidence ranking</label>
+        <select id="confidenceMode">
+          <option value="adaptive">Adaptif</option>
+          <option value="strict">Lebih ketat</option>
+          <option value="broad">Lebih luas</option>
+        </select>
+      </div>
+    </div>
+    <div class="note" style="margin-top:10px">
+      Batas kandidat adalah maksimum, bukan kewajiban. Engine memilih jumlah kandidat berdasarkan distribusi skor dan bukti backtest.
+    </div>
+  </div>
+
+  <div id="statusCard" class="card hidden">
+    <h2>Status</h2>
+    <div id="statusText">Memproses...</div>
+    <div id="progressDetail" class="muted" style="margin-top:6px">Menunggu proses...</div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </div>
+
+  <div id="summaryCard" class="card hidden">
+    <h2>Ringkasan Learning</h2>
+    <div class="grid" id="summaryGrid"></div>
+  </div>
+
+  <div id="rankingCard" class="card hidden">
+    <div class="rankhead">
+      <div>
+        <h2>Top Ranking Prediksi</h2>
+        <div class="muted">Ranking bersaing lintas level: 1D, 2D, 3D, dan 4D.</div>
+      </div>
+      <div class="row">
+        <button class="success" id="copyAllBtn">COPY SEMUA</button>
+      </div>
+    </div>
+    <div id="rankingList"></div>
+  </div>
+
+  <div id="backtestCard" class="card hidden">
+    <h2>BackTest Rolling</h2>
+    <div class="muted" style="margin-bottom:8px">
+      Setiap titik uji hanya menggunakan data sebelum titik tersebut, kemudian target aktual dipakai untuk evaluasi.
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>Level</th><th>Uji</th><th>Hit Top</th><th>Coverage</th><th>Hit Top-1</th><th>Avg posisi</th><th>Penyimpangan utama</th></tr></thead>
+        <tbody id="backtestBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="detailCard" class="card hidden">
+    <h2>Detail Model & Penyimpangan</h2>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/*
+  ENGINE
+  -------
+  Target berikutnya dipelajari dari seluruh prefix historis:
+  data[i] -> data[i+1].
+
+  Model level:
+  D1  : masing-masing posisi digit
+  2DD : digit 0-1
+  2DT : digit 1-2
+  2DB : digit 2-3
+  3DD : digit 0-2
+  3DB : digit 1-3
+  4D  : seluruh angka
+
+  Untuk setiap model dibuat distribusi target berdasarkan:
+  - pola sumber yang sama pada level yang sama
+  - konteks sumber 4 digit untuk memperkuat skor
+  - global frequency sebagai fallback
+  - recency weighting
+  - backtest rolling untuk menilai kualitas model
+*/
+
+const LEVELS = [
+  {id:"D1-R", name:"1D Ribuan", type:"digit", start:0, len:1},
+  {id:"D1-H", name:"1D Ratusan", type:"digit", start:1, len:1},
+  {id:"D1-P", name:"1D Puluhan", type:"digit", start:2, len:1},
+  {id:"D1-S", name:"1D Satuan", type:"digit", start:3, len:1},
+  {id:"2DD", name:"2DD Depan", type:"slice", start:0, len:2},
+  {id:"2DT", name:"2DT Tengah", type:"slice", start:1, len:2},
+  {id:"2DB", name:"2DB Belakang", type:"slice", start:2, len:2},
+  {id:"3DD", name:"3DD Depan", type:"slice", start:0, len:3},
+  {id:"3DB", name:"3DB Belakang", type:"slice", start:1, len:3},
+  {id:"4D",  name:"4D Penuh", type:"slice", start:0, len:4}
+];
+
+const $ = id => document.getElementById(id);
+
+$("dataInput").addEventListener("input", updateCount);
+$("processBtn").addEventListener("click", process);
+$("sampleBtn").addEventListener("click", () => {
+  $("dataInput").value = [
+    "1234","0998","5356","7812","3407","9981","4520","1638","7294","0815",
+    "6342","2709","9183","5067","4412","7850","1269","3508","6971","2084",
+    "5736","8140","0927","4651","7398","1572","6804","3291","9460","5127",
+    "0843","7619","2380","6952","4176","9031","1548","8263","3705","6492",
+    "2187","5304","9716","0459","6832","7190","2648","8573","3916","6085"
+  ].join(",");
+  updateCount();
+});
+$("clearBtn").addEventListener("click", () => {
+  $("dataInput").value = "";
+  updateCount();
+  hideResults();
+});
+
+function updateCount(){
+  const arr = parseInput();
+  $("inputCount").textContent = arr.length;
+}
+function parseInput(){
+  return $("dataInput").value.split(/[,\\s]+/).map(s=>s.trim()).filter(Boolean);
+}
+function valid4(s){ return /^\d{4}$/.test(s); }
+function keyPart(s,start,len){ return s.slice(start,start+len); }
+function pct(x){ return (x*100).toFixed(1)+"%"; }
+function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+
+function getLimits(){
+  return {
+    minSamples: Math.max(1,+$("minSamples").value||2),
+    maxBacktest: Math.max(20,+$("maxBacktest").value||300),
+    topRanks: clamp(+$("topRanks").value||10,1,10),
+    max1D: clamp(+$("max1D").value||6,1,10),
+    max2D: clamp(+$("max2D").value||36,1,100),
+    max3D: clamp(+$("max3D").value||324,1,1000),
+    max4D: clamp(+$("max4D").value||324,1,10000),
+    confidenceMode: $("confidenceMode").value
+  };
+}
+
+function buildModel(history, limit){
+  // history is array of 4-digit strings, ordered oldest -> newest.
+  const n = history.length;
+  const models = {};
+  for(const L of LEVELS){
+    const srcMap = new Map();
+    const global = new Map();
+    const totalGlobal = new Map();
+
+    // target is history[i+1], source history[i]
+    for(let i=0;i<n-1;i++){
+      const src = history[i], tgt = history[i+1];
+      const srcKey = keyPart(src,L.start,L.len);
+      const tgtKey = keyPart(tgt,L.start,L.len);
+      if(!srcMap.has(srcKey)) srcMap.set(srcKey,new Map());
+      srcMap.get(srcKey).set(tgtKey,(srcMap.get(srcKey).get(tgtKey)||0)+1);
+      totalGlobal.set(tgtKey,(totalGlobal.get(tgtKey)||0)+1);
+    }
+    models[L.id] = {L,srcMap,totalGlobal,n};
+  }
+  return models;
+}
+
+function distribution(model, source, recencyBias=0.35){
+  const {L,srcMap,totalGlobal} = model;
+  const key = keyPart(source,L.start,L.len);
+  const local = srcMap.get(key) || new Map();
+  const candidates = new Map();
+
+  // local evidence dominates; global evidence is fallback/smoothing
+  let localTotal=0, globalTotal=0;
+  for(const v of local.values()) localTotal+=v;
+  for(const v of totalGlobal.values()) globalTotal+=v;
+
+  for(const [k,v] of local.entries()){
+    const localP = localTotal ? v/localTotal : 0;
+    const globalP = globalTotal ? (totalGlobal.get(k)||0)/globalTotal : 0;
+    candidates.set(k, 0.78*localP + 0.22*globalP);
+  }
+  for(const [k,v] of totalGlobal.entries()){
+    if(!candidates.has(k)){
+      const globalP = globalTotal ? v/globalTotal : 0;
+      candidates.set(k,0.22*globalP);
+    }
+  }
+  // Normalize
+  let sum=0; for(const v of candidates.values()) sum+=v;
+  if(sum) for(const k of candidates.keys()) candidates.set(k,candidates.get(k)/sum);
+
+  const arr=[...candidates.entries()].map(([value,p])=>({value,p}));
+  arr.sort((a,b)=>b.p-a.p || a.value.localeCompare(b.value));
+
+  // Adaptive tail trimming: retain enough mass, but obey level maximum later.
+  const mode = $("confidenceMode").value;
+  const mass = mode==="strict" ? 0.86 : mode==="broad" ? 0.97 : 0.93;
+  let cum=0, keep=[];
+  for(const x of arr){
+    keep.push(x); cum+=x.p;
+    if(cum>=mass && keep.length>=2) break;
+  }
+  return keep.length ? keep : arr.slice(0,1);
+}
+
+function candidateLimit(L, limits){
+  if(L.len===1) return limits.max1D;
+  if(L.len===2) return limits.max2D;
+  if(L.len===3) return limits.max3D;
+  return limits.max4D;
+}
+
+function rankCandidatesForLevel(model, source, limits, validation){
+  const L=model.L;
+  const raw=distribution(model,source);
+  const max=candidateLimit(L,limits);
+
+  // Use backtest quality to adjust confidence.
+  const q = validation[L.id] || {coverage:0.5,top1:0.1,avgPos:0};
+  const quality = 0.55 + 0.45*clamp(q.coverage,0,1);
+  const out=raw.map((x,i)=>({
+    value:x.value,
+    base:x.p,
+    score:x.p * quality * (1/(1+0.025*i))
+  }));
+  out.sort((a,b)=>b.score-a.score);
+  return out.slice(0,max);
+}
+
+function evaluateLevelAt(models, history, idx, L, limits){
+  // idx = target index, source is idx-1; train only history[0..idx-1]
+  if(idx<1) return null;
+  const train=history.slice(0,idx);
+  const m=buildModel(train,limits);
+  const src=history[idx-1];
+  const target=history[idx];
+  const cand=distribution(m[L.id],src);
+  const actual=keyPart(target,L.start,L.len);
+  const pos=cand.findIndex(x=>x.value===actual)+1;
+  const top1=pos===1;
+  const max=candidateLimit(L,limits);
+  const hit=pos>0 && pos<=max;
+  return {pos,top1,hit,actual,cand};
+}
+
+async function rollingBacktest(history,limits, progressCb){
+  const start=Math.max(1, Math.min(8, history.length-1));
+  const end=history.length-1;
+  const actualTotal=end-start+1;
+  const total=Math.min(actualTotal, limits.maxBacktest);
+  const firstIdx=Math.max(start, end-total+1);
+
+  const stats={};
+  for(const L of LEVELS){
+    stats[L.id]={level:L,tests:0,hit:0,top1:0,posSum:0,errors:new Map()};
+  }
+
+  let done=0;
+
+  // Yield between test points so the browser can repaint the progress UI.
+  for(let idx=firstIdx;idx<=end;idx++){
+    for(const L of LEVELS){
+      const r=evaluateLevelAt(null,history,idx,L,limits);
+      if(!r) continue;
+      const s=stats[L.id];
+      s.tests++;
+      if(r.hit)s.hit++;
+      if(r.top1)s.top1++;
+      if(r.pos>0)s.posSum+=r.pos;
+      if(!r.hit){
+        const err=r.cand.slice(0,5).map(x=>x.value).join(",");
+        s.errors.set(err,(s.errors.get(err)||0)+1);
+      }
+    }
+
+    done++;
+    if(progressCb) progressCb(done,total,idx,end);
+    await new Promise(resolve => setTimeout(resolve,0));
+  }
+
+  for(const s of Object.values(stats)){
+    s.coverage=s.tests?s.hit/s.tests:0;
+    s.top1Rate=s.tests?s.top1/s.tests:0;
+    s.avgPos=s.hit?s.posSum/s.hit:0;
+  }
+  return stats;
+}
+
+function scoreModel(L, bt){
+  const s=bt[L.id];
+  if(!s || !s.tests) return 0;
+  const coverage=s.coverage, top1=s.top1Rate;
+  const posQuality=s.avgPos>0 ? 1/(1+s.avgPos/20) : 0;
+  // coverage receives the strongest weight; top1 and position reward precision.
+  return 0.55*coverage + 0.30*top1 + 0.15*posQuality;
+}
+
+function latestPredictions(history, limits, bt){
+  const models=buildModel(history,limits);
+  const source=history[history.length-1];
+  const all=[];
+  for(const L of LEVELS){
+    const candidates=rankCandidatesForLevel(models[L.id],source,limits,bt);
+    const q=bt[L.id] || {};
+    const modelScore=scoreModel(L,bt);
+    if(!candidates.length) continue;
+    all.push({
+      L,candidates,modelScore,
+      coverage:q.coverage||0,top1:q.top1Rate||0,avgPos:q.avgPos||0,
+      sampleCount:(models[L.id].srcMap.get(keyPart(source,L.start,L.len))||new Map()).size
+    });
+  }
+  // Avoid duplicate domination by exact same level score; ranking is across level models.
+  all.sort((a,b)=>b.modelScore-a.modelScore || b.candidates[0].score-a.candidates[0].score);
+  return all.slice(0,limits.topRanks);
+}
+
+function renderSummary(history,bt){
+  $("summaryCard").classList.remove("hidden");
+  const vals=[
+    ["Jumlah data",history.length],
+    ["Pasangan learning",Math.max(0,history.length-1)],
+    ["Model yang diuji",LEVELS.length],
+    ["Backtest terakhir",Math.max(...LEVELS.map(L=>bt[L.id]?.tests||0))],
+    ["Target terbaru",history.at(-1)],
+    ["Jumlah ranking",Math.min(getLimits().topRanks,LEVELS.length)]
+  ];
+  $("summaryGrid").innerHTML=vals.map(([a,b])=>`<div class="stat"><span class="muted">${a}</span><b>${b}</b></div>`).join("");
+}
+
+function renderRanking(preds){
+  $("rankingCard").classList.remove("hidden");
+  const list=$("rankingList");
+  list.innerHTML="";
+  preds.forEach((p,i)=>{
+    const values=p.candidates.map(x=>x.value);
+    const text=values.join("*");
+    const div=document.createElement("div");
+    div.className="rank";
+    div.innerHTML=`
+      <div class="rankhead">
+        <div>
+          <span class="badge">RANK ${i+1}</span>
+          <h3 style="display:inline;margin-left:7px">${p.L.name}</h3>
+          <div class="muted">Model score: <span class="score">${(p.modelScore*100).toFixed(2)}</span> · Coverage: ${pct(p.coverage)} · Top-1: ${pct(p.top1)}</div>
+        </div>
+        <button class="copyBtn" data-text="${escapeAttr(text)}">COPY</button>
+      </div>
+      <div class="candidateBox">
+        <div class="count">Jumlah kandidat: <b>${values.length}</b> · Batas maksimum: ${candidateLimit(p.L,getLimits())} · Format dipisahkan tanda *</div>
+        <textarea readonly>${escapeHtml(text)}</textarea>
+      </div>
+      <div class="small muted">Rata-rata posisi target saat tertangkap backtest: ${p.avgPos?p.avgPos.toFixed(2):"-"} · Kandidat pertama: ${values[0]||"-"}</div>
+    `;
+    list.appendChild(div);
+  });
+  list.querySelectorAll(".copyBtn").forEach(btn=>{
+    btn.addEventListener("click",()=>copyText(btn.dataset.text,btn));
+  });
+}
+
+function renderBacktest(bt){
+  $("backtestCard").classList.remove("hidden");
+  $("backtestBody").innerHTML=LEVELS.map(L=>{
+    const s=bt[L.id];
+    const errors=[...s.errors.entries()].sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]+" ("+x[1]+")").join(" · ")||"-";
+    return `<tr>
+      <td><b>${L.name}</b></td>
+      <td>${s.tests}</td>
+      <td class="${s.coverage>=.6?'ok':s.coverage>=.35?'warn':'err'}">${s.hit}</td>
+      <td>${pct(s.coverage)}</td>
+      <td>${pct(s.top1Rate)}</td>
+      <td>${s.avgPos?s.avgPos.toFixed(2):"-"}</td>
+      <td>${escapeHtml(errors)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderDetails(preds,bt){
+  $("detailCard").classList.remove("hidden");
+  $("detailContent").innerHTML=preds.map((p,i)=>{
+    const s=bt[p.L.id];
+    const errs=[...s.errors.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
+    return `<div class="rank">
+      <h3>RANK ${i+1} — ${p.L.name}</h3>
+      <div class="grid">
+        <div class="stat"><span class="muted">Backtest</span><b>${s.tests}</b></div>
+        <div class="stat"><span class="muted">Coverage kandidat</span><b>${pct(s.coverage)}</b></div>
+        <div class="stat"><span class="muted">Top-1</span><b>${pct(s.top1Rate)}</b></div>
+        <div class="stat"><span class="muted">Avg posisi saat hit</span><b>${s.avgPos?s.avgPos.toFixed(2):"-"}</b></div>
+      </div>
+      <div style="margin-top:9px"><b>Pola penyimpangan yang sering muncul:</b>
+        ${errs.length?`<ul>${errs.map(e=>`<li><code>${escapeHtml(e[0])}</code> — ${e[1]} kejadian</li>`).join("")}</ul>`:"<span class='muted'>Belum ada penyimpangan tercatat.</span>"}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+function escapeAttr(s){return escapeHtml(s).replace(/`/g,"&#96;");}
+
+async function copyText(text,btn){
+  try{
+    await navigator.clipboard.writeText(text);
+    const old=btn.textContent; btn.textContent="COPIED";
+    setTimeout(()=>btn.textContent=old,1000);
+  }catch(e){
+    const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);
+    ta.select();document.execCommand("copy");ta.remove();
+    btn.textContent="COPIED";setTimeout(()=>btn.textContent="COPY",1000);
+  }
+}
+
+$("copyAllBtn").addEventListener("click",async()=>{
+  const areas=[...document.querySelectorAll("#rankingList textarea")];
+  const text=areas.map((a,i)=>`RANK ${i+1}\n${a.value}`).join("\n\n");
+  await copyText(text,$("copyAllBtn"));
+});
+
+function setProgress(done,total,idx,end){
+  const p=total?Math.round(done/total*100):0;
+  $("progressBar").style.width=p+"%";
+  $("statusText").textContent=`Rolling backtest berjalan — ${done}/${total} (${p}%)`;
+  $("progressDetail").textContent =
+    `Sedang menguji target data ke-${idx+1} dari ${end+1}. ` +
+    `Sumber yang dipakai: data ke-${idx}.`;
+}
+
+async function process(){
+  const history=parseInput();
+  if(history.length<12){alert("Masukkan minimal 12 data 4 digit agar learning dan backtest mempunyai dasar yang cukup.");return;}
+  const invalid=history.filter(x=>!valid4(x));
+  if(invalid.length){alert("Ada data yang bukan 4 digit: "+invalid.slice(0,10).join(", "));return;}
+
+  hideResults();
+  const limits=getLimits();
+  $("statusCard").classList.remove("hidden");
+  $("progressBar").style.width="0%";
+  $("statusText").textContent="Menyiapkan rolling backtest...";
+  $("progressDetail").textContent="Membangun pengujian bertahap. Browser tetap diberi waktu untuk memperbarui tampilan.";
+
+  await new Promise(r=>setTimeout(r,30));
+  const bt=await rollingBacktest(history,limits,setProgress);
+
+  $("statusText").textContent="Rolling backtest selesai ✓ — menyusun model adaptif terbaru...";
+  $("progressDetail").textContent="Semua titik uji selesai. Sekarang menghitung ranking prediksi terbaru.";
+  $("progressBar").style.width="100%";
+  await new Promise(r=>setTimeout(r,30));
+
+  const preds=latestPredictions(history,limits,bt);
+  renderSummary(history,bt);
+  renderRanking(preds);
+  renderBacktest(bt);
+  renderDetails(preds,bt);
+
+  $("statusText").textContent="Selesai ✓ — learning, rolling backtest, dan ranking sudah selesai.";
+  $("progressDetail").textContent="Tidak hang: progress di atas menunjukkan titik uji yang sedang dikerjakan.";
+}
+
+function hideResults(){
+  ["statusCard","summaryCard","rankingCard","backtestCard","detailCard"].forEach(id=>$(id).classList.add("hidden"));
+}
+
+updateCount();
+</script>
+</body>
+</html>
