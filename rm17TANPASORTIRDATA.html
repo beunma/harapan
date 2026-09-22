@@ -48,15 +48,6 @@ th{background:#f7f9fa}
 code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
 .kpi{display:inline-block;padding:5px 8px;border-radius:999px;background:#f1f4f7;font-size:12px;margin:2px}
 .warnbox{background:#fff4f1;border:1px solid #f0c9bf;padding:10px;border-radius:8px;font-size:13px}
-.dataSelector{display:grid;grid-template-columns:minmax(90px,1fr) auto;gap:10px;align-items:center;border:1px solid #e0e5e9;border-radius:8px;padding:8px 10px;margin-bottom:6px;background:#fafbfc}
-.dataSelector .dataValue{font:14px monospace;font-weight:bold}
-.switch{position:relative;display:inline-block;width:48px;height:26px}
-.switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;inset:0;background:#b42318;border-radius:999px;transition:.15s}
-.slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
-.switch input:checked + .slider{background:#16833b}
-.switch input:checked + .slider:before{transform:translateX(22px)}
-.switchState{font-size:11px;margin-left:6px;min-width:22px;display:inline-block}
 @media(max-width:650px){.wrap{padding:10px}.card{padding:12px}h1{font-size:20px}}
 </style>
 </head>
@@ -80,6 +71,7 @@ code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
   <textarea id="dataInput" placeholder="5360,2874,9583,7206,3026,3054,4580,7161,3276,0147,3072,5266,0288,6055"></textarea>
   <div class="count">Jumlah data: <span id="inputCount">0</span></div>
   <div class="row">
+    <button id="processBtn">PROSES LEARNING</button>
     <button class="secondary" id="sampleBtn">Isi Contoh</button>
     <button class="danger" id="clearBtn">Kosongkan</button>
   </div>
@@ -140,31 +132,6 @@ code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
     tetapi mengurangi kepercayaan terhadap bukti lokal dan memperbesar pengaruh global/fallback.
     Jadi nilai 1, 2, 3, dst. memang dapat mengubah hasil scoring.
   </div>
-</div>
-
-<div class="card">
-  <h2>3. Data yang Dipakai</h2>
-  <div class="muted" style="margin-bottom:10px">
-    Data di bawah berasal dari <b>Masukkan Data RM8</b>. Secara default semua data = <b>ON</b>.
-    Matikan selector pada data yang ingin dikeluarkan dari proses learning.
-    <b>Semua perhitungan mesin learning menggunakan DATA YANG DIPAKAI di bawah ini.</b>
-  </div>
-  <div id="dataSelectorList"></div>
-  <div class="count">Jumlah data dipakai: <span id="usedCount">0</span></div>
-  <label for="usedData">DATA YANG DIPAKAI</label>
-  <textarea id="usedData" readonly placeholder="Data yang aktif akan tampil di sini"></textarea>
-  <div class="info" style="margin-top:10px">
-    <b>Catatan:</b> mengubah ON/OFF tidak mengubah data asli di atas.
-    Data yang OFF hanya dikeluarkan dari riwayat yang dikirim ke engine learning.
-  </div>
-</div>
-
-<div class="card">
-  <h2>4. Jalankan Learning</h2>
-  <div class="muted" style="margin-bottom:10px">
-    Setelah pengaturan learning dan data ON/OFF selesai, tekan tombol di bawah.
-  </div>
-  <button id="processBtn" class="success">PROSES LEARNING</button>
 </div>
 
 <div id="statusCard" class="card hidden">
@@ -276,22 +243,17 @@ const LEVELS = [
 
 const $ = id => document.getElementById(id);
 
-$("dataInput").addEventListener("input", () => {
-  updateCount();
-  rebuildDataSelectors();
-});
+$("dataInput").addEventListener("input", updateCount);
 $("processBtn").addEventListener("click", process);
 $("sampleBtn").addEventListener("click", () => {
   $("dataInput").value =
     "5360,2874,9583,7206,3026,3054,4580,7161,3276,0147,3072,5266,0288,6055," +
     "4182,7390,2641,8507,1936,4728,6083,3159,9274,0416";
   updateCount();
-  rebuildDataSelectors();
 });
 $("clearBtn").addEventListener("click", () => {
   $("dataInput").value = "";
   updateCount();
-  rebuildDataSelectors();
   hideResults();
 });
 
@@ -304,70 +266,6 @@ function parseInput(){
     .split(/[,;\s]+/)
     .map(s => s.trim())
     .filter(Boolean);
-}
-
-/*
-  DATA YANG DIPAKAI
-  -----------------
-  Setiap item dari Masukkan Data RM8 memiliki selector ON/OFF.
-  Status selector disimpan berdasarkan urutan item, sehingga ketika
-  input diuji dengan menghapus/menambah data, daftar selector dibangun
-  ulang sesuai data terbaru dan default-nya selalu ON.
-*/
-let dataSelectorState = [];
-
-function rebuildDataSelectors(){
-  const data = parseInput();
-  const oldState = dataSelectorState;
-  dataSelectorState = data.map((value, index) =>
-    oldState[index] === false ? false : true
-  );
-
-  const box = $("dataSelectorList");
-  if(!data.length){
-    box.innerHTML = '<div class="muted">Belum ada data.</div>';
-    updateUsedData();
-    return;
-  }
-
-  box.innerHTML = data.map((value,index)=>`
-    <div class="dataSelector">
-      <div class="dataValue">${index+1}. ${escapeHtml(value)}</div>
-      <div>
-        <label class="switch" title="ON/OFF data ${index+1}">
-          <input type="checkbox" class="dataToggle" data-index="${index}"
-                 ${dataSelectorState[index] ? "checked" : ""}>
-          <span class="slider"></span>
-        </label>
-        <span class="switchState" id="switchState${index}">
-          ${dataSelectorState[index] ? "ON" : "OFF"}
-        </span>
-      </div>
-    </div>
-  `).join("");
-
-  box.querySelectorAll(".dataToggle").forEach(toggle=>{
-    toggle.addEventListener("change", ()=>{
-      const i=Number(toggle.dataset.index);
-      dataSelectorState[i]=toggle.checked;
-      const state=$("switchState"+i);
-      if(state) state.textContent=toggle.checked ? "ON" : "OFF";
-      updateUsedData();
-    });
-  });
-
-  updateUsedData();
-}
-
-function getUsedHistory(){
-  const data=parseInput();
-  return data.filter((_,index)=>dataSelectorState[index] !== false);
-}
-
-function updateUsedData(){
-  const used=getUsedHistory();
-  $("usedData").value=used.join(",");
-  $("usedCount").textContent=used.length;
 }
 
 function valid4(s){
@@ -1261,16 +1159,10 @@ function hideResults(){
 ============================================================ */
 
 async function process(){
-  /*
-    PENTING:
-    Engine TIDAK lagi mengambil history langsung dari Masukkan Data RM8.
-    Sumber tunggal proses learning adalah DATA YANG DIPAKAI, yaitu data
-    yang sudah melewati selector ON/OFF.
-  */
-  const history=getUsedHistory();
+  const history=parseInput();
 
   if(history.length<2){
-    alert("DATA YANG DIPAKAI harus memiliki minimal 2 data 4 digit. Silakan nyalakan selector data yang diperlukan.");
+    alert("Masukkan minimal 2 data 4 digit.");
     return;
   }
 
@@ -1296,7 +1188,7 @@ async function process(){
     "Menyiapkan rolling backtest...";
 
   $("progressDetail").textContent =
-    "Menggunakan DATA YANG DIPAKAI dan membangun titik uji tanpa memakai data masa depan.";
+    "Membangun titik uji tanpa memakai data masa depan.";
 
   /*
     Repaint pertama.
@@ -1354,14 +1246,13 @@ async function process(){
     "Selesai ✓ — learning, backtest, scoring, dan ranking sudah selesai.";
 
   $("progressDetail").textContent =
-    "Semua perhitungan learning menggunakan DATA YANG DIPAKAI. Perubahan ON/OFF atau pengaturan akan memengaruhi proses berikutnya.";
+    "Perubahan nilai pengaturan akan memengaruhi proses berikutnya.";
 }
 
 /*
   Mulai dengan penghitung input.
 */
 updateCount();
-rebuildDataSelectors();
 </script>
 </body>
 </html>
