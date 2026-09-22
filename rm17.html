@@ -98,7 +98,7 @@ code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
     </div>
     <div>
       <label>Max kandidat 2 digit</label>
-      <input id="max2D" type="number" min="1" max="100" value="36">
+      <input id="max2D" type="number" min="1" max="100" value="49">
     </div>
     <div>
       <label>Max kandidat 3 digit</label>
@@ -142,18 +142,18 @@ code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
 </div>
 
 <div id="summaryCard" class="card hidden">
-  <h2>Ringkasan Learning</h2>
+  <h2>Ringkasan Learning & Prediksi Berikutnya</h2>
   <div class="grid" id="summaryGrid"></div>
   <div id="candidateAudit" style="margin-top:10px"></div>
+  <div id="blindTest" style="margin-top:12px"></div>
 </div>
 
 <div id="rankingCard" class="card hidden">
   <div class="rankhead">
     <div>
-      <h2>Top Ranking Prediksi</h2>
+      <h2>Prediksi Setelah Data Terakhir</h2>
       <div class="muted">
-        Ranking lintas level. Kandidat dipertahankan sampai jumlah target yang diminta,
-        lalu diurutkan berdasarkan skor.
+        Ini adalah prediksi untuk <b>data setelah data terakhir</b>. Data terakhir hanya menjadi sumber/input terakhir, bukan target yang diprediksi.
       </div>
     </div>
     <button class="success" id="copyAllBtn">COPY SEMUA</button>
@@ -173,7 +173,7 @@ code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
         <tr>
           <th>Level</th>
           <th>Uji</th>
-          <th>Hit sesuai target kandidat</th>
+          <th>Target masuk Top-N</th>
           <th>Coverage</th>
           <th>Hit Top-1</th>
           <th>Avg posisi saat hit</th>
@@ -738,6 +738,9 @@ async function rollingBacktest(history,limits,progressCb){
 ============================================================ */
 
 function latestPredictions(history,limits,bt){
+  // PREDIKSI AKTUAL: source adalah data terakhir yang diketahui.
+  // Targetnya adalah data SETELAH source, yang memang belum ada di history.
+  // Backtest hanya dipakai sebagai evaluasi/pembobotan, bukan sebagai target aktual.
   const models=buildModel(history,limits);
   const source=history[history.length-1];
   const out=[];
@@ -798,6 +801,37 @@ function latestPredictions(history,limits,bt){
    RENDER
 ============================================================ */
 
+function blindLastTest(history,limits){
+  /*
+    UJI BUTA 1 LANGKAH:
+    data terakhir sengaja DISEMBUNYIKAN.
+    Engine hanya boleh belajar dari history[0 .. n-2],
+    lalu memprediksi history[n-1].
+    Ini persis simulasi "hapus data paling belakang".
+  */
+  if(history.length<2) return [];
+
+  const train=history.slice(0,-1);
+  const actualFull=history[history.length-1];
+  const models=buildModel(train,limits);
+  const out=[];
+
+  /* Backtest untuk pemilihan kandidat juga harus berasal dari TRAIN saja. */
+  const trainBt=rollingBacktest(train,limits,null);
+
+  return trainBt.then(bt=>{
+    for(const L of LEVELS){
+      const dist=makeDistribution(models[L.id],train[train.length-1],limits);
+      const selected=chooseCandidates(dist,L,limits,bt[L.id]);
+      const actual=keyPart(actualFull,L.start,L.len);
+      const pos=selected.findIndex(x=>x.value===actual)+1;
+      const rawPos=dist.candidates.findIndex(x=>x.value===actual)+1;
+      out.push({L,actual,pos,rawPos,count:selected.length,top:selected.slice(0,10).map(x=>x.value)});
+    }
+    return out;
+  });
+}
+
 function renderSummary(history,bt,limits,preds){
   $("summaryCard").classList.remove("hidden");
 
@@ -806,8 +840,11 @@ function renderSummary(history,bt,limits,preds){
     ...LEVELS.map(L=>bt[L.id]?.tests||0)
   );
 
+  const last=history[history.length-1];
   const vals=[
     ["Jumlah data",history.length],
+    ["Data terakhir / sumber prediksi",last],
+    ["Target prediksi", "DATA SETELAH "+last],
     ["Pasangan learning",Math.max(0,history.length-1)],
     ["Backtest yang dipakai",maxTests],
     ["Minimum sampel pola",limits.minSamples],
@@ -821,7 +858,13 @@ function renderSummary(history,bt,limits,preds){
     `<div class="stat"><span class="muted">${a}</span><b>${b}</b></div>`
   ).join("");
 
-  $("candidateAudit").innerHTML=preds.map(p=>{
+  $("candidateAudit").innerHTML=
+    `<div class="note" style="margin-bottom:10px">
+      <b>LOGIKA PREDIKSI AKTUAL:</b> seluruh data yang dimasukkan sampai data terakhir
+      <b>${last}</b> dipakai sebagai riwayat belajar. Engine kemudian memprediksi
+      <b>data berikutnya yang belum diketahui</b>. Jadi ${last} bukan target prediksi.
+    </div>` +
+    preds.map(p=>{
     const target=candidateLimit(p.L,limits);
     const actual=p.candidates.length;
     const diff=target-actual;
@@ -838,7 +881,7 @@ function renderSummary(history,bt,limits,preds){
   }).join("");
 }
 
-function renderRanking(preds,limits){
+function renderRanking(preds,limits,historyLastForRender){
   $("rankingCard").classList.remove("hidden");
 
   const list=$("rankingList");
@@ -857,6 +900,10 @@ function renderRanking(preds,limits){
         <div>
           <span class="badge">RANK ${i+1}</span>
           <h3 style="display:inline;margin-left:7px">${p.L.name}</h3>
+
+          <div class="small" style="margin-top:4px">
+            Sumber terakhir: <b>${escapeHtml(historyLastForRender)}</b> → target: <b>data berikutnya</b>
+          </div>
 
           <div class="muted">
             Model score:
@@ -908,6 +955,37 @@ function renderRanking(preds,limits){
       copyText(btn.dataset.text,btn);
     });
   });
+}
+
+function renderBlindTest(results,limits){
+  const rows=results.map(r=>{
+    const ok=r.pos>0;
+    return `<tr>
+      <td><b>${r.L.name}</b></td>
+      <td><b>${r.actual}</b></td>
+      <td>${r.pos>0?r.pos:"-"}</td>
+      <td class="${ok?'ok':'err'}"><b>${ok?'MASUK':'TIDAK MASUK'}</b></td>
+      <td>${r.count}</td>
+      <td>${r.top.join("*")}</td>
+    </tr>`;
+  }).join("");
+
+  $("blindTest").innerHTML=`
+    <div class="note" style="margin-top:10px">
+      <b>VALIDASI BUTA — BUKAN TARGET PREDIKSI UTAMA</b><br>
+      Untuk validasi historis, data terakhir sengaja tidak diberikan ke engine saat prediksi dibuat.
+      Setelah prediksi selesai, data terakhir dibuka hanya sebagai target pembanding historis.
+      Ini adalah uji tambahan yang sama dengan cara manual: <b>hapus data paling belakang → proses → cek apakah data yang dihapus masuk kandidat</b>. Uji ini mengukur kemampuan prediksi pada titik yang sudah diketahui, bukan menentukan target prediksi aktual.
+      <br><br>
+      <b>Penting:</b> "Coverage 13/14" di BackTest berarti target historis masuk daftar Top-N kandidat,
+      <b>bukan</b> berarti engine menebak angka tepat 13 kali dari 14 dan bukan jaminan target berikutnya pasti masuk.
+    </div>
+    <div style="overflow:auto;margin-top:8px">
+      <table>
+        <thead><tr><th>Level</th><th>Target historis tersembunyi</th><th>Posisi</th><th>Hasil uji buta</th><th>Jumlah kandidat</th><th>Top kandidat</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 function renderBacktest(bt){
@@ -1129,9 +1207,11 @@ async function process(){
     "Rolling backtest selesai ✓ — menyusun ranking adaptif...";
 
   $("progressDetail").textContent =
-    "Backtest selesai. Sekarang semua ruang kandidat diberi skor.";
+    "Backtest selesai. Sekarang seluruh riwayat dipakai untuk memprediksi data setelah data terakhir.";
 
   await new Promise(r=>setTimeout(r,40));
+
+  const blind=await blindLastTest(history,limits);
 
   const preds=latestPredictions(
     history,
@@ -1146,9 +1226,12 @@ async function process(){
     preds
   );
 
+  renderBlindTest(blind,limits);
+
   renderRanking(
     preds,
-    limits
+    limits,
+    history[history.length-1]
   );
 
   renderBacktest(bt);
