@@ -94,11 +94,11 @@ code{background:#f1f3f5;padding:2px 4px;border-radius:4px}
     </div>
     <div>
       <label>Max kandidat 1 digit</label>
-      <input id="max1D" type="number" min="1" max="10" value="10">
+      <input id="max1D" type="number" min="1" max="10" value="7">
     </div>
     <div>
       <label>Max kandidat 2 digit</label>
-      <input id="max2D" type="number" min="1" max="100" value="36">
+      <input id="max2D" type="number" min="1" max="100" value="49">
     </div>
     <div>
       <label>Max kandidat 3 digit</label>
@@ -337,7 +337,6 @@ function buildModel(history, limits){
     const global = new Map();
     const recency = new Map();
     const patternTotal = new Map();
-    const digitGlobal = Array.from({length:L.len},()=>new Map());
 
     const n = history.length;
 
@@ -356,12 +355,6 @@ function buildModel(history, limits){
       map.set(tgtKey,(map.get(tgtKey)||0)+1);
 
       global.set(tgtKey,(global.get(tgtKey)||0)+1);
-
-      for(let p=0;p<L.len;p++){
-        const d=tgtKey[p];
-        const dm=digitGlobal[p];
-        dm.set(d,(dm.get(d)||0)+1);
-      }
 
       /*
         Recency:
@@ -384,7 +377,6 @@ function buildModel(history, limits){
       global,
       recency,
       patternTotal,
-      digitGlobal,
       n
     };
   }
@@ -397,48 +389,74 @@ function buildModel(history, limits){
 ============================================================ */
 
 function makeDistribution(model, source, limits){
-  const L=model.L;
-  const srcKey=keyPart(source,L.start,L.len);
-  const local=model.srcMap.get(srcKey)||new Map();
-  const localRecency=model.recency.get(srcKey)||new Map();
-  const localCount=model.patternTotal.get(srcKey)||0;
+  const L = model.L;
+  const srcKey = keyPart(source,L.start,L.len);
 
-  let globalTotal=0;
-  for(const v of model.global.values()) globalTotal+=v;
-  let localTotal=0;
-  for(const v of local.values()) localTotal+=v;
+  const local = model.srcMap.get(srcKey) || new Map();
+  const localRecency = model.recency.get(srcKey) || new Map();
+  const localCount = model.patternTotal.get(srcKey) || 0;
 
-  const minS=limits.minSamples;
-  let localTrust;
-  if(localCount>=minS){
-    localTrust=0.76+Math.min(0.14,(localCount-minS)*0.035);
-  }else{
-    localTrust=0.34+0.10*(localCount/Math.max(1,minS));
-  }
-  localTrust=clamp(localTrust,0.25,0.90);
-  const globalTrust=1-localTrust;
+  let globalTotal = 0;
+  for(const v of model.global.values()) globalTotal += v;
 
-  const values=UNIVERSE[L.len];
-  const scored=[];
-
-  let recTotal=0;
-  for(const v of localRecency.values()) recTotal+=v;
+  let localTotal = 0;
+  for(const v of local.values()) localTotal += v;
 
   /*
-    INI SENGAJA DIPERTAHANKAN SAMA DENGAN LOGIC LAMA.
-    Perbaikan hanya pada cara menangani kandidat yang memiliki
-    skor sama. Tidak ada perubahan bobot prediksi utama.
+    Minimum sampel:
+    - jika sampel lokal >= minSamples, bukti pola lokal dipercaya kuat.
+    - jika di bawah minimum, bukti lokal tetap dipakai tetapi lebih kecil.
   */
-  const alpha=L.len===4 ? 0.015 : 0.04;
+  const minS = limits.minSamples;
+  let localTrust;
+
+  if(localCount >= minS){
+    localTrust = 0.76 + Math.min(0.14,(localCount-minS)*0.035);
+  }else{
+    localTrust = 0.34 + 0.10*(localCount/Math.max(1,minS));
+  }
+
+  localTrust = clamp(localTrust,0.25,0.90);
+  const globalTrust = 1-localTrust;
+
+  const values = UNIVERSE[L.len];
+  const scored = [];
+
+  /*
+    Smooth prior:
+    kandidat yang belum pernah muncul tidak diberi skor nol.
+    Ini penting agar ketika jumlah kandidat dinaikkan,
+    engine benar-benar bisa memperluas kandidat tanpa asal acak.
+  */
+  const alpha = L.len===4 ? 0.015 : 0.04;
 
   for(const value of values){
-    const localRaw=local.get(value)||0;
-    const globalRaw=model.global.get(value)||0;
-    const recRaw=localRecency.get(value)||0;
+    const localRaw = local.get(value) || 0;
+    const globalRaw = model.global.get(value) || 0;
+    const recRaw = localRecency.get(value) || 0;
 
-    const localP=localTotal?localRaw/localTotal:0;
-    const globalP=globalTotal?globalRaw/globalTotal:0;
-    const recP=recTotal?recRaw/recTotal:0;
+    const localP = localTotal ? localRaw/localTotal : 0;
+    const globalP = globalTotal ? globalRaw/globalTotal : 0;
+
+    /*
+      Recency dinormalisasi terhadap total bobot pola lokal.
+    */
+    let recTotal = 0;
+    for(const v of localRecency.values()) recTotal += v;
+    const recP = recTotal ? recRaw/recTotal : 0;
+
+    /*
+      Kombinasi:
+      - localP       : hubungan pola yang sama
+      - recP         : hubungan pola yang sama dengan bobot terbaru
+      - globalP      : fallback
+      - alpha        : smoothing supaya tail tetap bisa dinilai
+    */
+    let score =
+      localTrust * (0.60*localP + 0.40*recP) +
+      globalTrust * globalP;
+
+    score = score + alpha / values.length;
 
     scored.push({
       value,
@@ -447,90 +465,83 @@ function makeDistribution(model, source, limits){
       localP,
       globalP,
       recP,
-      score:
-        localTrust*(0.60*localP+0.40*recP)+
-        globalTrust*globalP+
-        alpha/values.length
+      score
     });
   }
 
-  let sum=scored.reduce((a,b)=>a+b.score,0);
+  let sum = scored.reduce((a,b)=>a+b.score,0);
   if(sum>0){
-    for(const x of scored) x.prob=x.score/sum;
+    for(const x of scored){
+      x.prob = x.score/sum;
+    }
   }else{
-    const equal=1/scored.length;
+    const equal = 1/scored.length;
     for(const x of scored) x.prob=equal;
   }
 
-  /*
-    Primary order tetap berdasarkan probability seperti engine lama.
-    Pada tie absolut, kandidat yang benar-benar punya bukti global/
-    lokal tetap mempertahankan urutan asli. Untuk kandidat yang sama-
-    sama sekali belum punya bukti (tail smoothing), gunakan prior digit
-    sebagai pemecah tie agar tail tidak berubah menjadi 00,01,02,...
-    hanya karena urutan universe.
-  */
-  for(const x of scored){
-    let evidence = 0;
-    if(x.localRaw>0) evidence += 1;
-    if(x.globalRaw>0) evidence += 1;
-    if(x.recP>0) evidence += 1;
-    x.hasEvidence = evidence>0;
-
-    let priorRaw=1;
-    for(let p=0;p<L.len;p++){
-      const count=model.digitGlobal?.[p]?.get(x.value[p])||0;
-      priorRaw *= (count+1);
-    }
-    x.priorRaw=priorRaw;
-  }
-
   scored.sort((a,b)=>{
-    const d=b.prob-a.prob;
-    if(Math.abs(d)>1e-15) return d;
-
-    if(!a.hasEvidence && !b.hasEvidence && b.priorRaw!==a.priorRaw){
-      return b.priorRaw-a.priorRaw;
-    }
-
-    return 0;
+    if(b.prob!==a.prob) return b.prob-a.prob;
+    return a.value.localeCompare(b.value);
   });
 
   return {
-    candidates:scored,
+    candidates: scored,
     localCount,
     localTrust,
     globalTrust,
-    sourceKey:srcKey
+    sourceKey: srcKey
   };
 }
 
-function chooseCandidates(dist,L,limits,backtestInfo){
-  const target=Math.min(candidateLimit(L,limits),universeSize(L.len));
+/* ============================================================
+   ADAPTIVE CANDIDATE SELECTION
+============================================================ */
 
-  const bt=backtestInfo||{};
-  const coverage=bt.coverage||0;
-  const top1=bt.top1Rate||0;
-  const avgPos=bt.avgPos||0;
-  const positionQuality=avgPos>0?1/(1+avgPos/25):0.35;
-  const qualityFactor=
-    0.55+
-    0.30*coverage+
-    0.10*top1+
-    0.05*positionQuality;
+function chooseCandidates(dist,L,limits,backtestInfo){
+  const target = Math.min(
+    candidateLimit(L,limits),
+    universeSize(L.len)
+  );
+
+  const arr = dist.candidates;
 
   /*
-    Tail factor lama tetap dipertahankan karena itu bagian dari
-    logic lama. Yang DIBUANG hanya tie-break numeric.
-    Karena tailFactor selalu menurun terhadap index, ia tidak
-    mengubah urutan kandidat selama tidak ada tie aneh.
+    Base ranking score.
+    Backtest quality hanya mengubah prioritas, bukan menghapus
+    kebutuhan jumlah kandidat.
   */
-  const scored=dist.candidates.map((x,i)=>{
-    const tailFactor=1/(1+i*0.004);
-    let confidence=x.prob*qualityFactor*tailFactor;
+  const bt = backtestInfo || {};
+  const coverage = bt.coverage || 0;
+  const top1 = bt.top1Rate || 0;
+  const avgPos = bt.avgPos || 0;
 
-    if(limits.candidateMode==='strict'){
-      confidence*=1/(1+i*0.007);
+  const positionQuality =
+    avgPos>0 ? 1/(1+avgPos/25) : 0.35;
+
+  const qualityFactor =
+    0.55 +
+    0.30*coverage +
+    0.10*top1 +
+    0.05*positionQuality;
+
+  const scored = arr.map((x,i)=>{
+    /*
+      Tail penalty ringan.
+      Semakin jauh rankingnya, semakin kecil skor,
+      tetapi tidak dipotong.
+    */
+    const tailFactor = 1/(1 + i*0.004);
+
+    /*
+      Untuk mode target, kita tetap mengejar jumlah isian.
+      Untuk adaptive/strict, jumlah tetap dapat mendekati target
+      tetapi kandidat yang benar-benar lemah akan mendapat
+      confidence lebih kecil.
+    */
+    let confidence = x.prob * qualityFactor * tailFactor;
+
+    if(limits.candidateMode==="strict"){
+      confidence *= (1/(1+i*0.007));
     }
 
     return {
@@ -540,50 +551,70 @@ function chooseCandidates(dist,L,limits,backtestInfo){
     };
   });
 
-  /*
-    Kembalikan mekanisme ranking confidence dari engine asli.
-    Ini penting: tailFactor adalah bagian dari logic lama dan
-    memang dapat menentukan urutan ketika probability kandidat
-    sangat berdekatan.
-
-    Yang tidak boleh dipakai sebagai tie-break adalah nilai angka
-    kandidat (00,01,02,...). Bila confidence benar-benar sama,
-    pertahankan urutan ranking sebelumnya.
-  */
   scored.sort((a,b)=>{
-    const d=b.confidence-a.confidence;
-    if(Math.abs(d)>1e-15) return d;
-    return a.rank-b.rank;
+    if(b.confidence!==a.confidence) return b.confidence-a.confidence;
+    return a.value.localeCompare(b.value);
   });
 
-  if(limits.candidateMode==='target'){
+  /*
+    Mode target:
+    selalu isi sampai target.
+    Ini yang menjawab masalah "sudah diset tinggi tetapi hasil
+    terlalu sedikit".
+  */
+  if(limits.candidateMode==="target"){
     return scored.slice(0,target);
   }
 
-  if(limits.candidateMode==='adaptive'){
-    const minimum=Math.min(target,Math.max(1,Math.ceil(target*0.70)));
-    let selected=[];
-    for(let i=0;i<scored.length&&i<target;i++){
-      if(i<minimum){selected.push(scored[i]);continue;}
-      const relative=scored[i].prob/(scored[0]?.prob||1);
-      if(relative>=0.035) selected.push(scored[i]);
+  /*
+    Adaptive:
+    tetap minimal 70% target jika ruang kandidat mencukupi,
+    lalu bisa mencapai target bila distribusi masih masuk akal.
+  */
+  if(limits.candidateMode==="adaptive"){
+    const minimum = Math.min(target,Math.max(1,Math.ceil(target*0.70)));
+    let selected = [];
+
+    for(let i=0;i<scored.length && i<target;i++){
+      const x=scored[i];
+      if(i<minimum){
+        selected.push(x);
+        continue;
+      }
+
+      const relative = x.confidence/(scored[0]?.confidence || 1);
+      if(relative >= 0.035) selected.push(x);
       else break;
     }
-    if(selected.length<minimum) selected=scored.slice(0,minimum);
+
+    if(selected.length<minimum){
+      selected=scored.slice(0,minimum);
+    }
     return selected.slice(0,target);
   }
 
+  /*
+    Strict:
+    lebih selektif, tetapi tetap tidak jatuh terlalu jauh.
+  */
   const minimum=Math.min(target,Math.max(1,Math.ceil(target*0.50)));
   let selected=[];
-  for(let i=0;i<scored.length&&i<target;i++){
-    if(i<minimum){selected.push(scored[i]);continue;}
-    const relative=scored[i].prob/(scored[0]?.prob||1);
+  for(let i=0;i<scored.length && i<target;i++){
+    if(i<minimum){
+      selected.push(scored[i]);
+      continue;
+    }
+    const relative=scored[i].confidence/(scored[0]?.confidence || 1);
     if(relative>=0.08) selected.push(scored[i]);
     else break;
   }
   if(selected.length<minimum) selected=scored.slice(0,minimum);
   return selected.slice(0,target);
 }
+
+/* ============================================================
+   BACKTEST
+============================================================ */
 
 function evaluateLevel(history,idx,L,limits,backtestInfo){
   if(idx<1) return null;
