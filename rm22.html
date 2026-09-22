@@ -1563,6 +1563,9 @@ async function process(){
      salah satu dari dua level masuk pada setiap titik backtest. */
   await render3DPairAudit(history, limits, bt);
 
+  /* Panel manual range: memakai prediksi masa depan engine, bukan generator angka. */
+  renderManual3DRanges(history, limits, bt);
+
   renderDetails(
     preds,
     bt,
