@@ -727,10 +727,10 @@ function chooseCandidates(dist,L,limits,learningState){
   return out.slice(0,target);
 }
 
-function evaluateLevel(history,idx,L,limits,learningState,prebuiltModels=null){
+function evaluateLevel(history,idx,L,limits,learningState){
   if(idx<1)return null;
   const train=history.slice(0,idx);
-  const models=prebuiltModels || buildModel(train,limits);
+  const models=buildModel(train,limits);
   const model=models[L.id];
   const source=history[idx-1];
   const target=history[idx];
@@ -749,271 +749,51 @@ async function rollingBacktest(history,limits,progressCb){
   const firstIdx=history.length-totalTests;
   const states={};
   for(const L of LEVELS)states[L.id]=newLearningState(L);
-  const blind=[];
-  const pairAudit=[];
-  const levelTotal=LEVELS.length;
+
+  /* Warm-up: titik-titik sebelum jendela backtest boleh dipakai sebagai
+     pengalaman masa lalu. Mereka bukan bagian dari metrik backtest. */
   for(let idx=1;idx<firstIdx;idx++){
-    const models=buildModel(history.slice(0,idx),limits);
-    for(let li=0;li<levelTotal;li++){
-      const L=LEVELS[li],st=states[L.id];
-      const r=evaluateLevel(history,idx,L,limits,st,models);
-      if(r)learnFromResult(st,r.model,r);
-      if(progressCb)progressCb(Math.max(1,idx),Math.max(1,firstIdx-1),idx,firstIdx-1,L.name,li+1,levelTotal,"Learning warm-up");
-      await yieldUI();
+    for(const L of LEVELS){
+      const st=states[L.id];
+      const r=evaluateLevel(history,idx,L,limits,st);
+      if(r) learnFromResult(st,r.model,r);
     }
+    await new Promise(resolve=>setTimeout(resolve,0));
   }
-  for(let t=0;t<totalTests;t++){
-    const idx=firstIdx+t;
-    const models=buildModel(history.slice(0,idx),limits);
-    const pending=[];
-    for(let li=0;li<levelTotal;li++){
-      const L=LEVELS[li],st=states[L.id];
-      const r=evaluateLevel(history,idx,L,limits,st,models);
-      if(r){
-        pending.push([L.id,r]);
-        if(idx===history.length-1){
-          const selected=r.candidates;
-          blind.push({L,actual:r.actual,pos:r.pos,rawPos:r.rawPos,count:selected.length,top:selected.slice(0,10).map(x=>x.value)});
-        }
-      }
-      if(progressCb)progressCb(t+1,totalTests,idx,history.length-1,L.name,li+1,levelTotal,"Rolling backtest");
-      await yieldUI();
+
+  let done=0;
+  for(let idx=firstIdx;idx<history.length;idx++){
+    /*
+      Prediksi titik uji dibuat memakai memory dari masa lalu. TARGET
+      baru dipakai untuk belajar setelah prediksi selesai.
+    */
+    for(const L of LEVELS){
+      const st=states[L.id];
+      const r=evaluateLevel(history,idx,L,limits,st);
+      if(!r)continue;
+      learnFromResult(st,r.model,r);
     }
-    if(idx>=firstIdx){
-      const a=pending.find(x=>x[0]==="3DD")?.[1];
-      const b=pending.find(x=>x[0]==="3DB")?.[1];
-      pairAudit.push({idx,a:a?.hit||false,b:b?.hit||false,posA:a?.pos||0,posB:b?.pos||0,target:history[idx]});
-    }
-    for(const [id,r] of pending)learnFromResult(states[id],r.model,r);
+    done++;
+    if(progressCb)progressCb(done,totalTests,idx,history.length-1);
+    await new Promise(resolve=>setTimeout(resolve,0));
   }
-  const result=Object.fromEntries(LEVELS.map(L=>{
+
+  const stats={};
+  for(const L of LEVELS){
     const s=states[L.id];
-    const errors=new Map();
-    for(const m of s.misses)errors.set(m.actual,(errors.get(m.actual)||0)+1);
-    return [L.id,{tests:s.tests,hit:s.hit,top1:s.top1,coverage:s.tests?s.hit/s.tests:0,top1Rate:s.tests?s.top1/s.tests:0,avgPos:s.hit?s.posSum/s.hit:0,rawHit:s.rawHit,rawCoverage:s.tests?s.rawHit/s.tests:0,rawAvgPos:s.rawHit?s.rawPosSum/s.rawHit:0,errors}];
-  }));
-  result._blind=blind;
-  result._pairAudit=pairAudit;
-  return result;
-}
-
-function blindLastTest(history,limits,bt){
-  /*
-    UJI BUTA 1 LANGKAH:
-    rollingBacktest() sudah membuat prediksi pada target terakhir SEBELUM
-    target tersebut dipakai untuk belajar. Hasil titik itu disimpan sebagai
-    blind snapshot, sehingga TIDAK perlu menjalankan rolling backtest kedua.
-  */
-  if(bt && Array.isArray(bt._blind)) return bt._blind;
-  return [];
-}
-
-function renderSummary(history,bt,limits,preds){
-  $("summaryCard").classList.remove("hidden");
-
-  const maxTests=Math.max(
-    0,
-    ...LEVELS.map(L=>bt[L.id]?.tests||0)
-  );
-
-  const last=history[history.length-1];
-  const vals=[
-    ["Jumlah data",history.length],
-    ["Data terakhir / sumber prediksi",last],
-    ["Target prediksi", "DATA SETELAH "+last],
-    ["Pasangan learning",Math.max(0,history.length-1)],
-    ["Backtest yang dipakai",maxTests],
-    ["Minimum sampel pola",limits.minSamples],
-    ["Target 1D",limits.max1D],
-    ["Target 2D",limits.max2D],
-    ["Target 3D",limits.max3D],
-    ["Target 4D",limits.max4D]
-  ];
-
-  $("summaryGrid").innerHTML=vals.map(([a,b])=>
-    `<div class="stat"><span class="muted">${a}</span><b>${b}</b></div>`
-  ).join("");
-
-  $("candidateAudit").innerHTML=
-    `<div class="note" style="margin-bottom:10px">
-      <b>LOGIKA PREDIKSI AKTUAL:</b> seluruh data yang dimasukkan sampai data terakhir
-      <b>${last}</b> dipakai sebagai riwayat belajar. Engine kemudian memprediksi
-      <b>data berikutnya yang belum diketahui</b>. Jadi ${last} bukan target prediksi.
-    </div>` +
-    preds.map(p=>{
-    const target=candidateLimit(p.L,limits);
-    const actual=p.candidates.length;
-    const diff=target-actual;
-
-    return `
-      <div class="kpi">
-        <b>${p.L.name}</b>:
-        ${actual}/${target}
-        ${diff===0
-          ? "<span class='ok'>✓ target tercapai</span>"
-          : "<span class='warn'>target belum penuh</span>"}
-      </div>
-    `;
-  }).join("");
-}
-
-function renderRanking(preds,limits,historyLastForRender){
-  $("rankingCard").classList.remove("hidden");
-
-  const list=$("rankingList");
-  list.innerHTML="";
-
-  preds.forEach((p,i)=>{
-    const values=p.candidates.map(x=>x.value);
-    const text=values.join("*");
-    const target=candidateLimit(p.L,limits);
-
-    const div=document.createElement("div");
-    div.className="rank";
-
-    div.innerHTML=`
-      <div class="rankhead">
-        <div>
-          <span class="badge">RANK ${i+1}</span>
-          <h3 style="display:inline;margin-left:7px">${p.L.name}</h3>
-
-          <div class="small" style="margin-top:4px">
-            Sumber terakhir: <b>${escapeHtml(historyLastForRender)}</b> → target: <b>data berikutnya</b>
-          </div>
-
-          <div class="muted">
-            Model score:
-            <span class="score">${(p.modelScore*100).toFixed(2)}</span>
-            · Coverage:
-            <span class="${p.coverage>=.6?'ok':p.coverage>=.35?'warn':'err'}">${pct(p.coverage)}</span>
-            · Top-1:
-            ${pct(p.top1Rate)}
-          </div>
-        </div>
-
-        <button class="copyBtn" data-text="${escapeAttr(text)}">COPY</button>
-      </div>
-
-      <div class="candidateBox">
-        <div class="count">
-          Jumlah kandidat:
-          <b>${values.length}</b>
-          · Target:
-          <b>${target}</b>
-          · Ruang:
-          ${universeSize(p.L.len).toLocaleString("id-ID")}
-          · Dipisahkan dengan *
-        </div>
-
-        <textarea readonly>${escapeHtml(text)}</textarea>
-      </div>
-
-      <div class="small muted">
-        Sampel pola terbaru: ${p.localCount}
-        · Kepercayaan lokal: ${pct(p.localTrust)}
-        · Fallback global: ${pct(p.globalTrust)}
-        · Avg posisi saat hit: ${p.avgPos?p.avgPos.toFixed(2):"-"}
-      </div>
-
-      <div class="small" style="margin-top:7px">
-        <b>Skor kandidat teratas:</b>
-        ${p.candidates.slice(0,8).map((x,j)=>
-          `${j+1}. ${x.value} (${(x.confidence*100).toFixed(3)})`
-        ).join(" · ")}
-      </div>
-    `;
-
-    list.appendChild(div);
-  });
-
-  list.querySelectorAll(".copyBtn").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      copyText(btn.dataset.text,btn);
-    });
-  });
-}
-
-function renderBlindTest(results,limits){
-  const rows=results.map(r=>{
-    const ok=r.pos>0;
-    return `<tr>
-      <td><b>${r.L.name}</b></td>
-      <td><b>${r.actual}</b></td>
-      <td>${r.pos>0?r.pos:"-"}</td>
-      <td class="${ok?'ok':'err'}"><b>${ok?'MASUK':'TIDAK MASUK'}</b></td>
-      <td>${r.count}</td>
-      <td>${r.top.join("*")}</td>
-    </tr>`;
-  }).join("");
-
-  $("blindTest").innerHTML=`
-    <div class="note" style="margin-top:10px">
-      <b>VALIDASI BUTA — BUKAN TARGET PREDIKSI UTAMA</b><br>
-      Untuk validasi historis, data terakhir sengaja tidak diberikan ke engine saat prediksi dibuat.
-      Setelah prediksi selesai, data terakhir dibuka hanya sebagai target pembanding historis.
-      Ini adalah uji tambahan yang sama dengan cara manual: <b>hapus data paling belakang → proses → cek apakah data yang dihapus masuk kandidat</b>. Uji ini mengukur kemampuan prediksi pada titik yang sudah diketahui, bukan menentukan target prediksi aktual.
-      <br><br>
-      <b>Penting:</b> "Coverage 13/14" di BackTest berarti target historis masuk daftar Top-N kandidat,
-      <b>bukan</b> berarti engine menebak angka tepat 13 kali dari 14 dan bukan jaminan target berikutnya pasti masuk.
-    </div>
-    <div style="overflow:auto;margin-top:8px">
-      <table>
-        <thead><tr><th>Level</th><th>Target historis tersembunyi</th><th>Posisi</th><th>Hasil uji buta</th><th>Jumlah kandidat</th><th>Top kandidat</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
-}
-
-function renderBacktest(bt){
-  $("backtestCard").classList.remove("hidden");
-
-  $("backtestBody").innerHTML=LEVELS.map(L=>{
-    const s=bt[L.id];
-
-    const errors=[...s.errors.entries()]
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0,2)
-      .map(x=>x[0]+" ("+x[1]+")")
-      .join(" · ") || "-";
-
-    return `
-      <tr>
-        <td><b>${L.name}</b></td>
-        <td>${s.tests}</td>
-        <td class="${s.coverage>=.60?'ok':s.coverage>=.35?'warn':'err'}">
-          ${s.hit}
-        </td>
-        <td>${pct(s.coverage)}</td>
-        <td>${pct(s.top1Rate)}</td>
-        <td>${s.avgPos?s.avgPos.toFixed(2):"-"}</td>
-        <td>${escapeHtml(errors)}</td>
-      </tr>
-    `;
-  }).join("");
-}
-
-async function render3DPairAudit(history,limits,bt){
-  const old=document.getElementById('pairAuditCard'); if(old) old.remove();
-  const rowsData=bt && Array.isArray(bt._pairAudit)?bt._pairAudit:[];
-  if(!rowsData.length)return;
-  let either=0,both=0,streak=0,maxStreak=0;
-  for(const r of rowsData){
-    const ok=r.a||r.b;
-    if(ok){either++;streak=0;}else{streak++;maxStreak=Math.max(maxStreak,streak);}
-    if(r.a&&r.b)both++;
+    s.coverage=s.tests?s.hit/s.tests:0;
+    s.top1Rate=s.tests?s.top1/s.tests:0;
+    s.avgPos=s.hit?s.posSum/s.hit:0;
+    s.rawAvgPos=s.rawHit?s.rawPosSum/s.rawHit:0;
+    s.rawCoverage=s.tests?s.rawHit/s.tests:0;
+    s.modelScore=0.52*s.coverage+0.23*s.top1Rate+
+      0.15*(s.avgPos?1/(1+s.avgPos/20):0)+
+      0.10*(1/(1+s.maxStreak));
+    s.errors=new Map();
+    s.missStreak=s.streak;
+    stats[L.id]=s;
   }
-  const rows=rowsData.map(r=>`<tr><td>${r.idx+1}</td><td>${escapeHtml(keyPart(r.target,0,3))}</td><td>${r.posA||'-'}</td><td>${r.posB||'-'}</td><td class="${r.a||r.b?'ok':'err'}">${r.a&&r.b?'KEDUANYA':r.a?'3DD':r.b?'3DB':'KEDUANYA GAGAL'}</td></tr>`).join('');
-  const card=document.createElement('div'); card.id='pairAuditCard'; card.className='card';
-  card.innerHTML=`<h2>Audit Khusus 3DD + 3DB — Learning Gabungan</h2>
-    <div class="grid">
-      <div class="stat"><span class="muted">Uji</span><b>${rowsData.length}</b></div>
-      <div class="stat"><span class="muted">Minimal salah satu masuk</span><b>${either}/${rowsData.length} (${pct(either/rowsData.length)})</b></div>
-      <div class="stat"><span class="muted">Keduanya masuk</span><b>${both}/${rowsData.length} (${pct(both/rowsData.length)})</b></div>
-      <div class="stat"><span class="muted">Streak gagal terpanjang</span><b>${maxStreak}</b></div>
-    </div>
-    <div class="note" style="margin-top:10px"><b>Audit ini memakai titik rolling backtest yang sama</b>, bukan menjalankan mesin rolling kedua.</div>
-    <div style="overflow:auto;margin-top:10px"><table><thead><tr><th>Test</th><th>Target 3D</th><th>Pos 3DD</th><th>Pos 3DB</th><th>Hasil</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-  const parent=document.getElementById('backtestCard'); parent.parentNode.insertBefore(card,parent.nextSibling);
+  return stats;
 }
 
 /* ============================================================
@@ -1133,41 +913,7 @@ function crossDeret(groups){
     };
   }).filter(Boolean).sort((a,b)=>b.score-a.score);
 }
-async function runDeretEngine(history){
-  // Versi time-sliced: mesin deret tidak boleh mengunci UI/browser.
-  const groups={};
-  if(history.length<3) return {groups,cross:[]};
-  let done=0;
-  const total=DERET_POSITIONS.length;
-  for(const target of DERET_POSITIONS){
-    const methods=[]; const votes=new Map(); const occ=new Map();
-    for(const A of DERET_POSITIONS) for(const B of DERET_POSITIONS) for(const M of DERET_METHODS) for(let tol=-4;tol<=4;tol++){
-      const vm=new Map(); let hit=0,tests=0;
-      for(let i=2;i<history.length;i++){
-        const c=dCand(M.op,dDigit(history[i-2],A.index),dDigit(history[i-1],B.index),tol);
-        const actual=dDigit(history[i],target.index);
-        vm.set(String(c),(vm.get(String(c))||0)+1); tests++; if(c===actual)hit++;
-      }
-      const acc=tests?hit/tests:0; const weight=.50+2.50*acc;
-      methods.push({target,A,B,M,tol,hit,tests,accuracy:acc,votes:vm});
-      for(const [v,n] of vm){votes.set(v,(votes.get(v)||0)+n*weight); occ.set(v,(occ.get(v)||0)+1);}
-    }
-    const ranked=[...votes.entries()].map(([value,score])=>({value,score,occurrences:occ.get(value)||0})).sort((a,b)=>b.score-a.score||Number(a.value)-Number(b.value));
-    const bands=[];
-    for(const r of ranked){let b=bands.find(x=>x.occ===r.occurrences);if(!b){b={occ:r.occurrences,items:[]};bands.push(b);}b.items.push(r);}
-    const selected=[];
-    for(const b of bands){if(selected.length>=8)break;const next=selected.length+b.items.length;if(selected.length===0||next<=8||selected.length<6)selected.push(...b.items);else break;}
-    groups[target.id]={position:target,methods,ranked,selected};
-    done++;
-    $("progressDetail").textContent=`Mesin deret: posisi ${done}/${total} (${target.name}) selesai. Menyiapkan persilangan...`;
-    $("progressBar").style.width=(94+done*0.75)+"%";
-    await new Promise(r=>setTimeout(r,0));
-  }
-  // crossDeret sudah terbatas pada kelompok kecil; tetap beri kesempatan browser repaint.
-  const cross=crossDeret(groups);
-  await new Promise(r=>setTimeout(r,0));
-  return {groups,cross};
-}
+function runDeretEngine(history){const groups=deriveDigitGroups(history);return {groups,cross:crossDeret(groups)};}
 function renderDeretEngine(engine){
   $("deretCard").classList.remove("hidden"); const top=engine.cross[0];
   $("deretSummary").innerHTML=top?`<div class="info"><b>Ranking deret dinamis:</b> ${engine.cross.map((x,i)=>`${i+1}. ${x.name} (skor ${x.score.toFixed(2)})`).join(" · ")}<br><b>Catatan:</b> urutan tidak dipaksa; 3DD/3DB hanya berada di atas bila skor kelompoknya memang lebih besar.</div>`:`<div class="warnbox">Belum cukup data untuk mesin deret.</div>`;
@@ -1708,11 +1454,6 @@ function setProgress(done,total,idx,end){
     `Sumber untuk titik ini adalah data ke-${idx}.`;
 }
 
-
-async function yieldUI(){
-  await new Promise(r=>setTimeout(r,0));
-}
-
 function hideResults(){
   [
     "statusCard",
@@ -1789,15 +1530,7 @@ async function process(){
 
   await new Promise(r=>setTimeout(r,40));
 
-  $("statusText").textContent="Blind test berjalan...";
-  $("progressDetail").textContent="Menguji 1 langkah terakhir secara buta; target belum diberikan ke model.";
-  await yieldUI();
-  const blind=await blindLastTest(history,limits,bt);
-  $("progressBar").style.width="90%";
-
-  $("statusText").textContent="Prediksi data setelah terakhir berjalan...";
-  $("progressDetail").textContent="Sekarang seluruh DATA YANG DIPAKAI sudah menjadi riwayat untuk prediksi ke depan.";
-  await yieldUI();
+  const blind=await blindLastTest(history,limits);
 
   const preds=latestPredictions(
     history,
@@ -1805,16 +1538,7 @@ async function process(){
     bt
   );
 
-  $("progressBar").style.width="94%";
-  $("statusText").textContent="Engine deret berjalan...";
-  $("progressDetail").textContent="Menguji kombinasi posisi, operasi, toleransi, dan kekuatan kelompok.";
-  await yieldUI();
-  const deretEngine=await runDeretEngine(history);
-
-  $("progressBar").style.width="97%";
-  $("statusText").textContent="Menyusun seluruh hasil...";
-  $("progressDetail").textContent="Ranking, backtest, audit 3D, dan detail sedang dirender.";
-  await yieldUI();
+  const deretEngine=runDeretEngine(history);
 
   renderSummary(
     history,
@@ -1837,7 +1561,7 @@ async function process(){
 
   /* 3DD/3DB adalah pasangan evaluasi khusus: kita ukur apakah minimal
      salah satu dari dua level masuk pada setiap titik backtest. */
-  render3DPairAudit(history, limits, bt);
+  await render3DPairAudit(history, limits, bt);
 
   renderDetails(
     preds,
