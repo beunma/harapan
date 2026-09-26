@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RM8 - Data Inputan & Hasil Olahan</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 20px;
+        background: #f3f4f6;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #222;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .box {
+        background: #ffffff;
+        border: 1px solid #d0d0d0;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+    }
+
+    .box-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 130px;
+        resize: vertical;
+        border: 1px solid #aaa;
+        border-radius: 7px;
+        padding: 12px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 18px;
+        line-height: 1.5;
+        outline: none;
+    }
+
+    textarea:focus {
+        border-color: #555;
+    }
+
+    textarea.output {
+        background: #f7f7f7;
+    }
+
+    .bottom-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .ln-info {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .ln-normal {
+        color: #222;
+    }
+
+    .ln-error {
+        color: #d00000;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    button {
+        border: none;
+        border-radius: 6px;
+        padding: 9px 18px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        opacity: 0.88;
+    }
+
+    .btn-paste {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-reset {
+        background: #dc2626;
+        color: white;
+    }
+
+    .btn-copy {
+        background: #16a34a;
+        color: white;
+    }
+
+    /* Hasil Olahan disembunyikan saat input invalid */
+    #hasilOlahan {
+        display: none;
+    }
+
+    .status {
+        margin-top: 8px;
+        font-size: 14px;
+        min-height: 18px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =====================================================
+         DATA INPUTAN RM8
+         ===================================================== -->
+    <div class="box" id="dataInputanRM8">
+
+        <div class="box-title">
+            Data Inputan RM8
+        </div>
+
+        <textarea
+            id="inputData"
+            placeholder="Contoh: 34*45*02*00*60"
+            spellcheck="false"
+            autocomplete="off"
+        ></textarea>
+
+        <div class="bottom-row">
+
+            <div id="inputInfo" class="ln-info ln-error">
+                ERROR
+            </div>
+
+            <div class="buttons">
+                <button
+                    type="button"
+                    class="btn-reset"
+                    id="btnReset"
+                >
+                    Reset
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-paste"
+                    id="btnPaste"
+                >
+                    Paste
+                </button>
+            </div>
+
+        </div>
+
+        <div id="inputStatus" class="status"></div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HASIL OLAHAN
+         ===================================================== -->
+    <div class="box" id="hasilOlahan">
+
+        <div class="box-title">
+            Hasil Olahan
+        </div>
+
+        <textarea
+            id="outputData"
+            class="output"
+            readonly
+            spellcheck="false"
+        ></textarea>
+
+        <div class="bottom-row">
+
+            <div id="outputInfo" class="ln-info ln-normal">
+                Jumlah 0 LN
+            </div>
+
+            <div class="buttons">
+                <button
+                    type="button"
+                    class="btn-copy"
+                    id="btnCopy"
+                >
+                    Copy
+                </button>
+            </div>
+
+        </div>
+
+        <div id="outputStatus" class="status"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+/* =========================================================
+   KONFIGURASI
+   ========================================================= */
+
+const inputData    = document.getElementById("inputData");
+const outputData   = document.getElementById("outputData");
+
+const inputInfo    = document.getElementById("inputInfo");
+const outputInfo   = document.getElementById("outputInfo");
+
+const inputStatus  = document.getElementById("inputStatus");
+const outputStatus = document.getElementById("outputStatus");
+
+const hasilOlahan  = document.getElementById("hasilOlahan");
+
+const btnPaste     = document.getElementById("btnPaste");
+const btnReset     = document.getElementById("btnReset");
+const btnCopy      = document.getElementById("btnCopy");
+
+
+/* =========================================================
+   VALIDASI DATA
+   =========================================================
+
+   Format yang sah:
+
+   34*45*02*00*60
+
+   Setiap bagian HARUS tepat 2 digit.
+   Pemisah HARUS tanda *.
+
+   Contoh valid:
+   00
+   01
+   09
+   34
+   99
+
+   Contoh tidak valid:
+   0
+   000
+   3
+   345
+   34-45
+   34 45
+   34**45
+   *34*45
+   34*45*
+   abc*45
+*/
+
+function validasiInput(teks) {
+
+    const nilai = teks.trim();
+
+    if (nilai === "") {
+        return {
+            valid: false,
+            jumlah: 0,
+            kelompok: []
+        };
+    }
+
+    /*
+       Regex:
+
+       ^          awal
+       \d{2}      tepat 2 digit
+       (          kelompok berikutnya
+         \*\d{2}
+       )*         boleh berulang
+       $          akhir
+    */
+
+    const pola = /^\d{2}(?:\*\d{2})*$/;
+
+    if (!pola.test(nilai)) {
+        return {
+            valid: false,
+            jumlah: 0,
+            kelompok: []
+        };
+    }
+
+    const kelompok = nilai.split("*");
+
+    return {
+        valid: true,
+        jumlah: kelompok.length,
+        kelompok: kelompok
+    };
+}
+
+
+/* =========================================================
+   MEMBUAT HASIL OLAHAN
+   =========================================================
+
+   Contoh:
+
+   Input:
+   34*45*02*00*60
+
+   Hasil tambahan adalah masing-masing pasangan
+   dengan urutan digitnya dibalik:
+
+   34 -> 43
+   45 -> 54
+   02 -> 20
+   00 -> 00
+   60 -> 06
+
+   Kemudian digabung:
+
+   34*45*02*00*60*43*54*20*00*06
+*/
+
+function buatHasilOlahan(kelompok) {
+
+    const hasilBalik = kelompok.map(function(nilai) {
+
+        return nilai
+            .split("")
+            .reverse()
+            .join("");
+
+    });
+
+    return kelompok.concat(hasilBalik);
+}
+
+
+/* =========================================================
+   UPDATE TAMPILAN
+   ========================================================= */
+
+function updateTampilan() {
+
+    const hasilValidasi = validasiInput(inputData.value);
+
+    if (!hasilValidasi.valid) {
+
+        /* Input tidak valid */
+
+        inputInfo.textContent = "ERROR";
+        inputInfo.className = "ln-info ln-error";
+
+        hasilOlahan.style.display = "none";
+
+        outputData.value = "";
+        outputInfo.textContent = "Jumlah 0 LN";
+
+        inputStatus.textContent =
+            "Format harus 2 digit yang dipisahkan tanda *.";
+
+        outputStatus.textContent = "";
+
+        return;
+    }
+
+
+    /* =====================================================
+       INPUT VALID
+       ===================================================== */
+
+    inputInfo.textContent =
+        "Jumlah " + hasilValidasi.jumlah + " LN";
+
+    inputInfo.className =
+        "ln-info ln-normal";
+
+    inputStatus.textContent =
+        "Format valid.";
+
+    /* Buat hasil */
+
+    const hasil = buatHasilOlahan(
+        hasilValidasi.kelompok
+    );
+
+    outputData.value = hasil.join("*");
+
+    outputInfo.textContent =
+        "Jumlah " + hasil.length + " LN";
+
+    outputStatus.textContent = "";
+
+    /* Tampilkan seluruh wadah Hasil Olahan */
+
+    hasilOlahan.style.display = "block";
+}
+
+
+/* =========================================================
+   KETIKA USER MENGETIK
+   ========================================================= */
+
+inputData.addEventListener("input", function() {
+
+    updateTampilan();
+
+});
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+btnReset.addEventListener("click", function() {
+
+    inputData.value = "";
+
+    outputData.value = "";
+
+    inputInfo.textContent = "ERROR";
+    inputInfo.className = "ln-info ln-error";
+
+    outputInfo.textContent = "Jumlah 0 LN";
+
+    inputStatus.textContent = "";
+
+    outputStatus.textContent = "";
+
+    hasilOlahan.style.display = "none";
+
+    inputData.focus();
+
+});
+
+
+/* =========================================================
+   PASTE DARI CLIPBOARD
+   ========================================================= */
+
+btnPaste.addEventListener("click", async function() {
+
+    try {
+
+        const teks = await navigator.clipboard.readText();
+
+        inputData.value = teks;
+
+        updateTampilan();
+
+        inputData.focus();
+
+    } catch (error) {
+
+        /*
+           Fallback apabila browser tidak mengizinkan
+           akses Clipboard API.
+        */
+
+        inputStatus.textContent =
+            "Clipboard tidak dapat dibaca. Silakan paste manual.";
+
+        inputInfo.textContent = "ERROR";
+        inputInfo.className = "ln-info ln-error";
+
+        hasilOlahan.style.display = "none";
+    }
+
+});
+
+
+/* =========================================================
+   COPY HASIL OLAHAN
+   ========================================================= */
+
+btnCopy.addEventListener("click", async function() {
+
+    const teks = outputData.value;
+
+    if (!teks) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(teks);
+
+        outputStatus.textContent =
+            "Berhasil disalin ke clipboard.";
+
+    } catch (error) {
+
+        /*
+           Fallback untuk browser yang membatasi
+           Clipboard API.
+        */
+
+        outputData.focus();
+        outputData.select();
+
+        try {
+
+            document.execCommand("copy");
+
+            outputStatus.textContent =
+                "Berhasil disalin ke clipboard.";
+
+        } catch (e) {
+
+            outputStatus.textContent =
+                "Copy gagal. Silakan copy manual.";
+
+        }
+
+        window.getSelection().removeAllRanges();
+    }
+
+});
+
+
+/* =========================================================
+   KONDISI AWAL
+   ========================================================= */
+
+updateTampilan();
+
+</script>
+
+</body>
+</html>
