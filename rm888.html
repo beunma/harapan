@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mathematical Sequence Learning Engine</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;color:#172033;font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:1180px;margin:24px auto;padding:0 16px}
+h1{margin:0 0 6px;font-size:26px}.sub{color:#5b6577;margin-bottom:18px}
+.card{background:#fff;border:1px solid #dbe2ea;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+label{font-weight:700;display:block;margin-bottom:7px} textarea,input,button{font:inherit}
+textarea{width:100%;border:1px solid #b9c4d2;border-radius:9px;padding:12px;resize:vertical;outline:none}
+textarea:focus,input:focus{border-color:#526dff;box-shadow:0 0 0 3px rgba(82,109,255,.10)}
+#inputData{min-height:120px;font-family:Consolas,monospace}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{border:0;border-radius:8px;padding:10px 15px;font-weight:700;cursor:pointer}
+.btn{background:#e9eef5;color:#1e293b}.primary{background:#315efb;color:#fff}
+.primary:disabled{background:#aab5c7;cursor:not-allowed}.danger{background:#fff0f0;color:#b42318}
+.status{margin-top:9px;font-weight:700}.ok{color:#087443}.err{color:#c62828}
+.settings{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:14px}
+.field input{width:100%;padding:10px 11px;border:1px solid #b9c4d2;border-radius:8px}
+.help{font-size:12px;color:#687386;margin-top:5px}
+.progressBox{display:none}.progressOuter{height:25px;background:#e5eaf1;border-radius:99px;overflow:hidden}
+.progressInner{height:100%;width:0%;background:#315efb;transition:width .12s linear}
+.progressText{margin-top:9px;font-size:13px;color:#465268;min-height:18px}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.resultCard{border:1px solid #dbe2ea;border-radius:10px;padding:14px;background:#fbfcfe}
+.resultHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.resultHead strong{font-size:17px}.badge{font-size:12px;border-radius:20px;padding:4px 8px;background:#edf2ff;color:#315efb}
+.badge.fail{background:#fff0f0;color:#b42318}.resultArea{position:relative}
+.resultArea textarea{min-height:105px;padding-bottom:42px;font-family:Consolas,monospace}
+.copy{position:absolute;right:8px;bottom:8px;padding:7px 11px;font-size:12px;background:#e8edf5}
+.lineCount{font-size:12px;color:#5f6b7d;margin-top:5px}.formula{font-family:Consolas,monospace;background:#f0f3f8;border-radius:7px;padding:8px;margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:12px}
+.stats{font-size:12px;color:#58657a;margin-top:6px;line-height:1.5}.cross{margin-top:18px}.cross h3{margin:0 0 10px}
+.note{font-size:12px;line-height:1.5;color:#58657a}
+@media(max-width:760px){.settings,.results{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>Mathematical Sequence Learning Engine</h1>
+<div class="sub">Matematika Deret 2D — mencari hubungan matematis antaranggota deret.</div>
+<label for="inputData">Masukkan Data RM8</label>
+<textarea id="inputData" spellcheck="false" placeholder="Contoh: 1239,2347,3651,5843,8859,3467,1251,4863,5679,9867,4871"></textarea>
+<div class="row" style="margin-top:10px">
+<button class="btn" id="pasteBtn">PASTE</button>
+<button class="btn danger" id="resetBtn">RESET</button>
+<div id="lnStatus" class="status err">Jumlah LN: ERROR</div>
+</div>
+<div class="settings" style="margin-top:18px">
+<div class="field">
+<label for="tolerance">Toleransi 2D</label>
+<input id="tolerance" type="number" min="0" max="35" step="1" value="20">
+<div class="help">0–35. Untuk 2D, toleransi diterapkan pada nilai 00–99 secara melingkar.</div>
+</div>
+<div class="field">
+<label for="maxSeconds">Waktu maksimal per deret = ? detik</label>
+<input id="maxSeconds" type="number" min="10" max="300" step="1" value="40">
+<div class="help">Batas waktu pencarian formula per AB, BC, dan CD.</div>
+</div>
+</div>
+<button class="primary" id="processBtn" disabled style="margin-top:16px;width:100%;padding:13px">PROSES</button>
+</div>
+
+<div class="card progressBox" id="progressBox">
+<label>Progress Learning</label>
+<div class="progressOuter"><div class="progressInner" id="progressInner"></div></div>
+<div class="progressText" id="progressText">Menunggu proses...</div>
+</div>
+
+<div class="card" id="resultSection" style="display:none">
+<h2 style="margin-top:0">Hasil Learning 2D</h2>
+<div class="results" id="digitResults"></div>
+<div class="cross">
+<h3>Hasil Persilangan Berdasarkan Overlap</h3>
+<div class="results" id="crossResults"></div>
+</div>
+</div>
+
+<div class="card note">
+<b>Metode:</b> sumber belajar adalah AB=ribuan+ratusan, BC=ratusan+puluhan, CD=puluhan+satuan.
+Setiap hubungan matematika diuji secara rolling terhadap anggota deret berikutnya.
+Perhitungan dilakukan sebagai angka 2D penuh 00–99. Nilai antara boleh melewati 99 atau menjadi negatif, lalu hasil akhirnya direduksi modulo 100.
+Mesin mencoba transformasi lag, selisih/tren, prediksi orde-2, operasi +, -, ×, ABS, MIN, MAX, rata-rata, pembalikan 2D, jumlah/perkalian digit, serta kombinasi formula.
+</div>
+</div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const input=$("inputData"),lnStatus=$("lnStatus"),processBtn=$("processBtn");
+const tolerance=$("tolerance"),maxSeconds=$("maxSeconds");
+const progressBox=$("progressBox"),progressInner=$("progressInner"),progressText=$("progressText");
+const resultSection=$("resultSection"),digitResults=$("digitResults"),crossResults=$("crossResults");
+
+function parseInput(){
+  const raw=input.value.trim();
+  if(!raw)return{valid:false,data:[],reason:"kosong"};
+  const parts=raw.split(",").map(s=>s.trim());
+  if(parts.some(s=>!/^\d{4}$/.test(s)))return{valid:false,data:[],reason:"format"};
+  return{valid:true,data:parts};
+}
+function updateValidity(){
+  const p=parseInput();
+  if(p.valid){
+    lnStatus.textContent="Jumlah LN: "+p.data.length+" LN";
+    lnStatus.className="status ok";
+    processBtn.disabled=p.data.length<5;
+    if(p.data.length<5){
+      lnStatus.textContent+=" — minimal 5 LN";
+      lnStatus.className="status err";
+    }
+  }else{
+    lnStatus.textContent="Jumlah LN: ERROR";
+    lnStatus.className="status err";
+    processBtn.disabled=true;
+  }
+}
+input.addEventListener("input",updateValidity);
+
+function clampInt(el,min,max,def){
+  let v=Number(el.value);
+  if(!Number.isInteger(v)||v<min||v>max){el.value=def;return def}
+  return v;
+}
+tolerance.addEventListener("change",()=>clampInt(tolerance,0,35,20));
+maxSeconds.addEventListener("change",()=>clampInt(maxSeconds,10,300,40));
+
+$("resetBtn").addEventListener("click",()=>{
+  input.value="";
+  updateValidity();
+  resultSection.style.display="none";
+});
+$("pasteBtn").addEventListener("click",async()=>{
+  try{
+    input.value=await navigator.clipboard.readText();
+    updateValidity();
+  }catch(e){
+    alert("Clipboard tidak dapat dibaca. Gunakan Ctrl+V.");
+  }
+});
+
+document.addEventListener("click",async e=>{
+  const b=e.target.closest(".copy");
+  if(!b)return;
+  const ta=$(b.dataset.target);
+  try{
+    await navigator.clipboard.writeText(ta.value);
+    const old=b.textContent;
+    b.textContent="COPIED";
+    setTimeout(()=>b.textContent=old,900);
+  }catch(err){
+    ta.select();
+    document.execCommand("copy");
+  }
+});
+
+function setProgress(p,msg){
+  progressInner.style.width=Math.max(0,Math.min(100,p))+"%";
+  progressText.textContent=msg;
+}
+
+/* ============================================================
+   MATEMATIKA DERET
+   ------------------------------------------------------------
+   Ini bukan generator angka acak dan bukan frequency/probability.
+   Mesin mencari hubungan antar anggota deret.
+
+   Contoh penting:
+      34 -> 12 -> 90
+   dicoba sebagai:
+      2*12 - 34 = -10
+      -10 direduksi menjadi 90.
+
+   Semua operasi bekerja pada nilai 2D penuh 00..99.
+   ============================================================ */
+
+function mod100(v){
+  v%=100;
+  return v<0?v+100:v;
+}
+function pad2(v){return String(mod100(v)).padStart(2,"0")}
+function circularDist(a,b){
+  const d=Math.abs(a-b);
+  return Math.min(d,100-d);
+}
+
+/* Toleransi 20 = tepat 41 anggota: pusat-20 ... pusat+20.
+   Tidak dipangkas. */
+function toleranceSet(pred,tol){
+  const out=[];
+  for(let d=-tol;d<=tol;d++)out.push(pad2(pred+d));
+  return [...new Set(out)];
+}
+
+function make2Series(data,type){
+  if(type==="AB")return data.map(x=>Number(x.slice(0,2)));
+  if(type==="BC")return data.map(x=>Number(x.slice(1,3)));
+  return data.map(x=>Number(x.slice(2,4)));
+}
+
+/* ============================================================
+   Worker pencarian rumus.
+   ============================================================ */
+const workerCode=`
+"use strict";
+
+const M=v=>{v%=100;return v<0?v+100:v};
+const err=(a,b)=>Math.min(Math.abs(a-b),100-Math.abs(a-b));
+
+function rev(v){
+  v=M(v);
+  return (v%10)*10+Math.floor(v/10);
+}
+function sumDigits(v){
+  v=M(v);
+  return Math.floor(v/10)+(v%10);
+}
+function diffDigits(v){
+  v=M(v);
+  return Math.abs(Math.floor(v/10)-(v%10));
+}
+function prodDigits(v){
+  v=M(v);
+  return Math.floor(v/10)*(v%10);
+}
+function last2(v){return M(v)}
+
+function better(a,b){
+  if(!b)return true;
+  const A=[a.pass,a.exact,-a.sum,-a.maxErr,-a.complexity];
+  const B=[b.pass,b.exact,-b.sum,-b.maxErr,-b.complexity];
+  for(let i=0;i<A.length;i++){
+    if(A[i]!==B[i])return A[i]>B[i];
+  }
+  return false;
+}
+
+function search(series,tol,maxMs,report){
+  const n=series.length;
+  const deadline=performance.now()+maxMs;
+
+  /*
+    Setiap expression mempunyai nilai pada seluruh titik rolling.
+    target[i] hanya boleh diuji menggunakan anggota sebelum i.
+  */
+  const minLag=2;
+  if(n<=minLag)return null;
+
+  const E=[];
+  const seen=new Map();
+
+  function add(values,next,text,complexity){
+    const key=values.join(",")+"|"+M(next);
+    const old=seen.get(key);
+    if(old && old.complexity<=complexity)return;
+    const e={values,next:M(next),text,complexity};
+    seen.set(key,e);
+    E.push(e);
+  }
+
+  /* Lag dasar. */
+  for(let lag=1;lag<=Math.min(6,n-1);lag++){
+    const values=[];
+    for(let i=minLag;i<n;i++)values.push(series[i-lag]);
+    add(values,series[n-lag],"x[n-"+lag+"]",1);
+  }
+
+  /* Transformasi deterministik satu anggota. */
+  const base=E.slice();
+  for(const e of base){
+    if(performance.now()>deadline)return{best:null,timeout:true};
+
+    add(e.values.map(rev),rev(e.next),"REV2("+e.text+")",e.complexity+2);
+    add(e.values.map(sumDigits),sumDigits(e.next),"SUMDIG("+e.text+")",e.complexity+2);
+    add(e.values.map(diffDigits),diffDigits(e.next),"DIFFDIG("+e.text+")",e.complexity+2);
+    add(e.values.map(prodDigits),prodDigits(e.next),"PRODDIG("+e.text+")",e.complexity+2);
+  }
+
+  /*
+    Pola deret eksplisit.
+    34 -> 12 -> 90:
+    2*12 - 34 = -10 -> 90.
+  */
+  const lagMax=Math.min(6,n-1);
+  for(let a=1;a<=lagMax;a++){
+    for(let b=a+1;b<=lagMax;b++){
+      const v1=[],v2=[],v3=[],v4=[],v5=[],v6=[];
+      for(let i=minLag;i<n;i++){
+        const x=series[i-a],y=series[i-b];
+
+        v1.push(M(2*x-y));
+        v2.push(M(2*y-x));
+        v3.push(M(x+(x-y)));
+        v4.push(M(x-(x-y)));
+        v5.push(M(x+y));
+        v6.push(M(x-y));
+      }
+
+      const x=series[n-a],y=series[n-b];
+
+      add(v1,M(2*x-y),"2*x[n-"+a+"] - x[n-"+b+"]",4);
+      add(v2,M(2*y-x),"2*x[n-"+b+"] - x[n-"+a+"]",4);
+      add(v3,M(x+(x-y)),"x[n-"+a+"] + (x[n-"+a+"]-x[n-"+b+"])",4);
+      add(v4,M(x-(x-y)),"x[n-"+a+"] - (x[n-"+a+"]-x[n-"+b+"])",4);
+      add(v5,M(x+y),"x[n-"+a+"] + x[n-"+b+"]",3);
+      add(v6,M(x-y),"x[n-"+a+"] - x[n-"+b+"]",3);
+    }
+  }
+
+  /*
+    Operasi pasangan. Tidak menganggap angka random.
+    Nilai intermediate boleh negatif/>99; hanya hasil 2D akhirnya
+    yang dinormalisasi.
+  */
+  const seed=E.slice();
+  const ops=[
+    ["+",(a,b)=>a+b,1],
+    ["-",(a,b)=>a-b,1],
+    ["×",(a,b)=>a*b,2],
+    ["ABS",(a,b)=>Math.abs(a-b),2],
+    ["MIN",(a,b)=>Math.min(a,b),2],
+    ["MAX",(a,b)=>Math.max(a,b),2]
+  ];
+
+  for(let i=0;i<seed.length;i++){
+    if(performance.now()>deadline)return{best:null,timeout:true};
+    const A=seed[i];
+
+    for(let j=0;j<seed.length;j++){
+      const B=seed[j];
+
+      for(const [name,fn,c] of ops){
+        const values=[];
+        for(let k=0;k<A.values.length;k++){
+          values.push(M(fn(A.values[k],B.values[k])));
+        }
+        add(values,fn(A.next,B.next),
+            "("+A.text+" "+name+" "+B.text+")",
+            A.complexity+B.complexity+c);
+      }
+
+      const floorV=[],ceilV=[];
+      for(let k=0;k<A.values.length;k++){
+        floorV.push(M(Math.floor((A.values[k]+B.values[k])/2)));
+        ceilV.push(M(Math.ceil((A.values[k]+B.values[k])/2)));
+      }
+      add(floorV,Math.floor((A.next+B.next)/2),
+          "FLOOR(("+A.text+" + "+B.text+")/2)",
+          A.complexity+B.complexity+3);
+      add(ceilV,Math.ceil((A.next+B.next)/2),
+          "CEIL(("+A.text+" + "+B.text+")/2)",
+          A.complexity+B.complexity+3);
+    }
+
+    if(i%25===0){
+      report(Math.min(65,8+(i/seed.length)*57),
+             "Membangun pola matematika: "+E.length+" pola");
+    }
+
+    if(E.length>65000)break;
+  }
+
+  /*
+    Back-test.
+    Jangan mencari "formula yang kebetulan benar sekali".
+    Semua titik rolling dihitung dan diberi ukuran:
+      - pass dalam toleransi
+      - exact
+      - jumlah penyimpangan
+      - penyimpangan maksimum
+  */
+  let best=null;
+
+  for(let i=0;i<E.length;i++){
+    if(performance.now()>deadline)return{best,timeout:true};
+
+    const e=E[i];
+    let pass=0,exact=0,sum=0,maxErr=0;
+
+    for(let j=0;j<e.values.length;j++){
+      const target=series[minLag+j];
+      const d=err(e.values[j],target);
+
+      if(d<=tol)pass++;
+      if(d===0)exact++;
+      sum+=d;
+      if(d>maxErr)maxErr=d;
+    }
+
+    const candidate={
+      text:e.text,
+      next:e.next,
+      tests:e.values.length,
+      pass,
+      exact,
+      sum,
+      maxErr,
+      complexity:e.complexity
+    };
+
+    if(better(candidate,best))best=candidate;
+
+    if(i%1000===0){
+      report(66+Math.round((i/E.length)*34),
+             "Rolling back-test: "+i+"/"+E.length+
+             " | terbaik "+(best?best.pass+"/"+best.tests:"-"));
+    }
+  }
+
+  return{best,timeout:false};
+}
+
+self.onmessage=e=>{
+  const r=search(
+    e.data.series,
+    e.data.tol,
+    e.data.maxMs,
+    (p,m)=>self.postMessage({type:"progress",p,m})
+  );
+  self.postMessage({type:"done",result:r.best,timeout:r.timeout});
+};
+`;
+
+function runSeries(series,name,tol,maxSec,offset){
+  return new Promise(resolve=>{
+    const url=URL.createObjectURL(
+      new Blob([workerCode],{type:"application/javascript"})
+    );
+    const w=new Worker(url);
+
+    w.onmessage=e=>{
+      if(e.data.type==="progress"){
+        setProgress(
+          offset+(e.data.p/100)*31,
+          "["+name+"] "+e.data.m
+        );
+      }else{
+        w.terminate();
+        URL.revokeObjectURL(url);
+        resolve(e.data);
+      }
+    };
+
+    w.postMessage({
+      series,
+      tol,
+      maxMs:maxSec*1000
+    });
+  });
+}
+
+/* ============================================================
+   HASIL
+   ============================================================ */
+function renderResult(name,res,tol){
+  const id="res_"+name;
+  const box=document.createElement("div");
+  box.className="resultCard";
+
+  if(!res){
+    box.innerHTML=
+      '<div class="resultHead"><strong>'+name+'</strong>'+
+      '<span class="badge fail">BELUM DITEMUKAN</span></div>'+
+      '<div class="resultArea"><textarea id="'+id+
+      '" placeholder="Tidak ada hasil"></textarea>'+
+      '<button class="copy" data-target="'+id+'">COPY</button></div>'+
+      '<div class="lineCount">JUMLAH LN = 0</div>';
+    digitResults.appendChild(box);
+    return [];
+  }
+
+  const candidates=toleranceSet(res.next,tol);
+
+  box.innerHTML=
+    '<div class="resultHead"><strong>'+name+'</strong>'+
+    '<span class="badge">HASIL '+pad2(res.next)+'</span></div>'+
+    '<div class="resultArea"><textarea id="'+id+
+    '" spellcheck="false"></textarea>'+
+    '<button class="copy" data-target="'+id+'">COPY</button></div>'+
+    '<div class="lineCount">'+
+    'JUMLAH LN = '+candidates.length+
+    ' &nbsp; | &nbsp; TOLERANSI ±'+tol+
+    '</div>'+
+    '<div class="formula"><b>Hubungan matematika terpilih:</b> '+
+    res.text+'</div>'+
+    '<div class="stats">'+
+    'Rolling test: '+res.tests+
+    ' | sesuai toleransi: '+res.pass+'/'+res.tests+
+    ' | tepat: '+res.exact+
+    ' | total penyimpangan: '+res.sum+
+    ' | maksimum: '+res.maxErr+
+    '</div>';
+
+  box.querySelector("textarea").value=candidates.join("*");
+  digitResults.appendChild(box);
+
+  return candidates;
+}
+
+/*
+  ABC hanya dibuat jika:
+    AB = XY
+    BC = YZ
+  maka ABC = XYZ
+
+  BCD:
+    BC = XY
+    CD = YZ
+  maka BCD = XYZ
+*/
+function makeABC(ab,bc){
+  const out=[];
+  for(const a of ab)for(const b of bc){
+    if(a[1]===b[0])out.push(a+b[1]);
+  }
+  return [...new Set(out)];
+}
+function makeBCD(bc,cd){
+  const out=[];
+  for(const b of bc)for(const c of cd){
+    if(b[1]===c[0])out.push(b+c[1]);
+  }
+  return [...new Set(out)];
+}
+
+function renderCross(name,values){
+  const id="cross_"+name;
+  const box=document.createElement("div");
+  box.className="resultCard";
+
+  box.innerHTML=
+    '<div class="resultHead"><strong>'+name+'</strong>'+
+    '<span class="badge">'+values.length+' LN</span></div>'+
+    '<div class="resultArea"><textarea id="'+id+
+    '" spellcheck="false"></textarea>'+
+    '<button class="copy" data-target="'+id+'">COPY</button></div>'+
+    '<div class="lineCount">JUMLAH LN = '+values.length+
+    ' | overlap digit harus cocok</div>';
+
+  box.querySelector("textarea").value=values.join("*");
+  crossResults.appendChild(box);
+}
+
+processBtn.addEventListener("click",async()=>{
+  const p=parseInput();
+  if(!p.valid||p.data.length<5)return;
+
+  const tol=clampInt(tolerance,0,35,20);
+  const sec=clampInt(maxSeconds,10,300,40);
+
+  processBtn.disabled=true;
+  resultSection.style.display="none";
+  progressBox.style.display="block";
+  digitResults.innerHTML="";
+  crossResults.innerHTML="";
+
+  setProgress(0,"Menyiapkan MATEMATIKA DERET...");
+
+  const results={};
+
+  for(let i=0;i<3;i++){
+    const name=["AB","BC","CD"][i];
+    const series=make2Series(p.data,name);
+
+    setProgress(i*31,
+      "Memproses "+name+
+      " sebagai deret 2D penuh 00–99...");
+
+    const r=await runSeries(series,name,tol,sec,i*31);
+    results[name]=r.result
+      ? renderResult(name,r.result,tol)
+      : [];
+  }
+
+  const abc=makeABC(results.AB,results.BC);
+  const bcd=makeBCD(results.BC,results.CD);
+
+  renderCross("ABC",abc);
+  renderCross("BCD",bcd);
+
+  resultSection.style.display="block";
+  setProgress(
+    100,
+    "SELESAI — hubungan matematika deret telah diuji."
+  );
+
+  processBtn.disabled=false;
+});
+
+updateValidity();
+</script>
+</body>
+</html>

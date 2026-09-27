@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mathematical Sequence Learning Engine — Adaptive</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;color:#172033;font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:1220px;margin:24px auto;padding:0 16px}
+h1{margin:0 0 6px;font-size:26px}
+h2{margin:0 0 12px}
+h3{margin:0 0 10px}
+.sub{color:#5b6577;margin-bottom:18px}
+.card{background:#fff;border:1px solid #dbe2ea;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+label{font-weight:700;display:block;margin-bottom:7px}
+textarea,input,button{font:inherit}
+textarea{width:100%;border:1px solid #b9c4d2;border-radius:9px;padding:12px;resize:vertical;outline:none}
+textarea:focus,input:focus{border-color:#526dff;box-shadow:0 0 0 3px rgba(82,109,255,.10)}
+#inputData{min-height:120px;font-family:Consolas,monospace}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{border:0;border-radius:8px;padding:10px 15px;font-weight:700;cursor:pointer}
+.btn{background:#e9eef5;color:#1e293b}
+.primary{background:#315efb;color:#fff}
+.primary:disabled{background:#aab5c7;cursor:not-allowed}
+.danger{background:#fff0f0;color:#b42318}
+.status{margin-top:9px;font-weight:700}.ok{color:#087443}.err{color:#c62828}
+.settings{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:14px}
+.field input{width:100%;padding:10px 11px;border:1px solid #b9c4d2;border-radius:8px}
+.help{font-size:12px;color:#687386;margin-top:5px;line-height:1.45}
+.progressBox{display:none}
+.progressOuter{height:25px;background:#e5eaf1;border-radius:99px;overflow:hidden}
+.progressInner{height:100%;width:0%;background:#315efb;transition:width .12s linear}
+.progressText{margin-top:9px;font-size:13px;color:#465268;min-height:18px}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.resultCard{border:1px solid #dbe2ea;border-radius:10px;padding:14px;background:#fbfcfe}
+.resultHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.resultHead strong{font-size:17px}
+.badge{font-size:12px;border-radius:20px;padding:4px 8px;background:#edf2ff;color:#315efb;white-space:nowrap}
+.badge.fail{background:#fff0f0;color:#b42318}
+.badge.warn{background:#fff7df;color:#8a5a00}
+.resultArea{position:relative}
+.resultArea textarea{min-height:105px;padding-bottom:42px;font-family:Consolas,monospace}
+.copy{position:absolute;right:8px;bottom:8px;padding:7px 11px;font-size:12px;background:#e8edf5}
+.lineCount{font-size:12px;color:#5f6b7d;margin-top:5px}
+.formula{font-family:Consolas,monospace;background:#f0f3f8;border-radius:7px;padding:9px;margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:12px}
+.stats{font-size:12px;color:#58657a;margin-top:7px;line-height:1.55}
+.cross{margin-top:20px}
+.note{font-size:12px;line-height:1.55;color:#58657a}
+.toplist{margin-top:10px;border-top:1px solid #e2e7ee;padding-top:10px}
+.topitem{font-family:Consolas,monospace;font-size:12px;padding:6px 0;border-bottom:1px dashed #e1e5eb}
+.small{font-size:11px;color:#687386}
+@media(max-width:760px){.settings,.results{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Mathematical Sequence Learning Engine — Adaptive</h1>
+    <div class="sub">Rolling backtest pola matematika. Mesin tidak hanya mencari +, −, ×; ia juga menguji tren, selisih, perubahan selisih, transformasi digit, konstanta, dan kombinasi 1–2 langkah sebelumnya.</div>
+
+    <label for="inputData">Masukkan Data RM6</label>
+    <textarea id="inputData" spellcheck="false" placeholder="Contoh: 1239,2347,3651,5843,8859,3467,1251,4863,5679,9867,4871"></textarea>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="pasteBtn">PASTE</button>
+      <button class="btn danger" id="resetBtn">RESET</button>
+      <div id="lnStatus" class="status err">Jumlah LN: ERROR</div>
+    </div>
+
+    <div class="settings" style="margin-top:18px">
+      <div class="field">
+        <label for="tolerance">Toleransi</label>
+        <input id="tolerance" type="number" min="0" max="35" step="1" value="20">
+        <div class="help">0–35. Untuk 1 digit, jarak melingkar 0–9. Untuk 2 digit, jarak numerik 00–99. Default 20.</div>
+      </div>
+      <div class="field">
+        <label for="maxSeconds">Waktu maksimal per kelompok = detik</label>
+        <input id="maxSeconds" type="number" min="10" max="300" step="1" value="45">
+        <div class="help">Mesin akan mencari sebanyak mungkin pola sampai batas waktu, lalu meranking hasil backtest yang sudah diuji.</div>
+      </div>
+    </div>
+
+    <button class="primary" id="processBtn" disabled style="margin-top:16px;width:100%;padding:13px">PROSES</button>
+  </div>
+
+  <div class="card progressBox" id="progressBox">
+    <label>Progress Learning</label>
+    <div class="progressOuter"><div class="progressInner" id="progressInner"></div></div>
+    <div class="progressText" id="progressText">Menunggu proses...</div>
+  </div>
+
+  <div class="card" id="resultSection" style="display:none">
+    <h2>Hasil Learning Per Kelompok</h2>
+    <div class="small">Prediksi adalah nilai SETELAH data terakhir. Backtest hanya memakai target yang memang berada setelah titik input yang dipakai sebagai fitur.</div>
+    <div class="results" id="mainResults"></div>
+
+    <div class="cross">
+      <h3>Hasil Persilangan 2 Digit</h3>
+      <div class="small">AB = ribuan-ratusan, BC = ratusan-puluhan, CD = puluhan-satuan. ABC/BCD hanya dibentuk bila digit yang bertemu benar-benar overlap.</div>
+      <div class="results" id="crossResults"></div>
+    </div>
+  </div>
+
+  <div class="card note">
+    <b>Prinsip penting:</b> misalnya deret 34 → 12 → 90, mesin sekarang juga menguji pola tren
+    <b>next = 2×current − previous</b>. Secara 2D: 2×12−34 = −10 → 90.
+    Contoh lain 34 + 78 = 112 → 12; hasil antara boleh melewati 99 dan baru direduksi ke 2 digit.
+    Jadi angka 12 tidak diperlakukan hanya sebagai “12 hasil tambah biasa”, tetapi dicari jalur pembentukannya.
+    Semua pola tetap wajib diuji pada data historis berikutnya agar tidak sekadar cocok terhadap satu titik.
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const input = $("inputData"), lnStatus = $("lnStatus"), processBtn = $("processBtn");
+const tolerance = $("tolerance"), maxSeconds = $("maxSeconds");
+const progressBox = $("progressBox"), progressInner = $("progressInner"), progressText = $("progressText");
+const resultSection = $("resultSection"), mainResults = $("mainResults"), crossResults = $("crossResults");
+
+function parseInput(){
+  const raw=input.value.trim();
+  if(!raw)return {valid:false,data:[]};
+  const parts=raw.split(",").map(s=>s.trim());
+  if(parts.some(s=>!/^\d{4}$/.test(s)))return {valid:false,data:[]};
+  return {valid:true,data:parts};
+}
+function updateValidity(){
+  const p=parseInput();
+  if(p.valid){
+    lnStatus.textContent="Jumlah LN: "+p.data.length+" LN";
+    lnStatus.className="status ok";
+    processBtn.disabled=p.data.length<5;
+    if(p.data.length<5){
+      lnStatus.textContent="Jumlah LN: "+p.data.length+" LN — minimal 5 LN";
+      lnStatus.className="status err";
+    }
+  }else{
+    lnStatus.textContent="Jumlah LN: ERROR";
+    lnStatus.className="status err";
+    processBtn.disabled=true;
+  }
+}
+input.addEventListener("input",updateValidity);
+
+function clampInt(el,min,max,def){
+  const v=Number(el.value);
+  if(!Number.isInteger(v)||v<min||v>max){el.value=def;return def}
+  return v;
+}
+tolerance.addEventListener("change",()=>clampInt(tolerance,0,35,20));
+maxSeconds.addEventListener("change",()=>clampInt(maxSeconds,10,300,45));
+
+$("resetBtn").addEventListener("click",()=>{
+  input.value="";updateValidity();resultSection.style.display="none";progressBox.style.display="none";
+});
+$("pasteBtn").addEventListener("click",async()=>{
+  try{input.value=await navigator.clipboard.readText();updateValidity()}
+  catch(e){alert("Clipboard tidak dapat dibaca browser. Gunakan Ctrl+V pada area input.")}
+});
+
+document.addEventListener("click",async e=>{
+  const b=e.target.closest(".copy");if(!b)return;
+  const ta=document.getElementById(b.dataset.target);
+  try{await navigator.clipboard.writeText(ta.value)}
+  catch(err){ta.select();document.execCommand("copy")}
+  const old=b.textContent;b.textContent="COPIED";setTimeout(()=>b.textContent=old,900);
+});
+
+function setProgress(p,msg){
+  progressInner.style.width=Math.max(0,Math.min(100,p))+"%";
+  progressText.textContent=msg;
+}
+function digitAt(s,pos){return Number(s[pos])}
+function seriesDigit(data,pos){return data.map(x=>digitAt(x,pos))}
+function seriesPair(data,pos){return data.map(x=>Number(x.slice(pos,pos+2)))}
+
+function distance1(a,b){
+  const d=Math.abs(a-b);
+  return Math.min(d,10-d);
+}
+function distance2(a,b){return Math.abs(a-b)}
+function toleranceSet(pred,tol,max){
+  const out=[];
+  if(max===10){
+    for(let d=-tol;d<=tol;d++)out.push((pred+d+10)%10);
+  }else{
+    for(let d=-tol;d<=tol;d++)if(pred+d>=0&&pred+d<=99)out.push(pred+d);
+  }
+  return [...new Set(out)].sort((a,b)=>a-b).map(v=>max===10?String(v):String(v).padStart(2,"0"));
+}
+function fmt2(v){return String(((v%100)+100)%100).padStart(2,"0")}
+
+function overlapCross(a,b,mode){
+  const out=[];
+  for(const x of a)for(const y of b){
+    const sx=String(x), sy=String(y);
+    if(mode==="ABC" && sx[1]===sy[0])out.push(sx+sy[1]);
+    if(mode==="BCD" && sx[1]===sy[0])out.push(sx+sy[1]);
+  }
+  return [...new Set(out)];
+}
+
+function renderBox(title,badge,values,id,meta=""){
+  const box=document.createElement("div");box.className="resultCard";
+  const text=values.join("*");
+  box.innerHTML=`<div class="resultHead"><strong>${title}</strong><span class="badge">${badge}</span></div>
+    <div class="resultArea"><textarea id="${id}" spellcheck="false"></textarea><button class="copy" data-target="${id}">COPY</button></div>
+    <div class="lineCount">JUMLAH = ${values.length} LN</div>${meta}`;
+  box.querySelector("textarea").value=text;
+  return box;
+}
+
+function renderMainResult(name,res){
+  const id="main_"+name.replace(/[^A-Z0-9]/g,"");
+  let box;
+  if(res.found){
+    const cand=toleranceSet(res.pred,res.tol,res.domain);
+    const top=res.top||[];
+    const meta=`<div class="formula"><b>Pola utama:</b> ${escapeHtml(res.formula)}</div>
+      <div class="stats">Backtest: ${res.tests} target | tepat: ${res.exact}/${res.tests} | toleransi: ${res.pass}/${res.tests} | total deviasi: ${res.errorSum} | deviasi maksimum: ${res.maxErr} | kompleksitas: ${res.complexity}</div>
+      <div class="toplist"><b>Ranking pola teruji:</b>${top.slice(0,5).map((x,i)=>`<div class="topitem">#${i+1} ${escapeHtml(x.formula)} — tepat ${x.exact}/${x.tests}, toleransi ${x.pass}/${x.tests}, deviasi ${x.errorSum}, prediksi akhir ${x.pred}</div>`).join("")}</div>`;
+    box=renderBox(name,"PREDIKSI "+(res.domain===10?res.pred:String(res.pred).padStart(2,"0")),cand,id,meta);
+  }else{
+    box=document.createElement("div");box.className="resultCard";
+    box.innerHTML=`<div class="resultHead"><strong>${name}</strong><span class="badge fail">TIDAK ADA HASIL</span></div>
+      <div class="formula">${escapeHtml(res.message)}</div>`;
+  }
+  mainResults.appendChild(box);
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+function addCross(title,values){
+  if(!values.length)return;
+  const id="cross_"+title;
+  crossResults.appendChild(renderBox(title,values.length+" LN",values,id));
+}
+
+const workerCode = String.raw`
+"use strict";
+
+function modN(v,n){v%=n;return v<0?v+n:v}
+function rev2(v){v=modN(v,100);return (v%10)*10+Math.floor(v/10)}
+function ds(v){v=modN(v,100);return Math.floor(v/10)+(v%10)}
+function dd(v){v=modN(v,100);return Math.abs(Math.floor(v/10)-(v%10))}
+function dp(v){v=modN(v,100);return Math.floor(v/10)*(v%10)}
+function meanF(a,b){return Math.floor((a+b)/2)}
+function meanC(a,b){return Math.ceil((a+b)/2)}
+
+function build(series,domain,tol,maxMs,progress){
+  const deadline=performance.now()+maxMs;
+  const n=series.length;
+  const maxLag=Math.min(5,n-1);
+  const start=maxLag;
+  if(start>=n)return {best:[],aborted:false};
+
+  const dist=domain===10
+    ? (a,b)=>{const d=Math.abs(a-b);return Math.min(d,domain-d)}
+    : (a,b)=>Math.abs(a-b);
+
+  const map=new Map();
+  const expr=[];
+  function add(v,formula,c,next){
+    const sig=v.join(",")+"|"+modN(next,domain);
+    if(map.has(sig))return;
+    const o={v,formula,c,next:modN(next,domain)};
+    map.set(sig,o);expr.push(o);
+  }
+  function vecUnary(src,fn){
+    const v=new Array(src.length);for(let i=0;i<v.length;i++)v[i]=modN(fn(src[i]),domain);return v;
+  }
+  function vecBinary(a,b,fn){
+    const v=new Array(a.length);for(let i=0;i<v.length;i++)v[i]=modN(fn(a[i],b[i]),domain);return v;
+  }
+
+  // Raw lag features: the model may use previous values, never future targets.
+  for(let lag=1;lag<=maxLag;lag++){
+    const v=[];
+    for(let i=start;i<n;i++)v.push(series[i-lag]);
+    add(v,"x[n-"+lag+"]",1,series[n-lag]);
+  }
+
+  // Constants: 0..9 for 1D, 0..99 for 2D.
+  const maxConst=domain===10?9:99;
+  for(let c=0;c<=maxConst;c++)add(new Array(n-start).fill(c),String(c).padStart(domain===10?1:2,"0"),1,c);
+
+  // Unary transformations. For 2D these operate on the complete 00..99 value.
+  const unary=domain===10
+    ? [
+      ["NEG",v=>-v,2],
+      ["ABS",v=>Math.abs(v),2]
+    ]
+    : [
+      ["REV2",rev2,2],
+      ["DIGSUM",ds,2],
+      ["DIGDIFF",dd,2],
+      ["DIGPROD",dp,2],
+      ["NEG",v=>-v,2],
+      ["ABS",v=>Math.abs(v),2]
+    ];
+  const rawSnapshot=expr.slice();
+  for(const e of rawSnapshot){
+    for(const [name,fn,c] of unary){
+      if(performance.now()>deadline)return {best:rank([],series,start,domain,tol),aborted:true};
+      add(vecUnary(e.v,fn),name+"("+e.formula+")",e.c+c,fn(e.next));
+    }
+  }
+
+  // Explicit trend/step constructions.
+  // This catches patterns such as 34 -> 12 -> 90:
+  // 2*12 - 34 = -10 -> 90.
+  for(let lag=2;lag<=maxLag;lag++){
+    const a=expr.find(e=>e.formula==="x[n-1]");
+    const b=expr.find(e=>e.formula==="x[n-"+lag+"]");
+    if(a&&b){
+      const forms=[
+        ["TREND+","2*a-b",(x,y)=>2*x-y],
+        ["TREND-","2*b-a",(x,y)=>2*y-x],
+        ["STEP+","a+(a-b)",(x,y)=>x+(x-y)],
+        ["STEP-","a-(a-b)",(x,y)=>x-(x-y)],
+        ["MID","(a+b)/2",meanF]
+      ];
+      for(const [nm,txt,fn] of forms){
+        const v=vecBinary(a.v,b.v,fn);
+        add(v,nm+"("+a.formula+","+b.formula+")",a.c+b.c+2,fn(a.next,b.next));
+      }
+      const delta=vecBinary(a.v,b.v,(x,y)=>x-y);
+      add(delta,"DELTA("+a.formula+","+b.formula+")",a.c+b.c+2,a.next-b.next);
+    }
+  }
+
+  // Pair arithmetic. Keep expression pool bounded so the browser remains responsive.
+  const ops=[
+    ["+",(a,b)=>a+b,1],["-",(a,b)=>a-b,1],["*", (a,b)=>a*b,2],
+    ["ABS-", (a,b)=>Math.abs(a-b),2],["MIN",(a,b)=>Math.min(a,b),2],
+    ["MAX",(a,b)=>Math.max(a,b),2],
+    ["AVG-F",meanF,2],["AVG-C",meanC,2]
+  ];
+
+  for(let depth=0;depth<2;depth++){
+    const snap=expr.slice();
+    const limit=Math.min(snap.length,depth===0?260:180);
+    for(let ai=0;ai<limit;ai++){
+      if(performance.now()>deadline)return {best:rank(expr,series,start,domain,tol),aborted:true};
+      const a=snap[ai];
+      for(let bi=0;bi<limit;bi++){
+        const b=snap[bi];
+        for(const [nm,fn,cc] of ops){
+          const v=vecBinary(a.v,b.v,fn);
+          add(v,"("+a.formula+" "+nm+" "+b.formula+")",a.c+b.c+cc,fn(a.next,b.next));
+        }
+        if(domain===10){
+          add(vecBinary(a.v,b.v,(x,y)=>10+x-y),"WRAPDELTA("+a.formula+","+b.formula+")",a.c+b.c+3,10+a.next-b.next);
+        }else{
+          // Two-digit-specific constructions: concatenate digit-derived pieces,
+          // carry/overflow naturally through modulo 100, and digit arithmetic.
+          add(vecBinary(a.v,b.v,(x,y)=>10*Math.floor(x/10)+(y%10)),
+            "TEN("+a.formula+")+ONE("+b.formula+")",a.c+b.c+3,
+            10*Math.floor(a.next/10)+(b.next%10));
+          add(vecBinary(a.v,b.v,(x,y)=>10*(x%10)+Math.floor(y/10)),
+            "ONE->TEN("+a.formula+","+b.formula+")",a.c+b.c+3,
+            10*(a.next%10)+Math.floor(b.next/10));
+          add(vecBinary(a.v,b.v,(x,y)=>ds(x)*10+ds(y)),
+            "DIGSUM2("+a.formula+","+b.formula+")",a.c+b.c+3,
+            ds(a.next)*10+ds(b.next));
+          add(vecBinary(a.v,b.v,(x,y)=>dp(x)*10+dp(y)),
+            "DIGPROD2("+a.formula+","+b.formula+")",a.c+b.c+3,
+            dp(a.next)*10+dp(b.next));
+        }
+      }
+      if(ai%20===0)progress(Math.min(86,20+Math.round(60*ai/Math.max(1,limit))),"Membangun pola: "+expr.length+" kandidat");
+    }
+  }
+
+  return {best:rank(expr,series,start,domain,tol),aborted:false};
+}
+
+function rank(expr,series,start,domain,tol){
+  const dist=domain===10
+    ? (a,b)=>{const d=Math.abs(a-b);return Math.min(d,domain-d)}
+    : (a,b)=>Math.abs(a-b);
+  const rows=[];
+  for(const e of expr){
+    let pass=0,exact=0,sum=0,maxErr=0;
+    for(let j=0;j<e.v.length;j++){
+      const er=dist(e.v[j],series[start+j]);
+      if(er<=tol)pass++;
+      if(er===0)exact++;
+      sum+=er;if(er>maxErr)maxErr=er;
+    }
+    rows.push({formula:e.formula,pred:e.next,tests:e.v.length,pass,exact,errorSum:sum,maxErr,complexity:e.c});
+  }
+  rows.sort((a,b)=>
+    b.pass-a.pass ||
+    b.exact-a.exact ||
+    a.errorSum-b.errorSum ||
+    a.maxErr-b.maxErr ||
+    a.complexity-b.complexity
+  );
+  return rows.slice(0,12);
+}
+
+self.onmessage=function(ev){
+  const {series,domain,tol,maxMs}=ev.data;
+  const r=build(series,domain,tol,maxMs,(p,m)=>self.postMessage({type:"progress",p,m}));
+  const best=r.best||[];
+  self.postMessage({type:"done",result:best,aborted:r.aborted});
+};
+`;
+
+function runWorker(series,domain,tol,maxSeconds,groupIndex){
+  return new Promise(resolve=>{
+    const blob=new Blob([workerCode],{type:"application/javascript"});
+    const url=URL.createObjectURL(blob);
+    const w=new Worker(url);
+    let done=false;
+    w.onmessage=e=>{
+      if(e.data.type==="progress"){
+        const base=groupIndex*22;
+        setProgress(base+(e.data.p||0)*0.22,"Kelompok "+(domain===10?"1 digit":"2 digit")+" "+groupIndex+": "+e.data.m);
+      }else if(e.data.type==="done"&&!done){
+        done=true;w.terminate();URL.revokeObjectURL(url);resolve(e.data);
+      }
+    };
+    w.postMessage({series,domain,tol,maxMs:maxSeconds*1000});
+  });
+}
+
+function bestResult(rows,domain,tol){
+  if(!rows||!rows.length)return null;
+  const best=rows[0];
+  return {
+    found:true,pred:best.pred,domain,tol,formula:best.formula,
+    tests:best.tests,pass:best.pass,exact:best.exact,errorSum:best.errorSum,
+    maxErr:best.maxErr,complexity:best.complexity,top:rows
+  };
+}
+
+processBtn.addEventListener("click",async()=>{
+  const p=parseInput();if(!p.valid||p.data.length<5)return;
+  const tol=clampInt(tolerance,0,35,20);
+  const sec=clampInt(maxSeconds,10,300,45);
+
+  processBtn.disabled=true;
+  resultSection.style.display="none";progressBox.style.display="block";
+  mainResults.innerHTML="";crossResults.innerHTML="";
+  setProgress(1,"Menyiapkan rolling backtest...");
+
+  const groups=[
+    {name:"RIBUAN A — 1D",series:seriesDigit(p.data,0),domain:10},
+    {name:"RATUSAN B — 1D",series:seriesDigit(p.data,1),domain:10},
+    {name:"PULUHAN C — 1D",series:seriesDigit(p.data,2),domain:10},
+    {name:"SATUAN D — 1D",series:seriesDigit(p.data,3),domain:10},
+    {name:"AB — 2D",series:seriesPair(p.data,0),domain:100},
+    {name:"BC — 2D",series:seriesPair(p.data,1),domain:100},
+    {name:"CD — 2D",series:seriesPair(p.data,2),domain:100}
+  ];
+
+  const results=[];
+  for(let i=0;i<groups.length;i++){
+    const g=groups[i];
+    setProgress(i*13,"Rolling backtest "+g.name+"...");
+    const r=await runWorker(g.series,g.domain,tol,sec,i);
+    const best=bestResult(r.result,g.domain,tol);
+    results.push(best||{found:false,message:r.aborted
+      ?"Waktu habis sebelum pola selesai diuji. Hasil parsial tidak dipaksakan menjadi prediksi."
+      :"Belum ada pola yang bisa diperingkat."});
+    renderMainResult(g.name,results[i]);
+  }
+
+  // Candidate sets for 2D.
+  const ab=results[4].found?toleranceSet(results[4].pred,tol,100):[];
+  const bc=results[5].found?toleranceSet(results[5].pred,tol,100):[];
+  const cd=results[6].found?toleranceSet(results[6].pred,tol,100):[];
+
+  // Show pair candidate sets directly.
+  if(ab.length)crossResults.appendChild(renderBox("AB Kandidat",""+ab.length+" LN",ab,"pairAB"));
+  if(bc.length)crossResults.appendChild(renderBox("BC Kandidat",""+bc.length+" LN",bc,"pairBC"));
+  if(cd.length)crossResults.appendChild(renderBox("CD Kandidat",""+cd.length+" LN",cd,"pairCD"));
+
+  // Overlap-based crossings: AB + BC -> ABC only when B matches.
+  const abc=overlapCross(ab,bc,"ABC");
+  const bcd=overlapCross(bc,cd,"BCD");
+  if(abc.length)crossResults.appendChild(renderBox("ABC — OVERLAP",""+abc.length+" LN",abc,"crossABC"));
+  if(bcd.length)crossResults.appendChild(renderBox("BCD — OVERLAP",""+bcd.length+" LN",bcd,"crossBCD"));
+
+  // Also provide the three full 2D predictions without mixing unrelated digits.
+  resultSection.style.display="block";
+  setProgress(100,"Selesai. Rolling backtest, ranking pola, prediksi setelah data terakhir, dan overlap ABC/BCD selesai.");
+  processBtn.disabled=false;
+});
+
+updateValidity();
+</script>
+</body>
+</html>
