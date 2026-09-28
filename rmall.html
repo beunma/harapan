@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mathematical Sequence Learning Engine — RM ALL</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;color:#172033;font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:1240px;margin:24px auto;padding:0 16px}
+h1{margin:0 0 6px;font-size:27px} h2{margin:0 0 12px} h3{margin:0 0 10px}
+.sub{color:#5b6577;margin-bottom:18px;line-height:1.5}
+.card{background:#fff;border:1px solid #dbe2ea;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+label{font-weight:700;display:block;margin-bottom:7px}
+textarea,input,button{font:inherit}
+textarea{width:100%;border:1px solid #b9c4d2;border-radius:9px;padding:12px;resize:vertical;outline:none}
+textarea:focus,input:focus{border-color:#526dff;box-shadow:0 0 0 3px rgba(82,109,255,.10)}
+#inputAll{min-height:145px;font-family:Consolas,monospace}
+button{border:0;border-radius:8px;padding:10px 15px;font-weight:700;cursor:pointer}
+button:disabled{cursor:not-allowed}
+.btn{background:#e9eef5;color:#1e293b}.primary{background:#315efb;color:#fff}.primary:disabled{background:#aab5c7}
+.danger{background:#fff0f0;color:#b42318}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.status{margin-top:9px;font-weight:700}.ok{color:#087443}.err{color:#c62828}.warn{color:#8a5a00}
+.settings{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:14px}
+.field input{width:100%;padding:10px 11px;border:1px solid #b9c4d2;border-radius:8px}
+.help{font-size:12px;color:#687386;margin-top:5px;line-height:1.45}
+.dataList{border:1px solid #dbe2ea;border-radius:10px;overflow:hidden;margin-top:10px}
+.dataRow{display:grid;grid-template-columns:55px 1fr 90px;gap:10px;align-items:center;padding:8px 11px;border-bottom:1px solid #e7ebf0}
+.dataRow:last-child{border-bottom:0}.dataRow:nth-child(even){background:#fafbfd}
+.dataValue{font-family:Consolas,monospace;font-weight:700}.dataIndex{color:#687386;font-size:12px}
+.switch{position:relative;display:inline-flex;justify-content:flex-end}.switch input{display:none}
+.slider{width:46px;height:24px;background:#c7ced8;border-radius:20px;display:inline-block;position:relative;cursor:pointer}
+.slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+.switch input:checked + .slider{background:#315efb}.switch input:checked + .slider:before{transform:translateX(22px)}
+.usedBox{min-height:125px;background:#f8fafc}
+.progressBox{display:none}.progressOuter{height:25px;background:#e5eaf1;border-radius:99px;overflow:hidden}
+.progressInner{height:100%;width:0%;background:#315efb;transition:width .12s linear}
+.progressText{margin-top:9px;font-size:13px;color:#465268;min-height:18px}
+.engineStatus{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin-top:12px}
+.engine{border:1px solid #dbe2ea;border-radius:9px;padding:10px;background:#fbfcfe}.engine b{display:block;margin-bottom:4px}
+.engine.pending{color:#687386}.engine.running{border-color:#315efb;background:#f2f5ff}
+.engine.done{border-color:#8bc6a6;background:#f1fbf5}.engine.fail{border-color:#e7aaaa;background:#fff5f5}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.resultCard{border:1px solid #dbe2ea;border-radius:10px;padding:14px;background:#fbfcfe}
+.resultHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.resultHead strong{font-size:17px}.badge{font-size:12px;border-radius:20px;padding:4px 8px;background:#edf2ff;color:#315efb;white-space:nowrap}
+.badge.fail{background:#fff0f0;color:#b42318}.resultArea{position:relative}
+.resultArea textarea{min-height:95px;padding-bottom:42px;font-family:Consolas,monospace}
+.copy{position:absolute;right:8px;bottom:8px;padding:7px 11px;font-size:12px;background:#e8edf5}
+.lineCount{font-size:12px;color:#5f6b7d;margin-top:5px}
+.formula{font-family:Consolas,monospace;background:#f0f3f8;border-radius:7px;padding:9px;margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:12px}
+.stats{font-size:12px;color:#58657a;margin-top:7px;line-height:1.55}.cross{margin-top:20px}
+.note{font-size:12px;line-height:1.55;color:#58657a}.hidden{display:none!important}
+.summaryGroups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.summaryGroup{border:1px solid #dbe2ea;border-radius:10px;padding:14px;background:#fbfcfe}
+.summaryGroup h3{margin:0 0 9px}.summaryGroup.empty{opacity:.65}.summaryArea{position:relative}
+.summaryArea textarea{min-height:80px;padding-bottom:42px;font-family:Consolas,monospace}
+.small{font-size:12px;color:#687386}.separator{margin:18px 0;border:0;border-top:1px solid #e3e8ef}
+@media(max-width:820px){.settings,.results,.summaryGroups,.engineStatus{grid-template-columns:1fr}.dataRow{grid-template-columns:45px 1fr 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="card">
+  <h1>Mathematical Sequence Learning Engine — RM ALL</h1>
+  <div class="sub">Satu mesin gabungan untuk RM6, RM7, RM8, dan RM9. Sumber utama seluruh learning adalah <b>DATA YANG DIPAKAI</b>. Proses: <b>RM6 → RM7 → RM8 → RM9</b>.</div>
+  <h2>1. Masukkan Data RM ALL</h2>
+  <label for="inputAll">Data 4 Digit</label>
+  <textarea id="inputAll" spellcheck="false" placeholder="Contoh: 5360,2874,9583,7206,3026,3054,4580,7161,3276,0147,3072,5266,0288,6055"></textarea>
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="exampleBtn">ISI CONTOH</button>
+    <button class="btn danger" id="clearBtn">KOSONGKAN</button>
+    <button class="btn" id="pasteBtn">PASTE</button>
+    <div id="inputStatus" class="status err">Jumlah data: ERROR</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>2. Pengaturan Learning</h2>
+  <div class="settings">
+    <div class="field"><label for="tol1">Toleransi 1 Digit</label><input id="tol1" type="number" min="0" max="4" step="1" value="3"><div class="help">0–4. Dipakai pada RM9.</div></div>
+    <div class="field"><label for="tol2">Toleransi 2 Digit</label><input id="tol2" type="number" min="0" max="49" step="1" value="30"><div class="help">0–49. Dipakai pada RM6, RM7, dan RM8.</div></div>
+    <div class="field"><label for="maxSeconds">Waktu maksimal per deret = ? detik</label><input id="maxSeconds" type="number" min="5" max="300" step="1" value="50"><div class="help">5–300 detik. Batas pencarian masing-masing deret.</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>3. Data yang Dipakai</h2>
+  <div class="small">Setiap data hasil input ditampilkan. Selector default = <b>ON</b>. Matikan data yang tidak ingin dipakai; textarea DATA YANG DIPAKAI akan mengikuti selector.</div>
+  <div id="selectorList" class="dataList"></div>
+  <div style="margin-top:16px">
+    <label for="usedData">DATA YANG DIPAKAI</label>
+    <textarea id="usedData" class="usedBox" readonly spellcheck="false"></textarea>
+    <div id="usedStatus" class="status err">Jumlah data dipakai: 0</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>4. Jalankan Learning</h2>
+  <div class="small">Data acuan yang diproses adalah isi <b>DATA YANG DIPAKAI</b>.</div>
+  <button class="primary" id="processBtn" disabled style="margin-top:14px;width:100%;padding:13px">JALANKAN LEARNING / PROSES</button>
+  <div id="engineStatus" class="engineStatus">
+    <div class="engine pending" id="stRM6"><b>RM6</b>Menunggu</div>
+    <div class="engine pending" id="stRM7"><b>RM7</b>Menunggu</div>
+    <div class="engine pending" id="stRM8"><b>RM8</b>Menunggu</div>
+    <div class="engine pending" id="stRM9"><b>RM9</b>Menunggu</div>
+  </div>
+</div>
+
+<div class="card progressBox" id="progressBox">
+  <label>Progress Learning</label>
+  <div class="progressOuter"><div class="progressInner" id="progressInner"></div></div>
+  <div class="progressText" id="progressText">Menunggu proses...</div>
+</div>
+
+<div class="card hidden" id="engineResultsCard">
+  <h2>Hasil Learning RM6, RM7, RM8, RM9</h2>
+  <div id="engineResults"></div>
+</div>
+
+<div class="card hidden" id="conclusionCard">
+  <h2>KESIMPULAN DATA SEMUA RM</h2>
+  <div class="small">“ADA 4 Data” berarti kandidat yang sama muncul pada RM6, RM7, RM8, dan RM9. Kelompok lain menunjukkan jumlah RM yang menghasilkan kandidat yang sama. Pengelompokan dinamis.</div>
+
+  <hr class="separator"><h2>DATA AB</h2><div id="sumAB" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA BC</h2><div id="sumBC" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA CD</h2><div id="sumCD" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA ABC</h2><div id="sumABC" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA BCD</h2><div id="sumBCD" class="summaryGroups"></div>
+</div>
+
+<div class="card note"><b>Catatan:</b> RM6, RM7, RM8, dan RM9 memakai engine dari empat HTML sumber. Kandidat kesimpulan tidak diisi angka filler; hanya kandidat yang benar-benar keluar dari engine yang dikelompokkan.</div>
+
+<script>
+"use strict";
+
+const EXAMPLE = "5360,2874,9583,7206,3026,3054,4580,7161,3276,0147,3072,5266,0288,6055";
+const $ = id => document.getElementById(id);
+let inputData = [];
+let resultsByRM = {};
+
+function valid4(s){return /^\d{4}$/.test(String(s).trim())}
+function parseAll(){
+  const raw=$("inputAll").value.trim();
+  if(!raw)return {valid:false,data:[],reason:"kosong"};
+  const parts=raw.split(",").map(s=>s.trim());
+  if(parts.some(s=>!valid4(s)))return {valid:false,data:parts,reason:"format"};
+  return {valid:true,data:parts};
+}
+function updateInputStatus(){
+  const p=parseAll();
+  if(!p.valid){
+    $("inputStatus").textContent="Jumlah data: ERROR";
+    $("inputStatus").className="status err";
+    return;
+  }
+  $("inputStatus").textContent="Jumlah data: "+p.data.length;
+  $("inputStatus").className="status ok";
+}
+function buildSelectors(){
+  const p=parseAll();
+  inputData=p.valid?p.data.slice():[];
+  const box=$("selectorList");
+  box.innerHTML="";
+  if(!p.valid||!p.data.length){
+    box.innerHTML='<div class="dataRow"><div class="dataIndex">-</div><div class="small">Belum ada data valid.</div><div></div></div>';
+    updateUsedData();
+    return;
+  }
+  p.data.forEach((v,i)=>{
+    const row=document.createElement("div");
+    row.className="dataRow";
+    row.innerHTML='<div class="dataIndex">#'+(i+1)+'</div><div class="dataValue">'+escapeHtml(v)+'</div><label class="switch"><input type="checkbox" class="dataToggle" data-index="'+i+'" checked><span class="slider"></span></label>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll(".dataToggle").forEach(cb=>cb.addEventListener("change",updateUsedData));
+  updateUsedData();
+}
+function getUsedHistory(){
+  const arr=[];
+  document.querySelectorAll(".dataToggle").forEach(cb=>{
+    if(cb.checked){
+      const idx=Number(cb.dataset.index);
+      if(inputData[idx]!==undefined)arr.push(inputData[idx]);
+    }
+  });
+  return arr;
+}
+function updateUsedData(){
+  const used=getUsedHistory();
+  $("usedData").value=used.join(",");
+  $("usedStatus").textContent="Jumlah data dipakai: "+used.length;
+  $("usedStatus").className="status "+(used.length>=5?"ok":"err");
+  $("processBtn").disabled=used.length<5;
+}
+$("inputAll").addEventListener("input",()=>{updateInputStatus();buildSelectors();hideResults()});
+$("exampleBtn").addEventListener("click",()=>{$("inputAll").value=EXAMPLE;updateInputStatus();buildSelectors();hideResults()});
+$("clearBtn").addEventListener("click",()=>{$("inputAll").value="";updateInputStatus();buildSelectors();hideResults()});
+$("pasteBtn").addEventListener("click",async()=>{
+  try{$("inputAll").value=await navigator.clipboard.readText();updateInputStatus();buildSelectors();hideResults()}
+  catch(e){alert("Clipboard tidak dapat dibaca browser. Gunakan Ctrl+V pada area input.")}
+});
+function clampInt(el,min,max,def){
+  const v=Number(el.value);
+  if(!Number.isInteger(v)||v<min||v>max){el.value=def;return def}
+  return v;
+}
+$("tol1").addEventListener("change",()=>clampInt($("tol1"),0,4,3));
+$("tol2").addEventListener("change",()=>clampInt($("tol2"),0,49,30));
+$("maxSeconds").addEventListener("change",()=>clampInt($("maxSeconds"),5,300,50));
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function setProgress(percent,msg){$("progressInner").style.width=Math.max(0,Math.min(100,percent))+"%";$("progressText").textContent=msg}
+function setRMStatus(rm,state,text){const el=$("st"+rm);el.className="engine "+state;el.innerHTML="<b>"+rm+"</b>"+escapeHtml(text)}
+function hideResults(){$("engineResultsCard").classList.add("hidden");$("conclusionCard").classList.add("hidden");$("progressBox").style.display="none"}
+function showProgress(){$("progressBox").style.display="block";setProgress(0,"Menyiapkan rolling backtest...")}
+function fmt2(v){return String(((Number(v)%100)+100)%100).padStart(2,"0")}
+function linearTol2(pred,tol){const out=[];for(let d=-tol;d<=tol;d++){const v=pred+d;if(v>=0&&v<=99)out.push(fmt2(v))}return [...new Set(out)]}
+function circularTol2(pred,tol){const out=[];for(let d=-tol;d<=tol;d++)out.push(fmt2(pred+d));return [...new Set(out)]}
+function tol1Set(pred,tol){const out=[];for(let d=-tol;d<=tol;d++)out.push(String(((pred+d)%10+10)%10));return [...new Set(out)].sort((a,b)=>Number(a)-Number(b))}
+function pairSeries(data,kind){return data.map(s=>kind==="AB"?Number(s.slice(0,2)):kind==="BC"?Number(s.slice(1,3)):Number(s.slice(2,4)))}
+function digitSeries(data,pos){return data.map(s=>Number(s[pos]))}
+function overlap2(a,b){const out=[];for(const x of a)for(const y of b){const sx=String(x),sy=String(y);if(sx[1]===sy[0])out.push(sx+sy[1])}return [...new Set(out)]}
+function cross1(a,b){const out=[];for(const x of a)for(const y of b)out.push(String(x)+String(y));return [...new Set(out)]}
+function cross3(a,b,c){const out=[];for(const x of a)for(const y of b)for(const z of c)out.push(String(x)+String(y)+String(z));return [...new Set(out)]}
+
+function createWorker(source,payload,progressBase,progressSpan){
+  return new Promise(resolve=>{
+    const blob=new Blob([source],{type:"application/javascript"});
+    const url=URL.createObjectURL(blob);
+    const w=new Worker(url);
+    let done=false;
+    w.onmessage=e=>{
+      if(e.data.type==="progress"){
+        const p=Number(e.data.p)||0;
+        setProgress(progressBase+(p/100)*progressSpan,e.data.m||"Learning...");
+      }else if(e.data.type==="done"&&!done){
+        done=true;w.terminate();URL.revokeObjectURL(url);resolve(e.data);
+      }
+    };
+    w.onerror=e=>{
+      if(done)return;
+      done=true;w.terminate();URL.revokeObjectURL(url);
+      resolve({type:"done",found:false,error:String(e.message||"Worker error")});
+    };
+    w.postMessage(payload);
+  });
+}
+
+/* Engine sources copied from the four supplied HTMLs. */
+const RM6_WORKER = "\n\"use strict\";\n\nfunction modN(v,n){v%=n;return v<0?v+n:v}\nfunction rev2(v){v=modN(v,100);return (v%10)*10+Math.floor(v/10)}\nfunction ds(v){v=modN(v,100);return Math.floor(v/10)+(v%10)}\nfunction dd(v){v=modN(v,100);return Math.abs(Math.floor(v/10)-(v%10))}\nfunction dp(v){v=modN(v,100);return Math.floor(v/10)*(v%10)}\nfunction meanF(a,b){return Math.floor((a+b)/2)}\nfunction meanC(a,b){return Math.ceil((a+b)/2)}\n\nfunction build(series,domain,tol,maxMs,progress){\n  const deadline=performance.now()+maxMs;\n  const n=series.length;\n  const maxLag=Math.min(5,n-1);\n  const start=maxLag;\n  if(start>=n)return {best:[],aborted:false};\n\n  const dist=domain===10\n    ? (a,b)=>{const d=Math.abs(a-b);return Math.min(d,domain-d)}\n    : (a,b)=>Math.abs(a-b);\n\n  const map=new Map();\n  const expr=[];\n  function add(v,formula,c,next){\n    const sig=v.join(\",\")+\"|\"+modN(next,domain);\n    if(map.has(sig))return;\n    const o={v,formula,c,next:modN(next,domain)};\n    map.set(sig,o);expr.push(o);\n  }\n  function vecUnary(src,fn){\n    const v=new Array(src.length);for(let i=0;i<v.length;i++)v[i]=modN(fn(src[i]),domain);return v;\n  }\n  function vecBinary(a,b,fn){\n    const v=new Array(a.length);for(let i=0;i<v.length;i++)v[i]=modN(fn(a[i],b[i]),domain);return v;\n  }\n\n  // Raw lag features: the model may use previous values, never future targets.\n  for(let lag=1;lag<=maxLag;lag++){\n    const v=[];\n    for(let i=start;i<n;i++)v.push(series[i-lag]);\n    add(v,\"x[n-\"+lag+\"]\",1,series[n-lag]);\n  }\n\n  // Constants: 0..9 for 1D, 0..99 for 2D.\n  const maxConst=domain===10?9:99;\n  for(let c=0;c<=maxConst;c++)add(new Array(n-start).fill(c),String(c).padStart(domain===10?1:2,\"0\"),1,c);\n\n  // Unary transformations. For 2D these operate on the complete 00..99 value.\n  const unary=domain===10\n    ? [\n      [\"NEG\",v=>-v,2],\n      [\"ABS\",v=>Math.abs(v),2]\n    ]\n    : [\n      [\"REV2\",rev2,2],\n      [\"DIGSUM\",ds,2],\n      [\"DIGDIFF\",dd,2],\n      [\"DIGPROD\",dp,2],\n      [\"NEG\",v=>-v,2],\n      [\"ABS\",v=>Math.abs(v),2]\n    ];\n  const rawSnapshot=expr.slice();\n  for(const e of rawSnapshot){\n    for(const [name,fn,c] of unary){\n      if(performance.now()>deadline)return {best:rank([],series,start,domain,tol),aborted:true};\n      add(vecUnary(e.v,fn),name+\"(\"+e.formula+\")\",e.c+c,fn(e.next));\n    }\n  }\n\n  // Explicit trend/step constructions.\n  // This catches patterns such as 34 -> 12 -> 90:\n  // 2*12 - 34 = -10 -> 90.\n  for(let lag=2;lag<=maxLag;lag++){\n    const a=expr.find(e=>e.formula===\"x[n-1]\");\n    const b=expr.find(e=>e.formula===\"x[n-\"+lag+\"]\");\n    if(a&&b){\n      const forms=[\n        [\"TREND+\",\"2*a-b\",(x,y)=>2*x-y],\n        [\"TREND-\",\"2*b-a\",(x,y)=>2*y-x],\n        [\"STEP+\",\"a+(a-b)\",(x,y)=>x+(x-y)],\n        [\"STEP-\",\"a-(a-b)\",(x,y)=>x-(x-y)],\n        [\"MID\",\"(a+b)/2\",meanF]\n      ];\n      for(const [nm,txt,fn] of forms){\n        const v=vecBinary(a.v,b.v,fn);\n        add(v,nm+\"(\"+a.formula+\",\"+b.formula+\")\",a.c+b.c+2,fn(a.next,b.next));\n      }\n      const delta=vecBinary(a.v,b.v,(x,y)=>x-y);\n      add(delta,\"DELTA(\"+a.formula+\",\"+b.formula+\")\",a.c+b.c+2,a.next-b.next);\n    }\n  }\n\n  // Pair arithmetic. Keep expression pool bounded so the browser remains responsive.\n  const ops=[\n    [\"+\",(a,b)=>a+b,1],[\"-\",(a,b)=>a-b,1],[\"*\", (a,b)=>a*b,2],\n    [\"ABS-\", (a,b)=>Math.abs(a-b),2],[\"MIN\",(a,b)=>Math.min(a,b),2],\n    [\"MAX\",(a,b)=>Math.max(a,b),2],\n    [\"AVG-F\",meanF,2],[\"AVG-C\",meanC,2]\n  ];\n\n  for(let depth=0;depth<2;depth++){\n    const snap=expr.slice();\n    const limit=Math.min(snap.length,depth===0?260:180);\n    for(let ai=0;ai<limit;ai++){\n      if(performance.now()>deadline)return {best:rank(expr,series,start,domain,tol),aborted:true};\n      const a=snap[ai];\n      for(let bi=0;bi<limit;bi++){\n        const b=snap[bi];\n        for(const [nm,fn,cc] of ops){\n          const v=vecBinary(a.v,b.v,fn);\n          add(v,\"(\"+a.formula+\" \"+nm+\" \"+b.formula+\")\",a.c+b.c+cc,fn(a.next,b.next));\n        }\n        if(domain===10){\n          add(vecBinary(a.v,b.v,(x,y)=>10+x-y),\"WRAPDELTA(\"+a.formula+\",\"+b.formula+\")\",a.c+b.c+3,10+a.next-b.next);\n        }else{\n          // Two-digit-specific constructions: concatenate digit-derived pieces,\n          // carry/overflow naturally through modulo 100, and digit arithmetic.\n          add(vecBinary(a.v,b.v,(x,y)=>10*Math.floor(x/10)+(y%10)),\n            \"TEN(\"+a.formula+\")+ONE(\"+b.formula+\")\",a.c+b.c+3,\n            10*Math.floor(a.next/10)+(b.next%10));\n          add(vecBinary(a.v,b.v,(x,y)=>10*(x%10)+Math.floor(y/10)),\n            \"ONE->TEN(\"+a.formula+\",\"+b.formula+\")\",a.c+b.c+3,\n            10*(a.next%10)+Math.floor(b.next/10));\n          add(vecBinary(a.v,b.v,(x,y)=>ds(x)*10+ds(y)),\n            \"DIGSUM2(\"+a.formula+\",\"+b.formula+\")\",a.c+b.c+3,\n            ds(a.next)*10+ds(b.next));\n          add(vecBinary(a.v,b.v,(x,y)=>dp(x)*10+dp(y)),\n            \"DIGPROD2(\"+a.formula+\",\"+b.formula+\")\",a.c+b.c+3,\n            dp(a.next)*10+dp(b.next));\n        }\n      }\n      if(ai%20===0)progress(Math.min(86,20+Math.round(60*ai/Math.max(1,limit))),\"Membangun pola: \"+expr.length+\" kandidat\");\n    }\n  }\n\n  return {best:rank(expr,series,start,domain,tol),aborted:false};\n}\n\nfunction rank(expr,series,start,domain,tol){\n  const dist=domain===10\n    ? (a,b)=>{const d=Math.abs(a-b);return Math.min(d,domain-d)}\n    : (a,b)=>Math.abs(a-b);\n  const rows=[];\n  for(const e of expr){\n    let pass=0,exact=0,sum=0,maxErr=0;\n    for(let j=0;j<e.v.length;j++){\n      const er=dist(e.v[j],series[start+j]);\n      if(er<=tol)pass++;\n      if(er===0)exact++;\n      sum+=er;if(er>maxErr)maxErr=er;\n    }\n    rows.push({formula:e.formula,pred:e.next,tests:e.v.length,pass,exact,errorSum:sum,maxErr,complexity:e.c});\n  }\n  rows.sort((a,b)=>\n    b.pass-a.pass ||\n    b.exact-a.exact ||\n    a.errorSum-b.errorSum ||\n    a.maxErr-b.maxErr ||\n    a.complexity-b.complexity\n  );\n  return rows.slice(0,12);\n}\n\nself.onmessage=function(ev){\n  const {series,domain,tol,maxMs}=ev.data;\n  const r=build(series,domain,tol,maxMs,(p,m)=>self.postMessage({type:\"progress\",p,m}));\n  const best=r.best||[];\n  self.postMessage({type:\"done\",result:best,aborted:r.aborted});\n};";
+const RM7_WORKER = "\n\"use strict\";\n\nfunction mod100(x){x%=100;return x<0?x+100:x}\nfunction err(a,b){const d=Math.abs(a-b);return Math.min(d,100-d)}\n\nfunction search(series,tol,maxMs,report){\n  const deadline=performance.now()+maxMs;\n  const n=series.length;\n  if(n<5)return {best:null,timeout:false,checked:0};\n\n  /*\n    Expression memakai riwayat aktual.\n    evalAt(i) menghasilkan anggota target ke-i dari anggota sebelum i.\n    Formula juga mempunyai next() untuk menghitung anggota sesudah data terakhir.\n  */\n  const formulas=[];\n  const seen=new Set();\n\n  function add(f){\n    // Signature berbasis seluruh hasil rolling + hasil sesudah terakhir.\n    const sig=f.train.join(\",\")+\"|\"+f.next;\n    if(seen.has(sig))return;\n    seen.add(sig);\n    formulas.push(f);\n  }\n\n  const lags=Math.min(4,n-1);\n\n  // 1) Konstanta dan lag langsung.\n  for(let lag=1;lag<=lags;lag++){\n    const train=[];\n    for(let i=lags;i<n;i++)train.push(series[i-lag]);\n    const next=series[n-lag];\n    add({\n      train, next, complexity:1,\n      formula:\"x[n-\"+lag+\"]\"\n    });\n  }\n\n  // 2) Perubahan antaranggota: x[n-1] + d, dengan d dicari sistematis.\n  for(let d=-50;d<=50;d++){\n    const train=[];\n    for(let i=1;i<n;i++)train.push(mod100(series[i-1]+d));\n    add({\n      train, next:mod100(series[n-1]+d),\n      complexity:2,\n      formula:\"x[n-1] \"+(d>=0?\"+ \"+d:\"- \"+Math.abs(d))\n    });\n  }\n\n  // 3) Linear recurrence dua dan tiga lag.\n  for(let a=-5;a<=5;a++){\n    for(let b=-5;b<=5;b++){\n      for(let k=-20;k<=20;k++){\n        if(performance.now()>deadline)return {best:null,timeout:true,checked:formulas.length};\n        if(a===0&&b===0)continue;\n        const train=[];\n        for(let i=2;i<n;i++){\n          train.push(mod100(a*series[i-1]+b*series[i-2]+k));\n        }\n        const next=mod100(a*series[n-1]+b*series[n-2]+k);\n        add({\n          train,next,\n          complexity:Math.abs(a)+Math.abs(b)+2,\n          formula:\n            a+\"\u00d7x[n-1] \"+\n            (b>=0?\"+ \"+b:\"- \"+Math.abs(b))+\"\u00d7x[n-2] \"+\n            (k>=0?\"+ \"+k:\"- \"+Math.abs(k))\n        });\n      }\n    }\n  }\n\n  for(let a=-4;a<=4;a++){\n    for(let b=-4;b<=4;b++){\n      for(let c=-3;c<=3;c++){\n        for(let k=-20;k<=20;k++){\n          if(performance.now()>deadline)return {best:null,timeout:true,checked:formulas.length};\n          if(a===0&&b===0&&c===0)continue;\n          const train=[];\n          for(let i=3;i<n;i++){\n            train.push(mod100(a*series[i-1]+b*series[i-2]+c*series[i-3]+k));\n          }\n          const next=mod100(a*series[n-1]+b*series[n-2]+c*series[n-3]+k);\n          add({\n            train,next,\n            complexity:Math.abs(a)+Math.abs(b)+Math.abs(c)+3,\n            formula:\n              a+\"\u00d7x[n-1] \"+\n              (b>=0?\"+ \"+b:\"- \"+Math.abs(b))+\"\u00d7x[n-2] \"+\n              (c>=0?\"+ \"+c:\"- \"+Math.abs(c))+\"\u00d7x[n-3] \"+\n              (k>=0?\"+ \"+k:\"- \"+Math.abs(k))\n          });\n        }\n      }\n    }\n  }\n\n  report(35,\"Membangun \"+formulas.length.toLocaleString()+\" hubungan matematika...\");\n\n  // 4) Bentuk matematis tambahan yang jelas dan deterministik.\n  const unary=[\n    {name:\"REV\",fn:x=>{x=mod100(x);return (x%10)*10+Math.floor(x/10)},c:2},\n    {name:\"SUMDIG\",fn:x=>Math.floor(mod100(x)/10)+(mod100(x)%10),c:2},\n    {name:\"DIFFDIG\",fn:x=>Math.floor(mod100(x)/10)-(mod100(x)%10),c:2},\n    {name:\"PRODDIG\",fn:x=>Math.floor(mod100(x)/10)*(mod100(x)%10),c:2},\n    {name:\"COMP\",fn:x=>99-mod100(x),c:2}\n  ];\n\n  const baseSnapshot=formulas.slice();\n  for(const u of unary){\n    for(const f of baseSnapshot){\n      if(performance.now()>deadline)return {best:null,timeout:true,checked:formulas.length};\n      const train=f.train.map(u.fn);\n      add({\n        train,\n        next:mod100(u.fn(f.next)),\n        complexity:f.complexity+u.c,\n        formula:u.name+\"(\"+f.formula+\")\"\n      });\n    }\n  }\n\n  report(50,\"Menguji hubungan matematika: \"+formulas.length.toLocaleString()+\" pola unik\");\n\n  let best=null;\n  let checked=0;\n\n  for(const f of formulas){\n    if(performance.now()>deadline)return {best,timeout:true,checked};\n\n    let pass=0,exact=0,sum=0,maxErr=0;\n    // Formula hanya dibandingkan dengan target yang benar-benar sudah diketahui.\n    // Anggota terakhir TIDAK dijadikan target; setelah itu baru next dihitung.\n    for(let j=0;j<f.train.length;j++){\n      const target=series[j+(n-f.train.length)];\n      const e=err(f.train[j],target);\n      if(e<=tol)pass++;\n      if(e===0)exact++;\n      sum+=e;\n      if(e>maxErr)maxErr=e;\n    }\n\n    checked++;\n\n    // Wajib 100% titik uji berada dalam toleransi.\n    if(pass===f.train.length){\n      const score=[exact,-sum,-maxErr,-f.complexity];\n      if(!best ||\n        score[0]>best.score[0] ||\n        (score[0]===best.score[0]&&score[1]>best.score[1]) ||\n        (score[0]===best.score[0]&&score[1]===best.score[1]&&score[2]>best.score[2]) ||\n        (score[0]===best.score[0]&&score[1]===best.score[1]&&score[2]===best.score[2]&&score[3]>best.score[3])){\n        best={\n          next:mod100(f.next),\n          formula:f.formula,\n          tests:f.train.length,\n          pass,exact,sum,maxErr,\n          complexity:f.complexity,\n          score\n        };\n      }\n    }\n\n    if(checked%5000===0){\n      report(50+Math.round(48*checked/formulas.length),\n        \"Rolling backtest: \"+checked.toLocaleString()+\"/\"+formulas.length.toLocaleString());\n    }\n  }\n\n  return {best,timeout:false,checked};\n}\n\nself.onmessage=e=>{\n  const r=search(e.data.series,e.data.tol,e.data.maxMs,(p,m)=>self.postMessage({type:\"progress\",p,m}));\n  self.postMessage({type:\"done\",found:!!r.best,timeout:r.timeout,checked:r.checked,result:r.best});\n};";
+const RM8_WORKER = "\n\"use strict\";\n\nconst M=v=>{v%=100;return v<0?v+100:v};\nconst err=(a,b)=>Math.min(Math.abs(a-b),100-Math.abs(a-b));\n\nfunction rev(v){\n  v=M(v);\n  return (v%10)*10+Math.floor(v/10);\n}\nfunction sumDigits(v){\n  v=M(v);\n  return Math.floor(v/10)+(v%10);\n}\nfunction diffDigits(v){\n  v=M(v);\n  return Math.abs(Math.floor(v/10)-(v%10));\n}\nfunction prodDigits(v){\n  v=M(v);\n  return Math.floor(v/10)*(v%10);\n}\nfunction last2(v){return M(v)}\n\nfunction better(a,b){\n  if(!b)return true;\n  const A=[a.pass,a.exact,-a.sum,-a.maxErr,-a.complexity];\n  const B=[b.pass,b.exact,-b.sum,-b.maxErr,-b.complexity];\n  for(let i=0;i<A.length;i++){\n    if(A[i]!==B[i])return A[i]>B[i];\n  }\n  return false;\n}\n\nfunction search(series,tol,maxMs,report){\n  const n=series.length;\n  const deadline=performance.now()+maxMs;\n\n  /*\n    Setiap expression mempunyai nilai pada seluruh titik rolling.\n    target[i] hanya boleh diuji menggunakan anggota sebelum i.\n  */\n  const minLag=2;\n  if(n<=minLag)return null;\n\n  const E=[];\n  const seen=new Map();\n\n  function add(values,next,text,complexity){\n    const key=values.join(\",\")+\"|\"+M(next);\n    const old=seen.get(key);\n    if(old && old.complexity<=complexity)return;\n    const e={values,next:M(next),text,complexity};\n    seen.set(key,e);\n    E.push(e);\n  }\n\n  /* Lag dasar. */\n  for(let lag=1;lag<=Math.min(6,n-1);lag++){\n    const values=[];\n    for(let i=minLag;i<n;i++)values.push(series[i-lag]);\n    add(values,series[n-lag],\"x[n-\"+lag+\"]\",1);\n  }\n\n  /* Transformasi deterministik satu anggota. */\n  const base=E.slice();\n  for(const e of base){\n    if(performance.now()>deadline)return{best:null,timeout:true};\n\n    add(e.values.map(rev),rev(e.next),\"REV2(\"+e.text+\")\",e.complexity+2);\n    add(e.values.map(sumDigits),sumDigits(e.next),\"SUMDIG(\"+e.text+\")\",e.complexity+2);\n    add(e.values.map(diffDigits),diffDigits(e.next),\"DIFFDIG(\"+e.text+\")\",e.complexity+2);\n    add(e.values.map(prodDigits),prodDigits(e.next),\"PRODDIG(\"+e.text+\")\",e.complexity+2);\n  }\n\n  /*\n    Pola deret eksplisit.\n    34 -> 12 -> 90:\n    2*12 - 34 = -10 -> 90.\n  */\n  const lagMax=Math.min(6,n-1);\n  for(let a=1;a<=lagMax;a++){\n    for(let b=a+1;b<=lagMax;b++){\n      const v1=[],v2=[],v3=[],v4=[],v5=[],v6=[];\n      for(let i=minLag;i<n;i++){\n        const x=series[i-a],y=series[i-b];\n\n        v1.push(M(2*x-y));\n        v2.push(M(2*y-x));\n        v3.push(M(x+(x-y)));\n        v4.push(M(x-(x-y)));\n        v5.push(M(x+y));\n        v6.push(M(x-y));\n      }\n\n      const x=series[n-a],y=series[n-b];\n\n      add(v1,M(2*x-y),\"2*x[n-\"+a+\"] - x[n-\"+b+\"]\",4);\n      add(v2,M(2*y-x),\"2*x[n-\"+b+\"] - x[n-\"+a+\"]\",4);\n      add(v3,M(x+(x-y)),\"x[n-\"+a+\"] + (x[n-\"+a+\"]-x[n-\"+b+\"])\",4);\n      add(v4,M(x-(x-y)),\"x[n-\"+a+\"] - (x[n-\"+a+\"]-x[n-\"+b+\"])\",4);\n      add(v5,M(x+y),\"x[n-\"+a+\"] + x[n-\"+b+\"]\",3);\n      add(v6,M(x-y),\"x[n-\"+a+\"] - x[n-\"+b+\"]\",3);\n    }\n  }\n\n  /*\n    Operasi pasangan. Tidak menganggap angka random.\n    Nilai intermediate boleh negatif/>99; hanya hasil 2D akhirnya\n    yang dinormalisasi.\n  */\n  const seed=E.slice();\n  const ops=[\n    [\"+\",(a,b)=>a+b,1],\n    [\"-\",(a,b)=>a-b,1],\n    [\"\u00d7\",(a,b)=>a*b,2],\n    [\"ABS\",(a,b)=>Math.abs(a-b),2],\n    [\"MIN\",(a,b)=>Math.min(a,b),2],\n    [\"MAX\",(a,b)=>Math.max(a,b),2]\n  ];\n\n  for(let i=0;i<seed.length;i++){\n    if(performance.now()>deadline)return{best:null,timeout:true};\n    const A=seed[i];\n\n    for(let j=0;j<seed.length;j++){\n      const B=seed[j];\n\n      for(const [name,fn,c] of ops){\n        const values=[];\n        for(let k=0;k<A.values.length;k++){\n          values.push(M(fn(A.values[k],B.values[k])));\n        }\n        add(values,fn(A.next,B.next),\n            \"(\"+A.text+\" \"+name+\" \"+B.text+\")\",\n            A.complexity+B.complexity+c);\n      }\n\n      const floorV=[],ceilV=[];\n      for(let k=0;k<A.values.length;k++){\n        floorV.push(M(Math.floor((A.values[k]+B.values[k])/2)));\n        ceilV.push(M(Math.ceil((A.values[k]+B.values[k])/2)));\n      }\n      add(floorV,Math.floor((A.next+B.next)/2),\n          \"FLOOR((\"+A.text+\" + \"+B.text+\")/2)\",\n          A.complexity+B.complexity+3);\n      add(ceilV,Math.ceil((A.next+B.next)/2),\n          \"CEIL((\"+A.text+\" + \"+B.text+\")/2)\",\n          A.complexity+B.complexity+3);\n    }\n\n    if(i%25===0){\n      report(Math.min(65,8+(i/seed.length)*57),\n             \"Membangun pola matematika: \"+E.length+\" pola\");\n    }\n\n    if(E.length>65000)break;\n  }\n\n  /*\n    Back-test.\n    Jangan mencari \"formula yang kebetulan benar sekali\".\n    Semua titik rolling dihitung dan diberi ukuran:\n      - pass dalam toleransi\n      - exact\n      - jumlah penyimpangan\n      - penyimpangan maksimum\n  */\n  let best=null;\n\n  for(let i=0;i<E.length;i++){\n    if(performance.now()>deadline)return{best,timeout:true};\n\n    const e=E[i];\n    let pass=0,exact=0,sum=0,maxErr=0;\n\n    for(let j=0;j<e.values.length;j++){\n      const target=series[minLag+j];\n      const d=err(e.values[j],target);\n\n      if(d<=tol)pass++;\n      if(d===0)exact++;\n      sum+=d;\n      if(d>maxErr)maxErr=d;\n    }\n\n    const candidate={\n      text:e.text,\n      next:e.next,\n      tests:e.values.length,\n      pass,\n      exact,\n      sum,\n      maxErr,\n      complexity:e.complexity\n    };\n\n    if(better(candidate,best))best=candidate;\n\n    if(i%1000===0){\n      report(66+Math.round((i/E.length)*34),\n             \"Rolling back-test: \"+i+\"/\"+E.length+\n             \" | terbaik \"+(best?best.pass+\"/\"+best.tests:\"-\"));\n    }\n  }\n\n  return{best,timeout:false};\n}\n\nself.onmessage=e=>{\n  const r=search(\n    e.data.series,\n    e.data.tol,\n    e.data.maxMs,\n    (p,m)=>self.postMessage({type:\"progress\",p,m})\n  );\n  self.postMessage({type:\"done\",result:r.best,timeout:r.timeout});\n};";
+const RM9_WORKER = "\n\"use strict\";\nfunction cd(a,b){const d=Math.abs(a-b);return Math.min(d,10-d)}\nfunction mod10(v){v=v%10;return v<0?v+10:v}\nfunction buildExpressions(series, deadline, tol, progress){\n  const maxLag=Math.min(4,series.length-1);\n  const start=maxLag;\n  if(start>=series.length)return null;\n\n  // Expression object: {v: vector of predictions over all training points, s: text, c: complexity}\n  let exprs=[];\n  const seen=new Map();\n  function add(v,s,c,next){\n    const sig=v.join(\",\")+\"|\"+mod10(next);\n    const old=seen.get(sig);\n    if(old && old.c<=c)return;\n    const o={v,s,c,next:mod10(next)};seen.set(sig,o);exprs.push(o);\n  }\n  for(let l=1;l<=maxLag;l++){\n    const v=[];\n    for(let i=start;i<series.length;i++)v.push(series[i-l]);\n    add(v,\"x[n-\"+l+\"]\",1,series[series.length-l]);\n  }\n  for(let c=0;c<=9;c++)add(new Array(series.length-start).fill(c),String(c),1,c);\n\n  const ops=[\n    {n:\"+\",f:(a,b)=>a+b,c:1},\n    {n:\"-\",f:(a,b)=>a-b,c:1},\n    {n:\"*\",f:(a,b)=>a*b,c:2},\n    {n:\"abs-\",f:(a,b)=>Math.abs(a-b),c:2},\n    {n:\"min\",f:(a,b)=>Math.min(a,b),c:2},\n    {n:\"max\",f:(a,b)=>Math.max(a,b),c:2}\n  ];\n\n  // Build depth 1, then depth 2. All arithmetic is deterministic and reduced modulo 10.\n  for(let depth=0;depth<2;depth++){\n    const snapshot=exprs.slice();\n    const newItems=[];\n    for(let ai=0;ai<snapshot.length;ai++){\n      if(performance.now()>deadline)return {exprs,aborted:true,start};\n      const a=snapshot[ai];\n      for(let bi=0;bi<snapshot.length;bi++){\n        const b=snapshot[bi];\n        for(const op of ops){\n          const v=new Array(a.v.length);\n          for(let j=0;j<v.length;j++)v[j]=mod10(op.f(a.v[j],b.v[j]));\n          const s=op.n===\"abs-\" ? \"ABS(\"+a.s+\" - \"+b.s+\")\" : \"(\"+a.s+\" \"+op.n+\" \"+b.s+\")\";\n          const c=a.c+b.c+op.c;\n          const sig=v.join(\",\")+\"|\"+mod10(op.f(a.next,b.next));\n          if(!seen.has(sig)){newItems.push({v,s,c,next:mod10(op.f(a.next,b.next))});}\n        }\n        // Average / floor / ceiling are useful mathematical transformations.\n        const vf=new Array(a.v.length), vc=new Array(a.v.length);\n        for(let j=0;j<a.v.length;j++){\n          vf[j]=mod10(Math.floor((a.v[j]+b.v[j])/2));\n          vc[j]=mod10(Math.ceil((a.v[j]+b.v[j])/2));\n        }\n        if(!seen.has(vf.join(\",\")+\"|\"+mod10(Math.floor((a.next+b.next)/2))))newItems.push({v:vf,s:\"FLOOR((\"+a.s+\" + \"+b.s+\")/2)\",c:a.c+b.c+3,next:mod10(Math.floor((a.next+b.next)/2))});\n        if(!seen.has(vc.join(\",\")+\"|\"+mod10(Math.ceil((a.next+b.next)/2))))newItems.push({v:vc,s:\"CEILING((\"+a.s+\" + \"+b.s+\")/2)\",c:a.c+b.c+3,next:mod10(Math.ceil((a.next+b.next)/2))});\n      }\n    }\n    for(const x of newItems)add(x.v,x.s,x.c,x.next);\n    progress(Math.min(94,20+depth*35+Math.round(Math.min(1,exprs.length/30000)*25)), \"Membangun kandidat rumus matematika: \"+exprs.length+\" pola\");\n  }\n\n  // Score every generated expression. Formula is accepted only if every tested point\n  // is inside the selected tolerance.\n  let best=null;\n  let checked=0;\n  for(const e of exprs){\n    if(performance.now()>deadline)return {best,exprs,aborted:true,start};\n    let pass=0,exact=0,sum=0,maxErr=0;\n    for(let j=0;j<e.v.length;j++){\n      const err=cd(e.v[j],series[start+j]);\n      if(err<=tol)pass++;\n      if(err===0)exact++;\n      sum+=err; if(err>maxErr)maxErr=err;\n    }\n    checked++;\n    if(pass===e.v.length){\n      // IMPORTANT: e.v[e.v.length-1] is the prediction of the LAST KNOWN\n      // target. The actual output must be the value AFTER the final input.\n      // Therefore use the separately propagated next-state evaluation.\n      const pred=e.next;\n      // Prefer: exact matches, then smaller total deviation, then smaller\n      // maximum deviation, then simpler formula.\n      const score=[exact,-sum,-maxErr,-e.c];\n      if(!best || score[0]>best.score[0] ||\n         (score[0]===best.score[0] && score[1]>best.score[1]) ||\n         (score[0]===best.score[0] && score[1]===best.score[1] && score[2]>best.score[2]) ||\n         (score[0]===best.score[0] && score[1]===best.score[1] && score[2]===best.score[2] && score[3]>best.score[3])){\n        best={formula:e.s,pred,tests:e.v.length,pass,exact,errorSum:sum,maxErr,complexity:e.c,score};\n      }\n    }\n    if(checked%5000===0)progress(70+Math.round(25*checked/Math.max(1,exprs.length)),\"Menguji formula: \"+checked+\"/\"+exprs.length);\n  }\n  return {best,exprs,aborted:false,start};\n}\nself.onmessage=function(ev){\n  const {series,tol,maxMs}=ev.data;\n  const deadline=performance.now()+maxMs;\n  const r=buildExpressions(series,deadline,tol,(p,m)=>self.postMessage({type:\"progress\",p,m}));\n  if(r.best){\n    self.postMessage({type:\"done\",found:true,result:r.best});\n  }else{\n    self.postMessage({type:\"done\",found:false,aborted:!!r.aborted});\n  }\n};";
+
+async function runRM6(data,tol,sec){
+  const pairs={};
+  for(const kind of ["AB","BC","CD"]){
+    const r=await createWorker(RM6_WORKER,{series:pairSeries(data,kind),domain:100,tol,maxMs:sec*1000},0,8);
+    const best=(r.result||[])[0];
+    if(best)pairs[kind]={found:true,pred:best.pred,candidates:linearTol2(best.pred,tol),formula:best.formula,tests:best.tests,exact:best.exact,pass:best.pass,errorSum:best.errorSum,maxErr:best.maxErr,complexity:best.complexity};
+    else pairs[kind]={found:false,message:r.aborted?"Batas waktu tercapai.":"Tidak ada pola teruji."};
+  }
+  return {name:"RM6",pairs,composite:{ABC:pairs.AB?.found&&pairs.BC?.found?overlap2(pairs.AB.candidates,pairs.BC.candidates):[],BCD:pairs.BC?.found&&pairs.CD?.found?overlap2(pairs.BC.candidates,pairs.CD.candidates):[]}};
+}
+async function runRM7(data,tol,sec){
+  const pairs={};
+  for(const kind of ["AB","BC","CD"]){
+    const r=await createWorker(RM7_WORKER,{series:pairSeries(data,kind),tol,maxMs:sec*1000},24,18);
+    if(r.found&&r.result){
+      const b=r.result;
+      pairs[kind]={found:true,pred:b.next,candidates:circularTol2(b.next,tol),formula:b.formula,tests:b.tests,exact:b.exact,pass:b.pass,errorSum:b.sum,maxErr:b.maxErr,complexity:b.complexity};
+    }else pairs[kind]={found:false,message:r.timeout?"Batas waktu tercapai.":"Tidak ditemukan hubungan 100% toleransi."};
+  }
+  return {name:"RM7",pairs,composite:{ABC:pairs.AB?.found&&pairs.BC?.found?overlap2(pairs.AB.candidates,pairs.BC.candidates):[],BCD:pairs.BC?.found&&pairs.CD?.found?overlap2(pairs.BC.candidates,pairs.CD.candidates):[]}};
+}
+async function runRM8(data,tol,sec){
+  const pairs={};
+  for(const kind of ["AB","BC","CD"]){
+    const r=await createWorker(RM8_WORKER,{series:pairSeries(data,kind),tol,maxMs:sec*1000},48,18);
+    if(r.result){
+      const b=r.result;
+      pairs[kind]={found:true,pred:b.next,candidates:circularTol2(b.next,tol),formula:b.formula,tests:b.tests,exact:b.exact,pass:b.pass,errorSum:b.sum,maxErr:b.maxErr,complexity:b.complexity};
+    }else pairs[kind]={found:false,message:r.timeout?"Batas waktu tercapai.":"Tidak ditemukan pola."};
+  }
+  return {name:"RM8",pairs,composite:{ABC:pairs.AB?.found&&pairs.BC?.found?overlap2(pairs.AB.candidates,pairs.BC.candidates):[],BCD:pairs.BC?.found&&pairs.CD?.found?overlap2(pairs.BC.candidates,pairs.CD.candidates):[]}};
+}
+async function runRM9(data,tol,sec){
+  const digits=[];
+  for(let pos=0;pos<4;pos++){
+    const r=await createWorker(RM9_WORKER,{series:digitSeries(data,pos),tol,maxMs:sec*1000},66,8.5);
+    if(r.found&&r.result){
+      const b=r.result;
+      digits.push({found:true,pred:b.pred,candidates:tol1Set(b.pred,tol),formula:b.formula,tests:b.tests,exact:b.exact,pass:b.pass,errorSum:b.errorSum,maxErr:b.maxErr,complexity:b.complexity});
+    }else digits.push({found:false,message:r.aborted?"Batas waktu tercapai.":"Tidak ditemukan formula."});
+  }
+  const A=digits[0]?.found?digits[0].candidates:[],B=digits[1]?.found?digits[1].candidates:[],C=digits[2]?.found?digits[2].candidates:[],D=digits[3]?.found?digits[3].candidates:[];
+  return {name:"RM9",digits,pairs:{AB:{found:!!(A.length&&B.length),candidates:cross1(A,B)},BC:{found:!!(B.length&&C.length),candidates:cross1(B,C)},CD:{found:!!(C.length&&D.length),candidates:cross1(C,D)}},composite:{ABC:A.length&&B.length&&C.length?cross3(A,B,C):[],BCD:B.length&&C.length&&D.length?cross3(B,C,D):[]}};
+}
+
+function renderTextareaCard(title,values,id,badgeText){
+  const box=document.createElement("div");box.className="resultCard";
+  box.innerHTML='<div class="resultHead"><strong>'+escapeHtml(title)+'</strong><span class="badge">'+escapeHtml(badgeText||String(values.length)+" LN")+'</span></div><div class="resultArea"><textarea id="'+id+'" spellcheck="false"></textarea><button class="copy" data-target="'+id+'">COPY</button></div><div class="lineCount">JUMLAH = '+values.length+' LN</div>';
+  box.querySelector("textarea").value=values.join("*");
+  return box;
+}
+function renderRMResult(r){
+  const wrap=document.createElement("div"),title=document.createElement("h3");
+  title.textContent=r.name;wrap.appendChild(title);
+  const grid=document.createElement("div");grid.className="results";
+  if(r.name==="RM9"){
+    const names=["A — RIBUAN","B — RATUSAN","C — PULUHAN","D — SATUAN"];
+    r.digits.forEach((x,i)=>grid.appendChild(renderTextareaCard(names[i],x.found?x.candidates:[],"out_"+r.name+"_"+i,x.found?"PREDIKSI "+x.pred:"TIDAK ADA HASIL")));
+  }else{
+    for(const kind of ["AB","BC","CD"]){
+      const x=r.pairs[kind];
+      const box=renderTextareaCard(kind+" — 2D",x?.found?x.candidates:[],"out_"+r.name+"_"+kind,x?.found?"PREDIKSI "+fmt2(x.pred):"TIDAK ADA HASIL");
+      if(x?.found)box.querySelector(".lineCount").insertAdjacentHTML("afterend",'<div class="formula"><b>Formula:</b> '+escapeHtml(x.formula)+'</div><div class="stats">Uji: '+x.tests+' | Tepat: '+x.exact+' | Toleransi: '+x.pass+'/'+x.tests+' | Deviasi: '+x.errorSum+' | Maks: '+x.maxErr+'</div>');
+      grid.appendChild(box);
+    }
+  }
+  wrap.appendChild(grid);
+  const cg=document.createElement("div");cg.className="results";
+  for(const kind of ["ABC","BCD"])cg.appendChild(renderTextareaCard(kind+" — HASIL PERSILANGAN",r.composite[kind]||[],"out_"+r.name+"_"+kind+"X"));
+  wrap.appendChild(cg);
+  $("engineResults").appendChild(wrap);
+}
+
+function getRMValues(rm,key){
+  if(!rm)return[];
+  if(key==="ABC"||key==="BCD")return rm.composite[key]||[];
+  return rm.pairs[key]?.candidates||[];
+}
+function buildAgreementGroups(key){
+  const counts=new Map();
+  for(const rmName of ["RM6","RM7","RM8","RM9"]){
+    const vals=getRMValues(resultsByRM[rmName],key);
+    [...new Set(vals.map(v=>String(v).padStart(key.length===2?2:3,"0")))].forEach(v=>counts.set(v,(counts.get(v)||0)+1));
+  }
+  const groups={4:[],3:[],2:[],1:[]};
+  for(const [v,n] of counts)if(groups[n])groups[n].push(v);
+  Object.values(groups).forEach(a=>a.sort((x,y)=>x.localeCompare(y)));
+  return groups;
+}
+function renderConclusionBlock(containerId,key){
+  const c=$(containerId);c.innerHTML="";
+  const groups=buildAgreementGroups(key);
+  [4,3,2,1].forEach(n=>{
+    const vals=groups[n];if(!vals.length)return;
+    const b=document.createElement("div");b.className="summaryGroup";
+    const area=document.createElement("div");area.className="summaryArea";
+    const id="sum_"+key+"_"+n;
+    area.innerHTML='<h3>ADA '+n+' Data</h3><textarea id="'+id+'"></textarea><button class="copy" data-target="'+id+'">COPY</button>';
+    area.querySelector("textarea").value=vals.join("*");
+    b.appendChild(area);
+    const sm=document.createElement("div");sm.className="small";sm.style.marginTop="5px";sm.textContent="Jumlah = "+vals.length+" LN";b.appendChild(sm);
+    c.appendChild(b);
+  });
+  if(!c.children.length)c.innerHTML='<div class="summaryGroup empty"><div class="small">Tidak ada kandidat hasil yang tersedia.</div></div>';
+}
+function renderAllConclusions(){
+  renderConclusionBlock("sumAB","AB");renderConclusionBlock("sumBC","BC");renderConclusionBlock("sumCD","CD");renderConclusionBlock("sumABC","ABC");renderConclusionBlock("sumBCD","BCD");
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest(".copy");if(!b)return;
+  const ta=document.getElementById(b.dataset.target);if(!ta)return;
+  try{await navigator.clipboard.writeText(ta.value)}catch(err){ta.select();document.execCommand("copy")}
+  const old=b.textContent;b.textContent="COPIED";setTimeout(()=>b.textContent=old,900);
+});
+
+$("processBtn").addEventListener("click",async()=>{
+  const history=getUsedHistory();
+  if(history.length<5){alert("DATA YANG DIPAKAI minimal 5 data 4 digit.");return}
+  if(history.some(x=>!valid4(x))){alert("DATA YANG DIPAKAI masih memiliki data yang bukan 4 digit.");return}
+
+  const tol1=clampInt($("tol1"),0,4,3),tol2=clampInt($("tol2"),0,49,30),sec=clampInt($("maxSeconds"),5,300,50);
+  resultsByRM={};$("engineResults").innerHTML="";$("engineResultsCard").classList.remove("hidden");$("conclusionCard").classList.add("hidden");
+  showProgress();$("processBtn").disabled=true;
+  setRMStatus("RM6","running","Sedang diproses...");setRMStatus("RM7","pending","Menunggu");setRMStatus("RM8","pending","Menunggu");setRMStatus("RM9","pending","Menunggu");
+  try{
+    setProgress(0,"RM6 dimulai...");resultsByRM.RM6=await runRM6(history,tol2,sec);renderRMResult(resultsByRM.RM6);setRMStatus("RM6","done","Selesai");
+    setRMStatus("RM7","running","Sedang diproses...");setProgress(25,"RM7 dimulai...");resultsByRM.RM7=await runRM7(history,tol2,sec);renderRMResult(resultsByRM.RM7);setRMStatus("RM7","done","Selesai");
+    setRMStatus("RM8","running","Sedang diproses...");setProgress(50,"RM8 dimulai...");resultsByRM.RM8=await runRM8(history,tol2,sec);renderRMResult(resultsByRM.RM8);setRMStatus("RM8","done","Selesai");
+    setRMStatus("RM9","running","Sedang diproses...");setProgress(75,"RM9 dimulai...");resultsByRM.RM9=await runRM9(history,tol1,sec);renderRMResult(resultsByRM.RM9);setRMStatus("RM9","done","Selesai");
+    renderAllConclusions();$("conclusionCard").classList.remove("hidden");setProgress(100,"Selesai. RM6 → RM7 → RM8 → RM9 dan kesimpulan semua RM selesai.");
+  }catch(err){
+    console.error(err);setProgress(100,"Proses berhenti karena error.");alert("Terjadi error saat learning: "+(err.message||err));
+  }finally{$("processBtn").disabled=getUsedHistory().length<5}
+});
+
+updateInputStatus();buildSelectors();
+</script>
+</body>
+</html>
