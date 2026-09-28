@@ -57,19 +57,6 @@ button:disabled{cursor:not-allowed}
 .summaryGroup h3{margin:0 0 9px}.summaryGroup.empty{opacity:.65}.summaryArea{position:relative}
 .summaryArea textarea{min-height:80px;padding-bottom:42px;font-family:Consolas,monospace}
 .small{font-size:12px;color:#687386}.separator{margin:18px 0;border:0;border-top:1px solid #e3e8ef}
-.summaryGroupHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
-.summarySelectorWrap{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#4b5870;white-space:nowrap}
-.summarySelectorWrap .switch{margin:0}
-.summarySelectorWrap .slider{width:42px;height:22px}
-.summarySelectorWrap .slider:before{width:16px;height:16px;left:3px;top:3px}
-.summarySelectorWrap .switch input:checked + .slider:before{transform:translateX(20px)}
-.processing2D{margin-top:8px}
-.processing2D .resultCard{background:#fff}
-.processing2D .resultCard textarea{min-height:105px}
-.processing2D .sectionTitle{margin:4px 0 10px;font-size:18px}
-.processorNote{font-size:12px;color:#58657a;line-height:1.55;margin-bottom:14px}
-@media(max-width:820px){.summaryGroupHead{align-items:flex-start;flex-direction:column}.summarySelectorWrap{align-self:flex-start}}
-
 @media(max-width:820px){.settings,.results,.summaryGroups,.engineStatus{grid-template-columns:1fr}.dataRow{grid-template-columns:45px 1fr 70px}}
 </style>
 </head>
@@ -142,48 +129,6 @@ button:disabled{cursor:not-allowed}
   <hr class="separator"><h2>DATA CD</h2><div id="sumCD" class="summaryGroups"></div>
   <hr class="separator"><h2>DATA ABC</h2><div id="sumABC" class="summaryGroups"></div>
   <hr class="separator"><h2>DATA BCD</h2><div id="sumBCD" class="summaryGroups"></div>
-</div>
-
-<div class="card hidden" id="processor2DCard">
-  <h2>WADAH PENGOLAH KESIMPULAN 2D</h2>
-  <div class="processorNote">Data yang diproses di sini hanya berasal dari DATA AB, DATA BC, dan DATA CD yang selector-nya di-ON pada KESIMPULAN DATA SEMUA RM. Selector default = OFF.</div>
-
-  <div class="processing2D">
-    <h3 class="sectionTitle">DATA 2 DIGIT TERSELEKSI</h3>
-    <div class="results">
-      <div class="resultCard">
-        <div class="resultHead"><strong>DATA AB terseleksi</strong></div>
-        <div class="resultArea"><textarea id="procAB" spellcheck="false" readonly></textarea><button class="copy" data-target="procAB">COPY</button></div>
-        <div class="lineCount" id="procABCount">Jumlah = 0 LN</div>
-      </div>
-      <div class="resultCard">
-        <div class="resultHead"><strong>DATA BC terseleksi</strong></div>
-        <div class="resultArea"><textarea id="procBC" spellcheck="false" readonly></textarea><button class="copy" data-target="procBC">COPY</button></div>
-        <div class="lineCount" id="procBCCount">Jumlah = 0 LN</div>
-      </div>
-      <div class="resultCard">
-        <div class="resultHead"><strong>DATA CD terseleksi</strong></div>
-        <div class="resultArea"><textarea id="procCD" spellcheck="false" readonly></textarea><button class="copy" data-target="procCD">COPY</button></div>
-        <div class="lineCount" id="procCDCount">Jumlah = 0 LN</div>
-      </div>
-    </div>
-
-    <hr class="separator">
-    <h3 class="sectionTitle">HASIL OLAHAN 2 DIGIT → 3 DIGIT</h3>
-    <div class="results">
-      <div class="resultCard">
-        <div class="resultHead"><strong>DATA ABC</strong></div>
-        <div class="resultArea"><textarea id="procABC" spellcheck="false" readonly></textarea><button class="copy" data-target="procABC">COPY</button></div>
-        <div class="lineCount" id="procABCCount">Jumlah = 0 LN</div>
-      </div>
-      <div class="resultCard">
-        <div class="resultHead"><strong>DATA BCD</strong></div>
-        <div class="resultArea"><textarea id="procBCD" spellcheck="false" readonly></textarea><button class="copy" data-target="procBCD">COPY</button></div>
-        <div class="lineCount" id="procBCDCount">Jumlah = 0 LN</div>
-      </div>
-    </div>
-    <div class="small" style="margin-top:8px">ABC dibentuk dari DATA AB terseleksi × DATA BC terseleksi dengan syarat digit B bertemu. BCD dibentuk dari DATA BC terseleksi × DATA CD terseleksi dengan syarat digit C bertemu.</div>
-  </div>
 </div>
 
 <div class="card note"><b>Catatan:</b> RM6, RM7, RM8, dan RM9 memakai engine dari empat HTML sumber. Kandidat kesimpulan tidak diisi angka filler; hanya kandidat yang benar-benar keluar dari engine yang dikelompokkan.</div>
@@ -268,7 +213,7 @@ $("maxSeconds").addEventListener("change",()=>clampInt($("maxSeconds"),5,300,50)
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
 function setProgress(percent,msg){$("progressInner").style.width=Math.max(0,Math.min(100,percent))+"%";$("progressText").textContent=msg}
 function setRMStatus(rm,state,text){const el=$("st"+rm);el.className="engine "+state;el.innerHTML="<b>"+rm+"</b>"+escapeHtml(text)}
-function hideResults(){$("engineResultsCard").classList.add("hidden");$("conclusionCard").classList.add("hidden");$("processor2DCard").classList.add("hidden");$("progressBox").style.display="none"}
+function hideResults(){$("engineResultsCard").classList.add("hidden");$("conclusionCard").classList.add("hidden");$("progressBox").style.display="none"}
 function showProgress(){$("progressBox").style.display="block";setProgress(0,"Menyiapkan rolling backtest...")}
 function fmt2(v){return String(((Number(v)%100)+100)%100).padStart(2,"0")}
 function linearTol2(pred,tol){const out=[];for(let d=-tol;d<=tol;d++){const v=pred+d;if(v>=0&&v<=99)out.push(fmt2(v))}return [...new Set(out)]}
@@ -398,25 +343,15 @@ function buildAgreementGroups(key){
   Object.values(groups).forEach(a=>a.sort((x,y)=>x.localeCompare(y)));
   return groups;
 }
-
-
-
-/*
 function renderConclusionBlock(containerId,key){
   const c=$(containerId);c.innerHTML="";
   const groups=buildAgreementGroups(key);
   [4,3,2,1].forEach(n=>{
     const vals=groups[n];if(!vals.length)return;
     const b=document.createElement("div");b.className="summaryGroup";
-    const head=document.createElement("div");head.className="summaryGroupHead";
-    const h=document.createElement("h3");h.textContent="ADA "+n+" DATA";head.appendChild(h);
-    const sw=document.createElement("label");sw.className="summarySelectorWrap";
-    const id="sel_"+key+"_"+n;
-    sw.innerHTML='<span>SELECTOR ON/OFF</span><span class="switch"><input type="checkbox" class="summarySelector" id="'+id+'" data-key="'+key+'" data-group="'+n+'"><span class="slider"></span></span>';
-    head.appendChild(sw);b.appendChild(head);
     const area=document.createElement("div");area.className="summaryArea";
-    const taId="sum_"+key+"_"+n;
-    area.innerHTML='<textarea id="'+taId+'" spellcheck="false"></textarea><button class="copy" data-target="'+taId+'">COPY</button>';
+    const id="sum_"+key+"_"+n;
+    area.innerHTML='<h3>ADA '+n+' Data</h3><textarea id="'+id+'"></textarea><button class="copy" data-target="'+id+'">COPY</button>';
     area.querySelector("textarea").value=vals.join("*");
     b.appendChild(area);
     const sm=document.createElement("div");sm.className="small";sm.style.marginTop="5px";sm.textContent="Jumlah = "+vals.length+" LN";b.appendChild(sm);
@@ -424,151 +359,9 @@ function renderConclusionBlock(containerId,key){
   });
   if(!c.children.length)c.innerHTML='<div class="summaryGroup empty"><div class="small">Tidak ada kandidat hasil yang tersedia.</div></div>';
 }
-*/
-
-
-
-function renderConclusionBlock(containerId,key){
-  const c=$(containerId);
-  c.innerHTML="";
-
-  const groups=buildAgreementGroups(key);
-
-  [4,3,2,1].forEach(n=>{
-    const vals=groups[n];
-    if(!vals.length)return;
-
-    const b=document.createElement("div");
-    b.className="summaryGroup";
-
-    const head=document.createElement("div");
-    head.className="summaryGroupHead";
-
-    const h=document.createElement("h3");
-    h.textContent="ADA "+n+" DATA";
-    head.appendChild(h);
-
-    // SELECTOR HANYA DITAMPILKAN PADA DATA AB, BC, DAN CD
-    if(key==="AB" || key==="BC" || key==="CD"){
-      const sw=document.createElement("label");
-      sw.className="summarySelectorWrap";
-
-      const id="sel_"+key+"_"+n;
-
-      sw.innerHTML=
-        '<span>SELECTOR ON/OFF</span>'+
-        '<span class="switch">'+
-        '<input type="checkbox" class="summarySelector" id="'+id+
-        '" data-key="'+key+'" data-group="'+n+'">'+
-        '<span class="slider"></span>'+
-        '</span>';
-
-      head.appendChild(sw);
-    }
-
-    b.appendChild(head);
-
-    const area=document.createElement("div");
-    area.className="summaryArea";
-
-    const taId="sum_"+key+"_"+n;
-
-    area.innerHTML=
-      '<textarea id="'+taId+'" spellcheck="false"></textarea>'+
-      '<button class="copy" data-target="'+taId+'">COPY</button>';
-
-    area.querySelector("textarea").value=vals.join("*");
-
-    b.appendChild(area);
-
-    const sm=document.createElement("div");
-    sm.className="small";
-    sm.style.marginTop="5px";
-    sm.textContent="Jumlah = "+vals.length+" LN";
-
-    b.appendChild(sm);
-
-    c.appendChild(b);
-  });
-
-  if(!c.children.length){
-    c.innerHTML=
-      '<div class="summaryGroup empty">'+
-      '<div class="small">Tidak ada kandidat hasil yang tersedia.</div>'+
-      '</div>';
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function selectedConclusionValues(key){
-  const out=[];
-  document.querySelectorAll('.summarySelector[data-key="'+key+'"]:checked').forEach(cb=>{
-    const n=Number(cb.dataset.group);
-    const vals=buildAgreementGroups(key)[n]||[];
-    for(const v of vals)out.push(String(v).padStart(2,"0"));
-  });
-  return [...new Set(out)];
-}
-
-function renderProcessor2D(){
-  const ab=selectedConclusionValues("AB");
-  const bc=selectedConclusionValues("BC");
-  const cd=selectedConclusionValues("CD");
-  const abc=overlap2(ab,bc);
-  const bcd=overlap2(bc,cd);
-  const sets={AB:ab,BC:bc,CD:cd,ABC:abc,BCD:bcd};
-  for(const key of ["AB","BC","CD","ABC","BCD"]){
-    const ta=$("proc"+key);
-    if(ta)ta.value=sets[key].join("*");
-    const count=$("proc"+key+"Count");
-    if(count)count.textContent="Jumlah = "+sets[key].length+" LN";
-  }
-  $("processor2DCard").classList.remove("hidden");
-}
-
 function renderAllConclusions(){
   renderConclusionBlock("sumAB","AB");renderConclusionBlock("sumBC","BC");renderConclusionBlock("sumCD","CD");renderConclusionBlock("sumABC","ABC");renderConclusionBlock("sumBCD","BCD");
-  renderProcessor2D();
 }
-
-document.addEventListener("change",e=>{
-  if(e.target.matches(".summarySelector"))renderProcessor2D();
-});
 document.addEventListener("click",async e=>{
   const b=e.target.closest(".copy");if(!b)return;
   const ta=document.getElementById(b.dataset.target);if(!ta)return;
@@ -582,7 +375,7 @@ $("processBtn").addEventListener("click",async()=>{
   if(history.some(x=>!valid4(x))){alert("DATA YANG DIPAKAI masih memiliki data yang bukan 4 digit.");return}
 
   const tol1=clampInt($("tol1"),0,4,3),tol2=clampInt($("tol2"),0,49,30),sec=clampInt($("maxSeconds"),5,300,50);
-  resultsByRM={};$("engineResults").innerHTML="";$("engineResultsCard").classList.remove("hidden");$("conclusionCard").classList.add("hidden");$("processor2DCard").classList.add("hidden");
+  resultsByRM={};$("engineResults").innerHTML="";$("engineResultsCard").classList.remove("hidden");$("conclusionCard").classList.add("hidden");
   showProgress();$("processBtn").disabled=true;
   setRMStatus("RM6","running","Sedang diproses...");setRMStatus("RM7","pending","Menunggu");setRMStatus("RM8","pending","Menunggu");setRMStatus("RM9","pending","Menunggu");
   try{
