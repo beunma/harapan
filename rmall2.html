@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mathematical Sequence Learning Engine — RM ALL</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fa;color:#172033;font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:1240px;margin:24px auto;padding:0 16px}
+h1{margin:0 0 6px;font-size:27px} h2{margin:0 0 12px} h3{margin:0 0 10px}
+.sub{color:#5b6577;margin-bottom:18px;line-height:1.5}
+.card{background:#fff;border:1px solid #dbe2ea;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+label{font-weight:700;display:block;margin-bottom:7px}
+textarea,input,button{font:inherit}
+textarea{width:100%;border:1px solid #b9c4d2;border-radius:9px;padding:12px;resize:vertical;outline:none}
+textarea:focus,input:focus{border-color:#526dff;box-shadow:0 0 0 3px rgba(82,109,255,.10)}
+#inputAll{min-height:145px;font-family:Consolas,monospace}
+button{border:0;border-radius:8px;padding:10px 15px;font-weight:700;cursor:pointer}
+button:disabled{cursor:not-allowed}
+.btn{background:#e9eef5;color:#1e293b}.primary{background:#315efb;color:#fff}.primary:disabled{background:#aab5c7}
+.danger{background:#fff0f0;color:#b42318}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.status{margin-top:9px;font-weight:700}.ok{color:#087443}.err{color:#c62828}.warn{color:#8a5a00}
+.settings{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:14px}
+.field input{width:100%;padding:10px 11px;border:1px solid #b9c4d2;border-radius:8px}
+.help{font-size:12px;color:#687386;margin-top:5px;line-height:1.45}
+.dataList{border:1px solid #dbe2ea;border-radius:10px;overflow:hidden;margin-top:10px}
+.dataRow{display:grid;grid-template-columns:55px 1fr 90px;gap:10px;align-items:center;padding:8px 11px;border-bottom:1px solid #e7ebf0}
+.dataRow:last-child{border-bottom:0}.dataRow:nth-child(even){background:#fafbfd}
+.dataValue{font-family:Consolas,monospace;font-weight:700}.dataIndex{color:#687386;font-size:12px}
+.switch{position:relative;display:inline-flex;justify-content:flex-end}.switch input{display:none}
+.slider{width:46px;height:24px;background:#c7ced8;border-radius:20px;display:inline-block;position:relative;cursor:pointer}
+.slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+.switch input:checked + .slider{background:#315efb}.switch input:checked + .slider:before{transform:translateX(22px)}
+.usedBox{min-height:125px;background:#f8fafc}
+.progressBox{display:none}.progressOuter{height:25px;background:#e5eaf1;border-radius:99px;overflow:hidden}
+.progressInner{height:100%;width:0%;background:#315efb;transition:width .12s linear}
+.progressText{margin-top:9px;font-size:13px;color:#465268;min-height:18px}
+.engineStatus{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin-top:12px}
+.engine{border:1px solid #dbe2ea;border-radius:9px;padding:10px;background:#fbfcfe}.engine b{display:block;margin-bottom:4px}
+.engine.pending{color:#687386}.engine.running{border-color:#315efb;background:#f2f5ff}
+.engine.done{border-color:#8bc6a6;background:#f1fbf5}.engine.fail{border-color:#e7aaaa;background:#fff5f5}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.resultCard{border:1px solid #dbe2ea;border-radius:10px;padding:14px;background:#fbfcfe}
+.resultHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.resultHead strong{font-size:17px}.badge{font-size:12px;border-radius:20px;padding:4px 8px;background:#edf2ff;color:#315efb;white-space:nowrap}
+.badge.fail{background:#fff0f0;color:#b42318}.resultArea{position:relative}
+.resultArea textarea{min-height:95px;padding-bottom:42px;font-family:Consolas,monospace}
+.copy{position:absolute;right:8px;bottom:8px;padding:7px 11px;font-size:12px;background:#e8edf5}
+.lineCount{font-size:12px;color:#5f6b7d;margin-top:5px}
+.formula{font-family:Consolas,monospace;background:#f0f3f8;border-radius:7px;padding:9px;margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:12px}
+.stats{font-size:12px;color:#58657a;margin-top:7px;line-height:1.55}.cross{margin-top:20px}
+.note{font-size:12px;line-height:1.55;color:#58657a}.hidden{display:none!important}
+.summaryGroups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.summaryGroup{border:1px solid #dbe2ea;border-radius:10px;padding:14px;background:#fbfcfe}
+.summaryGroup h3{margin:0 0 9px}.summaryGroup.empty{opacity:.65}.summaryArea{position:relative}
+.summaryArea textarea{min-height:80px;padding-bottom:42px;font-family:Consolas,monospace}
+.small{font-size:12px;color:#687386}.separator{margin:18px 0;border:0;border-top:1px solid #e3e8ef}
+.summaryGroupHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.summarySelectorWrap{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#4b5870;white-space:nowrap}
+.summarySelectorWrap .switch{margin:0}
+.summarySelectorWrap .slider{width:42px;height:22px}
+.summarySelectorWrap .slider:before{width:16px;height:16px;left:3px;top:3px}
+.summarySelectorWrap .switch input:checked + .slider:before{transform:translateX(20px)}
+.processing2D{margin-top:8px}
+.processing2D .resultCard{background:#fff}
+.processing2D .resultCard textarea{min-height:105px}
+.processing2D .sectionTitle{margin:4px 0 10px;font-size:18px}
+.processorNote{font-size:12px;color:#58657a;line-height:1.55;margin-bottom:14px}
+@media(max-width:820px){.summaryGroupHead{align-items:flex-start;flex-direction:column}.summarySelectorWrap{align-self:flex-start}}
+
+@media(max-width:820px){.settings,.results,.summaryGroups,.engineStatus{grid-template-columns:1fr}.dataRow{grid-template-columns:45px 1fr 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="card">
+  <h1>Mathematical Sequence Learning Engine — RM ALL</h1>
+  <div class="sub">Satu mesin gabungan untuk RM6, RM7, RM8, dan RM9. Sumber utama seluruh learning adalah <b>DATA YANG DIPAKAI</b>. Proses: <b>RM6 → RM7 → RM8 → RM9</b>.</div>
+  <h2>1. Masukkan Data RM ALL</h2>
+  <label for="inputAll">Data 4 Digit</label>
+  <textarea id="inputAll" spellcheck="false" placeholder="Contoh: 5360,2874,9583,7206,3026,3054,4580,7161,3276,0147,3072,5266,0288,6055"></textarea>
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="exampleBtn">ISI CONTOH</button>
+    <button class="btn danger" id="clearBtn">KOSONGKAN</button>
+    <button class="btn" id="pasteBtn">PASTE</button>
+    <div id="inputStatus" class="status err">Jumlah data: ERROR</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>2. Pengaturan Learning</h2>
+  <div class="settings">
+    <div class="field"><label for="tol1">Toleransi 1 Digit</label><input id="tol1" type="number" min="0" max="4" step="1" value="3"><div class="help">0–4. Dipakai pada RM9.</div></div>
+    <div class="field"><label for="tol2">Toleransi 2 Digit</label><input id="tol2" type="number" min="0" max="49" step="1" value="35"><div class="help">0–49. Dipakai pada RM6, RM7, dan RM8.</div></div>
+    <div class="field"><label for="maxSeconds">Waktu maksimal per deret = ? detik</label><input id="maxSeconds" type="number" min="5" max="300" step="1" value="50"><div class="help">5–300 detik. Batas pencarian masing-masing deret. Rumus diterima hanya jika seluruh titik rolling yang diuji berada dalam toleransi. Rumus diterima hanya jika seluruh titik rolling yang diuji berada dalam toleransi.</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>3. Data yang Dipakai</h2>
+  <div class="small">Setiap data hasil input ditampilkan. Selector default = <b>ON</b>. Matikan data yang tidak ingin dipakai; textarea DATA YANG DIPAKAI akan mengikuti selector.</div>
+  <div id="selectorList" class="dataList"></div>
+  <div style="margin-top:16px">
+    <label for="usedData">DATA YANG DIPAKAI</label>
+    <textarea id="usedData" class="usedBox" readonly spellcheck="false"></textarea>
+    <div id="usedStatus" class="status err">Jumlah data dipakai: 0</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>4. Jalankan Learning</h2>
+  <div class="small">Data acuan yang diproses adalah isi <b>DATA YANG DIPAKAI</b>.</div>
+  <button class="primary" id="processBtn" disabled style="margin-top:14px;width:100%;padding:13px">JALANKAN LEARNING / PROSES</button>
+  <div id="engineStatus" class="engineStatus">
+    <div class="engine pending" id="stRM6"><b>RM6</b>Menunggu</div>
+    <div class="engine pending" id="stRM7"><b>RM7</b>Menunggu</div>
+    <div class="engine pending" id="stRM8"><b>RM8</b>Menunggu</div>
+    <div class="engine pending" id="stRM9"><b>RM9</b>Menunggu</div>
+  </div>
+</div>
+
+<div class="card progressBox" id="progressBox">
+  <label>Progress Learning</label>
+  <div class="progressOuter"><div class="progressInner" id="progressInner"></div></div>
+  <div class="progressText" id="progressText">Menunggu proses...</div>
+</div>
+
+<div class="card hidden" id="engineResultsCard">
+  <h2>Hasil Learning RM6, RM7, RM8, RM9</h2>
+  <div id="engineResults"></div>
+</div>
+
+<div class="card hidden" id="conclusionCard">
+  <h2>KESIMPULAN DATA SEMUA RM</h2>
+  <div class="small">“ADA 4 DATA” berarti nilai yang sama terdapat pada hasil keempat RM. Kelompok lain menunjukkan jumlah RM yang menghasilkan kandidat yang sama. Pengelompokan dinamis.</div>
+  <div id="blindAuditBox" class="small" style="margin-top:10px"></div>
+  <div id="blindAuditBox" class="small" style="margin-top:10px"></div>
+
+  <hr class="separator"><h2>DATA AB</h2><div id="sumAB" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA BC</h2><div id="sumBC" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA CD</h2><div id="sumCD" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA ABC</h2><div id="sumABC" class="summaryGroups"></div>
+  <hr class="separator"><h2>DATA BCD</h2><div id="sumBCD" class="summaryGroups"></div>
+</div>
+
+<div class="card hidden" id="processor2DCard">
+  <h2>WADAH PENGOLAH KESIMPULAN 2D</h2>
+  <div class="processorNote">Data yang diproses di sini hanya berasal dari DATA AB, DATA BC, dan DATA CD yang selector-nya di-ON pada KESIMPULAN DATA SEMUA RM. Selector default = OFF.</div>
+
+  <div class="processing2D">
+    <h3 class="sectionTitle">DATA 2 DIGIT TERSELEKSI</h3>
+    <div class="results">
+      <div class="resultCard">
+        <div class="resultHead"><strong>DATA AB terseleksi</strong></div>
+        <div class="resultArea"><textarea id="procAB" spellcheck="false" readonly></textarea><button class="copy" data-target="procAB">COPY</button></div>
+        <div class="lineCount" id="procABCount">Jumlah = 0 LN</div>
+      </div>
+      <div class="resultCard">
+        <div class="resultHead"><strong>DATA BC terseleksi</strong></div>
+        <div class="resultArea"><textarea id="procBC" spellcheck="false" readonly></textarea><button class="copy" data-target="procBC">COPY</button></div>
+        <div class="lineCount" id="procBCCount">Jumlah = 0 LN</div>
+      </div>
+      <div class="resultCard">
+        <div class="resultHead"><strong>DATA CD terseleksi</strong></div>
+        <div class="resultArea"><textarea id="procCD" spellcheck="false" readonly></textarea><button class="copy" data-target="procCD">COPY</button></div>
+        <div class="lineCount" id="procCDCount">Jumlah = 0 LN</div>
+      </div>
+    </div>
+
+    <hr class="separator">
+    <h3 class="sectionTitle">HASIL OLAHAN 2 DIGIT → 3 DIGIT</h3>
+    <div class="results">
+      <div class="resultCard">
+        <div class="resultHead"><strong>DATA ABC</strong></div>
+        <div class="resultArea"><textarea id="procABC" spellcheck="false" readonly></textarea><button class="copy" data-target="procABC">COPY</button></div>
+        <div class="lineCount" id="procABCCount">Jumlah = 0 LN</div>
+      </div>
+      <div class="resultCard">
+        <div class="resultHead"><strong>DATA BCD</strong></div>
+        <div class="resultArea"><textarea id="procBCD" spellcheck="false" readonly></textarea><button class="copy" data-target="procBCD">COPY</button></div>
+        <div class="lineCount" id="procBCDCount">Jumlah = 0 LN</div>
+      </div>
+    </div>
+    <div class="small" style="margin-top:8px">ABC dibentuk dari DATA AB terseleksi × DATA BC terseleksi dengan syarat digit B bertemu. BCD dibentuk dari DATA BC terseleksi × DATA CD terseleksi dengan syarat digit C bertemu.</div>
+  </div>
+</div>
+
+
+<div class="card" id="mathMethodCard">
+  <h2>5. JEJAK METODE MATEMATIS</h2>
+  <div class="small">Bagian ini menjelaskan aturan mesin secara eksplisit supaya hasil dapat diperiksa. Setiap RM mengerjakan AB, BC, dan CD sebagai tiga deret terpisah. Rumus yang dipilih untuk satu deret tidak diganti-ganti pada titik rolling berikutnya.</div>
+  <div class="results" style="margin-top:12px">
+    <div class="resultCard"><b>RM6 — Transformasi & operasi 2D</b><div class="small" style="margin-top:7px">Lag 1–5; pembalikan 2 digit; jumlah/selisih/produk digit; kombinasi linear; operasi pasangan; rata-rata floor/ceil; operasi berbobot; seluruh titik rolling wajib berada dalam toleransi.</div></div>
+    <div class="resultCard"><b>RM7 — Rekurensi linear modular</b><div class="small" style="margin-top:7px">Lag 1–4; konstanta perubahan; rekurensi 2-lag dan 3-lag; transformasi reverse, complement, jumlah, selisih, produk digit; seleksi hanya untuk rumus yang lolos seluruh titik rolling.</div></div>
+    <div class="resultCard"><b>RM8 — Relasi pasangan lag</b><div class="small" style="margin-top:7px">Lag pasangan dihitung hanya jika kedua indeks tersedia. Tidak ada lagi pembacaan indeks negatif/undefined. Ada relasi trend, jumlah, selisih, kali, min/max, rata-rata, dan bobot lag.</div></div>
+    <div class="resultCard"><b>RM9 — Learning per digit</b><div class="small" style="margin-top:7px">A, B, C, D masing-masing adalah deret sendiri. Rumus dipilih per digit, kemudian hasil A/B/C/D disilangkan menjadi AB, BC, CD, ABC, dan BCD.</div></div>
+  </div>
+  <div class="formula" style="margin-top:12px">
+    <b>Aturan validasi:</b><br>
+    1. Target rolling selalu merupakan anggota yang sudah diketahui; target tidak diberikan kepada rumus sebelum pengujian.<br>
+    2. Nilai lanjutan dihitung sesudah anggota terakhir yang diketahui, menggunakan rumus yang sama dengan rumus yang lulus backtest.<br>
+    3. Untuk 2 digit, normalisasi dilakukan pada domain 00–99. Selisih toleransi memakai jarak melingkar sehingga 99 dan 00 bersebelahan secara matematis modular.<br>
+    4. Toleransi 2 digit menghasilkan tepat <b>2 × toleransi + 1</b> nilai kandidat. Contoh toleransi 20 = 41 nilai kandidat.<br>
+    5. Rumus tidak diterima hanya karena cocok pada satu titik. Minimal tiga titik rolling digunakan bila panjang data memungkinkan; seleksi mengutamakan jumlah titik uji, kecocokan exact, total penyimpangan, penyimpangan maksimum, lalu kompleksitas rumus.<br>
+    6. AB, BC, dan CD tidak dipaksa memakai rumus yang sama. Ketiganya memang tiga deret matematika berbeda di dalam setiap RM.<br>
+    7. RM6, RM7, RM8 boleh mempunyai keluarga rumus berbeda. Kesamaan yang diwajibkan adalah disiplin backtest dan konsistensi satu rumus pada satu deret.<br>
+    8. RM9 tidak lagi menggunakan satu titik terakhir sebagai satu-satunya dasar. Ia melakukan rolling pada masing-masing deret digit dan hanya menerima rumus yang memenuhi seluruh titik uji dalam toleransi.
+  </div>
+  <div id="methodCheck" class="stats" style="margin-top:10px"></div>
+</div>
+
+<div class="card" id="verificationNotes">
+  <h2>6. PEMERIKSAAN INTEGRITAS PERHITUNGAN</h2>
+  <div class="small">Informasi berikut dibuat dari struktur hasil yang benar-benar dipakai saat proses, bukan angka tambahan untuk memperbanyak kandidat.</div>
+  <div id="integrityLog" class="formula" style="margin-top:10px">Menunggu proses.</div>
+</div>
+
+<div class="card note"><b>Catatan:</b> RM6, RM7, RM8, dan RM9 memakai engine dari empat HTML sumber. Kandidat kesimpulan tidak diisi angka filler; hanya kandidat yang benar-benar keluar dari engine yang dikelompokkan.</div>
+
+<script>
+"use strict";
+
+const EXAMPLE = "5360,2874,9583,7206,3026,3054,4580,7161,3276,0147,3072,5266,0288,6055";
+const $ = id => document.getElementById(id);
+let inputData = [];
+let resultsByRM = {};
+
+function valid4(s){return /^\d{4}$/.test(String(s).trim())}
+function parseAll(){
+  const raw=$("inputAll").value.trim();
+  if(!raw)return {valid:false,data:[],reason:"kosong"};
+  const parts=raw.split(",").map(s=>s.trim());
+  if(parts.some(s=>!valid4(s)))return {valid:false,data:parts,reason:"format"};
+  return {valid:true,data:parts};
+}
+function updateInputStatus(){
+  const p=parseAll();
+  if(!p.valid){
+    $("inputStatus").textContent="Jumlah data: ERROR";
+    $("inputStatus").className="status err";
+    return;
+  }
+  $("inputStatus").textContent="Jumlah data: "+p.data.length;
+  $("inputStatus").className="status ok";
+}
+function buildSelectors(){
+  const p=parseAll();
+  inputData=p.valid?p.data.slice():[];
+  const box=$("selectorList");
+  box.innerHTML="";
+  if(!p.valid||!p.data.length){
+    box.innerHTML='<div class="dataRow"><div class="dataIndex">-</div><div class="small">Belum ada data valid.</div><div></div></div>';
+    updateUsedData();
+    return;
+  }
+  p.data.forEach((v,i)=>{
+    const row=document.createElement("div");
+    row.className="dataRow";
+    row.innerHTML='<div class="dataIndex">#'+(i+1)+'</div><div class="dataValue">'+escapeHtml(v)+'</div><label class="switch"><input type="checkbox" class="dataToggle" data-index="'+i+'" checked><span class="slider"></span></label>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll(".dataToggle").forEach(cb=>cb.addEventListener("change",updateUsedData));
+  updateUsedData();
+}
+function getUsedHistory(){
+  const arr=[];
+  document.querySelectorAll(".dataToggle").forEach(cb=>{
+    if(cb.checked){
+      const idx=Number(cb.dataset.index);
+      if(inputData[idx]!==undefined)arr.push(inputData[idx]);
+    }
+  });
+  return arr;
+}
+function updateUsedData(){
+  const used=getUsedHistory();
+  $("usedData").value=used.join(",");
+  $("usedStatus").textContent="Jumlah data dipakai: "+used.length;
+  $("usedStatus").className="status "+(used.length>=5?"ok":"err");
+  $("processBtn").disabled=used.length<5;
+}
+$("inputAll").addEventListener("input",()=>{
+function updateMethodCheck(){
+ const t=Number($('tol2').value),expected=2*t+1;
+ $('methodCheck').textContent='Pemeriksaan parameter: toleransi 2D = '+t+' → '+expected+' kandidat per hasil 2D; domain 00–99; rumus diterima hanya jika seluruh titik rolling lulus.';
+}
+function renderIntegrityLog(){
+ const lines=[];
+ for(const rm of ['RM6','RM7','RM8','RM9']){
+  const r=resultsByRM[rm];if(!r){lines.push(rm+': belum ada hasil.');continue}
+  if(rm==='RM9'){
+   r.digits.forEach((d,i)=>lines.push(rm+' digit '+String.fromCharCode(65+i)+': '+(d.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests:'TIDAK ADA RUMUS')));
+  }else{
+   for(const k of ['AB','BC','CD']){const d=r.pairs[k];lines.push(rm+' '+k+': '+(d?.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests+' | deviasi '+d.errorSum+' | maks '+d.maxErr:'TIDAK ADA RUMUS'));}
+  }
+ }
+ $('integrityLog').innerHTML=lines.join('<br>');
+}
+$('tol2').addEventListener('input',updateMethodCheck);$('tol1').addEventListener('input',updateMethodCheck);updateMethodCheck();
+updateInputStatus();buildSelectors();hideResults()});
+$("exampleBtn").addEventListener("click",()=>{$("inputAll").value=EXAMPLE;
+function updateMethodCheck(){
+ const t=Number($('tol2').value),expected=2*t+1;
+ $('methodCheck').textContent='Pemeriksaan parameter: toleransi 2D = '+t+' → '+expected+' kandidat per hasil 2D; domain 00–99; rumus diterima hanya jika seluruh titik rolling lulus.';
+}
+function renderIntegrityLog(){
+ const lines=[];
+ for(const rm of ['RM6','RM7','RM8','RM9']){
+  const r=resultsByRM[rm];if(!r){lines.push(rm+': belum ada hasil.');continue}
+  if(rm==='RM9'){
+   r.digits.forEach((d,i)=>lines.push(rm+' digit '+String.fromCharCode(65+i)+': '+(d.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests:'TIDAK ADA RUMUS')));
+  }else{
+   for(const k of ['AB','BC','CD']){const d=r.pairs[k];lines.push(rm+' '+k+': '+(d?.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests+' | deviasi '+d.errorSum+' | maks '+d.maxErr:'TIDAK ADA RUMUS'));}
+  }
+ }
+ $('integrityLog').innerHTML=lines.join('<br>');
+}
+$('tol2').addEventListener('input',updateMethodCheck);$('tol1').addEventListener('input',updateMethodCheck);updateMethodCheck();
+updateInputStatus();buildSelectors();hideResults()});
+$("clearBtn").addEventListener("click",()=>{$("inputAll").value="";
+function updateMethodCheck(){
+ const t=Number($('tol2').value),expected=2*t+1;
+ $('methodCheck').textContent='Pemeriksaan parameter: toleransi 2D = '+t+' → '+expected+' kandidat per hasil 2D; domain 00–99; rumus diterima hanya jika seluruh titik rolling lulus.';
+}
+function renderIntegrityLog(){
+ const lines=[];
+ for(const rm of ['RM6','RM7','RM8','RM9']){
+  const r=resultsByRM[rm];if(!r){lines.push(rm+': belum ada hasil.');continue}
+  if(rm==='RM9'){
+   r.digits.forEach((d,i)=>lines.push(rm+' digit '+String.fromCharCode(65+i)+': '+(d.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests:'TIDAK ADA RUMUS')));
+  }else{
+   for(const k of ['AB','BC','CD']){const d=r.pairs[k];lines.push(rm+' '+k+': '+(d?.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests+' | deviasi '+d.errorSum+' | maks '+d.maxErr:'TIDAK ADA RUMUS'));}
+  }
+ }
+ $('integrityLog').innerHTML=lines.join('<br>');
+}
+$('tol2').addEventListener('input',updateMethodCheck);$('tol1').addEventListener('input',updateMethodCheck);updateMethodCheck();
+updateInputStatus();buildSelectors();hideResults()});
+$("pasteBtn").addEventListener("click",async()=>{
+  try{$("inputAll").value=await navigator.clipboard.readText();
+function updateMethodCheck(){
+ const t=Number($('tol2').value),expected=2*t+1;
+ $('methodCheck').textContent='Pemeriksaan parameter: toleransi 2D = '+t+' → '+expected+' kandidat per hasil 2D; domain 00–99; rumus diterima hanya jika seluruh titik rolling lulus.';
+}
+function renderIntegrityLog(){
+ const lines=[];
+ for(const rm of ['RM6','RM7','RM8','RM9']){
+  const r=resultsByRM[rm];if(!r){lines.push(rm+': belum ada hasil.');continue}
+  if(rm==='RM9'){
+   r.digits.forEach((d,i)=>lines.push(rm+' digit '+String.fromCharCode(65+i)+': '+(d.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests:'TIDAK ADA RUMUS')));
+  }else{
+   for(const k of ['AB','BC','CD']){const d=r.pairs[k];lines.push(rm+' '+k+': '+(d?.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests+' | deviasi '+d.errorSum+' | maks '+d.maxErr:'TIDAK ADA RUMUS'));}
+  }
+ }
+ $('integrityLog').innerHTML=lines.join('<br>');
+}
+$('tol2').addEventListener('input',updateMethodCheck);$('tol1').addEventListener('input',updateMethodCheck);updateMethodCheck();
+updateInputStatus();buildSelectors();hideResults()}
+  catch(e){alert("Clipboard tidak dapat dibaca browser. Gunakan Ctrl+V pada area input.")}
+});
+function clampInt(el,min,max,def){
+  const v=Number(el.value);
+  if(!Number.isInteger(v)||v<min||v>max){el.value=def;return def}
+  return v;
+}
+$("tol1").addEventListener("change",()=>clampInt($("tol1"),0,4,3));
+$("tol2").addEventListener("change",()=>clampInt($("tol2"),0,49,35));
+$("maxSeconds").addEventListener("change",()=>clampInt($("maxSeconds"),5,300,50));
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function setProgress(percent,msg){$("progressInner").style.width=Math.max(0,Math.min(100,percent))+"%";$("progressText").textContent=msg}
+function setRMStatus(rm,state,text){const el=$("st"+rm);el.className="engine "+state;el.innerHTML="<b>"+rm+"</b>"+escapeHtml(text)}
+function hideResults(){$("engineResultsCard").classList.add("hidden");$("conclusionCard").classList.add("hidden");$("processor2DCard").classList.add("hidden");$("progressBox").style.display="none"}
+function showProgress(){$("progressBox").style.display="block";setProgress(0,"Menyiapkan rolling backtest...")}
+function fmt2(v){return String(((Number(v)%100)+100)%100).padStart(2,"0")}
+function linearTol2(pred,tol){const out=[];for(let d=-tol;d<=tol;d++){const v=pred+d;if(v>=0&&v<=99)out.push(fmt2(v))}return [...new Set(out)]}
+function circularTol2(pred,tol){const out=[];for(let d=-tol;d<=tol;d++)out.push(fmt2(pred+d));return [...new Set(out)]}
+function tol1Set(pred,tol){const out=[];for(let d=-tol;d<=tol;d++)out.push(String(((pred+d)%10+10)%10));return [...new Set(out)].sort((a,b)=>Number(a)-Number(b))}
+function pairSeries(data,kind){return data.map(s=>kind==="AB"?Number(s.slice(0,2)):kind==="BC"?Number(s.slice(1,3)):Number(s.slice(2,4)))}
+function digitSeries(data,pos){return data.map(s=>Number(s[pos]))}
+function overlap2(a,b){const out=[];for(const x of a)for(const y of b){const sx=String(x),sy=String(y);if(sx[1]===sy[0])out.push(sx+sy[1])}return [...new Set(out)]}
+function cross1(a,b){const out=[];for(const x of a)for(const y of b)out.push(String(x)+String(y));return [...new Set(out)]}
+function cross3(a,b,c){const out=[];for(const x of a)for(const y of b)for(const z of c)out.push(String(x)+String(y)+String(z));return [...new Set(out)]}
+
+function createWorker(source,payload,progressBase,progressSpan){
+  return new Promise(resolve=>{
+    const blob=new Blob([source],{type:"application/javascript"});
+    const url=URL.createObjectURL(blob);
+    const w=new Worker(url);
+    let done=false;
+    w.onmessage=e=>{
+      if(e.data.type==="progress"){
+        const p=Number(e.data.p)||0;
+        setProgress(progressBase+(p/100)*progressSpan,e.data.m||"Learning...");
+      }else if(e.data.type==="done"&&!done){
+        done=true;w.terminate();URL.revokeObjectURL(url);resolve(e.data);
+      }
+    };
+    w.onerror=e=>{
+      if(done)return;
+      done=true;w.terminate();URL.revokeObjectURL(url);
+      resolve({type:"done",found:false,error:String(e.message||"Worker error")});
+    };
+    w.postMessage(payload);
+  });
+}
+
+/* Engine sources copied from the four supplied HTMLs. */
+const RM6_WORKER = "\"use strict\";\nfunction M(v){v%=100;return v<0?v+100:v}\nfunction E(a,b){return Math.min(Math.abs(a-b),100-Math.abs(a-b))}\nfunction rev(v){v=M(v);return (v%10)*10+Math.floor(v/10)}\nfunction ds(v){v=M(v);return Math.floor(v/10)+(v%10)}\nfunction dd(v){v=M(v);return Math.abs(Math.floor(v/10)-(v%10))}\nfunction dp(v){v=M(v);return Math.floor(v/10)*(v%10)}\nfunction score(a,b){if(!b)return true;return a.tests!==b.tests?a.tests>b.tests:a.exact!==b.exact?a.exact>b.exact:a.sum!==b.sum?a.sum<b.sum:a.maxErr!==b.maxErr?a.maxErr<b.maxErr:a.complexity<b.complexity}\nfunction search(series,tol,maxMs,report){\n const n=series.length,deadline=performance.now()+maxMs;if(n<5)return{best:null,timeout:false};\n const C=[],seen=new Set(),minTests=Math.min(3,n-1);\n function add(values,next,text,complexity,start){\n  if(values.length<minTests)return;\n  const key=start+'|'+values.join(',')+'|'+M(next);if(seen.has(key))return;seen.add(key);C.push({values,next:M(next),text,complexity,start});\n }\n function lag(l){const start=l;if(start>=n)return;const v=[];for(let i=start;i<n;i++)v.push(series[i-l]);add(v,series[n-l],'x[n-'+l+']',1,start)}\n for(let l=1;l<=Math.min(5,n-1);l++)lag(l);\n const base=C.slice();\n const unary=[['REV2',rev,2],['DIGSUM',ds,2],['DIGDIFF',dd,2],['DIGPROD',dp,2],['NEG',v=>-v,2],['ABS',v=>Math.abs(v),2]];\n for(const a of base){for(const [nm,fn,c] of unary){if(performance.now()>deadline)return{best:choose(C,series,tol,minTests),timeout:true};add(a.values.map(v=>M(fn(v))),M(fn(a.next)),nm+'('+a.text+')',a.complexity+c,a.start)}}\n // Trend/step 2-lag dihitung langsung agar alignment target tepat.\n const start2=2;if(n-start2>=minTests){\n  const vplus=[],vtrend=[];for(let i=start2;i<n;i++){vplus.push(M(series[i-1]+1));vtrend.push(M(2*series[i-1]-series[i-2]))}\n  add(vplus,M(series[n-1]+1),'x[n-1] + 1',2,start2);\n  add(vtrend,M(2*series[n-1]-series[n-2]),'2*x[n-1] - x[n-2]',4,start2);\n  const vminus=[];for(let i=start2;i<n;i++)vminus.push(M(series[i-1]-1));\n  add(vminus,M(series[n-1]-1),'x[n-1] - 1',2,start2);\n }\n const pairBase=C.filter(x=>x.start===2);\n if(pairBase.length){\n  for(const a of pairBase)for(const b of pairBase){\n   const ops=[['+', (x,y)=>x+y,1],['-',(x,y)=>x-y,1],['*',(x,y)=>x*y,2],['ABS-',(x,y)=>Math.abs(x-y),2],['MIN',(x,y)=>Math.min(x,y),2],['MAX',(x,y)=>Math.max(x,y),2],['AVG-F',(x,y)=>Math.floor((x+y)/2),2],['AVG-C',(x,y)=>Math.ceil((x+y)/2),2]];\n   for(const [nm,fn,c] of ops)add(a.values.map((v,i)=>M(fn(v,b.values[i]))),M(fn(a.next,b.next)),'('+a.text+' '+nm+' '+b.text+')',a.complexity+b.complexity+c,2);\n   add(a.values.map((v,i)=>M(2*v-b.values[i])),M(2*a.next-b.next),'2*'+a.text+' - '+b.text,a.complexity+b.complexity+2,2);\n   add(a.values.map((v,i)=>M(2*b.values[i]-v)),M(2*b.next-a.next),'2*'+b.text+' - '+a.text,a.complexity+b.complexity+2,2);\n  }\n }\n // Keluarga 2D tambahan: operasi posisi digit, kombinasi bobot, dan selisih bertingkat.\n const p2=C.filter(x=>x.start===1);\n for(const a of p2){\n  if(performance.now()>deadline)break;\n  add(a.values.map(v=>M(3*v)),M(3*a.next),'3*'+a.text,a.complexity+2,a.start);\n  add(a.values.map(v=>M(4*v)),M(4*a.next),'4*'+a.text,a.complexity+2,a.start);\n  add(a.values.map(v=>M(10*Math.floor(v/10)+(v%10))),M(a.next), 'TEN( '+a.text+' )+ONE( '+a.text+' )',a.complexity+2,a.start);\n  add(a.values.map(v=>M(10*(v%10)+Math.floor(v/10))),M(10*(a.next%10)+Math.floor(a.next/10)),'REVERSE-DIGIT('+a.text+')',a.complexity+2,a.start);\n  add(a.values.map(v=>M(ds(v)*10+dd(v))),M(ds(a.next)*10+dd(a.next)),'DIGSUM-DIFF('+a.text+')',a.complexity+3,a.start);\n  add(a.values.map(v=>M(dp(v)*10+ds(v))),M(dp(a.next)*10+ds(a.next)),'DIGPROD-SUM('+a.text+')',a.complexity+3,a.start);\n }\n function choose(arr,series,tol,minT){let best=null;for(const e of arr){let pass=0,exact=0,sum=0,maxErr=0;for(let j=0;j<e.values.length;j++){const d=E(e.values[j],series[e.start+j]);if(d<=tol)pass++;if(d===0)exact++;sum+=d;maxErr=Math.max(maxErr,d)}if(pass===e.values.length&&e.values.length>=minT){const q={next:e.next,text:e.text,tests:e.values.length,pass,exact,sum,maxErr,complexity:e.complexity};if(score(q,best))best=q}}return best}\n report(60,'Menguji '+C.length.toLocaleString()+' rumus matematika...');\n const best=choose(C,series,tol,minTests);report(100,best?'Rumus konsisten ditemukan.':'Tidak ada rumus yang memenuhi seluruh titik rolling.');return{best,timeout:false}\n}\nself.onmessage=e=>{const r=search(e.data.series,e.data.tol,e.data.maxMs,(p,m)=>self.postMessage({type:'progress',p,m}));self.postMessage({type:'done',found:!!r.best,timeout:r.timeout,result:r.best})};";
+const RM7_WORKER = "\"use strict\";\nfunction M(v){v%=100;return v<0?v+100:v}\nfunction E(a,b){return Math.min(Math.abs(a-b),100-Math.abs(a-b))}\nfunction better(a,b){if(!b)return true;return a.tests!==b.tests?a.tests>b.tests:a.exact!==b.exact?a.exact>b.exact:a.sum!==b.sum?a.sum<b.sum:a.maxErr!==b.maxErr?a.maxErr<b.maxErr:a.complexity<b.complexity}\nfunction search(series,tol,maxMs,report){\n const n=series.length,deadline=performance.now()+maxMs;if(n<5)return{best:null,timeout:false};\n const F=[],seen=new Set(),minTests=Math.min(3,n-1);\n function add(train,next,text,complexity,start){if(train.length<minTests)return;const k=start+'|'+train.join(',')+'|'+M(next);if(seen.has(k))return;seen.add(k);F.push({train,next:M(next),text,complexity,start})}\n for(let lag=1;lag<=Math.min(4,n-1);lag++){const v=[];for(let i=lag;i<n;i++)v.push(series[i-lag]);add(v,series[n-lag],'x[n-'+lag+']',1,lag)}\n for(let d=-50;d<=50;d++){const v=[];for(let i=1;i<n;i++)v.push(M(series[i-1]+d));add(v,M(series[n-1]+d),'x[n-1] '+(d>=0?'+ '+d:'- '+Math.abs(d)),2,1)}\n for(let a=-6;a<=6;a++)for(let b=-6;b<=6;b++)for(let k=-30;k<=30;k++){if(performance.now()>deadline)return{best:select(F,series,tol,minTests),timeout:true};if(!a&&!b)continue;const v=[];for(let i=2;i<n;i++)v.push(M(a*series[i-1]+b*series[i-2]+k));add(v,M(a*series[n-1]+b*series[n-2]+k),a+'×x[n-1] '+(b>=0?'+ '+b:'- '+Math.abs(b))+'×x[n-2] '+(k>=0?'+ '+k:'- '+Math.abs(k)),Math.abs(a)+Math.abs(b)+2,2)}\n for(let a=-4;a<=4;a++)for(let b=-4;b<=4;b++)for(let c=-3;c<=3;c++)for(let k=-20;k<=20;k++){if(performance.now()>deadline)return{best:select(F,series,tol,minTests),timeout:true};if(!a&&!b&&!c)continue;const v=[];for(let i=3;i<n;i++)v.push(M(a*series[i-1]+b*series[i-2]+c*series[i-3]+k));add(v,M(a*series[n-1]+b*series[n-2]+c*series[n-3]+k),a+'×x[n-1] '+(b>=0?'+ '+b:'- '+Math.abs(b))+'×x[n-2] '+(c>=0?'+ '+c:'- '+Math.abs(c))+'×x[n-3] '+(k>=0?'+ '+k:'- '+Math.abs(k)),Math.abs(a)+Math.abs(b)+Math.abs(c)+3,3)}\n const unary=[['REV',x=>{x=M(x);return(x%10)*10+Math.floor(x/10)},2],['SUMDIG',x=>Math.floor(M(x)/10)+(M(x)%10),2],['DIFFDIG',x=>Math.abs(Math.floor(M(x)/10)-(M(x)%10)),2],['PRODDIG',x=>Math.floor(M(x)/10)*(M(x)%10),2],['COMP',x=>99-M(x),2]];\n for(const u of unary){const snap=F.slice();for(const f of snap){if(performance.now()>deadline)return{best:select(F,series,tol,minTests),timeout:true};add(f.train.map(u[1]),u[1](f.next),u[0]+'('+f.text+')',f.complexity+u[2],f.start)}}\n report(70,'Backtest '+F.length.toLocaleString()+' rumus...');const best=select(F,series,tol,minTests);report(100,best?'Rumus konsisten ditemukan.':'Tidak ada rumus yang memenuhi seluruh titik rolling.');return{best,timeout:false}\n}\nfunction select(F,series,tol,minTests){let best=null;for(const f of F){let pass=0,exact=0,sum=0,maxErr=0;for(let j=0;j<f.train.length;j++){const d=E(f.train[j],series[f.start+j]);if(d<=tol)pass++;if(d===0)exact++;sum+=d;maxErr=Math.max(maxErr,d)}if(pass===f.train.length&&f.train.length>=minTests){const q={next:f.next,formula:f.text,tests:f.train.length,pass,exact,sum,maxErr,complexity:f.complexity};if(better(q,best))best=q}}return best}\nself.onmessage=e=>{const r=search(e.data.series,e.data.tol,e.data.maxMs,(p,m)=>self.postMessage({type:'progress',p,m}));self.postMessage({type:'done',found:!!r.best,timeout:r.timeout,result:r.best})};";
+const RM8_WORKER = "\"use strict\";\nfunction M(v){v%=100;return v<0?v+100:v}\nfunction E(a,b){return Math.min(Math.abs(a-b),100-Math.abs(a-b))}\nfunction better(a,b){if(!b)return true;return a.tests!==b.tests?a.tests>b.tests:a.exact!==b.exact?a.exact>b.exact:a.sum!==b.sum?a.sum<b.sum:a.maxErr!==b.maxErr?a.maxErr<b.maxErr:a.complexity<b.complexity}\nfunction search(series,tol,maxMs,report){\n const n=series.length,deadline=performance.now()+maxMs;if(n<5)return{best:null,timeout:false};\n const Elist=[],seen=new Set(),minTests=Math.min(3,n-1);\n function add(v,next,text,c,start){if(v.length<minTests)return;const k=start+'|'+v.join(',')+'|'+M(next);if(seen.has(k))return;seen.add(k);Elist.push({v,next:M(next),text,c,start})}\n const maxLag=Math.min(6,n-1);\n for(let lag=1;lag<=maxLag;lag++){const start=lag,v=[];for(let i=start;i<n;i++)v.push(series[i-lag]);add(v,series[n-lag],'x[n-'+lag+']',1,start)}\n // Pair-lag families use their own valid start=b. This prevents undefined/NaN values.\n for(let a=1;a<=maxLag;a++)for(let b=a+1;b<=maxLag;b++){\n  const start=b;if(n-start<minTests)continue;const V=Array.from({length:6},()=>[]);\n  for(let i=start;i<n;i++){const x=series[i-a],y=series[i-b];V[0].push(M(2*x-y));V[1].push(M(2*y-x));V[2].push(M(x+(x-y)));V[3].push(M(x-(x-y)));V[4].push(M(x+y));V[5].push(M(x-y))}\n  const x=series[n-a],y=series[n-b];\n  add(V[0],M(2*x-y),'2*x[n-'+a+'] - x[n-'+b+']',4,start);add(V[1],M(2*y-x),'2*x[n-'+b+'] - x[n-'+a+']',4,start);add(V[2],M(x+(x-y)),'x[n-'+a+'] + (x[n-'+a+']-x[n-'+b+'])',4,start);add(V[3],M(x-(x-y)),'x[n-'+a+'] - (x[n-'+a+']-x[n-'+b+'])',4,start);add(V[4],M(x+y),'x[n-'+a+'] + x[n-'+b+']',3,start);add(V[5],M(x-y),'x[n-'+a+'] - x[n-'+b+']',3,start)\n }\n const base=Elist.slice();\n const unary=[['REV2',x=>{x=M(x);return(x%10)*10+Math.floor(x/10)},2],['SUMDIG',x=>Math.floor(M(x)/10)+(M(x)%10),2],['DIFFDIG',x=>Math.abs(Math.floor(M(x)/10)-(M(x)%10)),2],['PRODDIG',x=>Math.floor(M(x)/10)*(M(x)%10),2]];\n for(const a of base)for(const u of unary){if(performance.now()>deadline)return{best:select(Elist,series,tol,minTests),timeout:true};add(a.v.map(u[1]),M(u[1](a.next)),u[0]+'('+a.text+')',a.c+u[2],a.start)}\n // Pair arithmetic only between expressions sharing the same rolling start.\n const groups=new Map();for(const e of Elist){if(!groups.has(e.start))groups.set(e.start,[]);groups.get(e.start).push(e)}\n const ops=[['+', (a,b)=>a+b,1],['-',(a,b)=>a-b,1],['×',(a,b)=>a*b,2],['ABS',(a,b)=>Math.abs(a-b),2],['MIN',(a,b)=>Math.min(a,b),2],['MAX',(a,b)=>Math.max(a,b),2]];\n for(const [start,arr] of groups){const seed=arr.slice(0,220);for(const a of seed)for(const b of seed){for(const [nm,fn,c] of ops)add(a.v.map((v,i)=>M(fn(v,b.v[i]))),M(fn(a.next,b.next)),'('+a.text+' '+nm+' '+b.text+')',a.c+b.c+c,start);add(a.v.map((v,i)=>M(Math.floor((v+b.v[i])/2))),M(Math.floor((a.next+b.next)/2)),'FLOOR(('+a.text+' + '+b.text+')/2)',a.c+b.c+3,start);add(a.v.map((v,i)=>M(Math.ceil((v+b.v[i])/2))),M(Math.ceil((a.next+b.next)/2)),'CEIL(('+a.text+' + '+b.text+')/2)',a.c+b.c+3,start)}if(Elist.length>70000)break}\n report(75,'Backtest '+Elist.length.toLocaleString()+' rumus...');const best=select(Elist,series,tol,minTests);report(100,best?'Rumus konsisten ditemukan.':'Tidak ada rumus yang memenuhi seluruh titik rolling.');return{best,timeout:false}\n}\nfunction select(list,series,tol,minTests){let best=null;for(const e of list){let pass=0,exact=0,sum=0,maxErr=0;for(let j=0;j<e.v.length;j++){const d=E(e.v[j],series[e.start+j]);if(d<=tol)pass++;if(d===0)exact++;sum+=d;maxErr=Math.max(maxErr,d)}if(pass===e.v.length&&e.v.length>=minTests){const q={next:e.next,formula:e.text,tests:e.v.length,pass,exact,sum,maxErr,complexity:e.c};if(better(q,best))best=q}}return best}\nself.onmessage=e=>{const r=search(e.data.series,e.data.tol,e.data.maxMs,(p,m)=>self.postMessage({type:'progress',p,m}));self.postMessage({type:'done',found:!!r.best,timeout:r.timeout,result:r.best})};";
+const RM9_WORKER = "\"use strict\";\nfunction M(v){v%=10;return v<0?v+10:v}\nfunction E(a,b){const d=Math.abs(a-b)%10;return Math.min(d,10-d)}\nfunction better(a,b){if(!b)return true;return a.tests!==b.tests?a.tests>b.tests:a.exact!==b.exact?a.exact>b.exact:a.sum!==b.sum?a.sum<b.sum:a.maxErr!==b.maxErr?a.maxErr<b.maxErr:a.complexity<b.complexity}\nfunction search(series,tol,maxMs,report){\n const n=series.length,deadline=performance.now()+maxMs;if(n<5)return{best:null,timeout:false};\n const F=[],seen=new Set(),minTests=Math.min(3,n-1);\n function add(v,next,text,c,start){if(v.length<minTests)return;const k=start+'|'+v.join(',')+'|'+M(next);if(seen.has(k))return;seen.add(k);F.push({v,next:M(next),text,c,start})}\n for(let lag=1;lag<=Math.min(4,n-1);lag++){const start=lag,v=[];for(let i=start;i<n;i++)v.push(series[i-lag]);add(v,series[n-lag],'x[n-'+lag+']',1,start)}\n for(let c=0;c<=9;c++)add(new Array(n-1).fill(c),c,'CONST '+c,1,1);\n const unary=[['REV',x=>{x=M(x);return(x%10)*10+Math.floor(x/10)},2],['NEG',x=>-x,2],['ABS',x=>Math.abs(x),2]];\n const base=F.slice();for(const a of base)for(const u of unary){if(performance.now()>deadline)return{best:select(F,series,tol,minTests),timeout:true};add(a.v.map(u[1]),u[1](a.next),u[0]+'('+a.text+')',a.c+u[2],a.start)}\n const groups=new Map();for(const e of F){if(!groups.has(e.start))groups.set(e.start,[]);groups.get(e.start).push(e)}\n const ops=[['+', (a,b)=>a+b,1],['-',(a,b)=>a-b,1],['*',(a,b)=>a*b,2],['ABS',(a,b)=>Math.abs(a-b),2],['MIN',(a,b)=>Math.min(a,b),2],['MAX',(a,b)=>Math.max(a,b),2]];\n for(const [start,arr] of groups){const seed=arr.slice(0,80);for(const a of seed)for(const b of seed){for(const [nm,fn,c] of ops)add(a.v.map((v,i)=>M(fn(v,b.v[i]))),M(fn(a.next,b.next)),'('+a.text+' '+nm+' '+b.text+')',a.c+b.c+c,start)}}\n // Keluarga 1D tambahan: transformasi linear dan pola balik digit.\n for(let a=-4;a<=4;a++)for(let b=-4;b<=4;b++){\n  if(!a&&!b)continue;const v=[];for(let i=2;i<n;i++)v.push(M(a*series[i-1]+b*series[i-2]));\n  add(v,M(a*series[n-1]+b*series[n-2]),a+'*x[n-1] '+(b>=0?'+ '+b:'- '+Math.abs(b))+'*x[n-2]',Math.abs(a)+Math.abs(b)+2,2);\n }\n\n const best=select(F,series,tol,minTests);report(100,best?'Rumus konsisten ditemukan.':'Tidak ada rumus yang memenuhi seluruh titik rolling.');return{best,timeout:false}\n}\nfunction select(F,series,tol,minTests){let best=null;for(const f of F){let pass=0,exact=0,sum=0,maxErr=0;for(let j=0;j<f.v.length;j++){const d=E(f.v[j],series[f.start+j]);if(d<=tol)pass++;if(d===0)exact++;sum+=d;maxErr=Math.max(maxErr,d)}if(pass===f.v.length&&f.v.length>=minTests){const q={next:f.next,formula:f.text,tests:f.v.length,pass,exact,errorSum:sum,maxErr,complexity:f.c};if(better(q,best))best=q}}return best}\nself.onmessage=e=>{const r=search(e.data.series,e.data.tol,e.data.maxMs,(p,m)=>self.postMessage({type:'progress',p,m}));self.postMessage({type:'done',found:!!r.best,timeout:r.timeout,result:r.best})};";
+function candidate2(pred,tol){return circularTol2(pred,tol)}
+function result2(best,tol){return {found:true,pred:best.next,candidates:candidate2(best.next,tol),formula:best.formula||best.text,tests:best.tests,exact:best.exact,pass:best.pass,errorSum:best.sum??best.errorSum,maxErr:best.maxErr,complexity:best.complexity}}
+async function runRM6(data,tol,sec){
+ const pairs={};for(const kind of ["AB","BC","CD"]){const r=await createWorker(RM6_WORKER,{series:pairSeries(data,kind),tol,maxMs:sec*1000},0,8);pairs[kind]=r.found&&r.result?result2(r.result,tol):{found:false,message:r.timeout?"Batas waktu tercapai.":"Tidak ada rumus yang memenuhi seluruh titik rolling."}}
+ return {name:"RM6",pairs,composite:{ABC:pairs.AB?.found&&pairs.BC?.found?overlap2(pairs.AB.candidates,pairs.BC.candidates):[],BCD:pairs.BC?.found&&pairs.CD?.found?overlap2(pairs.BC.candidates,pairs.CD.candidates):[]}}
+}
+async function runRM7(data,tol,sec){
+ const pairs={};for(const kind of ["AB","BC","CD"]){const r=await createWorker(RM7_WORKER,{series:pairSeries(data,kind),tol,maxMs:sec*1000},24,18);pairs[kind]=r.found&&r.result?result2(r.result,tol):{found:false,message:r.timeout?"Batas waktu tercapai.":"Tidak ada rumus yang memenuhi seluruh titik rolling."}}
+ return {name:"RM7",pairs,composite:{ABC:pairs.AB?.found&&pairs.BC?.found?overlap2(pairs.AB.candidates,pairs.BC.candidates):[],BCD:pairs.BC?.found&&pairs.CD?.found?overlap2(pairs.BC.candidates,pairs.CD.candidates):[]}}
+}
+async function runRM8(data,tol,sec){
+ const pairs={};for(const kind of ["AB","BC","CD"]){const r=await createWorker(RM8_WORKER,{series:pairSeries(data,kind),tol,maxMs:sec*1000},48,18);pairs[kind]=r.found&&r.result?result2(r.result,tol):{found:false,message:r.timeout?"Batas waktu tercapai.":"Tidak ada rumus yang memenuhi seluruh titik rolling."}}
+ return {name:"RM8",pairs,composite:{ABC:pairs.AB?.found&&pairs.BC?.found?overlap2(pairs.AB.candidates,pairs.BC.candidates):[],BCD:pairs.BC?.found&&pairs.CD?.found?overlap2(pairs.BC.candidates,pairs.CD.candidates):[]}}
+}
+async function runRM9(data,tol,sec){
+ const digits=[];for(let pos=0;pos<4;pos++){const r=await createWorker(RM9_WORKER,{series:digitSeries(data,pos),tol,maxMs:sec*1000},66,8.5);if(r.found&&r.result){const b=r.result;digits.push({found:true,pred:b.next,candidates:tol1Set(b.next,tol),formula:b.formula,tests:b.tests,exact:b.exact,pass:b.pass,errorSum:b.errorSum,maxErr:b.maxErr,complexity:b.complexity})}else digits.push({found:false,message:r.timeout?"Batas waktu tercapai.":"Tidak ada rumus yang memenuhi seluruh titik rolling."})}
+ const A=digits[0]?.found?digits[0].candidates:[],B=digits[1]?.found?digits[1].candidates:[],C=digits[2]?.found?digits[2].candidates:[],D=digits[3]?.found?digits[3].candidates:[];
+ return {name:"RM9",digits,pairs:{AB:{found:!!(A.length&&B.length),candidates:cross1(A,B)},BC:{found:!!(B.length&&C.length),candidates:cross1(B,C)},CD:{found:!!(C.length&&D.length),candidates:cross1(C,D)}},composite:{ABC:A.length&&B.length&&C.length?cross3(A,B,C):[],BCD:B.length&&C.length&&D.length?cross3(B,C,D):[]}}
+}
+
+function renderTextareaCard(title,values,id,badgeText){
+  const box=document.createElement("div");box.className="resultCard";
+  box.innerHTML='<div class="resultHead"><strong>'+escapeHtml(title)+'</strong><span class="badge">'+escapeHtml(badgeText||String(values.length)+" LN")+'</span></div><div class="resultArea"><textarea id="'+id+'" spellcheck="false"></textarea><button class="copy" data-target="'+id+'">COPY</button></div><div class="lineCount">JUMLAH = '+values.length+' LN</div>';
+  box.querySelector("textarea").value=values.join("*");
+  return box;
+}
+function renderRMResult(r){
+  const wrap=document.createElement("div"),title=document.createElement("h3");
+  title.textContent=r.name;wrap.appendChild(title);
+  const grid=document.createElement("div");grid.className="results";
+  if(r.name==="RM9"){
+    const names=["A — RIBUAN","B — RATUSAN","C — PULUHAN","D — SATUAN"];
+    r.digits.forEach((x,i)=>grid.appendChild(renderTextareaCard(names[i],x.found?x.candidates:[],"out_"+r.name+"_"+i,x.found?"HASIL "+x.pred:"TIDAK ADA HASIL")));
+  }else{
+    for(const kind of ["AB","BC","CD"]){
+      const x=r.pairs[kind];
+      const box=renderTextareaCard(kind+" — 2D",x?.found?x.candidates:[],"out_"+r.name+"_"+kind,x?.found?"HASIL "+fmt2(x.pred):"TIDAK ADA HASIL");
+      if(x?.found)box.querySelector(".lineCount").insertAdjacentHTML("afterend",'<div class="formula"><b>Formula:</b> '+escapeHtml(x.formula)+'</div><div class="stats">Uji: '+x.tests+' | Tepat: '+x.exact+' | Toleransi: '+x.pass+'/'+x.tests+' | Deviasi: '+x.errorSum+' | Maks: '+x.maxErr+'</div>');
+      grid.appendChild(box);
+    }
+  }
+  wrap.appendChild(grid);
+  const cg=document.createElement("div");cg.className="results";
+  for(const kind of ["ABC","BCD"])cg.appendChild(renderTextareaCard(kind+" — HASIL PERSILANGAN",r.composite[kind]||[],"out_"+r.name+"_"+kind+"X"));
+  wrap.appendChild(cg);
+  $("engineResults").appendChild(wrap);
+}
+
+function getRMValues(rm,key){
+  if(!rm)return[];
+  if(key==="ABC"||key==="BCD")return rm.composite[key]||[];
+  return rm.pairs[key]?.candidates||[];
+}
+function buildAgreementGroups(key){
+  const counts=new Map();
+  for(const rmName of ["RM6","RM7","RM8","RM9"]){
+    const vals=getRMValues(resultsByRM[rmName],key);
+    [...new Set(vals.map(v=>String(v).padStart(key.length===2?2:3,"0")))].forEach(v=>counts.set(v,(counts.get(v)||0)+1));
+  }
+  const groups={4:[],3:[],2:[],1:[]};
+  for(const [v,n] of counts)if(groups[n])groups[n].push(v);
+  Object.values(groups).forEach(a=>a.sort((x,y)=>x.localeCompare(y)));
+  return groups;
+}
+
+
+
+/*
+function renderConclusionBlock(containerId,key){
+  const c=$(containerId);c.innerHTML="";
+  const groups=buildAgreementGroups(key);
+  [4,3,2,1].forEach(n=>{
+    const vals=groups[n];if(!vals.length)return;
+    const b=document.createElement("div");b.className="summaryGroup";
+    const head=document.createElement("div");head.className="summaryGroupHead";
+    const h=document.createElement("h3");h.textContent="ADA "+n+" DATA";head.appendChild(h);
+    const sw=document.createElement("label");sw.className="summarySelectorWrap";
+    const id="sel_"+key+"_"+n;
+    sw.innerHTML='<span>SELECTOR ON/OFF</span><span class="switch"><input type="checkbox" class="summarySelector" id="'+id+'" data-key="'+key+'" data-group="'+n+'"><span class="slider"></span></span>';
+    head.appendChild(sw);b.appendChild(head);
+    const area=document.createElement("div");area.className="summaryArea";
+    const taId="sum_"+key+"_"+n;
+    area.innerHTML='<textarea id="'+taId+'" spellcheck="false"></textarea><button class="copy" data-target="'+taId+'">COPY</button>';
+    area.querySelector("textarea").value=vals.join("*");
+    b.appendChild(area);
+    const sm=document.createElement("div");sm.className="small";sm.style.marginTop="5px";sm.textContent="Jumlah = "+vals.length+" LN";b.appendChild(sm);
+    c.appendChild(b);
+  });
+  if(!c.children.length)c.innerHTML='<div class="summaryGroup empty"><div class="small">Tidak ada kandidat hasil yang tersedia.</div></div>';
+}
+*/
+
+
+
+function renderConclusionBlock(containerId,key){
+  const c=$(containerId);
+  c.innerHTML="";
+
+  const groups=buildAgreementGroups(key);
+
+  [4,3,2,1].forEach(n=>{
+    const vals=groups[n];
+    if(!vals.length)return;
+
+    const b=document.createElement("div");
+    b.className="summaryGroup";
+
+    const head=document.createElement("div");
+    head.className="summaryGroupHead";
+
+    const h=document.createElement("h3");
+    h.textContent="ADA "+n+" DATA";
+    head.appendChild(h);
+
+    // SELECTOR HANYA DITAMPILKAN PADA DATA AB, BC, DAN CD
+    if(key==="AB" || key==="BC" || key==="CD"){
+      const sw=document.createElement("label");
+      sw.className="summarySelectorWrap";
+
+      const id="sel_"+key+"_"+n;
+
+      sw.innerHTML=
+        '<span>SELECTOR ON/OFF</span>'+
+        '<span class="switch">'+
+        '<input type="checkbox" class="summarySelector" id="'+id+
+        '" data-key="'+key+'" data-group="'+n+'">'+
+        '<span class="slider"></span>'+
+        '</span>';
+
+      head.appendChild(sw);
+    }
+
+    b.appendChild(head);
+
+    const area=document.createElement("div");
+    area.className="summaryArea";
+
+    const taId="sum_"+key+"_"+n;
+
+    area.innerHTML=
+      '<textarea id="'+taId+'" spellcheck="false"></textarea>'+
+      '<button class="copy" data-target="'+taId+'">COPY</button>';
+
+    area.querySelector("textarea").value=vals.join("*");
+
+    b.appendChild(area);
+
+    const sm=document.createElement("div");
+    sm.className="small";
+    sm.style.marginTop="5px";
+    sm.textContent="Jumlah = "+vals.length+" LN";
+
+    b.appendChild(sm);
+
+    c.appendChild(b);
+  });
+
+  if(!c.children.length){
+    c.innerHTML=
+      '<div class="summaryGroup empty">'+
+      '<div class="small">Tidak ada kandidat hasil yang tersedia.</div>'+
+      '</div>';
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function selectedConclusionValues(key){
+  const out=[];
+  document.querySelectorAll('.summarySelector[data-key="'+key+'"]:checked').forEach(cb=>{
+    const n=Number(cb.dataset.group);
+    const vals=buildAgreementGroups(key)[n]||[];
+    for(const v of vals)out.push(String(v).padStart(2,"0"));
+  });
+  return [...new Set(out)];
+}
+
+function renderProcessor2D(){
+  const ab=selectedConclusionValues("AB");
+  const bc=selectedConclusionValues("BC");
+  const cd=selectedConclusionValues("CD");
+  const abc=overlap2(ab,bc);
+  const bcd=overlap2(bc,cd);
+  const sets={AB:ab,BC:bc,CD:cd,ABC:abc,BCD:bcd};
+  for(const key of ["AB","BC","CD","ABC","BCD"]){
+    const ta=$("proc"+key);
+    if(ta)ta.value=sets[key].join("*");
+    const count=$("proc"+key+"Count");
+    if(count)count.textContent="Jumlah = "+sets[key].length+" LN";
+  }
+  $("processor2DCard").classList.remove("hidden");
+}
+
+function renderAllConclusions(){
+  renderConclusionBlock("sumAB","AB");renderConclusionBlock("sumBC","BC");renderConclusionBlock("sumCD","CD");renderConclusionBlock("sumABC","ABC");renderConclusionBlock("sumBCD","BCD");
+  renderProcessor2D();
+}
+
+document.addEventListener("change",e=>{
+  if(e.target.matches(".summarySelector"))renderProcessor2D();
+});
+document.addEventListener("click",async e=>{
+  const b=e.target.closest(".copy");if(!b)return;
+  const ta=document.getElementById(b.dataset.target);if(!ta)return;
+  try{await navigator.clipboard.writeText(ta.value)}catch(err){ta.select();document.execCommand("copy")}
+  const old=b.textContent;b.textContent="COPIED";setTimeout(()=>b.textContent=old,900);
+});
+
+
+function getBlindIndices(){
+  const cbs=[...document.querySelectorAll(".dataToggle")];
+  const off=cbs.filter(cb=>!cb.checked).map(cb=>Number(cb.dataset.index)).sort((a,b)=>a-b);
+  if(!off.length)return {ok:true,off:[],start:inputData.length};
+  const start=off[0];
+  for(let i=start;i<inputData.length;i++){
+    if(cbs[i].checked)return {ok:false,reason:"Selector OFF harus berupa satu blok di bagian paling akhir."};
+  }
+  return {ok:true,off,start};
+}
+function within2(value,pred,tol){return circularTol2(pred,tol).includes(fmt2(value))}
+async function runBlindAudit(fullData, blindStart, tol1, tol2, sec){
+ if(blindStart>=fullData.length)return{targets:[],state:fullData.slice(),message:"Tidak ada blok OFF."};
+ const state=fullData.slice(0,blindStart),targets=fullData.slice(blindStart),audit=[];
+ for(let k=0;k<targets.length;k++){
+  const target=targets[k];
+  if(state.length<5){audit.push({index:blindStart+k,target,ok:false,message:"Riwayat belajar minimal 5 data."});state.push(target);continue}
+  const snap={RM6:await runRM6(state,tol2,sec),RM7:await runRM7(state,tol2,sec),RM8:await runRM8(state,tol2,sec),RM9:await runRM9(state,tol1,sec)};
+  const ab=Number(target.slice(0,2)),bc=Number(target.slice(1,3)),cd=Number(target.slice(2,4));
+  const hits={};
+  for(const [name,r] of Object.entries(snap)){
+   if(name==='RM9')hits[name]=r.digits.every(x=>x.found)&&r.digits[0].candidates.includes(target[0])&&r.digits[1].candidates.includes(target[1])&&r.digits[2].candidates.includes(target[2])&&r.digits[3].candidates.includes(target[3]);
+   else hits[name]=r.pairs.AB?.found&&r.pairs.BC?.found&&r.pairs.CD?.found&&within2(ab,r.pairs.AB.pred,tol2)&&within2(bc,r.pairs.BC.pred,tol2)&&within2(cd,r.pairs.CD.pred,tol2);
+  }
+  audit.push({index:blindStart+k,target,ok:true,hits,stateLength:state.length});state.push(target);
+ }
+ return{targets:audit,state,message:"Blind rolling selesai. Target baru dimasukkan ke riwayat setelah pengujian."}
+}
+
+function renderBlindAudit(audit){
+ const box=$("blindAuditBox");if(!box)return;if(!audit?.targets?.length){box.textContent="Blind audit: tidak ada target OFF.";return}
+ const rows=audit.targets.map(x=>{const h=Object.entries(x.hits||{}).map(([k,v])=>k+":"+(v?"HIT":"MISS")).join(" | ");return "#"+(x.index+1)+" "+x.target+" → "+h});
+ box.innerHTML='<b>BLIND ROLLING AUDIT</b><br>'+rows.join('<br>');
+}
+
+$("processBtn").addEventListener("click",async()=>{
+  const p=parseAll();
+  if(!p.valid||p.data.length<5){alert("Masukkan minimal 5 data 4 digit.");return}
+  const fullData=p.data.slice();
+  const info=getBlindIndices();
+  if(!info.ok){alert(info.reason);return}
+  const tol1=clampInt($("tol1"),0,4,3),tol2=clampInt($("tol2"),0,49,35),sec=clampInt($("maxSeconds"),5,300,50);
+  let blindStart=info.start;
+  let autoBlind=false;
+  if(!info.off.length){blindStart=fullData.length-1;autoBlind=true;}
+  if(blindStart<4){alert("Data belajar sebelum target blind minimal 4 data.");return}
+
+  resultsByRM={};$("engineResults").innerHTML="";$("engineResultsCard").classList.remove("hidden");$("conclusionCard").classList.add("hidden");$("processor2DCard").classList.add("hidden");
+  showProgress();$("processBtn").disabled=true;
+  setRMStatus("RM6","running","Menyiapkan blind rolling...");setRMStatus("RM7","pending","Menunggu");setRMStatus("RM8","pending","Menunggu");setRMStatus("RM9","pending","Menunggu");
+  try{
+    // First perform the chronological blind audit. Actual blind values are added
+    // only AFTER their prediction is tested (teacher forcing).
+    setProgress(2,autoBlind?"Semua selector ON: data terakhir dijadikan blind target...":"Menjalankan blind rolling sesuai selector...");
+    const audit=await runBlindAudit(fullData,blindStart,tol1,tol2,sec);
+    window.__blindAudit=audit;renderBlindAudit(audit);
+
+    // Final learning uses only the visible prefix plus actual blind values that
+    // have already been tested. Thus the final formula never sees an untested target.
+    const history=fullData.slice(0,blindStart);
+    const finalState=fullData.slice(0,blindStart);
+    // For a blind block, final prediction is made after incorporating all actual
+    // blind values that were tested; for the all-ON case this equals the full data.
+    if(info.off.length) finalState.push(...fullData.slice(blindStart));
+    else finalState.push(fullData[fullData.length-1]);
+
+    setRMStatus("RM6","running","Learning final dari data yang sudah diketahui...");setProgress(25,"RM6 learning...");
+    resultsByRM.RM6=await runRM6(finalState,tol2,sec);renderRMResult(resultsByRM.RM6);setRMStatus("RM6","done","Selesai");
+    setRMStatus("RM7","running","Sedang diproses...");setProgress(45,"RM7 learning...");resultsByRM.RM7=await runRM7(finalState,tol2,sec);renderRMResult(resultsByRM.RM7);setRMStatus("RM7","done","Selesai");
+    setRMStatus("RM8","running","Sedang diproses...");setProgress(65,"RM8 learning...");resultsByRM.RM8=await runRM8(finalState,tol2,sec);renderRMResult(resultsByRM.RM8);setRMStatus("RM8","done","Selesai");
+    setRMStatus("RM9","running","Sedang diproses...");setProgress(82,"RM9 learning...");resultsByRM.RM9=await runRM9(finalState,tol1,sec);renderRMResult(resultsByRM.RM9);setRMStatus("RM9","done","Selesai");
+    renderAllConclusions();renderIntegrityLog();$("conclusionCard").classList.remove("hidden");
+    setProgress(100,"Selesai. Blind rolling selesai; formula tidak melihat target sebelum pengujian.");
+  }catch(err){
+    console.error(err);setProgress(100,"Proses berhenti karena error.");alert("Terjadi error saat learning: "+(err.message||err));
+  }finally{$("processBtn").disabled=getUsedHistory().length<5}
+});
+
+
+function updateMethodCheck(){
+ const t=Number($('tol2').value),expected=2*t+1;
+ $('methodCheck').textContent='Pemeriksaan parameter: toleransi 2D = '+t+' → '+expected+' kandidat per hasil 2D; domain 00–99; rumus diterima hanya jika seluruh titik rolling lulus.';
+}
+function renderIntegrityLog(){
+ const lines=[];
+ for(const rm of ['RM6','RM7','RM8','RM9']){
+  const r=resultsByRM[rm];if(!r){lines.push(rm+': belum ada hasil.');continue}
+  if(rm==='RM9'){
+   r.digits.forEach((d,i)=>lines.push(rm+' digit '+String.fromCharCode(65+i)+': '+(d.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests:'TIDAK ADA RUMUS')));
+  }else{
+   for(const k of ['AB','BC','CD']){const d=r.pairs[k];lines.push(rm+' '+k+': '+(d?.found?'OK | uji '+d.tests+' | exact '+d.exact+' | toleransi '+d.pass+'/'+d.tests+' | deviasi '+d.errorSum+' | maks '+d.maxErr:'TIDAK ADA RUMUS'));}
+  }
+ }
+ $('integrityLog').innerHTML=lines.join('<br>');
+}
+$('tol2').addEventListener('input',updateMethodCheck);$('tol1').addEventListener('input',updateMethodCheck);updateMethodCheck();
+updateInputStatus();buildSelectors();
+</script>
+</body>
+</html>
