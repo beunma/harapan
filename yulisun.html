@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4D Extractor - Tanggal Hari Nomor</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 20px;
+        background: #f2f4f7;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #222;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 18px rgba(0,0,0,.10);
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        margin: 0 0 6px;
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .section-title {
+        font-size: 17px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 300px;
+        resize: vertical;
+        border: 1px solid #cfd5dc;
+        border-radius: 10px;
+        padding: 14px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        outline: none;
+        background: #fafafa;
+    }
+
+    textarea:focus {
+        border-color: #4285f4;
+    }
+
+    textarea[readonly] {
+        background: #f7f7f7;
+        cursor: default;
+    }
+
+    .result-box {
+        min-height: 220px;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    button {
+        border: 0;
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: .15s;
+    }
+
+    button:hover {
+        transform: translateY(-1px);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    .paste-btn {
+        background: #2563eb;
+        color: white;
+    }
+
+    .copy-btn {
+        background: #16a34a;
+        color: white;
+    }
+
+    .clear-btn {
+        background: #6b7280;
+        color: white;
+    }
+
+    .info {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #f0f4ff;
+        color: #334155;
+        font-size: 13px;
+    }
+
+    .status {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #666;
+        min-height: 18px;
+    }
+
+    .count {
+        font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 10px;
+        }
+
+        .card {
+            padding: 14px;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        textarea {
+            min-height: 240px;
+            font-size: 13px;
+        }
+
+        .button-row {
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+        <h1>4D DATA EXTRACTOR</h1>
+        <div class="subtitle">
+            Ekstraksi Nomor berdasarkan pola Tanggal → Hari → Nomor
+        </div>
+
+        <div class="section-title">
+            DATA HASIL PASTE
+        </div>
+
+        <textarea
+            id="inputText"
+            readonly
+            placeholder="Tekan tombol PASTE untuk memasukkan data dari clipboard..."
+        ></textarea>
+
+        <div class="button-row">
+            <button class="paste-btn" id="pasteBtn">
+                📋 PASTE
+            </button>
+
+            <button class="clear-btn" id="clearBtn">
+                RESET
+            </button>
+        </div>
+
+        <div class="status" id="inputStatus"></div>
+    </div>
+
+
+    <div class="card">
+        <div class="section-title">
+            HASIL 4D
+        </div>
+
+        <textarea
+            id="resultText"
+            class="result-box"
+            readonly
+            placeholder="Hasil ekstraksi akan muncul otomatis di sini..."
+        ></textarea>
+
+        <div class="button-row">
+            <button class="copy-btn" id="copyBtn">
+                📄 COPY
+            </button>
+        </div>
+
+        <div class="info">
+            Jumlah data: <span class="count" id="dataCount">0</span>
+        </div>
+
+        <div class="status" id="resultStatus"></div>
+    </div>
+
+</div>
+
+
+<script>
+(function () {
+
+    "use strict";
+
+    const inputText = document.getElementById("inputText");
+    const resultText = document.getElementById("resultText");
+
+    const pasteBtn = document.getElementById("pasteBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const inputStatus = document.getElementById("inputStatus");
+    const resultStatus = document.getElementById("resultStatus");
+    const dataCount = document.getElementById("dataCount");
+
+
+    /*
+     * ============================================================
+     * NORMALISASI TEKS
+     * ============================================================
+     */
+
+    function normalizeText(text) {
+
+        if (!text) {
+            return "";
+        }
+
+        return text
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n")
+            .replace(/\u00A0/g, " ")
+            .trim();
+    }
+
+
+    /*
+     * ============================================================
+     * VALIDASI TANGGAL
+     *
+     * Format yang diterima:
+     * DD-MM-YYYY
+     *
+     * Contoh:
+     * 30-09-2026
+     * 29-09-2026
+     * ============================================================
+     */
+
+    function isDateLine(text) {
+
+        return /^\d{2}-\d{2}-\d{4}$/.test(text.trim());
+
+    }
+
+
+    /*
+     * ============================================================
+     * VALIDASI HARI
+     *
+     * Indonesia:
+     * Senin
+     * Selasa
+     * Rabu
+     * Kamis
+     * Jumat
+     * Sabtu
+     * Minggu
+     * ============================================================
+     */
+
+    function isDayLine(text) {
+
+        const days = [
+            "senin",
+            "selasa",
+            "rabu",
+            "kamis",
+            "jumat",
+            "sabtu",
+            "minggu"
+        ];
+
+        return days.includes(
+            text.trim().toLowerCase()
+        );
+
+    }
+
+
+    /*
+     * ============================================================
+     * VALIDASI NOMOR 4D
+     *
+     * Harus tepat 4 digit.
+     *
+     * Leading zero tetap dipertahankan.
+     *
+     * Contoh valid:
+     * 0529
+     * 1250
+     * 0921
+     * 0701
+     * 0000
+     * ============================================================
+     */
+
+    function is4D(text) {
+
+        return /^\d{4}$/.test(text.trim());
+
+    }
+
+
+    /*
+     * ============================================================
+     * EKSTRAK DATA
+     *
+     * Struktur yang dicari:
+     *
+     * Tanggal
+     * Hari
+     * Nomor
+     *
+     * Contoh:
+     *
+     * 30-09-2026
+     * Rabu
+     * 0529
+     *
+     * Maka:
+     *
+     * {
+     *     date: "30-09-2026",
+     *     day: "Rabu",
+     *     number: "0529"
+     * }
+     *
+     * ============================================================
+     */
+
+    function extractData(text) {
+
+        const normalized = normalizeText(text);
+
+        if (!normalized) {
+            return [];
+        }
+
+        const lines = normalized
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => line !== "");
+
+        const records = [];
+
+        /*
+         * Kita tidak mencari semua angka 4 digit secara sembarangan.
+         *
+         * Yang dianggap valid hanya jika susunannya:
+         *
+         * TANGGAL
+         * HARI
+         * NOMOR 4D
+         *
+         */
+
+        for (let i = 0; i < lines.length - 2; i++) {
+
+            const date = lines[i];
+            const day = lines[i + 1];
+            const number = lines[i + 2];
+
+            if (
+                isDateLine(date) &&
+                isDayLine(day) &&
+                is4D(number)
+            ) {
+
+                records.push({
+                    date: date,
+                    day: day,
+                    number: number
+                });
+
+                /*
+                 * Lompat 3 baris karena ketiganya sudah
+                 * menjadi satu record.
+                 */
+                i += 2;
+            }
+        }
+
+        return records;
+
+    }
+
+
+    /*
+     * ============================================================
+     * PROSES REAL-TIME
+     * ============================================================
+     */
+
+    function processData() {
+
+        const text = inputText.value;
+
+        if (!text.trim()) {
+
+            resultText.value = "";
+            dataCount.textContent = "0";
+
+            inputStatus.textContent = "";
+            resultStatus.textContent = "";
+
+            return;
+        }
+
+
+        const records = extractData(text);
+
+
+        /*
+         * ========================================================
+         * BALIK URUTAN
+         *
+         * Data sumber:
+         *
+         * 30-09-2026 0529
+         * 29-09-2026 1250
+         * ...
+         * 14-09-2026 1906
+         *
+         * Menjadi:
+         *
+         * 1906
+         * 7105
+         * ...
+         * 0529
+         *
+         * ========================================================
+         */
+
+        const reversedRecords = [...records].reverse();
+
+
+        /*
+         * Ambil nomor saja.
+         *
+         * Setiap nomor tetap STRING agar:
+         *
+         * 0921
+         * 0701
+         * 0654
+         *
+         * tidak berubah menjadi:
+         *
+         * 921
+         * 701
+         * 654
+         */
+
+        const numbers = reversedRecords.map(
+            record => record.number
+        );
+
+
+        /*
+         * Tampilkan satu baris per nomor.
+         *
+         * Contoh:
+         *
+         * 2997
+         * 2710
+         * 9400
+         * ...
+         */
+
+        resultText.value = numbers.join(",");
+
+        dataCount.textContent = String(numbers.length);
+
+        inputStatus.textContent =
+            "Data berhasil dibaca: " +
+            records.length +
+            " record Tanggal → Hari → Nomor.";
+
+        resultStatus.textContent =
+            records.length > 0
+                ? "Urutan hasil: paling bawah → paling atas."
+                : "Belum ditemukan pola Tanggal → Hari → Nomor.";
+
+    }
+
+
+    /*
+     * ============================================================
+     * PASTE
+     * ============================================================
+     */
+
+    pasteBtn.addEventListener("click", async function () {
+
+        try {
+
+            const text = await navigator.clipboard.readText();
+
+            inputText.value = text;
+
+            processData();
+
+        } catch (error) {
+
+            /*
+             * Fallback jika browser tidak memberikan izin
+             * Clipboard API.
+             */
+
+            inputStatus.textContent =
+                "Clipboard tidak dapat dibaca. Pastikan izin clipboard diberikan pada browser.";
+
+            console.error(error);
+
+        }
+
+    });
+
+
+    /*
+     * ============================================================
+     * COPY HASIL
+     * ============================================================
+     */
+
+    copyBtn.addEventListener("click", async function () {
+
+        const text = resultText.value;
+
+        if (!text) {
+
+            resultStatus.textContent =
+                "Tidak ada hasil untuk dicopy.";
+
+            return;
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            resultStatus.textContent =
+                "Hasil berhasil dicopy ke clipboard.";
+
+            /*
+             * Hilangkan pesan setelah beberapa detik.
+             */
+
+            setTimeout(function () {
+
+                resultStatus.textContent =
+                    "Urutan hasil: paling bawah → paling atas.";
+
+            }, 2000);
+
+        } catch (error) {
+
+            /*
+             * Fallback copy.
+             */
+
+            resultText.focus();
+            resultText.select();
+
+            try {
+
+                document.execCommand("copy");
+
+                resultStatus.textContent =
+                    "Hasil berhasil dicopy ke clipboard.";
+
+            } catch (err) {
+
+                resultStatus.textContent =
+                    "Copy gagal. Silakan copy secara manual.";
+
+            }
+
+        }
+
+    });
+
+
+    /*
+     * ============================================================
+     * RESET
+     * ============================================================
+     */
+
+    clearBtn.addEventListener("click", function () {
+
+        inputText.value = "";
+        resultText.value = "";
+
+        dataCount.textContent = "0";
+
+        inputStatus.textContent = "";
+        resultStatus.textContent = "";
+
+    });
+
+
+    /*
+     * ============================================================
+     * REAL-TIME PROCESSING
+     *
+     * Jika isi textarea berubah oleh proses lain,
+     * hasil langsung diperbarui.
+     * ============================================================
+     */
+
+    inputText.addEventListener("input", processData);
+
+
+})();
+</script>
+
+</body>
+</html>
