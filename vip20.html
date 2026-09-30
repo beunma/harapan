@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Analisa Generator</title>
+<title>Analisa Generator - Math Self Learning V4</title>
 
 <style>
     * {
@@ -307,6 +307,133 @@
     }
 
     /* =========================================================
+       MONITOR KEKUATAN 2D
+       ========================================================= */
+
+    .strength-box {
+        overflow-x: auto;
+    }
+
+    .strength-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .strength-card {
+        border: 2px solid #444;
+        border-radius: 9px;
+        padding: 12px;
+        background: #090909;
+        min-height: 110px;
+    }
+
+    .strength-card .rank {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    .strength-card .group {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .strength-card .score {
+        font-family: Consolas, monospace;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .strength-rank-1 {
+        background: #0b5d2a !important;
+        border-color: #00e676 !important;
+        color: #fff !important;
+    }
+
+    .strength-rank-2 {
+        background: #8a7800 !important;
+        border-color: #ffe600 !important;
+        color: #fff !important;
+    }
+
+    .strength-rank-3 {
+        background: #8e356e !important;
+        border-color: #ff79c6 !important;
+        color: #fff !important;
+    }
+
+    .strength-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #444;
+        border-radius: 8px;
+    }
+
+    .strength-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .strength-table th,
+    .strength-table td {
+        border: 1px solid #444;
+        padding: 8px 10px;
+        text-align: center;
+        font-family: Consolas, monospace;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .strength-table th {
+        background: #090909;
+        color: #ffd54a;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .strength-hit {
+        background: #006b32;
+        color: #fff;
+    }
+
+    .strength-miss {
+        background: #4d0000;
+        color: #fff;
+    }
+
+    .strength-note {
+        margin-top: 12px;
+        color: #bbb;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .hasil-box.strength-rank-1 {
+        padding: 8px;
+        border-radius: 9px;
+    }
+
+    .hasil-box.strength-rank-2 {
+        padding: 8px;
+        border-radius: 9px;
+    }
+
+    .hasil-box.strength-rank-3 {
+        padding: 8px;
+        border-radius: 9px;
+    }
+
+    @media (max-width: 800px) {
+        .strength-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* =========================================================
        BACKTEST
        ========================================================= */
 
@@ -454,6 +581,22 @@
 
             </div>
 
+            <div class="setting-item">
+
+                <label for="tolerance">
+                    Toleransi 2D
+                </label>
+
+                <input
+                    type="number"
+                    id="tolerance"
+                    min="0"
+                    max="49"
+                    step="1"
+                    value="35">
+
+            </div>
+
         </div>
 
     </div>
@@ -577,6 +720,49 @@
 
 
     <!-- =====================================================
+         MONITOR KEKUATAN 2D
+         ===================================================== -->
+
+    <div class="box strength-box">
+
+        <div class="judul">Monitor Kekuatan 2D</div>
+
+        <div id="strengthSummary" class="strength-summary">
+            <div class="strength-card">Belum ada pengujian.</div>
+            <div class="strength-card">Minimal pengujian: 8 data.</div>
+            <div class="strength-card">Hasil akan dihitung walk-forward.</div>
+        </div>
+
+        <div class="strength-table-wrap">
+            <table class="strength-table">
+                <thead>
+                    <tr>
+                        <th>Jumlah Data</th>
+                        <th>2DD</th>
+                        <th>2DT</th>
+                        <th>2DB</th>
+                        <th>Formula Dipilih</th>
+                    </tr>
+                </thead>
+                <tbody id="strengthBody">
+                    <tr>
+                        <td colspan="5" class="backtest-empty">
+                            Belum ada hasil monitor kekuatan.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="strengthNote" class="strength-note">
+            Walk-forward dimulai dari 8 data: data sebelum target dipakai untuk belajar,
+            lalu target yang baru dibuka hanya dipakai untuk mengukur HIT/MISS.
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
          BACKTEST
          Dibuat setelah Hasil Analisa.
          Proses memakai salinan data di memori sehingga
@@ -675,6 +861,7 @@ const inputStatus     = document.getElementById("inputStatus");
 
 const minHitInput     = document.getElementById("minHit");
 const maxGenInput     = document.getElementById("maxGen");
+const toleranceInput  = document.getElementById("tolerance");
 
 const btnProses       = document.getElementById("btnProses");
 const btnReset        = document.getElementById("btnReset");
@@ -685,6 +872,10 @@ const hasil2DT        = document.getElementById("hasil2DT");
 const hasil2DB        = document.getElementById("hasil2DB");
 
 const backtestBody    = document.getElementById("backtestBody");
+
+const strengthSummary = document.getElementById("strengthSummary");
+const strengthBody    = document.getElementById("strengthBody");
+const strengthNote    = document.getElementById("strengthNote");
 
 const title2DD        = document.getElementById("title2DD");
 const title2DT        = document.getElementById("title2DT");
@@ -768,12 +959,16 @@ function validateAll() {
 
     const minHit = Number(minHitInput.value);
     const maxGen = Number(maxGenInput.value);
+    const tolerance = Number(toleranceInput.value);
 
     const settingsValid =
         Number.isInteger(minHit) &&
         minHit >= 1 &&
         Number.isInteger(maxGen) &&
-        maxGen >= 1;
+        maxGen >= 1 &&
+        Number.isInteger(tolerance) &&
+        tolerance >= 0 &&
+        tolerance <= 49;
 
     if (!parsed.valid) {
 
@@ -852,18 +1047,26 @@ maxGenInput.addEventListener(
     validateAll
 );
 
+toleranceInput.addEventListener(
+    "input",
+    validateAll
+);
+
 
 btnReset.addEventListener("click", function() {
 
     dataInput.value = "";
 
-    minHitInput.value = "5";
+    minHitInput.value = "12";
+    maxGenInput.value = "1000";
+    toleranceInput.value = "35";
 
     hasil2DD.value = "";
     hasil2DT.value = "";
     hasil2DB.value = "";
 
     clearBacktestTable();
+    clearStrengthMonitor();
 
     resetResultStates();
 
@@ -1131,113 +1334,90 @@ btnStop.addEventListener(
    UTILITAS DIGIT
    ========================================================= */
 
-function cyclicDigit(digit, offset) {
+function normalize2DValue(value) {
 
-    return (
-        (Number(digit) +
-            offset +
-            10) % 10
-    );
+    const n = Math.trunc(Number(value));
+
+    if (!Number.isFinite(n)) {
+        return 0;
+    }
+
+    return ((Math.abs(n) % 100) + 100) % 100;
 }
 
 
-function generate49(seed) {
+function pad2D(value) {
+    return String(normalize2DValue(value)).padStart(2, "0");
+}
 
-    seed =
-        String(seed)
-        .padStart(2, "0")
-        .slice(-2);
 
-    const d1 = Number(seed[0]);
-    const d2 = Number(seed[1]);
+/*
+   Kandidat 2D sekarang bekerja pada BILANGAN 00..99, bukan
+   pada dua digit yang masing-masing diberi +/-3.
 
-    const list1 = [];
-    const list2 = [];
+   Toleransi adalah jarak numerik siklik pada lingkaran 00..99.
+   Contoh tolerance 2 dari 98 menghasilkan:
+       96,97,98,99,00,01,02
 
-    for (
-        let offset = -3;
-        offset <= 3;
-        offset++
-    ) {
+   Ini menjaga makna matematika 2D dan tetap menangani batas 99->00.
+*/
+function generateCandidates(seed, tolerance) {
 
-        list1.push(
-            cyclicDigit(
-                d1,
-                offset
-            )
-        );
-
-        list2.push(
-            cyclicDigit(
-                d2,
-                offset
-            )
-        );
-    }
-
+    const center = normalize2DValue(seed);
+    const t = Math.max(0, Math.min(49, Math.trunc(Number(tolerance) || 0)));
     const result = [];
+    const seen = new Set();
 
-    for (
-        let i = 0;
-        i < list1.length;
-        i++
-    ) {
-
-        for (
-            let j = 0;
-            j < list2.length;
-            j++
-        ) {
-
-            result.push(
-                String(list1[i]) +
-                String(list2[j])
-            );
+    for (let offset = -t; offset <= t; offset++) {
+        const value = (center + offset + 100) % 100;
+        const text = pad2D(value);
+        if (!seen.has(text)) {
+            seen.add(text);
+            result.push(text);
         }
     }
 
     return {
-        digit1: list1.join(""),
-        digit2: list2.join(""),
+        center: pad2D(center),
+        tolerance: t,
         combinations: result
     };
 }
 
 
-function isHit(seed, target) {
+function isHit(seed, target, tolerance) {
 
-    seed =
-        String(seed)
-        .padStart(2, "0");
+    const a = normalize2DValue(seed);
+    const b = normalize2DValue(target);
+    const t = Math.max(0, Math.min(49, Math.trunc(Number(tolerance) || 0)));
 
-    target =
-        String(target)
-        .padStart(2, "0");
+    let distance = Math.abs(a - b);
+    distance = Math.min(distance, 100 - distance);
 
-    return generate49(seed)
-        .combinations
-        .includes(target);
+    return distance <= t;
 }
 
 
 /* =========================================================
    EKSPRESI MATEMATIKA
-   =========================================================
 
-   Variabel:
+   Semua keluaran expression dipertahankan sebagai INTEGER.
+   Normalisasi ke domain 00..99 hanya dilakukan ketika formula
+   membentuk output 2D. Dengan demikian:
 
-   A = digit pertama data sekarang
-   B = digit kedua data sekarang
+       38 + 84 = 122 -> 22
+       84 - 38 = 46
+       38 * 84 = 3192 -> 92
 
-   P = digit pertama pasangan data sebelumnya
-   Q = digit kedua pasangan data sebelumnya
+   Tidak ada lagi pemotongan setiap expression menjadi digit terakhir.
 
-   Formula TIDAK menggunakan target.
-
-   Formula TIDAK menggunakan pairIndex.
-
-   Formula yang sama dipakai pada semua pasangan.
+   Variabel formula:
+   A = nilai 2D sekarang (00..99)
+   B = nilai 2D sebelumnya (00..99)
+   P = digit pertama nilai sekarang
+   Q = digit kedua nilai sekarang
    ========================================================= */
+
 
 const UNARY_OPS = [
     "abs",
@@ -2105,13 +2285,19 @@ function buildValueTable(
                 : current;
 
 
+        const currentPair =
+            normalize2DValue(current);
+
+        const previousPair =
+            normalize2DValue(previous);
+
         const vars = [
 
-            Number(current[0]),
-            Number(current[1]),
+            currentPair,
+            previousPair,
 
-            Number(previous[0]),
-            Number(previous[1])
+            Number(current[0]),
+            Number(current[1])
         ];
 
 
@@ -2302,123 +2488,29 @@ function decodeFormula(
    OUTPUT FORMULA
    ========================================================= */
 
-function normalizeDigit(value) {
-
-    return (
-        Math.abs(
-            Math.trunc(value)
-        ) % 10
-    );
-}
-
-
 function makeSeed(
     value1,
     value2,
     mode
 ) {
 
-    let d1 =
-        normalizeDigit(
-            value1
-        );
-
-    let d2 =
-        normalizeDigit(
-            value2
-        );
-
+    const x = normalize2DValue(value1);
+    const y = normalize2DValue(value2);
+    let out;
 
     switch (mode) {
-
-        case 0:
-
-            return (
-                String(d1) +
-                String(d2)
-            );
-
-
-        case 1:
-
-            return (
-                String(d2) +
-                String(d1)
-            );
-
-
-        case 2:
-
-            return (
-                String(
-                    (d1 + d2) % 10
-                ) +
-                String(d2)
-            );
-
-
-        case 3:
-
-            return (
-                String(d1) +
-                String(
-                    (d1 + d2) % 10
-                )
-            );
-
-
-        case 4:
-
-            return (
-                String(
-                    (d1 * d2) % 10
-                ) +
-                String(d2)
-            );
-
-
-        case 5:
-
-            return (
-                String(d1) +
-                String(
-                    (d1 * d2) % 10
-                )
-            );
-
-
-        case 6:
-
-            return (
-                String(
-                    Math.abs(
-                        d1 - d2
-                    )
-                ) +
-                String(
-                    (d1 + d2) % 10
-                )
-            );
-
-
-        case 7:
-
-            return (
-                String(
-                    (d1 + d2) % 10
-                ) +
-                String(
-                    Math.abs(
-                        d1 - d2
-                    )
-                )
-            );
+        case 0: out = x; break;
+        case 1: out = y; break;
+        case 2: out = x + y; break;
+        case 3: out = x - y; break;
+        case 4: out = x * y; break;
+        case 5: out = Math.abs(x - y); break;
+        case 6: out = x + y + Math.abs(x - y); break;
+        case 7: out = x + y - Math.abs(x - y); break;
+        default: out = x;
     }
 
-    return (
-        String(d1) +
-        String(d2)
-    );
+    return pad2D(out);
 }
 
 
@@ -2428,29 +2520,14 @@ function getOutputModeText(
 
     switch (mode) {
 
-        case 0:
-            return "[X,Y]";
-
-        case 1:
-            return "[Y,X]";
-
-        case 2:
-            return "[X+Y,Y]";
-
-        case 3:
-            return "[X,X+Y]";
-
-        case 4:
-            return "[X×Y,Y]";
-
-        case 5:
-            return "[X,X×Y]";
-
-        case 6:
-            return "[|X-Y|,X+Y]";
-
-        case 7:
-            return "[X+Y,|X-Y|]";
+        case 0: return "X";
+        case 1: return "Y";
+        case 2: return "X+Y → MOD100";
+        case 3: return "X-Y → MOD100";
+        case 4: return "X×Y → MOD100";
+        case 5: return "|X-Y|";
+        case 6: return "X+Y+|X-Y| → MOD100";
+        case 7: return "X+Y-|X-Y| → MOD100";
     }
 
     return "[X,Y]";
@@ -2493,7 +2570,8 @@ function getFormulaText(
 function testFormula(
     formula,
     valueTable,
-    targets
+    targets,
+    tolerance
 ) {
     const pairCount = targets.length;
 
@@ -2534,7 +2612,7 @@ function testFormula(
             formula.mode
         );
 
-        if (isHit(seed, targets[i])) {
+        if (isHit(seed, targets[i], tolerance)) {
             totalHit++;
         }
     }
@@ -2555,7 +2633,7 @@ function testFormula(
             formula.mode
         );
 
-        if (!isHit(seed, targets[i])) {
+        if (!isHit(seed, targets[i], tolerance)) {
             break;
         }
 
@@ -2582,9 +2660,32 @@ function testFormula(
             formula.mode
         );
 
+    const recentCount = Math.min(5, pairCount);
+    let recentHit = 0;
+
+    for (let i = pairCount - recentCount; i < pairCount; i++) {
+        const values = valueTable[i];
+        const seed = makeSeed(
+            values[formula.e1],
+            values[formula.e2],
+            formula.mode
+        );
+        if (isHit(seed, targets[i], tolerance)) {
+            recentHit++;
+        }
+    }
+
+    const weightedScore =
+        (trailingConsecutive * 1000) +
+        (recentHit * 100) +
+        totalHit;
+
     return {
         seed: latestSeed,
         totalHit: totalHit,
+        recentHit: recentHit,
+        recentCount: recentCount,
+        weightedScore: weightedScore,
         longestConsecutive: trailingConsecutive,
         trailingConsecutive: trailingConsecutive,
         pairCount: pairCount
@@ -2632,7 +2733,8 @@ async function analyzeGroup(
     data,
     group,
     minHit,
-    maxGen
+    maxGen,
+    tolerance
 ) {
     const pairCount =
         data.length - 1;
@@ -2692,7 +2794,8 @@ async function analyzeGroup(
                     testFormula(
                         fallback,
                         valueTable,
-                        targets
+                        targets,
+                        tolerance
                     );
 
                 best = {
@@ -2724,7 +2827,8 @@ async function analyzeGroup(
             testFormula(
                 formula,
                 valueTable,
-                targets
+                targets,
+                tolerance
             );
 
         /*
@@ -2748,6 +2852,16 @@ async function analyzeGroup(
         else if (
             score.trailingConsecutive ===
             best.score.trailingConsecutive &&
+            score.recentHit >
+            best.score.recentHit
+        ) {
+            isBetter = true;
+        }
+        else if (
+            score.trailingConsecutive ===
+            best.score.trailingConsecutive &&
+            score.recentHit ===
+            best.score.recentHit &&
             score.totalHit >
             best.score.totalHit
         ) {
@@ -2894,6 +3008,12 @@ async function analyzeGroup(
                 pairCount +
                 "\n" +
 
+                "Recent 5 hit   : " +
+                best.score.recentHit +
+                "/" +
+                best.score.recentCount +
+                "\n" +
+
                 "Seed terbaru   : " +
                 best.score.seed +
                 "\n\n" +
@@ -2942,7 +3062,8 @@ async function analyzeGroup(
    ========================================================= */
 
 function buildResultText(
-    result
+    result,
+    tolerance
 ) {
 
     if (!result) {
@@ -2950,8 +3071,9 @@ function buildResultText(
     }
 
     const generated =
-        generate49(
-            result.seed
+        generateCandidates(
+            result.seed,
+            tolerance
         );
 
     return generated
@@ -3017,7 +3139,8 @@ function target2DFrom4D(
 function resultContainsTarget(
     resultText,
     target4D,
-    group
+    group,
+    tolerance
 ) {
     const target2D =
         target2DFrom4D(
@@ -3029,8 +3152,10 @@ function resultContainsTarget(
         return false;
     }
 
-    return normalize2DList(resultText)
-        .includes(target2D);
+    const values = normalize2DList(resultText);
+    return values.some(function(value) {
+        return isHit(value, target2D, tolerance);
+    });
 }
 
 
@@ -3125,22 +3250,412 @@ function addBacktestRow(
 }
 
 
+function clearStrengthMonitor() {
+    strengthSummary.innerHTML =
+        '<div class="strength-card">Belum ada pengujian.</div>' +
+        '<div class="strength-card">Minimal pengujian: 8 data.</div>' +
+        '<div class="strength-card">Hasil akan dihitung walk-forward.</div>';
+
+    strengthBody.innerHTML =
+        '<tr><td colspan="5" class="backtest-empty">' +
+        'Belum ada hasil monitor kekuatan.</td></tr>';
+
+    strengthNote.textContent =
+        'Walk-forward dimulai dari 8 data: data sebelum target dipakai untuk belajar, ' +
+        'lalu target yang baru dibuka hanya dipakai untuk mengukur HIT/MISS.';
+
+    [hasil2DD, hasil2DT, hasil2DB].forEach(function(textarea) {
+        textarea.parentElement.classList.remove(
+            'strength-rank-1',
+            'strength-rank-2',
+            'strength-rank-3'
+        );
+    });
+}
+
+function chooseFormulaForHistory(data, group, maxGen, tolerance) {
+    if (data.length < 2) return null;
+
+    const valueTable = buildValueTable(data, group);
+    const targets = buildTargets(data, group);
+    const actualMaxGen = Math.min(
+        Math.max(1, Math.trunc(maxGen)),
+        TOTAL_FORMULAS
+    );
+
+    let best = null;
+
+    for (let gen = 1; gen <= actualMaxGen; gen++) {
+        const formula = decodeFormula(gen);
+        const score = testFormula(formula, valueTable, targets, tolerance);
+
+        if (!best ||
+            score.trailingConsecutive > best.score.trailingConsecutive ||
+            (score.trailingConsecutive === best.score.trailingConsecutive &&
+             score.recentHit > best.score.recentHit) ||
+            (score.trailingConsecutive === best.score.trailingConsecutive &&
+             score.recentHit === best.score.recentHit &&
+             score.totalHit > best.score.totalHit) ||
+            (score.trailingConsecutive === best.score.trailingConsecutive &&
+             score.recentHit === best.score.recentHit &&
+             score.totalHit === best.score.totalHit &&
+             gen < best.gen)) {
+            best = { formula: formula, gen: gen, score: score };
+        }
+
+        if (score.trailingConsecutive >= data.length - 1) {
+            break;
+        }
+    }
+
+    return best;
+}
+
+async function buildStrengthMonitor(data, maxGen, tolerance) {
+    clearStrengthMonitor();
+
+    const groups = ['2DD', '2DT', '2DB'];
+    const stats = {
+        '2DD': { hits: 0, tests: 0, recent: [], streak: 0, bestStreak: 0, rows: [] },
+        '2DT': { hits: 0, tests: 0, recent: [], streak: 0, bestStreak: 0, rows: [] },
+        '2DB': { hits: 0, tests: 0, recent: [], streak: 0, bestStreak: 0, rows: [] }
+    };
+
+    if (data.length < 8) {
+        strengthNote.textContent =
+            'Data belum mencapai 8. Monitor belum memberi peringkat agar tidak membuat kesimpulan dari sampel terlalu kecil.';
+        return { available: false, stats: stats, ranking: [] };
+    }
+
+    /*
+       Walk-forward murni:
+       N data -> belajar hanya dari data 1..N-1 -> uji data N.
+       Karena N dimulai dari 8, setiap baris mempunyai minimal 7 data
+       historis sebelum target dibuka.
+    */
+    for (let n = 8; n <= data.length; n++) {
+        if (stopRequested) break;
+
+        const trainData = data.slice(0, n - 1);
+        const target4D = data[n - 1];
+        const row = { n: n, values: {}, gens: {} };
+
+        for (const group of groups) {
+            const selected = chooseFormulaForHistory(
+                trainData,
+                group,
+                maxGen,
+                tolerance
+            );
+
+            let hit = false;
+            let seed = '';
+
+            if (selected) {
+                const table = buildValueTable(trainData, group);
+                const latest = table[table.length - 1];
+                seed = makeSeed(
+                    latest[selected.formula.e1],
+                    latest[selected.formula.e2],
+                    selected.formula.mode
+                );
+                const target = getGroupValue(target4D, group);
+                hit = isHit(seed, target, tolerance);
+            }
+
+            const st = stats[group];
+            st.tests++;
+            if (hit) {
+                st.hits++;
+                st.streak++;
+                st.bestStreak = Math.max(st.bestStreak, st.streak);
+            } else {
+                st.streak = 0;
+            }
+            st.recent.push(hit ? 1 : 0);
+            if (st.recent.length > 5) st.recent.shift();
+
+            row.values[group] = hit ? 'HIT' : 'NULL';
+            row.gens[group] = selected ? selected.gen : '-';
+        }
+
+        stats['2DD'].rows.push(row);
+        stats['2DT'].rows.push(row);
+        stats['2DB'].rows.push(row);
+
+        const done = n - 7;
+        const total = data.length - 7;
+        setProgress(
+            10 + (done / total) * 25,
+            'MONITOR KEKUATAN | ' + n + ' DATA | WALK-FORWARD'
+        );
+
+        progressInfo.textContent =
+            'MONITOR KEKUATAN 2D\n\n' +
+            'Pengujian: ' + n + ' data\n' +
+            'Belajar: data 1-' + (n - 1) + '\n' +
+            'Target OOS: data ' + n + '\n\n' +
+            '2DD : ' + row.values['2DD'] + '\n' +
+            '2DT : ' + row.values['2DT'] + '\n' +
+            '2DB : ' + row.values['2DB'];
+
+        await sleep(0);
+    }
+
+    const scoreList = groups.map(function(group) {
+        const st = stats[group];
+        const hitRate = st.tests ? st.hits / st.tests : 0;
+        const recentCount = Math.min(5, st.recent.length);
+        const recentHits = st.recent.reduce((a, b) => a + b, 0);
+        const recentRate = recentCount ? recentHits / recentCount : 0;
+        const streakRate = st.tests ? st.bestStreak / st.tests : 0;
+
+        /*
+           Bobot transparan:
+           70% = seluruh hit OOS,
+           20% = lima pengujian terakhir,
+           10% = streak terbaik.
+           Bobot ini hanya mengukur kekuatan historis; tidak mengubah
+           angka kandidat secara langsung.
+        */
+        const strength =
+            (hitRate * 70) +
+            (recentRate * 20) +
+            (streakRate * 10);
+
+        return {
+            group: group,
+            hits: st.hits,
+            tests: st.tests,
+            hitRate: hitRate,
+            recentRate: recentRate,
+            bestStreak: st.bestStreak,
+            strength: strength
+        };
+    }).sort(function(a, b) {
+        return b.strength - a.strength ||
+               b.hitRate - a.hitRate ||
+               b.bestStreak - a.bestStreak ||
+               a.group.localeCompare(b.group);
+    });
+
+    scoreList.forEach(function(item, index) {
+        item.rank = index + 1;
+    });
+
+    strengthSummary.innerHTML = '';
+    scoreList.forEach(function(item) {
+        const card = document.createElement('div');
+        card.className = 'strength-card strength-rank-' + item.rank;
+        card.innerHTML =
+            '<div class="rank">PERINGKAT ' + item.rank + '</div>' +
+            '<div class="group">' + item.group + '</div>' +
+            '<div class="score">KEKUATAN ' + item.strength.toFixed(1) + ' / 100</div>' +
+            '<div>OOS HIT ' + item.hits + '/' + item.tests +
+            ' · 5 TERAKHIR ' + (item.recentRate * 100).toFixed(0) + '%</div>';
+        strengthSummary.appendChild(card);
+    });
+
+    strengthBody.innerHTML = '';
+    for (let n = 8; n <= data.length; n++) {
+        const tr = document.createElement('tr');
+        const row = stats['2DD'].rows.find(function(r) { return r.n === n; });
+        const cells = [String(n)];
+        groups.forEach(function(group) { cells.push(row.values[group]); });
+        cells.push(
+            '2DD G' + row.gens['2DD'] +
+            ' | 2DT G' + row.gens['2DT'] +
+            ' | 2DB G' + row.gens['2DB']
+        );
+
+        cells.forEach(function(value, idx) {
+            const td = document.createElement('td');
+            td.textContent = value;
+            if (idx > 0 && idx < 4) {
+                td.className = value === 'HIT' ? 'strength-hit' : 'strength-miss';
+            }
+            tr.appendChild(td);
+        });
+        strengthBody.appendChild(tr);
+    }
+
+    const strongest = scoreList[0];
+    strengthNote.textContent =
+        'Monitor memakai data 8 sampai ' + data.length + '. ' +
+        'Kekuatan dihitung dari 70% seluruh HIT OOS + 20% HIT 5 pengujian terakhir + 10% streak terbaik. ' +
+        'Ranking hanya menunjukkan konsistensi historis; kandidat 2D tidak dipaksa mengikuti ranking.';
+
+    /* Warna juga ditempel pada kotak hasil utama agar ranking langsung terlihat. */
+    const ids = { '2DD': hasil2DD, '2DT': hasil2DT, '2DB': hasil2DB };
+    scoreList.forEach(function(item) {
+        const box = ids[item.group].parentElement;
+        box.classList.remove('strength-rank-1', 'strength-rank-2', 'strength-rank-3');
+        box.classList.add('strength-rank-' + item.rank);
+    });
+
+    return {
+        available: true,
+        stats: stats,
+        ranking: scoreList,
+        strongest: strongest
+    };
+}
+
+
+async function refineFormulaByWalkForward(
+    data,
+    group,
+    initialResult,
+    minHit,
+    maxGen,
+    tolerance
+) {
+    /*
+       Putaran refinement: kandidat formula tidak boleh melihat target
+       yang sedang diuji. Kita menguji champion terhadap beberapa titik
+       walk-forward terakhir dan hanya mengganti champion jika kandidat
+       mempunyai stabilitas OOS yang lebih baik.
+    */
+    if (!initialResult || data.length < 4) {
+        return initialResult;
+    }
+
+    const candidateGens = [];
+    const startGen = Math.max(1, initialResult.gen - 12);
+    const endGen = Math.min(
+        Math.max(1, Math.trunc(maxGen)),
+        initialResult.gen + 12,
+        TOTAL_FORMULAS
+    );
+
+    for (let gen = startGen; gen <= endGen; gen++) {
+        candidateGens.push(gen);
+    }
+
+    let champion = {
+        formula: initialResult.formula,
+        gen: initialResult.gen,
+        oosHit: -1,
+        oosTotal: 0,
+        oosTrailing: -1
+    };
+
+    const firstTest = Math.max(2, data.length - Math.min(5, data.length - 2));
+
+    for (const gen of candidateGens) {
+        const formula = decodeFormula(gen);
+        let oosHit = 0;
+        let oosTotal = 0;
+        let trailing = 0;
+        let runningTrailing = 0;
+
+        for (let targetIndex = firstTest; targetIndex < data.length; targetIndex++) {
+            const trainData = data.slice(0, targetIndex);
+            if (trainData.length < 2) continue;
+
+            const table = buildValueTable(trainData, group);
+            const values = table[table.length - 1];
+            const seed = makeSeed(values[formula.e1], values[formula.e2], formula.mode);
+            const target = getGroupValue(data[targetIndex], group);
+            const hit = isHit(seed, target, tolerance);
+
+            oosTotal++;
+            if (hit) {
+                oosHit++;
+                runningTrailing++;
+                trailing = Math.max(trailing, runningTrailing);
+            } else {
+                runningTrailing = 0;
+            }
+
+            if (stopRequested) break;
+        }
+
+        const better =
+            oosHit > champion.oosHit ||
+            (oosHit === champion.oosHit && trailing > champion.oosTrailing);
+
+        if (better) {
+            champion = {
+                formula: formula,
+                gen: gen,
+                oosHit: oosHit,
+                oosTotal: oosTotal,
+                oosTrailing: trailing
+            };
+        }
+
+        await sleep(0);
+    }
+
+    const valuesTable = buildValueTable(data, group);
+    const latestValues = valuesTable[valuesTable.length - 1];
+    const finalSeed = makeSeed(
+        latestValues[champion.formula.e1],
+        latestValues[champion.formula.e2],
+        champion.formula.mode
+    );
+
+    return {
+        stopped: false,
+        group: group,
+        gen: champion.gen,
+        formula: champion.formula,
+        seed: finalSeed,
+        hit: initialResult.hit,
+        longest: initialResult.longest,
+        total: initialResult.total,
+        totalFormulas: TOTAL_FORMULAS,
+        finishedBy: "WALK-FORWARD",
+        oosHit: champion.oosHit,
+        oosTotal: champion.oosTotal,
+        oosTrailing: champion.oosTrailing
+    };
+}
+
+
 async function runBackTest(
     data,
     minHit,
-    maxGen
+    maxGen,
+    tolerance
 ) {
     clearBacktestTable();
 
     /*
-       Tidak mengubah:
-       - dataInput
-       - hasil2DD
-       - hasil2DT
-       - hasil2DB
-       - title hasil utama
+       CHAIN BACKTEST — WALK FORWARD
 
-       Semua data BackTest dibuat sebagai array baru.
+       Prinsip utama:
+       1. Target TIDAK pernah masuk ke proses belajar.
+       2. Formula dipilih hanya dari histori yang SUDAH diketahui.
+       3. Formula yang dipilih adalah SATU formula yang sama untuk
+          seluruh rantai histori pada saat itu.
+       4. Setelah formula dipilih dari histori A...E, formula yang
+          sama langsung diuji untuk E -> F.
+       5. F baru dibuka setelah pengujian selesai. Karena itu F tidak
+          dapat mempengaruhi pemilihan formula untuk prediksi F.
+       6. Untuk target berikutnya, histori bertambah satu data dan
+          proses belajar diulang secara walk-forward. Ini bukan
+          mengganti formula di tengah satu pengujian.
+
+       Contoh target F:
+
+           A -> B -> C -> D -> E   = BELAJAR / VALIDASI
+                                   R = formula terpilih
+           E --R--> F              = UJI / OUT-OF-SAMPLE
+
+       Jika R gagal pada E -> F, hasilnya NULL. Tidak boleh mencari
+       formula lain dengan memakai F, karena itu akan membocorkan
+       target ke proses belajar.
+
+       CATATAN PENTING:
+       BackTest menggunakan kandidat numerik 2D sesuai toleransi. Itu
+       membuat arti HIT menjadi "target ada di area toleransi 49
+       kandidat", bukan "formula langsung menghasilkan target".
+       Di sini status CHAIN HIT memakai aturan isHit() yang sama
+       dengan validasi formula, sehingga seed formula diuji melalui
+       49 kandidat cyclic yang memang menjadi aturan HIT aplikasi.
+       Tidak ada formula baru yang dicari setelah target dibuka.
     */
 
     const totalTarget =
@@ -3151,6 +3666,18 @@ async function runBackTest(
 
     const groups =
         ["2DD", "2DT", "2DB"];
+
+    let totalHits = {
+        "2DD": 0,
+        "2DT": 0,
+        "2DB": 0
+    };
+
+    let totalTested = {
+        "2DD": 0,
+        "2DT": 0,
+        "2DB": 0
+    };
 
     for (
         let step = 0;
@@ -3166,19 +3693,22 @@ async function runBackTest(
                 "BackTest dihentikan pada target ke-" +
                 step +
                 " dari " +
-                totalTarget +
-                ".";
+                totalTarget + ".";
 
             return {
-                stopped: true
+                stopped: true,
+                total: step,
+                totalHits: totalHits,
+                totalTested: totalTested
             };
         }
 
         /*
-           targetIndex:
-           0 = data paling belakang
-           1 = satu posisi sebelum data paling belakang
-           dst.
+           Target bergerak dari terbaru ke belakang.
+           Contoh A,B,C,D,E,F:
+             step 0 -> target F, belajar A..E
+             step 1 -> target E, belajar A..D
+             step 2 -> target D, belajar A..C
         */
         const targetIndex =
             data.length -
@@ -3188,59 +3718,12 @@ async function runBackTest(
         const target =
             data[targetIndex];
 
-        /*
-           VIP sementara hanya data SEBELUM target.
-           Lalu target ditambahkan sebagai target proses.
+        const trainData =
+            data.slice(0, targetIndex);
 
-           Contoh:
-           Data:
-           A,B,C,D
-
-           BackTest pertama:
-           VIP = A,B,C
-           Target = D
-           data untuk mesin = A,B,C,D
-
-           BackTest kedua:
-           VIP = A,B
-           Target = C
-           data untuk mesin = A,B,C
-        */
-        const vipBeforeTarget =
-            data.slice(
-                0,
-                targetIndex
-            );
-
-        /*
-           PENTING:
-           Target TIDAK boleh dimasukkan ke data analisa.
-
-           BackTest harus benar-benar mensimulasikan kondisi
-           saat target tersebut BELUM diketahui: target dihapus
-           dari ujung belakang, lalu proses analisa dijalankan
-           pada data yang tersisa. Setelah hasil analisa keluar,
-           barulah hasil itu dibandingkan dengan target yang
-           tadi dihapus.
-
-           Kalau target ikut dimasukkan ke analyzeGroup(), mesin
-           justru memakai target itu sendiri sebagai target
-           terbaru saat memilih formula. Itu yang membuat hasil
-           BackTest cenderung selalu hijau.
-        */
-        const testData =
-            vipBeforeTarget.slice();
-
-        /*
-           Tampilkan hanya status proses pada overlay.
-           Wadah Hasil Analisa utama tidak disentuh.
-        */
         setProgress(
-            (
-                step /
-                totalTarget
-            ) * 100,
-            "BackTest " +
+            (step / Math.max(1, totalTarget)) * 100,
+            "BackTest CHAIN " +
             (step + 1) +
             "/" +
             totalTarget +
@@ -3249,31 +3732,22 @@ async function runBackTest(
         );
 
         progressInfo.textContent =
-            "BACKTEST\n\n" +
-
+            "BACKTEST — CHAIN WALK-FORWARD\n\n" +
             "Target       : " +
             target +
             "\n" +
-
             "Target ke    : " +
             (step + 1) +
             "/" +
             totalTarget +
             "\n\n" +
-
-            "VIP sementara:\n" +
-            vipBeforeTarget.join(", ") +
+            "Histori BELUM termasuk target:\n" +
+            trainData.join(", ") +
             "\n\n" +
-
-            "Setting sama dengan analisa utama:\n" +
-            "Minimal Hit  : " +
-            minHit +
-            "\n" +
-            "Maksimal GEN : " +
-            maxGen +
-            "\n\n" +
-
-            "Menjalankan 2DD, 2DT, 2DB di memori...";
+            "Aturan:\n" +
+            "SATU FORMULA -> SATU RANTAI -> UJI TARGET BERIKUTNYA\n" +
+            "Target tidak dipakai untuk memilih formula.\n" +
+            "Hasil utama 2DD/2DT/2DB tidak disentuh.";
 
         const rowValues = {};
 
@@ -3288,92 +3762,174 @@ async function runBackTest(
                     "BackTest di-STOP";
 
                 return {
-                    stopped: true
+                    stopped: true,
+                    total: step,
+                    totalHits: totalHits,
+                    totalTested: totalTested
                 };
             }
 
-            const group =
-                groups[g];
+            const group = groups[g];
 
             /*
-               analyzeGroup menerima data dengan target
-               sebagai elemen terakhir, persis seperti analisa
-               utama. Hasilnya hanya disimpan dalam variabel lokal.
+               Tidak ada target di trainData.
+               Dengan demikian analyzeGroup() hanya dapat belajar
+               dari transisi yang memang sudah diketahui.
             */
-            const result =
-                await analyzeGroup(
-                    testData,
+            let result = null;
+
+            if (trainData.length >= 2) {
+                result = await analyzeGroup(
+                    trainData,
                     group,
-                    minHit,
+                    Math.min(
+                        Math.max(1, Math.trunc(minHit)),
+                        trainData.length - 1
+                    ),
                     maxGen
                 );
+            }
 
-            const resultText =
-                buildResultText(
-                    result
-                );
+            let predicted = "";
+            let hit = false;
 
-            const hit =
-                resultContainsTarget(
-                    resultText,
-                    target,
-                    group
-                );
+            if (result && result.formula) {
+                /*
+                   Prediksi OUT-OF-SAMPLE memakai FORMULA YANG SAMA
+                   dengan formula yang dipilih dari trainData.
+
+                   Input terakhir trainData adalah sumber target.
+                   Kita evaluasi ekspresi formula pada pasangan terakhir
+                   persis seperti mekanisme formula utama.
+                */
+                const valueTable =
+                    buildValueTable(
+                        trainData,
+                        group
+                    );
+
+                if (valueTable.length > 0) {
+                    const latestValues =
+                        valueTable[valueTable.length - 1];
+
+                    const x =
+                        latestValues[result.formula.e1];
+
+                    const y =
+                        latestValues[result.formula.e2];
+
+                    predicted =
+                        makeSeed(
+                            x,
+                            y,
+                            result.formula.mode
+                        );
+
+                    const target2D =
+                        target2DFrom4D(
+                            target,
+                            group
+                        );
+
+                    /*
+                       BackTest harus memakai aturan HIT yang SAMA
+                       dengan proses belajar formula.
+
+                       Training memakai isHit(): seed formula menjadi
+                       49 kandidat matematika (rentang cyclic -3..+3).
+                       Jika di tahap training toleransi 49 kandidat
+                       dipakai, target out-of-sample juga wajib diuji
+                       dengan aturan yang sama.
+
+                       Perbandingan langsung (===) di sini sebelumnya
+                       membuat BackTest hampir selalu NULL meskipun
+                       formula yang sama sebenarnya mengenai target
+                       melalui kandidatnya.
+                    */
+                    hit =
+                        isHit(
+                            predicted,
+                            target2D
+                        );
+                }
+            }
+
+            totalTested[group]++;
+
+            if (hit) {
+                totalHits[group]++;
+            }
 
             rowValues[group] =
                 hit
-                    ? target2DFrom4D(
-                        target,
-                        group
-                    )
+                    ? target2DFrom4D(target, group)
                     : "NULL";
+
+            progressInfo.textContent +=
+                "\n\n" +
+                group +
+                ": " +
+                (hit ? "CHAIN HIT" : "CHAIN NULL") +
+                "\nFormula GEN : " +
+                (result ? result.gen : "-") +
+                "\nTraining hit: " +
+                (result ? result.hit : 0) +
+                "/" +
+                (result ? result.total : 0) +
+                "\nRantai hit  : " +
+                (result ? result.longest : 0) +
+                "\nPrediksi    : " +
+                (predicted || "-") +
+                "\nTarget      : " +
+                target2DFrom4D(target, group) +
+                "\nStatus      : " +
+                (hit ? "HIT" : "NULL");
         }
 
-        /*
-           Setelah ketiga group selesai, baru satu baris
-           dimasukkan ke tabel BackTest.
-        */
         addBacktestRow(
             target,
             rowValues
         );
 
-        /*
-           Beri kesempatan browser menggambar tabel sebelum
-           lanjut ke target berikutnya.
-        */
         await sleep(0);
     }
 
     setProgress(
         100,
-        "BackTest selesai"
+        "BackTest CHAIN selesai"
     );
 
     progressInfo.textContent =
-        "BACKTEST SELESAI\n\n" +
-
+        "BACKTEST CHAIN SELESAI\n\n" +
         "Jumlah target diuji : " +
         totalTarget +
-        "\n" +
-
-        "Minimal Hit          : " +
-        minHit +
-        "\n" +
-
-        "Maksimal GEN         : " +
-        maxGen +
         "\n\n" +
-
-        "Setiap target diuji mundur dari data paling belakang.\n" +
-        "Hasil utama 2DD / 2DT / 2DB tidak diubah.";
+        "2DD : " +
+        totalHits["2DD"] +
+        "/" +
+        totalTested["2DD"] +
+        " CHAIN HIT\n" +
+        "2DT : " +
+        totalHits["2DT"] +
+        "/" +
+        totalTested["2DT"] +
+        " CHAIN HIT\n" +
+        "2DB : " +
+        totalHits["2DB"] +
+        "/" +
+        totalTested["2DB"] +
+        " CHAIN HIT\n\n" +
+        "Formula dipilih tanpa melihat target.\n" +
+        "Prediksi target berikutnya memakai formula yang sama\n" +
+        "yang telah divalidasi pada rantai histori training.";
 
     return {
         stopped: false,
-        total: totalTarget
+        total: totalTarget,
+        totalHits: totalHits,
+        totalTested: totalTested
     };
 }
-
 
 /* =========================================================
    PROGRESS
@@ -3490,6 +4046,11 @@ btnProses.addEventListener(
                 maxGenInput.value
             );
 
+        const tolerance =
+            Number(
+                toleranceInput.value
+            );
+
 
         hasil2DD.value = "";
         hasil2DT.value = "";
@@ -3578,19 +4139,31 @@ btnProses.addEventListener(
                 data,
                 "2DD",
                 minHit,
-                maxGen
+                maxGen,
+                tolerance
+            );
+
+        const refined2DD =
+            await refineFormulaByWalkForward(
+                data,
+                "2DD",
+                result2DD,
+                minHit,
+                maxGen,
+                tolerance
             );
 
 
         title2DD.textContent =
             buildTitle(
                 "2DD",
-                result2DD
+                refined2DD
             );
 
         hasil2DD.value =
             buildResultText(
-                result2DD
+                refined2DD,
+                tolerance
             );
 
         resultStates["hasil2DD"].original =
@@ -3663,19 +4236,31 @@ btnProses.addEventListener(
                 data,
                 "2DT",
                 minHit,
-                maxGen
+                maxGen,
+                tolerance
+            );
+
+        const refined2DT =
+            await refineFormulaByWalkForward(
+                data,
+                "2DT",
+                result2DT,
+                minHit,
+                maxGen,
+                tolerance
             );
 
 
         title2DT.textContent =
             buildTitle(
                 "2DT",
-                result2DT
+                refined2DT
             );
 
         hasil2DT.value =
             buildResultText(
-                result2DT
+                refined2DT,
+                tolerance
             );
 
         resultStates["hasil2DT"].original =
@@ -3748,19 +4333,31 @@ btnProses.addEventListener(
                 data,
                 "2DB",
                 minHit,
-                maxGen
+                maxGen,
+                tolerance
+            );
+
+        const refined2DB =
+            await refineFormulaByWalkForward(
+                data,
+                "2DB",
+                result2DB,
+                minHit,
+                maxGen,
+                tolerance
             );
 
 
         title2DB.textContent =
             buildTitle(
                 "2DB",
-                result2DB
+                refined2DB
             );
 
         hasil2DB.value =
             buildResultText(
-                result2DB
+                refined2DB,
+                tolerance
             );
 
         resultStates["hasil2DB"].original =
@@ -3805,6 +4402,27 @@ btnProses.addEventListener(
 
 
         /* =================================================
+           MONITOR KEKUATAN 8 -> DATA TERAKHIR
+           ================================================= */
+
+        progressState.textContent =
+            "Mengukur kekuatan 2DD / 2DT / 2DB";
+
+        const strengthReport =
+            await buildStrengthMonitor(
+                data,
+                maxGen,
+                tolerance
+            );
+
+        if (stopRequested) {
+            progressState.textContent =
+                "PROSES DI-STOP";
+            return;
+        }
+
+
+        /* =================================================
            SELESAI
            ================================================= */
 
@@ -3824,64 +4442,74 @@ btnProses.addEventListener(
 
             "2DD\n" +
             "GEN : " +
-            result2DD.gen +
+            refined2DD.gen +
             "\n" +
             "Total hit : " +
-            result2DD.hit +
+            refined2DD.hit +
             "/" +
-            result2DD.total +
+            refined2DD.total +
             "\n" +
             "Hit berurutan : " +
-            result2DD.longest +
+            refined2DD.longest +
             "\n" +
             "Seed : " +
-            result2DD.seed +
+            refined2DD.seed +
             "\n" +
             getFormulaText(
-                result2DD.formula
+                refined2DD.formula
             ) +
 
             "\n\n" +
 
             "2DT\n" +
             "GEN : " +
-            result2DT.gen +
+            refined2DT.gen +
             "\n" +
             "Total hit : " +
-            result2DT.hit +
+            refined2DT.hit +
             "/" +
-            result2DT.total +
+            refined2DT.total +
             "\n" +
             "Hit berurutan : " +
-            result2DT.longest +
+            refined2DT.longest +
             "\n" +
             "Seed : " +
-            result2DT.seed +
+            refined2DT.seed +
             "\n" +
             getFormulaText(
-                result2DT.formula
+                refined2DT.formula
             ) +
 
             "\n\n" +
 
             "2DB\n" +
             "GEN : " +
-            result2DB.gen +
+            refined2DB.gen +
             "\n" +
             "Total hit : " +
-            result2DB.hit +
+            refined2DB.hit +
             "/" +
-            result2DB.total +
+            refined2DB.total +
             "\n" +
             "Hit berurutan : " +
-            result2DB.longest +
+            refined2DB.longest +
             "\n" +
             "Seed : " +
-            result2DB.seed +
+            refined2DB.seed +
             "\n" +
             getFormulaText(
-                result2DB.formula
+                refined2DB.formula
             );
+
+        if (strengthReport.available) {
+            progressInfo.textContent +=
+                "\n\nMONITOR KEKUATAN\n" +
+                strengthReport.ranking.map(function(item) {
+                    return item.rank + ". " + item.group +
+                        " = " + item.strength.toFixed(1) +
+                        " (" + item.hits + "/" + item.tests + " OOS HIT)";
+                }).join("\n");
+        }
 
 
         progressState.textContent =
@@ -3900,7 +4528,8 @@ btnProses.addEventListener(
             await runBackTest(
                 data,
                 minHit,
-                maxGen
+                maxGen,
+                tolerance
             );
 
         if (backtestResult.stopped) {
