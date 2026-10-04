@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -111,11 +110,6 @@ textarea.invalid {
     color: #00eaff;
 }
 
-
-/* =========================================================
-   TOLERANSI
-========================================================= */
-
 .toleransi-box {
     display: none;
     background: #111;
@@ -196,11 +190,6 @@ textarea.invalid {
     cursor: not-allowed;
 }
 
-
-/* =========================================================
-   STATUS PROSES
-========================================================= */
-
 .proses-box {
     display: none;
     background: #111;
@@ -222,11 +211,6 @@ textarea.invalid {
     color: #bbb;
     line-height: 1.7;
 }
-
-
-/* =========================================================
-   HASIL
-========================================================= */
 
 .hasil {
     margin-top: 25px;
@@ -330,10 +314,11 @@ textarea.invalid {
     font-weight: bold;
 }
 
-
-/* =========================================================
-   KESIMPULAN GABUNGAN
-========================================================= */
+.kandidat span.top {
+    background: #174d58;
+    color: #00ffcc;
+    font-weight: bold;
+}
 
 .kesimpulan {
     display: none;
@@ -387,11 +372,6 @@ textarea.invalid {
 .scoring strong {
     color: white;
 }
-
-
-/* =========================================================
-   GENERATOR KOMBINASI
-========================================================= */
 
 .generator-section {
     display: none;
@@ -455,9 +435,7 @@ textarea.invalid {
     display: none;
 }
 
-
 @media (max-width: 650px) {
-
     .toleransi-item input {
         width: 100%;
     }
@@ -472,24 +450,17 @@ textarea.invalid {
     }
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-
-<h1>Pemecah Deret Angka</h1>
+<h1>Pemecah Deret Matematika</h1>
 
 <div class="subjudul">
     Analisa pola deret dengan dua metode dan scoring gabungan
 </div>
-
-
-<!-- =====================================================
-     INPUT DATA
-====================================================== -->
 
 <label class="label">
     Masukkan Deret
@@ -497,10 +468,9 @@ textarea.invalid {
 
 <div class="box">
 
-    <textarea
-        id="dataInput"
-        placeholder="Contoh:
-
+<textarea
+    id="dataInput"
+    placeholder="Contoh:
 
 23,56,44,00
 
@@ -512,28 +482,15 @@ atau
 
 0023,0453,6748,9399"></textarea>
 
+<button class="paste-btn" id="btnPaste">
+    Paste
+</button>
 
-    <button
-        class="paste-btn"
-        id="btnPaste">
-        Paste
-    </button>
-
-    <div
-        id="status"
-        class="status">
-    </div>
+<div id="status" class="status"></div>
 
 </div>
 
-
-<!-- =====================================================
-     SATU TOLERANSI UNTUK KEDUA DERET
-====================================================== -->
-
-<div
-    id="toleransiBox"
-    class="toleransi-box">
+<div id="toleransiBox" class="toleransi-box">
 
     <div class="toleransi-title">
         Toleransi Pendekatan
@@ -551,127 +508,73 @@ atau
             min="0"
             max="4"
             step="1"
-            value="4">
+            value="3">
 
     </div>
 
     <div class="toleransi-info">
         Nilai toleransi minimal 0 dan maksimal 4.
         Nilai ini digunakan bersama oleh Deret 1 dan Deret 2.
-        Contoh toleransi 2 berarti nilai prediksi ±2 tetap dianggap memenuhi formula.
+        Perhitungan digit tetap melingkar 0 sampai 9.
     </div>
 
-    <div
-        id="statusToleransi"
-        class="status">
-    </div>
+    <div id="statusToleransi" class="status"></div>
 
 </div>
 
-
-<!-- =====================================================
-     PROSES
-====================================================== -->
-
-<button
-    id="btnProses"
-    class="btn-proses"
-    disabled>
+<button id="btnProses" class="btn-proses" disabled>
     PROSES
 </button>
 
-
-<!-- =====================================================
-     STATUS PROSES
-====================================================== -->
-
-<div
-    id="prosesBox"
-    class="proses-box">
+<div id="prosesBox" class="proses-box">
 
     <div class="proses-title">
         STATUS PROSES
     </div>
 
-    <div
-        id="prosesStatus"
-        class="proses-status">
-    </div>
+    <div id="prosesStatus" class="proses-status"></div>
 
 </div>
 
-
-<!-- =====================================================
-     HASIL DERET 1
-====================================================== -->
-
-<div
-    id="hasilDeret1"
-    class="hasil hidden">
+<div id="hasilDeret1" class="hasil hidden">
 
     <div class="section-title">
         HASIL ANALISA DERET 1
     </div>
 
-    <div id="hasilPosisiDeret1">
-    </div>
+    <div id="hasilPosisiDeret1"></div>
 
 </div>
 
-
-<!-- =====================================================
-     HASIL DERET 2
-====================================================== -->
-
-<div
-    id="hasilDeret2"
-    class="hasil hidden">
+<div id="hasilDeret2" class="hasil hidden">
 
     <div class="section-title">
         HASIL ANALISA DERET 2
     </div>
 
-    <div id="hasilPosisiDeret2">
-    </div>
+    <div id="hasilPosisiDeret2"></div>
 
 </div>
 
-
-<!-- =====================================================
-     KESIMPULAN GABUNGAN
-====================================================== -->
-
-<div
-    id="kesimpulanBox"
-    class="kesimpulan">
+<div id="kesimpulanBox" class="kesimpulan">
 
     <div class="section-title">
         KESIMPULAN GABUNGAN
     </div>
 
-    <div id="hasilGabungan">
-    </div>
+    <div id="hasilGabungan"></div>
 
 </div>
 
-
-<!-- =====================================================
-     GENERATOR KOMBINASI
-====================================================== -->
-
-<div
-    id="generatorSection"
-    class="generator-section">
+<div id="generatorSection" class="generator-section">
 
     <div class="section-title">
         HASIL PEMBENTUKAN KOMBINASI
     </div>
 
-    <div id="generatorContainer">
-    </div>
+    <div id="generatorContainer"></div>
 
 </div>
-
 
 </div>
 
@@ -734,95 +637,53 @@ const generatorContainer =
 
 
 /* =========================================================
-   NAMA POSISI DIGIT
+   NAMA POSISI
 ========================================================= */
 
-function namaPosisi(
-    jumlahDigit,
-    index
-) {
+function namaPosisi(jumlahDigit, index) {
 
     const posisi =
         jumlahDigit - index;
 
-
-    if (
-        posisi === 4
-    ) {
-        return "Ribuan";
-    }
-
-
-    if (
-        posisi === 3
-    ) {
-        return "Ratusan";
-    }
-
-
-    if (
-        posisi === 2
-    ) {
-        return "Puluhan";
-    }
-
+    if (posisi === 4) return "Ribuan";
+    if (posisi === 3) return "Ratusan";
+    if (posisi === 2) return "Puluhan";
 
     return "Satuan";
 }
 
 
 /* =========================================================
-   PARSER DATA
+   PARSER
 ========================================================= */
 
 function parseData(teks) {
 
-    let s =
-        teks.trim();
-
+    let s = teks.trim();
 
     if (!s) {
-
         return {
             valid: false,
             error: "Data masih kosong."
         };
     }
 
-
-    s =
-        s.replace(
-            /[,*]/g,
-            " "
-        );
-
+    s = s.replace(/[,*]/g, " ");
 
     const token =
-        s.split(/\s+/)
-         .filter(Boolean);
+        s.split(/\s+/).filter(Boolean);
 
-
-    if (
-        token.length < 3
-    ) {
-
+    if (token.length < 3) {
         return {
             valid: false,
-            error:
-                "Minimal masukkan 3 kelompok angka."
+            error: "Minimal masukkan 3 kelompok angka."
         };
     }
-
 
     const panjang =
         token[0].length;
 
-
-    if (
-        panjang < 1 ||
-        panjang > 4
-    ) {
-
+    if (panjang < 1 || panjang > 4) {
         return {
             valid: false,
             error:
@@ -830,38 +691,23 @@ function parseData(teks) {
         };
     }
 
-
     const angka = [];
 
+    for (let i = 0; i < token.length; i++) {
 
-    for (
-        let i = 0;
-        i < token.length;
-        i++
-    ) {
+        const item = token[i];
 
-        const item =
-            token[i];
-
-
-        if (
-            !/^[0-9]+$/.test(item)
-        ) {
-
+        if (!/^[0-9]+$/.test(item)) {
             return {
                 valid: false,
                 error:
-                    "Data tidak valid: \"" +
+                    'Data tidak valid: "' +
                     item +
-                    "\" bukan angka."
+                    '" bukan angka.'
             };
         }
 
-
-        if (
-            item.length !== panjang
-        ) {
-
+        if (item.length !== panjang) {
             return {
                 valid: false,
                 error:
@@ -875,17 +721,12 @@ function parseData(teks) {
             };
         }
 
-
         angka.push(item);
     }
 
-
     return {
-
         valid: true,
-
         data: angka,
-
         panjang: panjang
     };
 }
@@ -900,18 +741,10 @@ function validasiToleransi() {
     const teks =
         toleransiInput.value.trim();
 
+    if (teks === "") {
 
-    if (
-        teks === ""
-    ) {
-
-        toleransiInput.classList.remove(
-            "valid"
-        );
-
-        toleransiInput.classList.add(
-            "invalid"
-        );
+        toleransiInput.classList.remove("valid");
+        toleransiInput.classList.add("invalid");
 
         statusToleransi.className =
             "status err";
@@ -922,10 +755,8 @@ function validasiToleransi() {
         return false;
     }
 
-
     const nilai =
         Number(teks);
-
 
     if (
         !Number.isInteger(nilai) ||
@@ -933,13 +764,8 @@ function validasiToleransi() {
         nilai > 4
     ) {
 
-        toleransiInput.classList.remove(
-            "valid"
-        );
-
-        toleransiInput.classList.add(
-            "invalid"
-        );
+        toleransiInput.classList.remove("valid");
+        toleransiInput.classList.add("invalid");
 
         statusToleransi.className =
             "status err";
@@ -950,22 +776,14 @@ function validasiToleransi() {
         return false;
     }
 
-
-    toleransiInput.classList.remove(
-        "invalid"
-    );
-
-    toleransiInput.classList.add(
-        "valid"
-    );
+    toleransiInput.classList.remove("invalid");
+    toleransiInput.classList.add("valid");
 
     statusToleransi.className =
         "status ok";
 
     statusToleransi.textContent =
-        "Toleransi valid: ±" +
-        nilai;
-
+        "Toleransi valid: ±" + nilai;
 
     return true;
 }
@@ -978,27 +796,15 @@ function validasiToleransi() {
 function validasi() {
 
     const resultado =
-        parseData(
-            dataInput.value
-        );
+        parseData(dataInput.value);
 
+    if (resultado.valid) {
 
-    if (
-        resultado.valid
-    ) {
-
-        dataInput.classList.remove(
-            "invalid"
-        );
-
-        dataInput.classList.add(
-            "valid"
-        );
-
+        dataInput.classList.remove("invalid");
+        dataInput.classList.add("valid");
 
         statusBox.className =
             "status ok";
-
 
         statusBox.textContent =
             "Data valid: " +
@@ -1007,43 +813,30 @@ function validasi() {
             resultado.panjang +
             " digit.";
 
-
         toleransiBox.style.display =
             "block";
 
-
     } else {
 
-        dataInput.classList.remove(
-            "valid"
-        );
-
-        dataInput.classList.add(
-            "invalid"
-        );
-
+        dataInput.classList.remove("valid");
+        dataInput.classList.add("invalid");
 
         statusBox.className =
             "status err";
 
-
         statusBox.textContent =
             resultado.error;
-
 
         toleransiBox.style.display =
             "none";
     }
 
-
     const toleransiValid =
         validasiToleransi();
-
 
     btnProses.disabled =
         !resultado.valid ||
         !toleransiValid;
-
 
     return (
         resultado.valid &&
@@ -1056,13 +849,8 @@ dataInput.addEventListener(
     "input",
     function() {
 
-        hasilDeret1.classList.add(
-            "hidden"
-        );
-
-        hasilDeret2.classList.add(
-            "hidden"
-        );
+        hasilDeret1.classList.add("hidden");
+        hasilDeret2.classList.add("hidden");
 
         kesimpulanBox.style.display =
             "none";
@@ -1079,13 +867,8 @@ toleransiInput.addEventListener(
     "input",
     function() {
 
-        hasilDeret1.classList.add(
-            "hidden"
-        );
-
-        hasilDeret2.classList.add(
-            "hidden"
-        );
+        hasilDeret1.classList.add("hidden");
+        hasilDeret2.classList.add("hidden");
 
         kesimpulanBox.style.display =
             "none";
@@ -1111,13 +894,10 @@ btnPaste.addEventListener(
             const teks =
                 await navigator.clipboard.readText();
 
-
             dataInput.value =
                 teks;
 
-
             validasi();
-
 
             dataInput.focus();
 
@@ -1125,7 +905,6 @@ btnPaste.addEventListener(
 
             statusBox.className =
                 "status err";
-
 
             statusBox.textContent =
                 "Clipboard tidak dapat dibaca. Gunakan Ctrl+V.";
@@ -1140,16 +919,11 @@ btnPaste.addEventListener(
 
 function mod10(n) {
 
-    n =
-        n % 10;
+    n = n % 10;
 
-
-    if (
-        n < 0
-    ) {
+    if (n < 0) {
         n += 10;
     }
-
 
     return n;
 }
@@ -1159,16 +933,10 @@ function mod10(n) {
    JARAK MELINGKAR 0-9
 ========================================================= */
 
-function jarakDigit(
-    a,
-    b
-) {
+function jarakDigit(a, b) {
 
     const d =
-        Math.abs(
-            a - b
-        );
-
+        Math.abs(a - b);
 
     return Math.min(
         d,
@@ -1178,7 +946,7 @@ function jarakDigit(
 
 
 /* =========================================================
-   CEK DALAM TOLERANSI
+   TOLERANSI MELINGKAR
 ========================================================= */
 
 function dalamToleransi(
@@ -1191,20 +959,18 @@ function dalamToleransi(
         jarakDigit(
             prediksi,
             aktual
-        ) <=
-        toleransi
+        ) <= toleransi
     );
 }
 
 
 /* =========================================================
-   BEDA
+   DIFFERENCES
 ========================================================= */
 
 function differences(data) {
 
     const hasil = [];
-
 
     for (
         let i = 1;
@@ -1220,13 +986,12 @@ function differences(data) {
         );
     }
 
-
     return hasil;
 }
 
 
 /* =========================================================
-   BEDA KEDUA
+   SECOND DIFFERENCES
 ========================================================= */
 
 function secondDifferences(data) {
@@ -1234,9 +999,7 @@ function secondDifferences(data) {
     const d =
         differences(data);
 
-
     const hasil = [];
-
 
     for (
         let i = 1;
@@ -1252,27 +1015,22 @@ function secondDifferences(data) {
         );
     }
 
-
     return hasil;
 }
 
 
 /* =========================================================
-   KONSTAN
+   KONSTANT
 ========================================================= */
 
 function isConstant(arr) {
 
-    if (
-        arr.length === 0
-    ) {
+    if (arr.length === 0) {
         return false;
     }
 
-
     return arr.every(
-        x =>
-            x === arr[0]
+        x => x === arr[0]
     );
 }
 
@@ -1283,24 +1041,17 @@ function isConstant(arr) {
 
 function findRepeatingPattern(arr) {
 
-    if (
-        arr.length < 2
-    ) {
+    if (arr.length < 2) {
         return null;
     }
 
-
     for (
         let panjang = 1;
-        panjang <=
-        Math.floor(
-            arr.length / 2
-        );
+        panjang <= Math.floor(arr.length / 2);
         panjang++
     ) {
 
         let cocok = true;
-
 
         for (
             let i = panjang;
@@ -1314,15 +1065,11 @@ function findRepeatingPattern(arr) {
             ) {
 
                 cocok = false;
-
                 break;
             }
         }
 
-
-        if (
-            cocok
-        ) {
+        if (cocok) {
 
             return arr.slice(
                 0,
@@ -1330,7 +1077,6 @@ function findRepeatingPattern(arr) {
             );
         }
     }
-
 
     return null;
 }
@@ -1345,11 +1091,9 @@ function buatFormula(data) {
     const formula = [];
 
 
-    /*
-       =====================================================
+    /* =====================================================
        BEDA TETAP
-       =====================================================
-    */
+    ===================================================== */
 
     for (
         let k = -9;
@@ -1367,28 +1111,32 @@ function buatFormula(data) {
             tipe:
                 "beda-tetap",
 
+            kompleksitas:
+                1,
+
             prediksi:
                 function(i) {
 
                     return mod10(
-                        data[i - 1] +
-                        k
+                        data[i - 1] + k
                     );
                 },
 
             detail:
                 k >= 0
-                ? "Nilai berikutnya = nilai sebelumnya + " + k + " modulo 10."
-                : "Nilai berikutnya = nilai sebelumnya - " + Math.abs(k) + " modulo 10."
+                ? "Nilai berikutnya = nilai sebelumnya + " +
+                  k +
+                  " modulo 10."
+                : "Nilai berikutnya = nilai sebelumnya - " +
+                  Math.abs(k) +
+                  " modulo 10."
         });
     }
 
 
-    /*
-       =====================================================
+    /* =====================================================
        BEDA KEDUA TETAP
-       =====================================================
-    */
+    ===================================================== */
 
     for (
         let k = -9;
@@ -1409,15 +1157,15 @@ function buatFormula(data) {
             tipe:
                 "beda-kedua",
 
+            kompleksitas:
+                2,
+
             prediksi:
                 function(i) {
 
-                    if (
-                        i < 2
-                    ) {
+                    if (i < 2) {
                         return null;
                     }
-
 
                     const d1 =
                         mod10(
@@ -1425,13 +1173,10 @@ function buatFormula(data) {
                             data[i - 2]
                         );
 
-
                     const d2 =
                         mod10(
-                            d1 +
-                            k
+                            d1 + k
                         );
-
 
                     return mod10(
                         data[i - 1] +
@@ -1447,11 +1192,9 @@ function buatFormula(data) {
     }
 
 
-    /*
-       =====================================================
+    /* =====================================================
        FIBONACCI
-       =====================================================
-    */
+    ===================================================== */
 
     formula.push({
 
@@ -1461,15 +1204,15 @@ function buatFormula(data) {
         tipe:
             "fibonacci",
 
+        kompleksitas:
+            1,
+
         prediksi:
             function(i) {
 
-                if (
-                    i < 2
-                ) {
+                if (i < 2) {
                     return null;
                 }
-
 
                 return mod10(
                     data[i - 1] +
@@ -1478,15 +1221,13 @@ function buatFormula(data) {
             },
 
         detail:
-            "Nilai berikutnya dihitung dari dua nilai sebelumnya."
+            "Nilai berikutnya dihitung dari dua nilai sebelumnya modulo 10."
     });
 
 
-    /*
-       =====================================================
+    /* =====================================================
        PERKALIAN
-       =====================================================
-    */
+    ===================================================== */
 
     for (
         let k = 0;
@@ -1502,28 +1243,28 @@ function buatFormula(data) {
             tipe:
                 "perkalian",
 
+            kompleksitas:
+                2,
+
             prediksi:
                 function(i) {
 
                     return mod10(
-                        data[i - 1] *
-                        k
+                        data[i - 1] * k
                     );
                 },
 
             detail:
                 "Nilai sebelumnya dikalikan " +
                 k +
-                " kemudian diambil modulo 10."
+                " kemudian modulo 10."
         });
     }
 
 
-    /*
-       =====================================================
-       PERKALIAN + PENAMBAHAN
-       =====================================================
-    */
+    /* =====================================================
+       AFFINE
+    ===================================================== */
 
     for (
         let k = 0;
@@ -1540,13 +1281,13 @@ function buatFormula(data) {
             formula.push({
 
                 nama:
-                    "×" +
-                    k +
-                    " +" +
-                    b,
+                    "×" + k + " +" + b,
 
                 tipe:
                     "afine",
+
+                kompleksitas:
+                    3,
 
                 prediksi:
                     function(i) {
@@ -1571,23 +1312,17 @@ function buatFormula(data) {
     }
 
 
-    /*
-       =====================================================
+    /* =====================================================
        BEDA BERULANG
-       =====================================================
-    */
+    ===================================================== */
 
     const d =
         differences(data);
 
-
     const pola =
         findRepeatingPattern(d);
 
-
-    if (
-        pola
-    ) {
+    if (pola) {
 
         formula.push({
 
@@ -1597,15 +1332,15 @@ function buatFormula(data) {
             tipe:
                 "beda-berulang",
 
+            kompleksitas:
+                2,
+
             prediksi:
                 function(i) {
 
                     const posisi =
-                        (
-                            i - 1
-                        ) %
+                        (i - 1) %
                         pola.length;
-
 
                     return mod10(
                         data[i - 1] +
@@ -1620,19 +1355,14 @@ function buatFormula(data) {
     }
 
 
-    /*
-       =====================================================
+    /* =====================================================
        SELANG-SELING
-       =====================================================
-    */
+    ===================================================== */
 
-    if (
-        data.length >= 4
-    ) {
+    if (data.length >= 4) {
 
         const genap = [];
         const ganjil = [];
-
 
         for (
             let i = 0;
@@ -1640,29 +1370,18 @@ function buatFormula(data) {
             i++
         ) {
 
-            if (
-                i % 2 === 0
-            ) {
-
-                genap.push(
-                    data[i]
-                );
-
+            if (i % 2 === 0) {
+                genap.push(data[i]);
             } else {
-
-                ganjil.push(
-                    data[i]
-                );
+                ganjil.push(data[i]);
             }
         }
-
 
         const dg =
             differences(genap);
 
         const dj =
             differences(ganjil);
-
 
         if (
             dg.length > 0 &&
@@ -1679,26 +1398,23 @@ function buatFormula(data) {
                 tipe:
                     "selang-seling",
 
+                kompleksitas:
+                    2,
+
                 prediksi:
                     function(i) {
 
-                        if (
-                            i < 2
-                        ) {
+                        if (i < 2) {
                             return null;
                         }
 
-
-                        if (
-                            i % 2 === 0
-                        ) {
+                        if (i % 2 === 0) {
 
                             return mod10(
                                 data[i - 2] +
                                 dg[0]
                             );
                         }
-
 
                         return mod10(
                             data[i - 2] +
@@ -1718,7 +1434,39 @@ function buatFormula(data) {
 
 
 /* =========================================================
-   UJI FORMULA
+   UJI FORMULA — LOGIKA BARU
+=========================================================
+
+   PERBAIKAN UTAMA:
+
+   Formula TIDAK lagi dinilai hanya dari jumlah hit.
+
+   Penilaian:
+
+   1. Akurasi tepat adalah bobot terbesar.
+   2. Akurasi toleransi berada di bawahnya.
+   3. Rata-rata jarak melingkar menjadi pembeda.
+   4. Formula yang lebih kompleks mendapat penalti kecil.
+   5. Formula yang benar pada banyak titik lebih dipercaya.
+   6. Prediksi terakhir tetap dihitung dari formula tersebut.
+
+   Contoh:
+   1,2,3,5,8,3
+
+   Fibonacci:
+   3 -> 3
+   5 -> 5
+   8 -> 8
+   3 -> 3
+
+   Jadi 4/4 tepat = 100%.
+
+   Prediksi berikutnya:
+   8 + 3 = 11 -> 1
+
+   Formula yang hanya kebetulan menghasilkan
+   5 atau 6 tidak boleh mengalahkan formula
+   yang sudah terbukti 100% pada data sebelumnya.
 ========================================================= */
 
 function ujiFormula(
@@ -1730,8 +1478,9 @@ function ujiFormula(
     let hit = 0;
     let hitToleransi = 0;
     let total = 0;
-    let kedekatanTotal = 0;
 
+    let jarakTotal = 0;
+    let jarakKuadrat = 0;
 
     for (
         let i = 1;
@@ -1742,7 +1491,6 @@ function ujiFormula(
         const prediksi =
             formula.prediksi(i);
 
-
         if (
             prediksi === null ||
             prediksi === undefined
@@ -1750,13 +1498,10 @@ function ujiFormula(
             continue;
         }
 
-
         total++;
-
 
         const aktual =
             data[i];
-
 
         const jarak =
             jarakDigit(
@@ -1764,40 +1509,81 @@ function ujiFormula(
                 aktual
             );
 
+        jarakTotal += jarak;
+        jarakKuadrat += jarak * jarak;
 
         if (
             prediksi === aktual
         ) {
-
             hit++;
         }
-
 
         if (
             jarak <= toleransi
         ) {
-
             hitToleransi++;
-
-            kedekatanTotal +=
-                jarak;
         }
     }
 
-
-    if (
-        total === 0
-    ) {
+    if (total === 0) {
         return null;
     }
 
-
     const akurasi =
+        hit / total;
+
+    const akurasiToleransi =
+        hitToleransi / total;
+
+    const rataJarak =
+        jarakTotal / total;
+
+    const rmsJarak =
+        Math.sqrt(
+            jarakKuadrat / total
+        );
+
+
+    /*
+       =====================================================
+       SCORE FORMULA
+
+       Exact accuracy sangat dominan.
+
+       Toleransi hanya membantu jika exact
+       tidak bisa membedakan.
+
+       Kompleksitas diberi penalti kecil agar
+       formula sederhana lebih dipercaya jika
+       performanya sama.
+       =====================================================
+    */
+
+    const skorFormula =
         (
-            hit /
-            total
-        ) *
-        100;
+            akurasi *
+            1000000
+        ) +
+        (
+            akurasiToleransi *
+            100000
+        ) +
+        (
+            hit *
+            1000
+        ) +
+        (
+            hitToleransi *
+            100
+        ) -
+        (
+            rataJarak *
+            100
+        ) -
+        (
+            (formula.kompleksitas || 1) *
+            5
+        );
 
 
     return {
@@ -1814,10 +1600,25 @@ function ujiFormula(
             total,
 
         akurasi:
-            akurasi,
+            akurasi * 100,
+
+        akurasiToleransi:
+            akurasiToleransi * 100,
+
+        jarakTotal:
+            jarakTotal,
 
         kedekatanTotal:
-            kedekatanTotal,
+            jarakTotal,
+
+        rataJarak:
+            rataJarak,
+
+        rmsJarak:
+            rmsJarak,
+
+        skorFormula:
+            skorFormula,
 
         prediksiBerikutnya:
             formula.prediksi(
@@ -1828,8 +1629,82 @@ function ujiFormula(
 
 
 /* =========================================================
-   ANALISA DERET 1
-   METODE PERTAMA DARI HTML PERTAMA
+   RANKING FORMULA
+========================================================= */
+
+function bandingkanFormula(a, b) {
+
+    if (
+        b.skorFormula !==
+        a.skorFormula
+    ) {
+        return (
+            b.skorFormula -
+            a.skorFormula
+        );
+    }
+
+    if (
+        b.akurasi !==
+        a.akurasi
+    ) {
+        return (
+            b.akurasi -
+            a.akurasi
+        );
+    }
+
+    if (
+        b.akurasiToleransi !==
+        a.akurasiToleransi
+    ) {
+        return (
+            b.akurasiToleransi -
+            a.akurasiToleransi
+        );
+    }
+
+    if (
+        a.rataJarak !==
+        b.rataJarak
+    ) {
+        return (
+            a.rataJarak -
+            b.rataJarak
+        );
+    }
+
+    if (
+        b.total !==
+        a.total
+    ) {
+        return (
+            b.total -
+            a.total
+        );
+    }
+
+    return (
+        (a.kompleksitas || 1) -
+        (b.kompleksitas || 1)
+    );
+}
+
+
+/* =========================================================
+   ANALISA KOLOM DERET 1
+=========================================================
+
+   Tidak lagi menjumlahkan semua formula secara buta.
+
+   Setiap formula diberi nilai berdasarkan kemampuan
+   melakukan BACKTEST terhadap data yang sudah ada.
+
+   Kemudian digit calon berikutnya mendapat bobot dari
+   formula-formula terbaik.
+
+   Formula dengan 100% exact akan jauh lebih kuat
+   daripada formula yang hanya kebetulan masuk toleransi.
 ========================================================= */
 
 function analisaKolomDeret1(
@@ -1838,13 +1713,9 @@ function analisaKolomDeret1(
 ) {
 
     const formula =
-        buatFormula(
-            dataKolom
-        );
-
+        buatFormula(dataKolom);
 
     const hasilUji = [];
-
 
     formula.forEach(
         f => {
@@ -1856,24 +1727,22 @@ function analisaKolomDeret1(
                     toleransi
                 );
 
-
-            if (
-                hasil
-            ) {
-
-                hasilUji.push(
-                    hasil
-                );
+            if (hasil) {
+                hasilUji.push(hasil);
             }
         }
     );
 
 
+    hasilUji.sort(
+        bandingkanFormula
+    );
+
+
     /*
-       Deret 1 menggunakan
-       hit toleransi sebagai dasar
-       supaya input toleransi benar-benar
-       mempengaruhi hasil.
+       =====================================================
+       STATISTIK DIGIT
+       =====================================================
     */
 
     const statistik =
@@ -1881,25 +1750,43 @@ function analisaKolomDeret1(
             { length: 10 },
             () => ({
 
-                jumlahFormula: 0,
+                jumlahFormula:
+                    0,
 
-                hitTepat: 0,
+                hitTepat:
+                    0,
 
-                hitToleransi: 0,
+                hitToleransi:
+                    0,
 
-                totalData: 0,
+                totalData:
+                    0,
 
-                jarakNominal: 0
+                jarakNominal:
+                    0,
+
+                skor:
+                    0,
+
+                formulaTerbaik:
+                    null,
+
+                skorTerbaik:
+                    -Infinity
             })
         );
 
+
+    /*
+       HANYA formula yang mempunyai prediksi
+       berikutnya valid yang dipakai untuk kandidat.
+    */
 
     hasilUji.forEach(
         hasil => {
 
             const nominal =
                 hasil.prediksiBerikutnya;
-
 
             if (
                 nominal === null ||
@@ -1909,35 +1796,56 @@ function analisaKolomDeret1(
             }
 
 
-            statistik[nominal]
-                .jumlahFormula++;
+            const s =
+                statistik[nominal];
 
 
-            statistik[nominal]
-                .hitTepat +=
+            s.jumlahFormula++;
+
+            s.hitTepat +=
                 hasil.hit;
 
-
-            statistik[nominal]
-                .hitToleransi +=
+            s.hitToleransi +=
                 hasil.hitToleransi;
 
-
-            statistik[nominal]
-                .totalData +=
+            s.totalData +=
                 hasil.total;
 
+            s.jarakNominal +=
+                hasil.rataJarak;
 
-            statistik[nominal]
-                .jarakNominal +=
-                hasil.kedekatanTotal;
+
+            /*
+               Formula terbaik yang menuju
+               digit ini disimpan.
+
+               Jadi 100 formula buruk tidak otomatis
+               mengalahkan 1 formula yang sangat kuat.
+            */
+
+            if (
+                hasil.skorFormula >
+                s.skorTerbaik
+            ) {
+
+                s.skorTerbaik =
+                    hasil.skorFormula;
+
+                s.formulaTerbaik =
+                    hasil;
+            }
         }
     );
 
 
+    /*
+       =====================================================
+       FREKUENSI AKTUAL
+       =====================================================
+    */
+
     const frekuensiAktual =
         Array(10).fill(0);
-
 
     dataKolom.forEach(
         nilai => {
@@ -1949,124 +1857,29 @@ function analisaKolomDeret1(
     );
 
 
-    const urutanNominal =
-        [...Array(10).keys()]
-        .sort(
-            (a, b) => {
+    /*
+       =====================================================
+       NILAI DIGIT
 
-                if (
-                    statistik[b]
-                        .hitToleransi !==
-                    statistik[a]
-                        .hitToleransi
-                ) {
+       Prioritas utama:
 
-                    return (
-                        statistik[b]
-                            .hitToleransi -
-                        statistik[a]
-                            .hitToleransi
-                    );
-                }
+       1. Kualitas formula terbaik
+       2. Exact accuracy formula terbaik
+       3. Tolerance accuracy
+       4. Jarak
+       5. Dukungan formula terbaik lain
+       6. Frekuensi aktual
 
-
-                if (
-                    statistik[b]
-                        .hitTepat !==
-                    statistik[a]
-                        .hitTepat
-                ) {
-
-                    return (
-                        statistik[b]
-                            .hitTepat -
-                        statistik[a]
-                            .hitTepat
-                    );
-                }
-
-
-                if (
-                    statistik[b]
-                        .jumlahFormula !==
-                    statistik[a]
-                        .jumlahFormula
-                ) {
-
-                    return (
-                        statistik[b]
-                            .jumlahFormula -
-                        statistik[a]
-                            .jumlahFormula
-                    );
-                }
-
-
-                const akurasiA =
-                    statistik[a].totalData > 0
-                    ? (
-                        statistik[a].hitTepat /
-                        statistik[a].totalData
-                    )
-                    : 0;
-
-
-                const akurasiB =
-                    statistik[b].totalData > 0
-                    ? (
-                        statistik[b].hitTepat /
-                        statistik[b].totalData
-                    )
-                    : 0;
-
-
-                if (
-                    akurasiB !==
-                    akurasiA
-                ) {
-
-                    return (
-                        akurasiB -
-                        akurasiA
-                    );
-                }
-
-
-                if (
-                    statistik[a]
-                        .jarakNominal !==
-                    statistik[b]
-                        .jarakNominal
-                ) {
-
-                    return (
-                        statistik[a]
-                            .jarakNominal -
-                        statistik[b]
-                            .jarakNominal
-                    );
-                }
-
-
-                if (
-                    frekuensiAktual[a] !==
-                    frekuensiAktual[b]
-                ) {
-
-                    return (
-                        frekuensiAktual[a] -
-                        frekuensiAktual[b]
-                    );
-                }
-
-
-                return a - b;
-            }
-        );
-
+       Bukan lagi:
+       "berapa banyak formula menghasilkan digit X"
+       =====================================================
+    */
 
     const skorPrediksi =
         Array(10).fill(0);
+
+    const detailDigit =
+        Array(10).fill(null);
 
 
     for (
@@ -2079,82 +1892,201 @@ function analisaKolomDeret1(
             statistik[digit];
 
 
-        skorPrediksi[digit] =
+        if (
+            !s.formulaTerbaik
+        ) {
+
+            skorPrediksi[digit] =
+                0;
+
+            detailDigit[digit] =
+                {
+                    skor:
+                        0,
+
+                    formulaTerbaik:
+                        null
+                };
+
+            continue;
+        }
+
+
+        const terbaik =
+            s.formulaTerbaik;
+
+
+        /*
+           Formula terbaik menjadi dasar.
+
+           Exact accuracy:
+           10.000.000
+
+           Tolerance:
+           1.000.000
+
+           Hit:
+           10.000
+
+           Jarak:
+           pengurang.
+
+           Ini sengaja dibuat sangat berat
+           ke kualitas backtest.
+        */
+
+        let skor =
             (
-                s.hitToleransi *
-                1000000
+                terbaik.akurasi *
+                100000
             ) +
             (
-                s.hitTepat *
+                terbaik.akurasiToleransi *
                 10000
             ) +
             (
-                s.jumlahFormula *
+                terbaik.hit *
                 100
             ) +
             (
-                s.totalData
+                terbaik.hitToleransi *
+                10
+            ) -
+            (
+                terbaik.rataJarak *
+                100
             );
+
+
+        /*
+           Tambahan dukungan dari formula lain,
+           tetapi sangat kecil.
+
+           Jadi jumlah formula bukan faktor utama.
+        */
+
+        const formulaPendukung =
+            hasilUji
+                .filter(
+                    f =>
+                        f.prediksiBerikutnya ===
+                        digit &&
+                        f !== terbaik
+                )
+                .slice(0, 5);
+
+
+        formulaPendukung.forEach(
+            f => {
+
+                skor +=
+                    (
+                        f.akurasi *
+                        500
+                    ) +
+                    (
+                        f.akurasiToleransi *
+                        50
+                    ) -
+                    (
+                        f.rataJarak *
+                        5
+                    );
+            }
+        );
+
+
+        /*
+           Frekuensi aktual hanya tie-breaker
+           kecil, bukan penentu utama.
+        */
+
+        skor +=
+            frekuensiAktual[digit] *
+            0.01;
+
+
+        skorPrediksi[digit] =
+            skor;
+
+
+        detailDigit[digit] = {
+
+            skor:
+                skor,
+
+            formulaTerbaik:
+                terbaik,
+
+            formulaPendukung:
+                formulaPendukung
+        };
     }
 
 
-    hasilUji.sort(
-        (a, b) => {
+    /*
+       =====================================================
+       URUTAN DIGIT
+       =====================================================
+    */
 
-            if (
-                b.hitToleransi !==
-                a.hitToleransi
-            ) {
+    const urutanNominal =
+        [...Array(10).keys()]
+        .sort(
+            (a, b) => {
 
-                return (
-                    b.hitToleransi -
-                    a.hitToleransi
-                );
+                if (
+                    skorPrediksi[b] !==
+                    skorPrediksi[a]
+                ) {
+
+                    return (
+                        skorPrediksi[b] -
+                        skorPrediksi[a]
+                    );
+                }
+
+
+                const fa =
+                    statistik[a]
+                        .formulaTerbaik;
+
+                const fb =
+                    statistik[b]
+                        .formulaTerbaik;
+
+
+                if (
+                    fa &&
+                    fb &&
+                    fa.akurasi !==
+                    fb.akurasi
+                ) {
+
+                    return (
+                        fb.akurasi -
+                        fa.akurasi
+                    );
+                }
+
+
+                if (
+                    fa &&
+                    fb &&
+                    fa.rataJarak !==
+                    fb.rataJarak
+                ) {
+
+                    return (
+                        fa.rataJarak -
+                        fb.rataJarak
+                    );
+                }
+
+
+                return a - b;
             }
-
-
-            if (
-                b.hit !==
-                a.hit
-            ) {
-
-                return (
-                    b.hit -
-                    a.hit
-                );
-            }
-
-
-            if (
-                b.akurasi !==
-                a.akurasi
-            ) {
-
-                return (
-                    b.akurasi -
-                    a.akurasi
-                );
-            }
-
-
-            if (
-                a.kedekatanTotal !==
-                b.kedekatanTotal
-            ) {
-
-                return (
-                    a.kedekatanTotal -
-                    b.kedekatanTotal
-                );
-            }
-
-
-            return (
-                b.prediksiBerikutnya -
-                a.prediksiBerikutnya
-            );
-        }
-    );
+        );
 
 
     return {
@@ -2180,6 +2112,9 @@ function analisaKolomDeret1(
         frekuensiAktual:
             frekuensiAktual,
 
+        detailDigit:
+            detailDigit,
+
         formulaUtama:
             hasilUji.length > 0
             ? hasilUji[0]
@@ -2189,8 +2124,12 @@ function analisaKolomDeret1(
 
 
 /* =========================================================
-   ANALISA DERET 2
-   METODE KEDUA DARI HTML KEDUA
+   DERET 2
+
+   Menggunakan logika validasi yang sama.
+   Perbedaannya tetap dipertahankan sebagai metode kedua,
+   tetapi sekarang tidak menggunakan jumlah formula
+   sebagai penentu utama.
 ========================================================= */
 
 function analisaKolomDeret2(
@@ -2199,13 +2138,9 @@ function analisaKolomDeret2(
 ) {
 
     const formula =
-        buatFormula(
-            dataKolom
-        );
-
+        buatFormula(dataKolom);
 
     const hasilUji = [];
-
 
     formula.forEach(
         f => {
@@ -2217,16 +2152,15 @@ function analisaKolomDeret2(
                     toleransi
                 );
 
-
-            if (
-                hasil
-            ) {
-
-                hasilUji.push(
-                    hasil
-                );
+            if (hasil) {
+                hasilUji.push(hasil);
             }
         }
+    );
+
+
+    hasilUji.sort(
+        bandingkanFormula
     );
 
 
@@ -2235,17 +2169,32 @@ function analisaKolomDeret2(
             { length: 10 },
             () => ({
 
-                jumlahFormula: 0,
+                jumlahFormula:
+                    0,
 
-                hitTepat: 0,
+                hitTepat:
+                    0,
 
-                hitToleransi: 0,
+                hitToleransi:
+                    0,
 
-                frekuensiKedekatan: 0,
+                frekuensiKedekatan:
+                    0,
 
-                jarakNominal: 0,
+                jarakNominal:
+                    0,
 
-                totalData: 0
+                totalData:
+                    0,
+
+                skor:
+                    0,
+
+                formulaTerbaik:
+                    null,
+
+                skorTerbaik:
+                    -Infinity
             })
         );
 
@@ -2256,7 +2205,6 @@ function analisaKolomDeret2(
             const nominal =
                 hasil.prediksiBerikutnya;
 
-
             if (
                 nominal === null ||
                 nominal === undefined
@@ -2265,39 +2213,44 @@ function analisaKolomDeret2(
             }
 
 
-            statistik[nominal]
-                .jumlahFormula++;
+            const s =
+                statistik[nominal];
 
 
-            statistik[nominal]
-                .hitTepat +=
+            s.jumlahFormula++;
+
+            s.hitTepat +=
                 hasil.hit;
 
-
-            statistik[nominal]
-                .hitToleransi +=
+            s.hitToleransi +=
                 hasil.hitToleransi;
 
+            s.frekuensiKedekatan++;
 
-            statistik[nominal]
-                .frekuensiKedekatan++;
-
-
-            statistik[nominal]
-                .totalData +=
+            s.totalData +=
                 hasil.total;
 
+            s.jarakNominal +=
+                hasil.rataJarak;
 
-            statistik[nominal]
-                .jarakNominal +=
-                hasil.kedekatanTotal;
+
+            if (
+                hasil.skorFormula >
+                s.skorTerbaik
+            ) {
+
+                s.skorTerbaik =
+                    hasil.skorFormula;
+
+                s.formulaTerbaik =
+                    hasil;
+            }
         }
     );
 
 
     const frekuensiAktual =
         Array(10).fill(0);
-
 
     dataKolom.forEach(
         nilai => {
@@ -2309,124 +2262,11 @@ function analisaKolomDeret2(
     );
 
 
-    const urutanNominal =
-        [...Array(10).keys()]
-        .sort(
-            (a, b) => {
-
-                if (
-                    statistik[b]
-                        .hitToleransi !==
-                    statistik[a]
-                        .hitToleransi
-                ) {
-
-                    return (
-                        statistik[b]
-                            .hitToleransi -
-                        statistik[a]
-                            .hitToleransi
-                    );
-                }
-
-
-                if (
-                    statistik[b]
-                        .hitTepat !==
-                    statistik[a]
-                        .hitTepat
-                ) {
-
-                    return (
-                        statistik[b]
-                            .hitTepat -
-                        statistik[a]
-                            .hitTepat
-                    );
-                }
-
-
-                if (
-                    statistik[b]
-                        .jumlahFormula !==
-                    statistik[a]
-                        .jumlahFormula
-                ) {
-
-                    return (
-                        statistik[b]
-                            .jumlahFormula -
-                        statistik[a]
-                            .jumlahFormula
-                    );
-                }
-
-
-                const akurasiA =
-                    statistik[a].totalData > 0
-                    ? (
-                        statistik[a].hitTepat /
-                        statistik[a].totalData
-                    )
-                    : 0;
-
-
-                const akurasiB =
-                    statistik[b].totalData > 0
-                    ? (
-                        statistik[b].hitTepat /
-                        statistik[b].totalData
-                    )
-                    : 0;
-
-
-                if (
-                    akurasiB !==
-                    akurasiA
-                ) {
-
-                    return (
-                        akurasiB -
-                        akurasiA
-                    );
-                }
-
-
-                if (
-                    statistik[a]
-                        .jarakNominal !==
-                    statistik[b]
-                        .jarakNominal
-                ) {
-
-                    return (
-                        statistik[a]
-                            .jarakNominal -
-                        statistik[b]
-                            .jarakNominal
-                    );
-                }
-
-
-                if (
-                    frekuensiAktual[a] !==
-                    frekuensiAktual[b]
-                ) {
-
-                    return (
-                        frekuensiAktual[a] -
-                        frekuensiAktual[b]
-                    );
-                }
-
-
-                return a - b;
-            }
-        );
-
-
     const skorPrediksi =
         Array(10).fill(0);
+
+    const detailDigit =
+        Array(10).fill(null);
 
 
     for (
@@ -2439,89 +2279,115 @@ function analisaKolomDeret2(
             statistik[digit];
 
 
-        skorPrediksi[digit] =
+        if (
+            !s.formulaTerbaik
+        ) {
+
+            continue;
+        }
+
+
+        const terbaik =
+            s.formulaTerbaik;
+
+
+        let skor =
             (
-                s.hitToleransi *
-                1000000
+                terbaik.akurasi *
+                100000
             ) +
             (
-                s.hitTepat *
+                terbaik.akurasiToleransi *
                 10000
             ) +
             (
-                s.jumlahFormula *
+                terbaik.hit *
                 100
             ) +
-            s.frekuensiKedekatan;
+            (
+                terbaik.hitToleransi *
+                10
+            ) -
+            (
+                terbaik.rataJarak *
+                100
+            );
+
+
+        const formulaPendukung =
+            hasilUji
+                .filter(
+                    f =>
+                        f.prediksiBerikutnya ===
+                        digit &&
+                        f !== terbaik
+                )
+                .slice(0, 5);
+
+
+        formulaPendukung.forEach(
+            f => {
+
+                skor +=
+                    (
+                        f.akurasi *
+                        500
+                    ) +
+                    (
+                        f.akurasiToleransi *
+                        50
+                    ) -
+                    (
+                        f.rataJarak *
+                        5
+                    );
+            }
+        );
+
+
+        skor +=
+            frekuensiAktual[digit] *
+            0.01;
+
+
+        skorPrediksi[digit] =
+            skor;
+
+
+        detailDigit[digit] = {
+
+            skor:
+                skor,
+
+            formulaTerbaik:
+                terbaik,
+
+            formulaPendukung:
+                formulaPendukung
+        };
     }
 
 
-    hasilUji.sort(
-        (a, b) => {
+    const urutanNominal =
+        [...Array(10).keys()]
+        .sort(
+            (a, b) => {
 
-            if (
-                b.hitToleransi !==
-                a.hitToleransi
-            ) {
+                if (
+                    skorPrediksi[b] !==
+                    skorPrediksi[a]
+                ) {
 
-                return (
-                    b.hitToleransi -
-                    a.hitToleransi
-                );
+                    return (
+                        skorPrediksi[b] -
+                        skorPrediksi[a]
+                    );
+                }
+
+
+                return a - b;
             }
-
-
-            if (
-                b.hit !==
-                a.hit
-            ) {
-
-                return (
-                    b.hit -
-                    a.hit
-                );
-            }
-
-
-            if (
-                b.akurasi !==
-                a.akurasi
-            ) {
-
-                return (
-                    b.akurasi -
-                    a.akurasi
-                );
-            }
-
-
-            if (
-                b.kedekatanTotal !==
-                a.kedekatanTotal
-            ) {
-
-                return (
-                    a.kedekatanTotal -
-                    b.kedekatanTotal
-                );
-            }
-
-
-            if (
-                b.prediksiBerikutnya !==
-                a.prediksiBerikutnya
-            ) {
-
-                return (
-                    b.prediksiBerikutnya -
-                    a.prediksiBerikutnya
-                );
-            }
-
-
-            return 0;
-        }
-    );
+        );
 
 
     return {
@@ -2547,6 +2413,9 @@ function analisaKolomDeret2(
         frekuensiAktual:
             frekuensiAktual,
 
+        detailDigit:
+            detailDigit,
+
         formulaUtama:
             hasilUji.length > 0
             ? hasilUji[0]
@@ -2556,7 +2425,7 @@ function analisaKolomDeret2(
 
 
 /* =========================================================
-   AMBIL KOLOM DIGIT
+   AMBIL KOLOM
 ========================================================= */
 
 function ambilKolom(
@@ -2565,7 +2434,6 @@ function ambilKolom(
 ) {
 
     const kolom = [];
-
 
     data.forEach(
         item => {
@@ -2577,7 +2445,6 @@ function ambilKolom(
             );
         }
     );
-
 
     return kolom;
 }
@@ -2596,7 +2463,6 @@ function analisaSemua(
 
     const hasil = [];
 
-
     for (
         let index = 0;
         index < panjang;
@@ -2609,7 +2475,6 @@ function analisaSemua(
                 index
             );
 
-
         const analisa =
             metode === 1
             ? analisaKolomDeret1(
@@ -2620,7 +2485,6 @@ function analisaSemua(
                 kolom,
                 toleransi
             );
-
 
         hasil.push({
 
@@ -2641,13 +2505,12 @@ function analisaSemua(
         });
     }
 
-
     return hasil;
 }
 
 
 /* =========================================================
-   FORMAT TOLERANSI PREDIKSI
+   FORMAT RENTANG MELINGKAR
 ========================================================= */
 
 function formatRentang(
@@ -2662,9 +2525,7 @@ function formatRentang(
         return [];
     }
 
-
     const hasil = [];
-
 
     for (
         let i = -toleransi;
@@ -2679,17 +2540,14 @@ function formatRentang(
         );
     }
 
-
     return [
-        ...new Set(
-            hasil
-        )
+        ...new Set(hasil)
     ];
 }
 
 
 /* =========================================================
-   TAMPILKAN HASIL SATU DERET
+   TAMPILKAN HASIL
 ========================================================= */
 
 function tampilkanHasilDeret(
@@ -2697,9 +2555,7 @@ function tampilkanHasilDeret(
     container
 ) {
 
-    container.innerHTML =
-        "";
-
+    container.innerHTML = "";
 
     semuaHasil.forEach(
         posisi => {
@@ -2707,23 +2563,22 @@ function tampilkanHasilDeret(
             const h =
                 posisi.hasil;
 
-
             const kartu =
                 document.createElement(
                     "div"
                 );
 
-
             kartu.className =
                 "kartu-jawaban";
 
 
-            let kandidatHTML =
-                "";
-
+            let kandidatHTML = "";
 
             h.urutan.forEach(
                 (digit, index) => {
+
+                    const nilaiSkor =
+                        h.skor[digit];
 
                     kandidatHTML +=
 
@@ -2732,7 +2587,11 @@ function tampilkanHasilDeret(
                         (
                             index === 0
                             ? "utama"
-                            : ""
+                            : (
+                                index < 3
+                                ? "top"
+                                : ""
+                            )
                         ) +
 
                         "'>" +
@@ -2741,22 +2600,27 @@ function tampilkanHasilDeret(
 
                         "<br><small>" +
 
-                        h.skor[digit] +
+                        (
+                            Number.isFinite(
+                                nilaiSkor
+                            )
+                            ? nilaiSkor.toFixed(2)
+                            : "0"
+                        ) +
 
                         "</small></span>";
                 }
             );
 
 
-            let polaHTML =
-                "";
+            /*
+               Formula ranking tetap ditampilkan.
+            */
 
+            let polaHTML = "";
 
             h.kandidat
-                .slice(
-                    0,
-                    12
-                )
+                .slice(0, 12)
                 .forEach(
                     (p, index) => {
 
@@ -2766,14 +2630,11 @@ function tampilkanHasilDeret(
                                 h.toleransi
                             );
 
-
                         polaHTML +=
 
                             (index + 1) +
                             ". <strong>" +
-
                             p.nama +
-
                             "</strong><br>" +
 
                             p.detail +
@@ -2781,51 +2642,49 @@ function tampilkanHasilDeret(
                             "<br>" +
 
                             "Uji tepat: <strong>" +
-
                             p.hit +
-
                             " / " +
-
                             p.total +
-
-                            "</strong> cocok" +
-
-                            " — " +
+                            "</strong> cocok — " +
 
                             p.akurasi.toFixed(1) +
-
                             "%" +
 
                             "<br>" +
 
                             "Uji toleransi: <strong>" +
-
                             p.hitToleransi +
-
                             " / " +
-
                             p.total +
+                            "</strong> cocok — " +
 
-                            "</strong> cocok" +
+                            p.akurasiToleransi.toFixed(1) +
+                            "%" +
+
+                            "<br>" +
+
+                            "Rata-rata jarak: <strong>" +
+                            p.rataJarak.toFixed(2) +
+                            "</strong>" +
+
+                            "<br>" +
+
+                            "Skor formula: <strong>" +
+                            p.skorFormula.toFixed(2) +
+                            "</strong>" +
 
                             "<br>" +
 
                             "Prediksi berikutnya: <strong>" +
-
                             p.prediksiBerikutnya +
-
                             "</strong>" +
 
                             "<br>" +
 
                             "Dengan toleransi ±" +
-
                             h.toleransi +
-
                             ": <strong>" +
-
                             rentang.join(" ") +
-
                             "</strong>" +
 
                             "<br><br>";
@@ -2842,6 +2701,10 @@ function tampilkanHasilDeret(
             }
 
 
+            /*
+               FORMULA TERBAIK GLOBAL
+            */
+
             const formulaUtama =
                 h.formulaUtama;
 
@@ -2855,730 +2718,502 @@ function tampilkanHasilDeret(
                 : [];
 
 
+            /*
+               FORMULA TERBAIK YANG MENGHASILKAN
+               DIGIT UTAMA.
+
+               Ini lebih penting daripada formula
+               global jika formula global kalah karena
+               prediksinya berbeda.
+            */
+
+            const detailUtama =
+                h.detailDigit &&
+                h.detailDigit[h.utama];
+
+            const formulaDigitUtama =
+                detailUtama
+                ? detailUtama.formulaTerbaik
+                : null;
+
+
+            const rentangDigitUtama =
+                formulaDigitUtama
+                ? formatRentang(
+                    formulaDigitUtama.prediksiBerikutnya,
+                    h.toleransi
+                )
+                : [];
+
+
             kartu.innerHTML =
 
                 "<div class='posisi-title'>" +
-
                 posisi.nama +
-
                 "</div>" +
 
                 "<textarea class='jawaban' readonly>" +
-
                 h.utama +
-
                 "</textarea>" +
 
+                "<div class='info'>" +
 
-            "<div class='info'>" +
+                "<strong>Data posisi:</strong> " +
+                posisi.data.join(", ") +
 
-            "<strong>Data posisi:</strong> " +
+                "<br><br>" +
 
-            posisi.data.join(", ") +
-
-            "<br><br>" +
-
-            "<strong>Jawaban utama:</strong> " +
-
-            h.utama +
-
-            "<br>" +
-
-            "<strong>Toleransi:</strong> ±" +
-
-            h.toleransi +
-
-            "</div>" +
-
-            "<div class='pola'>" +
-
-            "<strong>Formula terpilih:</strong>" +
-
-            "<br><br>" +
-
-            (
-
-                formulaUtama
-
-                ?
-
-                "<strong>" +
-                formulaUtama.nama +
-                "</strong>" +
+                "<strong>Jawaban utama:</strong> " +
+                h.utama +
 
                 "<br>" +
 
-                formulaUtama.detail +
-
-                "<br>" +
-
-                "Hasil pengujian tepat: <strong>" +
-
-                formulaUtama.hit +
-
-                " / " +
-
-                formulaUtama.total +
-
-                "</strong> cocok" +
-
-                " (" +
-
-                formulaUtama.akurasi.toFixed(1) +
-
-                "%)" +
-
-                "<br>" +
-
-                "Hasil pengujian toleransi: <strong>" +
-
-                formulaUtama.hitToleransi +
-
-                " / " +
-
-                formulaUtama.total +
-
-                "</strong> cocok" +
-
-                "<br>" +
-
-                "Prediksi tepat: <strong>" +
-
-                formulaUtama.prediksiBerikutnya +
-
-                "</strong>" +
-
-                "<br>" +
-
-                "Jawaban dengan toleransi ±" +
-
+                "<strong>Toleransi:</strong> ±" +
                 h.toleransi +
 
-                ": <strong>" +
+                "</div>" +
 
-                rentangUtama.join(" ") +
+                "<div class='pola'>" +
 
-                "</strong>"
+                "<strong>ALASAN PEMILIHAN JAWABAN UTAMA:</strong>" +
 
-                :
+                "<br><br>" +
 
-                "Tidak ditemukan formula yang dapat diuji."
+                (
+                    formulaDigitUtama
 
-            ) +
+                    ?
 
-            "</div>" +
+                    "<strong>" +
+                    formulaDigitUtama.nama +
+                    "</strong>" +
 
-            "<div class='pola'>" +
+                    "<br>" +
 
-            "<strong>Ranking formula hasil pengujian:</strong>" +
+                    formulaDigitUtama.detail +
 
-            "<br><br>" +
+                    "<br>" +
 
-            polaHTML +
+                    "Backtest tepat: <strong>" +
+                    formulaDigitUtama.hit +
+                    " / " +
+                    formulaDigitUtama.total +
+                    "</strong> = " +
 
-            "</div>" +
+                    formulaDigitUtama.akurasi.toFixed(1) +
+                    "%" +
 
-            "<div class='info'>" +
+                    "<br>" +
 
-            "<strong>Ranking kandidat 0–9:</strong>" +
+                    "Backtest toleransi: <strong>" +
+                    formulaDigitUtama.hitToleransi +
+                    " / " +
+                    formulaDigitUtama.total +
+                    "</strong> = " +
 
-            "</div>" +
+                    formulaDigitUtama.akurasiToleransi.toFixed(1) +
+                    "%" +
 
-            "<div class='kandidat'>" +
+                    "<br>" +
 
-            kandidatHTML +
+                    "Rata-rata jarak melingkar: <strong>" +
+                    formulaDigitUtama.rataJarak.toFixed(2) +
+                    "</strong>" +
 
-            "</div>";
+                    "<br>" +
+
+                    "Prediksi berikutnya: <strong>" +
+                    formulaDigitUtama.prediksiBerikutnya +
+                    "</strong>" +
+
+                    "<br>" +
+
+                    "Rentang ±" +
+                    h.toleransi +
+                    ": <strong>" +
+                    rentangDigitUtama.join(" ") +
+                    "</strong>"
+
+                    :
+
+                    "Tidak ditemukan formula kuat untuk digit utama."
+                ) +
+
+                "</div>" +
+
+                "<div class='pola'>" +
+
+                "<strong>Formula terbaik global:</strong>" +
+
+                "<br><br>" +
+
+                (
+                    formulaUtama
+
+                    ?
+
+                    "<strong>" +
+                    formulaUtama.nama +
+                    "</strong>" +
+
+                    "<br>" +
+
+                    formulaUtama.detail +
+
+                    "<br>" +
+
+                    "Uji tepat: <strong>" +
+                    formulaUtama.hit +
+                    " / " +
+                    formulaUtama.total +
+                    "</strong> cocok (" +
+                    formulaUtama.akurasi.toFixed(1) +
+                    "%)" +
+
+                    "<br>" +
+
+                    "Uji toleransi: <strong>" +
+                    formulaUtama.hitToleransi +
+                    " / " +
+                    formulaUtama.total +
+                    "</strong> cocok (" +
+                    formulaUtama.akurasiToleransi.toFixed(1) +
+                    "%)" +
+
+                    "<br>" +
+
+                    "Prediksi berikutnya: <strong>" +
+                    formulaUtama.prediksiBerikutnya +
+                    "</strong>" +
+
+                    "<br>" +
+
+                    "Rentang ±" +
+                    h.toleransi +
+                    ": <strong>" +
+                    rentangUtama.join(" ") +
+                    "</strong>"
+
+                    :
+
+                    "Tidak ditemukan formula."
+                ) +
+
+                "</div>" +
+
+                "<div class='pola'>" +
+
+                "<strong>Ranking formula berdasarkan backtest:</strong>" +
+
+                "<br><br>" +
+
+                polaHTML +
+
+                "</div>" +
+
+                "<div class='info'>" +
+
+                "<strong>Ranking kandidat 0–9:</strong>" +
+
+                "<br>" +
+
+                "Ranking sekarang diprioritaskan berdasarkan kualitas formula yang terbukti pada data sebelumnya, bukan sekadar jumlah formula yang kebetulan menghasilkan digit tersebut." +
+
+                "</div>" +
+
+                "<div class='kandidat'>" +
+
+                kandidatHTML +
+
+                "</div>";
 
 
-        container.appendChild(
-            kartu
-        );
-    }
-);
-
+            container.appendChild(
+                kartu
+            );
+        }
+    );
 }
 
+
 /* =========================================================
-SCORING GABUNGAN
-BOBOT RANKING:
-POSISI 1 = 9
-POSISI 2 = 8
-...
-POSISI 10 = 0
+   SCORING GABUNGAN
 ========================================================= */
 
 function buatScoringGabungan(
-ranking1,
-ranking2
+    ranking1,
+    ranking2
 ) {
 
+    const skor1 =
+        Array(10).fill(0);
 
-const skor1 =
-    Array(10).fill(0);
-
-const skor2 =
-    Array(10).fill(0);
-
-
-ranking1.forEach(
-    (digit, index) => {
-
-        skor1[digit] =
-            9 - index;
-    }
-);
+    const skor2 =
+        Array(10).fill(0);
 
 
-ranking2.forEach(
-    (digit, index) => {
+    ranking1.forEach(
+        (digit, index) => {
 
-        skor2[digit] =
-            9 - index;
-    }
-);
-
-
-const gabungan =
-    Array.from(
-        { length: 10 },
-        (_, digit) => ({
-
-            digit:
-                digit,
-
-            bobotDeret1:
-                skor1[digit],
-
-            bobotDeret2:
-                skor2[digit],
-
-            total:
-                skor1[digit] +
-                skor2[digit]
-        })
+            skor1[digit] =
+                9 - index;
+        }
     );
 
 
-gabungan.sort(
-    (a, b) => {
+    ranking2.forEach(
+        (digit, index) => {
 
-        if (
-            b.total !==
-            a.total
-        ) {
-
-            return (
-                b.total -
-                a.total
-            );
+            skor2[digit] =
+                9 - index;
         }
+    );
 
 
-        if (
-            b.bobotDeret1 !==
-            a.bobotDeret1
-        ) {
+    const gabungan =
+        Array.from(
+            { length: 10 },
+            (_, digit) => ({
 
-            return (
-                b.bobotDeret1 -
-                a.bobotDeret1
-            );
-        }
+                digit:
+                    digit,
 
+                bobotDeret1:
+                    skor1[digit],
 
-        if (
-            b.bobotDeret2 !==
-            a.bobotDeret2
-        ) {
+                bobotDeret2:
+                    skor2[digit],
 
-            return (
-                b.bobotDeret2 -
-                a.bobotDeret2
-            );
-        }
-
-
-        return (
-            a.digit -
-            b.digit
+                total:
+                    skor1[digit] +
+                    skor2[digit]
+            })
         );
-    }
-);
 
 
-return {
+    gabungan.sort(
+        (a, b) => {
 
-    ranking:
-        gabungan.map(
-            item => item.digit
-        ),
+            if (
+                b.total !==
+                a.total
+            ) {
 
-    detail:
-        gabungan
-};
+                return (
+                    b.total -
+                    a.total
+                );
+            }
 
+            if (
+                b.bobotDeret1 !==
+                a.bobotDeret1
+            ) {
+
+                return (
+                    b.bobotDeret1 -
+                    a.bobotDeret1
+                );
+            }
+
+            if (
+                b.bobotDeret2 !==
+                a.bobotDeret2
+            ) {
+
+                return (
+                    b.bobotDeret2 -
+                    a.bobotDeret2
+                );
+            }
+
+            return a.digit - b.digit;
+        }
+    );
+
+
+    return {
+
+        ranking:
+            gabungan.map(
+                item => item.digit
+            ),
+
+        detail:
+            gabungan
+    };
 }
 
+
 /* =========================================================
-KESIMPULAN GABUNGAN
+   KESIMPULAN GABUNGAN
 ========================================================= */
 
 function buatKesimpulanGabungan(
-hasil1,
-hasil2
+    hasil1,
+    hasil2
 ) {
 
+    hasilGabungan.innerHTML = "";
 
-hasilGabungan.innerHTML =
-    "";
+    hasil1.forEach(
+        (posisi1, index) => {
 
+            const posisi2 =
+                hasil2[index];
 
-hasil1.forEach(
-    (posisi1, index) => {
-
-        const posisi2 =
-            hasil2[index];
-
-
-        const gabungan =
-            buatScoringGabungan(
-                posisi1.hasil.urutan,
-                posisi2.hasil.urutan
-            );
-
-
-        const box =
-            document.createElement(
-                "div"
-            );
-
-
-        box.className =
-            "gabungan-posisi";
-
-
-        let scoringHTML =
-            "";
-
-
-        gabungan.detail.forEach(
-            item => {
-
-                scoringHTML +=
-
-                    "<strong>" +
-
-                    item.digit +
-
-                    "</strong> : " +
-
-                    item.bobotDeret1 +
-
-                    " + " +
-
-                    item.bobotDeret2 +
-
-                    " = <strong>" +
-
-                    item.total +
-
-                    "</strong><br>";
-            }
-        );
-
-
-        box.innerHTML =
-
-            "<div class='gabungan-posisi-title'>" +
-
-            posisi1.nama +
-
-            "</div>" +
-
-            "<div class='info'>" +
-
-            "<strong>Deret 1 Ranking kandidat 0–9:</strong>" +
-
-            "</div>" +
-
-            "<div class='ranking-gabungan'>" +
-
-            posisi1.hasil.urutan.join("") +
-
-            "</div>" +
-
-            "<div class='info'>" +
-
-            "<strong>Deret 2 Ranking kandidat 0–9:</strong>" +
-
-            "</div>" +
-
-            "<div class='ranking-gabungan'>" +
-
-            posisi2.hasil.urutan.join("") +
-
-            "</div>" +
-
-            "<div class='scoring'>" +
-
-            "<strong>Pembobotan Gabungan:</strong>" +
-
-            "<br>" +
-
-            "Ranking posisi 1 = bobot 9, posisi 2 = 8, ... posisi 10 = 0." +
-
-            "<br><br>" +
-
-            scoringHTML +
-
-            "<br>" +
-
-            "<strong>Rangking Gabungan nya adalah</strong>" +
-
-            "<div class='ranking-gabungan'>" +
-
-            gabungan.ranking.join("") +
-
-            "</div>" +
-
-            "</div>";
-
-
-        hasilGabungan.appendChild(
-            box
-        );
-    }
-);
-
-
-return hasil1.map(
-    (posisi1, index) => {
-
-        const posisi2 =
-            hasil2[index];
-
-
-        return {
-
-            nama:
-                posisi1.nama,
-
-            ranking:
+            const gabungan =
                 buatScoringGabungan(
                     posisi1.hasil.urutan,
                     posisi2.hasil.urutan
-                ).ranking
-        };
-    }
-);
+                );
 
 
-}
+            const box =
+                document.createElement(
+                    "div"
+                );
 
-/* =========================================================
-BUAT KOMBINASI
-========================================================= */
-
-function buatKombinasi(
-rankingArray,
-jumlahAmbil
-) {
+            box.className =
+                "gabungan-posisi";
 
 
-const sumber =
-    rankingArray
-        .slice(
-            0,
-            jumlahAmbil
-        )
-        .map(
-            Number
-        );
+            let scoringHTML = "";
 
+            gabungan.detail.forEach(
+                item => {
 
-const hasil = [];
+                    scoringHTML +=
 
+                        "<strong>" +
+                        item.digit +
+                        "</strong> : " +
 
-function rekursif(
-    level,
-    sementara
-) {
+                        item.bobotDeret1 +
+                        " + " +
 
-    if (
-        level ===
-        sumber.length
-    ) {
+                        item.bobotDeret2 +
 
-        hasil.push(
-            sementara.join("")
-        );
+                        " = <strong>" +
 
-        return;
-    }
+                        item.total +
 
-
-    sumber.forEach(
-        digit => {
-
-            rekursif(
-                level + 1,
-                [
-                    ...sementara,
-                    digit
-                ]
+                        "</strong><br>";
+                }
             );
+
+
+            box.innerHTML =
+
+                "<div class='gabungan-posisi-title'>" +
+                posisi1.nama +
+                "</div>" +
+
+                "<div class='info'>" +
+                "<strong>Deret 1 Ranking kandidat 0–9:</strong>" +
+                "</div>" +
+
+                "<div class='ranking-gabungan'>" +
+                posisi1.hasil.urutan.join("") +
+                "</div>" +
+
+                "<div class='info'>" +
+                "<strong>Deret 2 Ranking kandidat 0–9:</strong>" +
+                "</div>" +
+
+                "<div class='ranking-gabungan'>" +
+                posisi2.hasil.urutan.join("") +
+                "</div>" +
+
+                "<div class='scoring'>" +
+
+                "<strong>Pembobotan Gabungan:</strong>" +
+
+                "<br>" +
+
+                "Ranking posisi 1 = bobot 9, posisi 2 = 8, ... posisi 10 = 0." +
+
+                "<br><br>" +
+
+                scoringHTML +
+
+                "<br>" +
+
+                "<strong>Ranking Gabungan adalah:</strong>" +
+
+                "<div class='ranking-gabungan'>" +
+                gabungan.ranking.join("") +
+                "</div>" +
+
+                "</div>";
+
+
+            hasilGabungan.appendChild(
+                box
+            );
+        }
+    );
+
+
+    return hasil1.map(
+        (posisi1, index) => {
+
+            const posisi2 =
+                hasil2[index];
+
+            return {
+
+                nama:
+                    posisi1.nama,
+
+                ranking:
+                    buatScoringGabungan(
+                        posisi1.hasil.urutan,
+                        posisi2.hasil.urutan
+                    ).ranking
+            };
         }
     );
 }
 
 
-rekursif(
-    0,
-    []
-);
-
-
-return hasil;
-
-
-}
-
 /* =========================================================
-COPY
+   KOMBINASI
 ========================================================= */
 
-async function copyTextarea(
-textarea,
-tombol
+function buatKombinasi(
+    rankingArray,
+    jumlahAmbil
 ) {
 
+    const sumber =
+        rankingArray
+            .slice(0, jumlahAmbil)
+            .map(Number);
 
-try {
+    const hasil = [];
 
-    await navigator.clipboard.writeText(
-        textarea.value
-    );
 
+    function rekursif(
+        level,
+        sementara
+    ) {
 
-    const teksLama =
-        tombol.textContent;
+        if (
+            level ===
+            sumber.length
+        ) {
 
+            hasil.push(
+                sementara.join("")
+            );
 
-    tombol.textContent =
-        "COPIED";
+            return;
+        }
 
 
-    setTimeout(
-        function() {
-
-            tombol.textContent =
-                teksLama;
-
-        },
-        1000
-    );
-
-} catch (e) {
-
-    textarea.focus();
-
-    textarea.select();
-
-    document.execCommand(
-        "copy"
-    );
-
-
-    const teksLama =
-        tombol.textContent;
-
-
-    tombol.textContent =
-        "COPIED";
-
-
-    setTimeout(
-        function() {
-
-            tombol.textContent =
-                teksLama;
-
-        },
-        1000
-    );
-}
-
-
-}
-
-/* =========================================================
-TAMBAH GENERATOR
-========================================================= */
-
-function tambahGenerator(
-nama,
-ranking,
-jumlahAmbil
-) {
-
-
-const kombinasi =
-    buatKombinasi(
-        ranking,
-        jumlahAmbil
-    );
-
-
-const card =
-    document.createElement(
-        "div"
-    );
-
-
-card.className =
-    "generator-card";
-
-
-const title =
-    document.createElement(
-        "div"
-    );
-
-
-title.className =
-    "generator-title";
-
-
-title.textContent =
-    nama;
-
-
-const textarea =
-    document.createElement(
-        "textarea"
-    );
-
-
-textarea.readOnly =
-    true;
-
-
-textarea.value =
-    kombinasi.join("*");
-
-
-const jumlah =
-    document.createElement(
-        "div"
-    );
-
-
-jumlah.className =
-    "jumlah";
-
-
-jumlah.textContent =
-    "Jumlah " +
-    kombinasi.length +
-    " LN";
-
-
-const tombol =
-    document.createElement(
-        "button"
-    );
-
-
-tombol.className =
-    "copy-btn";
-
-
-tombol.textContent =
-    "COPY";
-
-
-tombol.addEventListener(
-    "click",
-    function() {
-
-        copyTextarea(
-            textarea,
-            tombol
-        );
-    }
-);
-
-
-card.appendChild(
-    title
-);
-
-
-card.appendChild(
-    textarea
-);
-
-
-card.appendChild(
-    jumlah
-);
-
-
-card.appendChild(
-    tombol
-);
-
-
-generatorContainer.appendChild(
-    card
-);
-
-
-}
-
-/* =========================================================
-BUAT SEMUA GENERATOR
-========================================================= */
-
-
-
-function buatSemuaGenerator(rankingGabungan) {
-
-    generatorContainer.innerHTML = "";
-
-    const ribuan = rankingGabungan[0].ranking;
-    const ratusan = rankingGabungan[1].ranking;
-    const puluhan = rankingGabungan[2].ranking;
-    const satuan = rankingGabungan[3].ranking;
-
-
-    // =========================================
-    // GENERATOR KOMBINASI MULTI RANKING
-    // =========================================
-    function buatKombinasiMulti(sumberArray, jumlahAmbil) {
-
-        const sumber = sumberArray.map(
-            ranking =>
-                ranking
-                    .slice(0, jumlahAmbil)
-                    .map(String)
-        );
-
-        const hasil = [];
-
-        function rekursif(level, sementara) {
-
-            if (level === sumber.length) {
-
-                hasil.push(
-                    sementara.join("")
-                );
-
-                return;
-            }
-
-            sumber[level].forEach(digit => {
+        sumber.forEach(
+            digit => {
 
                 rekursif(
                     level + 1,
@@ -3587,9 +3222,241 @@ function buatSemuaGenerator(rankingGabungan) {
                         digit
                     ]
                 );
+            }
+        );
+    }
 
-            });
+
+    rekursif(
+        0,
+        []
+    );
+
+
+    return hasil;
+}
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+async function copyTextarea(
+    textarea,
+    tombol
+) {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            textarea.value
+        );
+
+        const teksLama =
+            tombol.textContent;
+
+        tombol.textContent =
+            "COPIED";
+
+        setTimeout(
+            function() {
+
+                tombol.textContent =
+                    teksLama;
+
+            },
+            1000
+        );
+
+    } catch (e) {
+
+        textarea.focus();
+        textarea.select();
+
+        document.execCommand("copy");
+
+        const teksLama =
+            tombol.textContent;
+
+        tombol.textContent =
+            "COPIED";
+
+        setTimeout(
+            function() {
+
+                tombol.textContent =
+                    teksLama;
+
+            },
+            1000
+        );
+    }
+}
+
+
+/* =========================================================
+   GENERATOR LANGSUNG
+========================================================= */
+
+function tambahGeneratorLangsung(
+    nama,
+    kombinasi
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "generator-card";
+
+
+    const title =
+        document.createElement(
+            "div"
+        );
+
+    title.className =
+        "generator-title";
+
+    title.textContent =
+        nama;
+
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+    textarea.readOnly =
+        true;
+
+    textarea.value =
+        kombinasi.join("*");
+
+
+    const jumlah =
+        document.createElement(
+            "div"
+        );
+
+    jumlah.className =
+        "jumlah";
+
+    jumlah.textContent =
+        "Jumlah " +
+        kombinasi.length +
+        " LN";
+
+
+    const tombol =
+        document.createElement(
+            "button"
+        );
+
+    tombol.className =
+        "copy-btn";
+
+    tombol.textContent =
+        "COPY";
+
+
+    tombol.addEventListener(
+        "click",
+        function() {
+
+            copyTextarea(
+                textarea,
+                tombol
+            );
         }
+    );
+
+
+    card.appendChild(title);
+    card.appendChild(textarea);
+    card.appendChild(jumlah);
+    card.appendChild(tombol);
+
+    generatorContainer.appendChild(
+        card
+    );
+}
+
+
+/* =========================================================
+   SEMUA GENERATOR
+========================================================= */
+
+function buatSemuaGenerator(
+    rankingGabungan
+) {
+
+    generatorContainer.innerHTML = "";
+
+    const ribuan =
+        rankingGabungan[0].ranking;
+
+    const ratusan =
+        rankingGabungan[1].ranking;
+
+    const puluhan =
+        rankingGabungan[2].ranking;
+
+    const satuan =
+        rankingGabungan[3].ranking;
+
+
+    function buatKombinasiMulti(
+        sumberArray,
+        jumlahAmbil
+    ) {
+
+        const sumber =
+            sumberArray.map(
+                ranking =>
+                    ranking
+                        .slice(0, jumlahAmbil)
+                        .map(String)
+            );
+
+
+        const hasil = [];
+
+
+        function rekursif(
+            level,
+            sementara
+        ) {
+
+            if (
+                level ===
+                sumber.length
+            ) {
+
+                hasil.push(
+                    sementara.join("")
+                );
+
+                return;
+            }
+
+
+            sumber[level].forEach(
+                digit => {
+
+                    rekursif(
+                        level + 1,
+                        [
+                            ...sementara,
+                            digit
+                        ]
+                    );
+                }
+            );
+        }
+
 
         rekursif(0, []);
 
@@ -3597,15 +3464,15 @@ function buatSemuaGenerator(rankingGabungan) {
     }
 
 
-    // =========================================
-    // 2DD
-    // RIBUAN - RATUSAN
-    // 7 x 7 = 49
-    // =========================================
-    const hasil2DD = buatKombinasiMulti(
-        [ribuan, ratusan],
-        7
-    );
+    /*
+       2DD
+    */
+
+    const hasil2DD =
+        buatKombinasiMulti(
+            [ribuan, ratusan],
+            7
+        );
 
     tambahGeneratorLangsung(
         "2DD — RIBUAN-RATUSAN",
@@ -3613,15 +3480,15 @@ function buatSemuaGenerator(rankingGabungan) {
     );
 
 
-    // =========================================
-    // 2DT
-    // RATUSAN - PULUHAN
-    // 7 x 7 = 49
-    // =========================================
-    const hasil2DT = buatKombinasiMulti(
-        [ratusan, puluhan],
-        7
-    );
+    /*
+       2DT
+    */
+
+    const hasil2DT =
+        buatKombinasiMulti(
+            [ratusan, puluhan],
+            7
+        );
 
     tambahGeneratorLangsung(
         "2DT — RATUSAN-PULUHAN",
@@ -3629,15 +3496,15 @@ function buatSemuaGenerator(rankingGabungan) {
     );
 
 
-    // =========================================
-    // 2DB
-    // PULUHAN - SATUAN
-    // 7 x 7 = 49
-    // =========================================
-    const hasil2DB = buatKombinasiMulti(
-        [puluhan, satuan],
-        7
-    );
+    /*
+       2DB
+    */
+
+    const hasil2DB =
+        buatKombinasiMulti(
+            [puluhan, satuan],
+            7
+        );
 
     tambahGeneratorLangsung(
         "2DB — PULUHAN-SATUAN",
@@ -3645,15 +3512,15 @@ function buatSemuaGenerator(rankingGabungan) {
     );
 
 
-    // =========================================
-    // 3DD
-    // RIBUAN - RATUSAN - PULUHAN
-    // 8 x 8 x 8 = 512
-    // =========================================
-    const hasil3DD = buatKombinasiMulti(
-        [ribuan, ratusan, puluhan],
-        8
-    );
+    /*
+       3DD
+    */
+
+    const hasil3DD =
+        buatKombinasiMulti(
+            [ribuan, ratusan, puluhan],
+            8
+        );
 
     tambahGeneratorLangsung(
         "3DD — RIBUAN-RATUSAN-PULUHAN",
@@ -3661,15 +3528,15 @@ function buatSemuaGenerator(rankingGabungan) {
     );
 
 
-    // =========================================
-    // 3DB
-    // RATUSAN - PULUHAN - SATUAN
-    // 8 x 8 x 8 = 512
-    // =========================================
-    const hasil3DB = buatKombinasiMulti(
-        [ratusan, puluhan, satuan],
-        8
-    );
+    /*
+       3DB
+    */
+
+    const hasil3DB =
+        buatKombinasiMulti(
+            [ratusan, puluhan, satuan],
+            8
+        );
 
     tambahGeneratorLangsung(
         "3DB — RATUSAN-PULUHAN-SATUAN",
@@ -3677,15 +3544,15 @@ function buatSemuaGenerator(rankingGabungan) {
     );
 
 
-    // =========================================
-    // 4DB
-    // RIBUAN - RATUSAN - PULUHAN - SATUAN
-    // 8 x 8 x 8 x 8 = 4096
-    // =========================================
-    const hasil4DB = buatKombinasiMulti(
-        [ribuan, ratusan, puluhan, satuan],
-        8
-    );
+    /*
+       4DB
+    */
+
+    const hasil4DB =
+        buatKombinasiMulti(
+            [ribuan, ratusan, puluhan, satuan],
+            8
+        );
 
     tambahGeneratorLangsung(
         "4DB — RIBUAN-RATUSAN-PULUHAN-SATUAN",
@@ -3693,320 +3560,180 @@ function buatSemuaGenerator(rankingGabungan) {
     );
 
 
-    generatorSection.style.display = "block";
+    generatorSection.style.display =
+        "block";
 }
 
 
-
-
-
-
-
-
-
-
-
 /* =========================================================
-TAMPILKAN GENERATOR
-========================================================= */
-
-function tambahGeneratorLangsung(
-nama,
-kombinasi
-) {
-
-
-const card =
-    document.createElement(
-        "div"
-    );
-
-
-card.className =
-    "generator-card";
-
-
-const title =
-    document.createElement(
-        "div"
-    );
-
-
-title.className =
-    "generator-title";
-
-
-title.textContent =
-    nama;
-
-
-const textarea =
-    document.createElement(
-        "textarea"
-    );
-
-
-textarea.readOnly =
-    true;
-
-
-textarea.value =
-    kombinasi.join("*");
-
-
-const jumlah =
-    document.createElement(
-        "div"
-    );
-
-
-jumlah.className =
-    "jumlah";
-
-
-jumlah.textContent =
-    "Jumlah " +
-    kombinasi.length +
-    " LN";
-
-
-const tombol =
-    document.createElement(
-        "button"
-    );
-
-
-tombol.className =
-    "copy-btn";
-
-
-tombol.textContent =
-    "COPY";
-
-
-tombol.addEventListener(
-    "click",
-    function() {
-
-        copyTextarea(
-            textarea,
-            tombol
-        );
-    }
-);
-
-
-card.appendChild(
-    title
-);
-
-
-card.appendChild(
-    textarea
-);
-
-
-card.appendChild(
-    jumlah
-);
-
-
-card.appendChild(
-    tombol
-);
-
-
-generatorContainer.appendChild(
-    card
-);
-
-
-}
-
-/* =========================================================
-PROSES
+   PROSES
 ========================================================= */
 
 btnProses.addEventListener(
-"click",
-function() {
+    "click",
+    function() {
+
+        if (!validasi()) {
+            return;
+        }
 
 
-    if (
-        !validasi()
-    ) {
-        return;
-    }
+        const parsed =
+            parseData(
+                dataInput.value
+            );
+
+        const data =
+            parsed.data;
+
+        const panjang =
+            parsed.panjang;
+
+        const toleransi =
+            Number(
+                toleransiInput.value
+            );
 
 
-    const parsed =
-        parseData(
-            dataInput.value
+        /*
+           RESET
+        */
+
+        hasilDeret1.classList.add(
+            "hidden"
         );
 
-
-    const data =
-        parsed.data;
-
-
-    const panjang =
-        parsed.panjang;
-
-
-    const toleransi =
-        Number(
-            toleransiInput.value
+        hasilDeret2.classList.add(
+            "hidden"
         );
 
+        kesimpulanBox.style.display =
+            "none";
 
-    /*
-       RESET HASIL LAMA
-    */
-
-    hasilDeret1.classList.add(
-        "hidden"
-    );
-
-    hasilDeret2.classList.add(
-        "hidden"
-    );
-
-    kesimpulanBox.style.display =
-        "none";
-
-    generatorSection.style.display =
-        "none";
+        generatorSection.style.display =
+            "none";
 
 
-    hasilPosisiDeret1.innerHTML =
-        "";
+        hasilPosisiDeret1.innerHTML =
+            "";
 
-    hasilPosisiDeret2.innerHTML =
-        "";
+        hasilPosisiDeret2.innerHTML =
+            "";
 
-    hasilGabungan.innerHTML =
-        "";
+        hasilGabungan.innerHTML =
+            "";
 
-    generatorContainer.innerHTML =
-        "";
-
-
-    prosesBox.style.display =
-        "block";
+        generatorContainer.innerHTML =
+            "";
 
 
-    btnProses.disabled =
-        true;
+        prosesBox.style.display =
+            "block";
+
+        btnProses.disabled =
+            true;
 
 
-    /*
-       =================================================
-       DERET 1
-       =================================================
-    */
+        /*
+           DERET 1
+        */
 
-    prosesStatus.textContent =
-        "Memproses Deret 1...";
+        prosesStatus.textContent =
+            "Memproses Deret 1 dengan backtest formula...";
 
 
-    const semuaHasil1 =
-        analisaSemua(
-            data,
-            panjang,
-            toleransi,
-            1
-        );
+        const semuaHasil1 =
+            analisaSemua(
+                data,
+                panjang,
+                toleransi,
+                1
+            );
 
 
-    tampilkanHasilDeret(
-        semuaHasil1,
-        hasilPosisiDeret1
-    );
-
-
-    hasilDeret1.classList.remove(
-        "hidden"
-    );
-
-
-    /*
-       =================================================
-       DERET 2
-       =================================================
-    */
-
-    prosesStatus.textContent =
-        "Deret 1 selesai. Memproses Deret 2...";
-
-
-    const semuaHasil2 =
-        analisaSemua(
-            data,
-            panjang,
-            toleransi,
-            2
-        );
-
-
-    tampilkanHasilDeret(
-        semuaHasil2,
-        hasilPosisiDeret2
-    );
-
-
-    hasilDeret2.classList.remove(
-        "hidden"
-    );
-
-
-    /*
-       =================================================
-       KESIMPULAN
-       =================================================
-    */
-
-    prosesStatus.textContent =
-        "Deret 2 selesai. Membuat KESIMPULAN GABUNGAN...";
-
-
-    const rankingGabungan =
-        buatKesimpulanGabungan(
+        tampilkanHasilDeret(
             semuaHasil1,
-            semuaHasil2
+            hasilPosisiDeret1
         );
 
 
-    kesimpulanBox.style.display =
-        "block";
+        hasilDeret1.classList.remove(
+            "hidden"
+        );
 
 
-    /*
-       =================================================
-       GENERATOR 2D / 3D / 4D
-       =================================================
-    */
+        /*
+           DERET 2
+        */
 
-    prosesStatus.textContent =
-        "Membuat kombinasi 2DD, 2DT, 2DB, 3DD, 3DB dan 4DB...";
+        prosesStatus.textContent =
+            "Deret 1 selesai. Memproses Deret 2...";
 
 
-    buatSemuaGenerator(
-        rankingGabungan
-    );
+        const semuaHasil2 =
+            analisaSemua(
+                data,
+                panjang,
+                toleransi,
+                2
+            );
 
 
-    prosesStatus.textContent =
-        "SELESAI. Deret 1, Deret 2, scoring gabungan dan seluruh kombinasi telah dibuat.";
+        tampilkanHasilDeret(
+            semuaHasil2,
+            hasilPosisiDeret2
+        );
 
 
-    btnProses.disabled =
-        false;
-}
+        hasilDeret2.classList.remove(
+            "hidden"
+        );
 
+
+        /*
+           KESIMPULAN
+        */
+
+        prosesStatus.textContent =
+            "Deret 2 selesai. Membuat scoring gabungan...";
+
+
+        const rankingGabungan =
+            buatKesimpulanGabungan(
+                semuaHasil1,
+                semuaHasil2
+            );
+
+
+        kesimpulanBox.style.display =
+            "block";
+
+
+        /*
+           GENERATOR
+        */
+
+        prosesStatus.textContent =
+            "Membuat kombinasi 2DD, 2DT, 2DB, 3DD, 3DB dan 4DB...";
+
+
+        buatSemuaGenerator(
+            rankingGabungan
+        );
+
+
+        prosesStatus.textContent =
+            "SELESAI. Analisa per posisi, backtest formula, scoring gabungan dan seluruh kombinasi telah dibuat.";
+
+
+        btnProses.disabled =
+            false;
+    }
 );
 
+
 /* =========================================================
-START
+   START
 ========================================================= */
 
 validasi();
