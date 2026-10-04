@@ -551,7 +551,7 @@ atau
             min="0"
             max="4"
             step="1"
-            value="2">
+            value="4">
 
     </div>
 
@@ -3680,11 +3680,11 @@ function buatSemuaGenerator(rankingGabungan) {
     // =========================================
     // 4DB
     // RIBUAN - RATUSAN - PULUHAN - SATUAN
-    // 7 x 7 x 7 x 7 = 2401
+    // 8 x 8 x 8 x 8 = 4096
     // =========================================
     const hasil4DB = buatKombinasiMulti(
         [ribuan, ratusan, puluhan, satuan],
-        7
+        8
     );
 
     tambahGeneratorLangsung(
