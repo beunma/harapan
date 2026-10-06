@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Kalkulator Prediksi Deret 4 Digit</title>
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -193,288 +195,1949 @@
             font-size: 0.9rem;
             margin-top: 5px;
         }
+
+        /* =========================================
+           AUTO ANALISIS
+        ========================================= */
+
+        .auto-title {
+            color: var(--warning);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .auto-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .auto-control-item {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .auto-control-item input {
+            width: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .auto-control-item input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-auto {
+            width: 100%;
+            background-color: var(--success);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-auto:hover {
+            opacity: 0.9;
+        }
+
+        .btn-auto:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .auto-status {
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            min-height: 22px;
+        }
+
+        .auto-note {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-top: 8px;
+        }
+
+        .auto-result-card {
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .auto-result-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .auto-result-value {
+            font-size: 1.5rem;
+            color: var(--warning);
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .auto-result-details {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .flex-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .auto-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .auto-control-item {
+                width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
+
     <h1>Kalkulator Deret Matematika</h1>
-    <p class="subtitle">Analisis Pola, Modulo 10, & Ranking Frekuensi Rumus</p>
+
+    <p class="subtitle">
+        Analisis Pola, Modulo 10, & Ranking Frekuensi Rumus
+    </p>
+
+
+    <!-- =========================================
+         INPUT DATA
+    ========================================== -->
 
     <div class="card">
+
         <div class="input-group">
-            <label for="dataInput">Data Deret (4 Digit angka dipisah koma/spasi)</label>
-            <textarea id="dataInput" placeholder="Contoh: 3456,3323,0345,0006,6734 ( Minimal sebaiknya 7 Data )"></textarea>
-            <button class="btn-paste" id="btnPaste">Paste</button>
+
+            <label for="dataInput">
+                Data Deret (4 Digit angka dipisah koma/spasi)
+            </label>
+
+            <textarea
+                id="dataInput"
+                placeholder="Contoh: 3456,3323,0345,0006,6734 ( Minimal sebaiknya 7 Data )"
+            ></textarea>
+
+            <button
+                class="btn-paste"
+                id="btnPaste"
+            >
+                Paste
+            </button>
+
         </div>
-        <div id="errorBox" class="error-msg hidden"></div>
+
+
+        <div
+            id="errorBox"
+            class="error-msg hidden"
+        ></div>
+
 
         <div class="flex-row">
+
             <div>
-                <label for="toleranceInput">Toleransi (0 - 4)</label>
-                <input type="number" id="toleranceInput" class="tol-input" min="0" max="4" value="2">
+
+                <label for="toleranceInput">
+                    Toleransi (0 - 4)
+                </label>
+
+                <input
+                    type="number"
+                    id="toleranceInput"
+                    class="tol-input"
+                    min="0"
+                    max="4"
+                    value="1"
+                >
+
             </div>
-            <div style="flex-grow: 1; color: var(--text-muted); font-size: 0.85rem; padding-top: 20px;">
-                * Toleransi menentukan seberapa jauh deviasi hasil rumus yang masih dianggap valid (kalkulasi melingkar 0-9).<br>
-				Toleransi mainkan antara 0 sd 2. Lihat sampai ada 1 aja terpisah di depan ( set toleransi=3 ).<br>
-				Awalnya mungkin 14 data defult tolerasni 2, lihat apakah sdh ada yang terpish. <br>
-				Kalau belum kurangi data sampai 7 Data.
+
+
+            <div
+                style="
+                    flex-grow:1;
+                    color:var(--text-muted);
+                    font-size:0.85rem;
+                    padding-top:20px;
+                "
+            >
+
+                * Toleransi menentukan seberapa jauh deviasi hasil rumus
+                yang masih dianggap valid (kalkulasi melingkar 0-9).
+
+                <br>
+
+                Toleransi mainkan antara 0 sd 2.
+                Lihat sampai ada 1 aja terpisah di depan
+                (set toleransi = 3).
+
+                <br>
+
+                Awalnya mungkin 14 data default toleransi 2,
+                lihat apakah sudah ada yang terpisah.
+
+                <br>
+
+                Kalau belum kurangi data sampai 7 Data.
+
             </div>
+
         </div>
 
-        <button class="btn-process" id="btnProcess">PROSES ANALISIS</button>
+
+        <button
+            class="btn-process"
+            id="btnProcess"
+        >
+            PROSES ANALISIS
+        </button>
+
     </div>
 
-    <div id="resultsContainer" class="card hidden">
-        <label>Hasil Prediksi Deret (Diurutkan dari frekuensi terbanyak)</label>
+
+
+    <!-- =========================================
+         HASIL MANUAL
+    ========================================== -->
+
+    <div
+        id="resultsContainer"
+        class="card hidden"
+    >
+
+        <label>
+            Hasil Prediksi Deret
+            (Diurutkan dari frekuensi terbanyak)
+        </label>
+
+
         <div class="results-grid">
+
             <div class="result-card">
-                <div class="result-title">Ribuan</div>
-                <div class="result-value" id="resRibuan">-</div>
-                <div class="result-details" id="detRibuan"></div>
+
+                <div class="result-title">
+                    Ribuan
+                </div>
+
+                <div
+                    class="result-value"
+                    id="resRibuan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="result-details"
+                    id="detRibuan"
+                ></div>
+
             </div>
+
+
             <div class="result-card">
-                <div class="result-title">Ratusan</div>
-                <div class="result-value" id="resRatusan">-</div>
-                <div class="result-details" id="detRatusan"></div>
+
+                <div class="result-title">
+                    Ratusan
+                </div>
+
+                <div
+                    class="result-value"
+                    id="resRatusan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="result-details"
+                    id="detRatusan"
+                ></div>
+
             </div>
+
+
             <div class="result-card">
-                <div class="result-title">Puluhan</div>
-                <div class="result-value" id="resPuluhan">-</div>
-                <div class="result-details" id="detPuluhan"></div>
+
+                <div class="result-title">
+                    Puluhan
+                </div>
+
+                <div
+                    class="result-value"
+                    id="resPuluhan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="result-details"
+                    id="detPuluhan"
+                ></div>
+
             </div>
+
+
             <div class="result-card">
-                <div class="result-title">Satuan</div>
-                <div class="result-value" id="resSatuan">-</div>
-                <div class="result-details" id="detSatuan"></div>
+
+                <div class="result-title">
+                    Satuan
+                </div>
+
+                <div
+                    class="result-value"
+                    id="resSatuan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="result-details"
+                    id="detSatuan"
+                ></div>
+
             </div>
+
         </div>
+
     </div>
+
+
+
+    <!-- =========================================
+         AUTO ANALISIS
+    ========================================== -->
+
+    <div class="card">
+
+        <div class="auto-title">
+            AUTO ANALISIS
+        </div>
+
+
+        <div class="auto-controls">
+
+            <!-- MINIMAL DATA -->
+
+            <div class="auto-control-item">
+
+                <label for="minimalDataAuto">
+                    Minimal Data Auto Analisis
+                </label>
+
+                <input
+                    type="number"
+                    id="minimalDataAuto"
+                    min="3"
+                    max="14"
+                    value="3"
+                >
+
+            </div>
+
+
+            <!-- MAKSIMAL TOLERANSI -->
+
+            <div class="auto-control-item">
+
+                <label for="maxToleranceAuto">
+                    Maksimal Toleransi Auto Analisis
+                </label>
+
+                <input
+                    type="number"
+                    id="maxToleranceAuto"
+                    min="0"
+                    max="4"
+                    value="1"
+                >
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="btn-auto"
+            id="btnAutoAnalyze"
+        >
+            AUTO ANALISIS
+        </button>
+
+
+        <div
+            id="autoStatus"
+            class="auto-status"
+        ></div>
+
+
+        <div class="auto-note">
+
+            Auto akan mencoba jumlah data dari yang terbesar
+            lalu turun satu per satu sampai Minimal Data.
+            Pada setiap jumlah data, toleransi dimulai dari 0
+            sampai Maksimal Toleransi yang ditentukan.
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+         HASIL AUTO ANALISIS
+    ========================================== -->
+
+    <div
+        id="autoResultsContainer"
+        class="card hidden"
+    >
+
+        <label>
+            Hasil Auto Analisis
+        </label>
+
+
+        <div class="results-grid">
+
+
+            <!-- RIBUAN -->
+
+            <div class="auto-result-card">
+
+                <div class="auto-result-title">
+                    Ribuan
+                </div>
+
+                <div
+                    class="auto-result-value"
+                    id="autoResRibuan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="auto-result-details"
+                    id="autoDetRibuan"
+                ></div>
+
+            </div>
+
+
+            <!-- RATUSAN -->
+
+            <div class="auto-result-card">
+
+                <div class="auto-result-title">
+                    Ratusan
+                </div>
+
+                <div
+                    class="auto-result-value"
+                    id="autoResRatusan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="auto-result-details"
+                    id="autoDetRatusan"
+                ></div>
+
+            </div>
+
+
+            <!-- PULUHAN -->
+
+            <div class="auto-result-card">
+
+                <div class="auto-result-title">
+                    Puluhan
+                </div>
+
+                <div
+                    class="auto-result-value"
+                    id="autoResPuluhan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="auto-result-details"
+                    id="autoDetPuluhan"
+                ></div>
+
+            </div>
+
+
+            <!-- SATUAN -->
+
+            <div class="auto-result-card">
+
+                <div class="auto-result-title">
+                    Satuan
+                </div>
+
+                <div
+                    class="auto-result-value"
+                    id="autoResSatuan"
+                >
+                    -
+                </div>
+
+                <div
+                    class="auto-result-details"
+                    id="autoDetSatuan"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
+
+
 <script>
-    const dataInput = document.getElementById('dataInput');
-    const btnPaste = document.getElementById('btnPaste');
-    const toleranceInput = document.getElementById('toleranceInput');
-    const btnProcess = document.getElementById('btnProcess');
-    const errorBox = document.getElementById('errorBox');
-    const resultsContainer = document.getElementById('resultsContainer');
 
-    // Paste handler
-    btnPaste.addEventListener('click', async () => {
-        try {
-            const text = await navigator.clipboard.readText();
-            dataInput.value = text;
-        } catch (err) {
-            alert('Gagal membaca clipboard. Silakan gunakan Ctrl+V atau Paste manual.');
+    // =========================================
+    // ELEMENT HTML
+    // =========================================
+
+    const dataInput =
+        document.getElementById('dataInput');
+
+    const btnPaste =
+        document.getElementById('btnPaste');
+
+    const toleranceInput =
+        document.getElementById('toleranceInput');
+
+    const btnProcess =
+        document.getElementById('btnProcess');
+
+    const errorBox =
+        document.getElementById('errorBox');
+
+    const resultsContainer =
+        document.getElementById('resultsContainer');
+
+
+    // AUTO
+
+    const minimalDataAuto =
+        document.getElementById('minimalDataAuto');
+
+    const maxToleranceAuto =
+        document.getElementById('maxToleranceAuto');
+
+    const btnAutoAnalyze =
+        document.getElementById('btnAutoAnalyze');
+
+    const autoStatus =
+        document.getElementById('autoStatus');
+
+    const autoResultsContainer =
+        document.getElementById('autoResultsContainer');
+
+
+
+    // =========================================
+    // PASTE
+    // =========================================
+
+    btnPaste.addEventListener(
+        'click',
+        async () => {
+
+            try {
+
+                const text =
+                    await navigator.clipboard.readText();
+
+                dataInput.value = text;
+
+                updateAutoControl();
+
+            } catch (err) {
+
+                alert(
+                    'Gagal membaca clipboard. Silakan gunakan Ctrl+V atau Paste manual.'
+                );
+
+            }
+
         }
-    });
+    );
 
-    // Modulo 10 behavior (handles negative numbers correctly)
+
+
+    // =========================================
+    // MODULO 10
+    // =========================================
+
     function mod10(n) {
+
         return ((n % 10) + 10) % 10;
+
     }
 
-    // Circular distance between two digits (0-9)
+
+
+    // =========================================
+    // JARAK MELINGKAR 0 - 9
+    // =========================================
+
     function getDistance(a, b) {
-        const d = Math.abs(a - b);
-        return Math.min(d, 10 - d);
+
+        const d =
+            Math.abs(a - b);
+
+        return Math.min(
+            d,
+            10 - d
+        );
+
     }
 
-    // Generate possible mathematical formulas
+
+
+    // =========================================
+    // GENERATE FORMULA
+    // =========================================
+
     function generateFormulas() {
+
         const formulas = [];
-        
-        // 1. Constant Difference (Penambahan/Pengurangan Tetap)
-        for (let k = 0; k < 10; k++) {
+
+
+        // -----------------------------------------
+        // 1. CONSTANT +k
+        // -----------------------------------------
+
+        for (
+            let k = 0;
+            k < 10;
+            k++
+        ) {
+
             formulas.push({
+
                 name: `+${k}`,
-                fn: (history) => mod10(history[history.length - 1] + k)
+
+                fn: (history) =>
+                    mod10(
+                        history[history.length - 1] + k
+                    )
+
             });
+
         }
 
-        // 2. Fibonacci (Jumlah 2 angka sebelumnya)
+
+
+        // -----------------------------------------
+        // 2. FIBONACCI x+y
+        // -----------------------------------------
+
         formulas.push({
+
             name: `Fibo (x+y)`,
+
             fn: (history) => {
-                if (history.length < 2) return history[0];
-                return mod10(history[history.length - 1] + history[history.length - 2]);
+
+                if (history.length < 2) {
+
+                    return history[0];
+
+                }
+
+                return mod10(
+                    history[history.length - 1] +
+                    history[history.length - 2]
+                );
+
             }
+
         });
-        
-        // 3. Fibonacci Selisih (x-y)
+
+
+
+        // -----------------------------------------
+        // 3. FIBONACCI x-y
+        // -----------------------------------------
+
         formulas.push({
+
             name: `Fibo (x-y)`,
+
             fn: (history) => {
-                if (history.length < 2) return history[0];
-                return mod10(history[history.length - 1] - history[history.length - 2]);
+
+                if (history.length < 2) {
+
+                    return history[0];
+
+                }
+
+                return mod10(
+                    history[history.length - 1] -
+                    history[history.length - 2]
+                );
+
             }
+
         });
 
-        // 4. Perkalian (x * k)
-        for (let k = 0; k < 10; k++) {
+
+
+        // -----------------------------------------
+        // 4. PERKALIAN
+        // -----------------------------------------
+
+        for (
+            let k = 0;
+            k < 10;
+            k++
+        ) {
+
             formulas.push({
+
                 name: `*${k}`,
-                fn: (history) => mod10(history[history.length - 1] * k)
+
+                fn: (history) =>
+                    mod10(
+                        history[history.length - 1] * k
+                    )
+
             });
+
         }
 
-        // 5. Affine (x * k + b) -> Kombinasi kali dan tambah
-        for (let k = 1; k < 10; k++) {
-            for (let b = 1; b < 10; b++) {
+
+
+        // -----------------------------------------
+        // 5. AFFINE
+        // x*k+b
+        // -----------------------------------------
+
+        for (
+            let k = 1;
+            k < 10;
+            k++
+        ) {
+
+            for (
+                let b = 1;
+                b < 10;
+                b++
+            ) {
+
                 formulas.push({
+
                     name: `*${k}+${b}`,
-                    fn: (history) => mod10((history[history.length - 1] * k) + b)
+
+                    fn: (history) =>
+                        mod10(
+                            (
+                                history[history.length - 1] * k
+                            ) + b
+                        )
+
                 });
+
             }
+
         }
-        
-        // 6. Rata-rata 2 angka sebelumnya dibulatkan
+
+
+
+        // -----------------------------------------
+        // 6. RATA-RATA
+        // -----------------------------------------
+
         formulas.push({
+
             name: `Avg(x,y)`,
+
             fn: (history) => {
-                if (history.length < 2) return history[0];
-                return mod10(Math.round((history[history.length - 1] + history[history.length - 2]) / 2));
+
+                if (history.length < 2) {
+
+                    return history[0];
+
+                }
+
+                return mod10(
+                    Math.round(
+                        (
+                            history[history.length - 1] +
+                            history[history.length - 2]
+                        ) / 2
+                    )
+                );
+
             }
+
         });
+
 
         return formulas;
+
     }
 
-    // Analyze a single sequence (array of digits)
-    function analyzeSequence(sequence, tolerance) {
-        const formulas = generateFormulas();
-        const validPredictions = []; // Will store next digits predicted by formulas that have 100% history match
 
-        formulas.forEach(formula => {
-            let isValid = true;
-            
-            // Check history
-            // We need at least index 1 (or 2 for fibo) to start checking
-            for (let i = 1; i < sequence.length; i++) {
-                const historySlice = sequence.slice(0, i);
-                const predicted = formula.fn(historySlice);
-                const actual = sequence[i];
-                
-                if (getDistance(predicted, actual) > tolerance) {
-                    isValid = false;
-                    break;
+
+    // =========================================
+    // ANALYZE SEQUENCE
+    // =========================================
+
+    function analyzeSequence(
+        sequence,
+        tolerance
+    ) {
+
+        const formulas =
+            generateFormulas();
+
+        const validPredictions = [];
+
+
+        formulas.forEach(
+            formula => {
+
+                let isValid = true;
+
+
+                // -----------------------------------------
+                // CHECK HISTORY
+                // -----------------------------------------
+
+                for (
+                    let i = 1;
+                    i < sequence.length;
+                    i++
+                ) {
+
+                    const historySlice =
+                        sequence.slice(0, i);
+
+                    const predicted =
+                        formula.fn(historySlice);
+
+                    const actual =
+                        sequence[i];
+
+
+                    if (
+                        getDistance(
+                            predicted,
+                            actual
+                        ) > tolerance
+                    ) {
+
+                        isValid = false;
+
+                        break;
+
+                    }
+
                 }
-            }
 
-            if (isValid) {
-                // If it perfectly matches history (within tolerance), predict the next one
-                const nextPrediction = formula.fn(sequence);
-                validPredictions.push(nextPrediction);
-            }
-        });
 
-        // Count frequencies of the predicted digits
+                // -----------------------------------------
+                // VALID
+                // -----------------------------------------
+
+                if (isValid) {
+
+                    const nextPrediction =
+                        formula.fn(sequence);
+
+                    validPredictions.push(
+                        nextPrediction
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        // =========================================
+        // HITUNG FREKUENSI
+        // =========================================
+
         const counts = {};
-        for (let i = 0; i < 10; i++) counts[i] = 0;
-        validPredictions.forEach(pred => counts[pred]++);
 
-        // Group by frequency: { "5": [4], "2": [1, 2, 8], ... }
-        const freqGroups = {};
-        for (let i = 0; i < 10; i++) {
-            const c = counts[i];
-            if (!freqGroups[c]) freqGroups[c] = [];
-            freqGroups[c].push(i);
+        for (
+            let i = 0;
+            i < 10;
+            i++
+        ) {
+
+            counts[i] = 0;
+
         }
 
-        // Sort frequencies descending
-        const sortedFrequencies = Object.keys(freqGroups).map(Number).sort((a, b) => b - a);
 
-        // Build the formatted output string (e.g., 45-467-128-90)
+        validPredictions.forEach(
+            pred => {
+
+                counts[pred]++;
+
+            }
+        );
+
+
+
+        // =========================================
+        // GROUP FREQUENCY
+        // =========================================
+
+        const freqGroups = {};
+
+
+        for (
+            let i = 0;
+            i < 10;
+            i++
+        ) {
+
+            const c =
+                counts[i];
+
+            if (!freqGroups[c]) {
+
+                freqGroups[c] = [];
+
+            }
+
+            freqGroups[c].push(i);
+
+        }
+
+
+
+        // =========================================
+        // SORT FREQUENCY TERBESAR
+        // =========================================
+
+        const sortedFrequencies =
+            Object.keys(freqGroups)
+                .map(Number)
+                .sort(
+                    (a, b) => b - a
+                );
+
+
+
+        // =========================================
+        // FORMAT HASIL
+        // =========================================
+
         let resultParts = [];
-        sortedFrequencies.forEach(freq => {
-            const digits = freqGroups[freq].join('');
-            if (digits) resultParts.push(digits);
-        });
 
-        const resultString = resultParts.join('-');
-        
-        // Find total valid formulas to display
-        const totalValidFormulas = validPredictions.length;
+
+        sortedFrequencies.forEach(
+            freq => {
+
+                const digits =
+                    freqGroups[freq].join('');
+
+                if (digits) {
+
+                    resultParts.push(
+                        digits
+                    );
+
+                }
+
+            }
+        );
+
+
+        const resultString =
+            resultParts.join('-');
+
+
+        const totalValidFormulas =
+            validPredictions.length;
+
 
         return {
+
             resultString,
+
             totalValidFormulas
+
         };
+
     }
 
-    btnProcess.addEventListener('click', () => {
-        // Reset Error
-        errorBox.classList.add('hidden');
-        errorBox.textContent = '';
-        
-        const rawText = dataInput.value.trim();
-        const tolerance = parseInt(toleranceInput.value, 10);
 
-        if (!rawText) {
-            errorBox.textContent = 'Harap masukkan data deret terlebih dahulu.';
-            errorBox.classList.remove('hidden');
-            return;
-        }
 
-        if (isNaN(tolerance) || tolerance < 0 || tolerance > 4) {
-            errorBox.textContent = 'Toleransi harus berupa angka antara 0 hingga 4.';
-            errorBox.classList.remove('hidden');
-            return;
-        }
+    // =========================================
+    // PARSE DATA
+    // =========================================
 
-        // Parse data
-        // Mengganti semua karakter selain angka menjadi spasi, lalu split
-        const tokens = rawText.replace(/[^0-9]/g, ' ').split(/\s+/).filter(Boolean);
-        
-        if (tokens.length < 3) {
-            errorBox.textContent = 'Minimal masukkan 3 kelompok data (misal: 1234, 5678, 9012).';
-            errorBox.classList.remove('hidden');
-            return;
-        }
+    function parseSequenceData(rawText) {
+
+        const tokens =
+            rawText
+                .replace(/[^0-9]/g, ' ')
+                .split(/\s+/)
+                .filter(Boolean);
+
 
         const ribuan = [];
         const ratusan = [];
         const puluhan = [];
         const satuan = [];
 
-        // Validasi dan ekstraksi
-        for (let i = 0; i < tokens.length; i++) {
-            let t = tokens[i];
-            // Pad left with zero if less than 4 digits (as per standard approach, though usually we expect exact 4)
-            while (t.length < 4) t = '0' + t;
-            
-            // If it's more than 4, grab the last 4
-            if (t.length > 4) t = t.slice(-4);
 
-            ribuan.push(parseInt(t[0], 10));
-            ratusan.push(parseInt(t[1], 10));
-            puluhan.push(parseInt(t[2], 10));
-            satuan.push(parseInt(t[3], 10));
+        for (
+            let i = 0;
+            i < tokens.length;
+            i++
+        ) {
+
+            let t =
+                tokens[i];
+
+
+            // Kurang dari 4 digit
+            while (
+                t.length < 4
+            ) {
+
+                t =
+                    '0' + t;
+
+            }
+
+
+            // Lebih dari 4 digit
+            if (
+                t.length > 4
+            ) {
+
+                t =
+                    t.slice(-4);
+
+            }
+
+
+            ribuan.push(
+                parseInt(t[0], 10)
+            );
+
+            ratusan.push(
+                parseInt(t[1], 10)
+            );
+
+            puluhan.push(
+                parseInt(t[2], 10)
+            );
+
+            satuan.push(
+                parseInt(t[3], 10)
+            );
+
         }
 
-        // Proses analisa tiap posisi
-        const resRib = analyzeSequence(ribuan, tolerance);
-        const resRat = analyzeSequence(ratusan, tolerance);
-        const resPul = analyzeSequence(puluhan, tolerance);
-        const resSat = analyzeSequence(satuan, tolerance);
 
-        // Tampilkan hasil
-        document.getElementById('resRibuan').textContent = resRib.resultString;
-        document.getElementById('detRibuan').textContent = `Dari ${resRib.totalValidFormulas} rumus valid`;
-        
-        document.getElementById('resRatusan').textContent = resRat.resultString;
-        document.getElementById('detRatusan').textContent = `Dari ${resRat.totalValidFormulas} rumus valid`;
-        
-        document.getElementById('resPuluhan').textContent = resPul.resultString;
-        document.getElementById('detPuluhan').textContent = `Dari ${resPul.totalValidFormulas} rumus valid`;
-        
-        document.getElementById('resSatuan').textContent = resSat.resultString;
-        document.getElementById('detSatuan').textContent = `Dari ${resSat.totalValidFormulas} rumus valid`;
+        return {
 
-        resultsContainer.classList.remove('hidden');
-    });
+            tokens,
+            ribuan,
+            ratusan,
+            puluhan,
+            satuan
+
+        };
+
+    }
+
+
+
+    // =========================================
+    // MANUAL ANALISIS
+    // =========================================
+
+    btnProcess.addEventListener(
+        'click',
+        () => {
+
+            errorBox.classList.add(
+                'hidden'
+            );
+
+            errorBox.textContent = '';
+
+
+            const rawText =
+                dataInput.value.trim();
+
+
+            const tolerance =
+                parseInt(
+                    toleranceInput.value,
+                    10
+                );
+
+
+            // -----------------------------------------
+            // VALIDASI DATA
+            // -----------------------------------------
+
+            if (!rawText) {
+
+                errorBox.textContent =
+                    'Harap masukkan data deret terlebih dahulu.';
+
+                errorBox.classList.remove(
+                    'hidden'
+                );
+
+                return;
+
+            }
+
+
+            // -----------------------------------------
+            // VALIDASI TOLERANSI
+            // -----------------------------------------
+
+            if (
+                isNaN(tolerance) ||
+                tolerance < 0 ||
+                tolerance > 4
+            ) {
+
+                errorBox.textContent =
+                    'Toleransi harus berupa angka antara 0 hingga 4.';
+
+                errorBox.classList.remove(
+                    'hidden'
+                );
+
+                return;
+
+            }
+
+
+            const parsed =
+                parseSequenceData(
+                    rawText
+                );
+
+
+            if (
+                parsed.tokens.length < 3
+            ) {
+
+                errorBox.textContent =
+                    'Minimal masukkan 3 kelompok data (misal: 1234, 5678, 9012).';
+
+                errorBox.classList.remove(
+                    'hidden'
+                );
+
+                return;
+
+            }
+
+
+
+            // -----------------------------------------
+            // ANALISIS
+            // -----------------------------------------
+
+            const resRib =
+                analyzeSequence(
+                    parsed.ribuan,
+                    tolerance
+                );
+
+            const resRat =
+                analyzeSequence(
+                    parsed.ratusan,
+                    tolerance
+                );
+
+            const resPul =
+                analyzeSequence(
+                    parsed.puluhan,
+                    tolerance
+                );
+
+            const resSat =
+                analyzeSequence(
+                    parsed.satuan,
+                    tolerance
+                );
+
+
+
+            // -----------------------------------------
+            // TAMPILKAN
+            // -----------------------------------------
+
+            document.getElementById(
+                'resRibuan'
+            ).textContent =
+                resRib.resultString;
+
+            document.getElementById(
+                'detRibuan'
+            ).textContent =
+                `Dari ${resRib.totalValidFormulas} rumus valid`;
+
+
+            document.getElementById(
+                'resRatusan'
+            ).textContent =
+                resRat.resultString;
+
+            document.getElementById(
+                'detRatusan'
+            ).textContent =
+                `Dari ${resRat.totalValidFormulas} rumus valid`;
+
+
+            document.getElementById(
+                'resPuluhan'
+            ).textContent =
+                resPul.resultString;
+
+            document.getElementById(
+                'detPuluhan'
+            ).textContent =
+                `Dari ${resPul.totalValidFormulas} rumus valid`;
+
+
+            document.getElementById(
+                'resSatuan'
+            ).textContent =
+                resSat.resultString;
+
+            document.getElementById(
+                'detSatuan'
+            ).textContent =
+                `Dari ${resSat.totalValidFormulas} rumus valid`;
+
+
+            resultsContainer.classList.remove(
+                'hidden'
+            );
+
+        }
+    );
+
+
+
+    // =========================================
+    // AUTO CONTROL
+    // =========================================
+
+    function updateAutoControl() {
+
+        const rawText =
+            dataInput.value.trim();
+
+
+        if (!rawText) {
+
+            btnAutoAnalyze.disabled = true;
+
+            return;
+
+        }
+
+
+        const parsed =
+            parseSequenceData(
+                rawText
+            );
+
+
+        const actualCount =
+            parsed.tokens.length;
+
+
+        if (
+            actualCount < 3
+        ) {
+
+            btnAutoAnalyze.disabled = true;
+
+            return;
+
+        }
+
+
+        btnAutoAnalyze.disabled = false;
+
+
+        // Maksimum data yang tersedia,
+        // dibatasi 14
+
+        const maxData =
+            Math.min(
+                14,
+                actualCount
+            );
+
+
+        minimalDataAuto.max =
+            maxData;
+
+
+        let currentMin =
+            parseInt(
+                minimalDataAuto.value,
+                10
+            );
+
+
+        // Jika default 7 masih memungkinkan
+        // tetap 7.
+
+        // Jika data kurang dari 7,
+        // otomatis mengikuti jumlah data.
+
+        if (
+            currentMin > maxData
+        ) {
+
+            currentMin =
+                maxData;
+
+            minimalDataAuto.value =
+                maxData;
+
+        }
+
+
+        if (
+            currentMin < 3
+        ) {
+
+            currentMin = 3;
+
+            minimalDataAuto.value =
+                3;
+
+        }
+
+    }
+
+
+
+    // =========================================
+    // AUTO ANALYZE SATU POSISI
+    // =========================================
+
+    function autoAnalyzePosition(
+        sequence,
+        minimalData,
+        maxToleranceAutoValue
+    ) {
+
+        /*
+         * Mulai dari jumlah data terbesar.
+         *
+         * Contoh:
+         * Data tersedia = 14
+         * Minimal = 7
+         *
+         * Urutan:
+         * 14 data
+         * 13 data
+         * 12 data
+         * ...
+         * 7 data
+         *
+         * Setiap jumlah data:
+         * tolerance 0
+         * tolerance 1
+         * tolerance 2
+         * dst.
+         */
+
+
+        const actualCount =
+            Math.min(
+                14,
+                sequence.length
+            );
+
+
+        const minimum =
+            Math.max(
+                3,
+                Math.min(
+                    minimalData,
+                    actualCount
+                )
+            );
+
+
+        // -----------------------------------------
+        // DATA TERBESAR -> MINIMAL
+        // -----------------------------------------
+
+        for (
+            let dataCount = actualCount;
+            dataCount >= minimum;
+            dataCount--
+        ) {
+
+
+            /*
+             * Ambil DATA TERAKHIR sebanyak dataCount.
+             *
+             * Contoh 14 -> 13:
+             *
+             * 5027
+             * 3928
+             *  ...
+             * 1890
+             *
+             * Data pertama dibuang.
+             */
+
+
+            const startIndex =
+                sequence.length -
+                dataCount;
+
+
+            const currentSequence =
+                sequence.slice(
+                    startIndex
+                );
+
+
+            // -----------------------------------------
+            // TOLERANSI 0 -> MAX
+            // -----------------------------------------
+
+            for (
+                let tolerance = 0;
+                tolerance <= maxToleranceAutoValue;
+                tolerance++
+            ) {
+
+
+                const result =
+                    analyzeSequence(
+                        currentSequence,
+                        tolerance
+                    );
+
+
+                /*
+                 * Begitu ada minimal 1 rumus valid,
+                 * langsung berhenti.
+                 */
+
+                if (
+                    result.totalValidFormulas > 0
+                ) {
+
+                    return {
+
+                        found: true,
+
+                        resultString:
+                            result.resultString,
+
+                        dataCount,
+
+                        tolerance,
+
+                        totalValidFormulas:
+                            result.totalValidFormulas
+
+                    };
+
+                }
+
+            }
+
+        }
+
+
+
+        // -----------------------------------------
+        // TIDAK ADA FORMULA VALID
+        // -----------------------------------------
+
+        return {
+
+            found: false,
+
+            resultString:
+                '0123456789',
+
+            dataCount: 0,
+
+            tolerance: 0,
+
+            totalValidFormulas: 0
+
+        };
+
+    }
+
+
+
+    // =========================================
+    // TAMPILKAN HASIL AUTO
+    // =========================================
+
+    function displayAutoResult(
+        elementId,
+        detailId,
+        result
+    ) {
+
+        document.getElementById(
+            elementId
+        ).textContent =
+            result.resultString;
+
+
+        if (result.found) {
+
+            document.getElementById(
+                detailId
+            ).textContent =
+                `Data: ${result.dataCount} | ` +
+                `Toleransi: ${result.tolerance} | ` +
+                `Rumus valid: ${result.totalValidFormulas}`;
+
+        } else {
+
+            document.getElementById(
+                detailId
+            ).textContent =
+                'Tidak ditemukan rumus valid sampai batas yang ditentukan';
+
+        }
+
+    }
+
+
+
+    // =========================================
+    // AUTO ANALISIS
+    // =========================================
+
+    btnAutoAnalyze.addEventListener(
+        'click',
+        () => {
+
+            const rawText =
+                dataInput.value.trim();
+
+
+            // -----------------------------------------
+            // VALIDASI DATA
+            // -----------------------------------------
+
+            if (!rawText) {
+
+                autoStatus.textContent =
+                    'Masukkan data deret terlebih dahulu.';
+
+                return;
+
+            }
+
+
+            const parsed =
+                parseSequenceData(
+                    rawText
+                );
+
+
+            const actualCount =
+                parsed.tokens.length;
+
+
+            if (
+                actualCount < 3
+            ) {
+
+                autoStatus.textContent =
+                    'Minimal diperlukan 3 data untuk Auto Analisis.';
+
+                return;
+
+            }
+
+
+            // -----------------------------------------
+            // AMBIL MINIMAL DATA
+            // -----------------------------------------
+
+            let minimalData =
+                parseInt(
+                    minimalDataAuto.value,
+                    10
+                );
+
+
+            if (
+                isNaN(minimalData) ||
+                minimalData < 3 ||
+                minimalData > 14
+            ) {
+
+                autoStatus.textContent =
+                    'Minimal Data harus antara 3 sampai 14.';
+
+                return;
+
+            }
+
+
+            // Tidak boleh melebihi data yang tersedia
+
+            if (
+                minimalData > actualCount
+            ) {
+
+                minimalData =
+                    actualCount;
+
+                minimalDataAuto.value =
+                    actualCount;
+
+            }
+
+
+
+            // -----------------------------------------
+            // AMBIL MAKSIMAL TOLERANSI
+            // -----------------------------------------
+
+            let maxToleranceAutoValue =
+                parseInt(
+                    maxToleranceAuto.value,
+                    10
+                );
+
+
+            if (
+                isNaN(maxToleranceAutoValue) ||
+                maxToleranceAutoValue < 0 ||
+                maxToleranceAutoValue > 4
+            ) {
+
+                autoStatus.textContent =
+                    'Maksimal Toleransi harus antara 0 sampai 4.';
+
+                return;
+
+            }
+
+
+
+            // -----------------------------------------
+            // LOCK
+            // -----------------------------------------
+
+            btnAutoAnalyze.disabled = true;
+
+            btnProcess.disabled = true;
+
+            minimalDataAuto.disabled = true;
+
+            maxToleranceAuto.disabled = true;
+
+
+            autoResultsContainer.classList.remove(
+                'hidden'
+            );
+
+
+            autoStatus.textContent =
+                'Sedang melakukan Auto Analisis...';
+
+
+
+            // -----------------------------------------
+            // ANALISIS 4 POSISI
+            // -----------------------------------------
+
+            const autoRibuan =
+                autoAnalyzePosition(
+                    parsed.ribuan,
+                    minimalData,
+                    maxToleranceAutoValue
+                );
+
+
+            const autoRatusan =
+                autoAnalyzePosition(
+                    parsed.ratusan,
+                    minimalData,
+                    maxToleranceAutoValue
+                );
+
+
+            const autoPuluhan =
+                autoAnalyzePosition(
+                    parsed.puluhan,
+                    minimalData,
+                    maxToleranceAutoValue
+                );
+
+
+            const autoSatuan =
+                autoAnalyzePosition(
+                    parsed.satuan,
+                    minimalData,
+                    maxToleranceAutoValue
+                );
+
+
+
+            // -----------------------------------------
+            // TAMPILKAN HASIL
+            // -----------------------------------------
+
+            displayAutoResult(
+                'autoResRibuan',
+                'autoDetRibuan',
+                autoRibuan
+            );
+
+
+            displayAutoResult(
+                'autoResRatusan',
+                'autoDetRatusan',
+                autoRatusan
+            );
+
+
+            displayAutoResult(
+                'autoResPuluhan',
+                'autoDetPuluhan',
+                autoPuluhan
+            );
+
+
+            displayAutoResult(
+                'autoResSatuan',
+                'autoDetSatuan',
+                autoSatuan
+            );
+
+
+            autoStatus.textContent =
+                `Auto Analisis selesai. ` +
+                `Data tersedia: ${actualCount}. ` +
+                `Minimal Data: ${minimalData}. ` +
+                `Maksimal Toleransi: ${maxToleranceAutoValue}.`;
+
+
+            // -----------------------------------------
+            // UNLOCK
+            // -----------------------------------------
+
+            btnAutoAnalyze.disabled = false;
+
+            btnProcess.disabled = false;
+
+            minimalDataAuto.disabled = false;
+
+            maxToleranceAuto.disabled = false;
+
+        }
+    );
+
+
+
+    // =========================================
+    // UPDATE SAAT DATA BERUBAH
+    // =========================================
+
+    dataInput.addEventListener(
+        'input',
+        () => {
+
+            updateAutoControl();
+
+        }
+    );
+
+
+    // =========================================
+    // UPDATE SAAT MINIMAL DATA BERUBAH
+    // =========================================
+
+    minimalDataAuto.addEventListener(
+        'change',
+        () => {
+
+            let value =
+                parseInt(
+                    minimalDataAuto.value,
+                    10
+                );
+
+
+            if (
+                isNaN(value)
+            ) {
+
+                value = 7;
+
+            }
+
+
+            if (
+                value < 3
+            ) {
+
+                value = 3;
+
+            }
+
+
+            if (
+                value > 14
+            ) {
+
+                value = 14;
+
+            }
+
+
+            const parsed =
+                parseSequenceData(
+                    dataInput.value.trim()
+                );
+
+
+            if (
+                parsed.tokens.length >= 3 &&
+                value > parsed.tokens.length
+            ) {
+
+                value =
+                    parsed.tokens.length;
+
+            }
+
+
+            minimalDataAuto.value =
+                value;
+
+        }
+    );
+
+
+
+    // =========================================
+    // UPDATE SAAT MAKSIMAL TOLERANSI BERUBAH
+    // =========================================
+
+    maxToleranceAuto.addEventListener(
+        'change',
+        () => {
+
+            let value =
+                parseInt(
+                    maxToleranceAuto.value,
+                    10
+                );
+
+
+            if (
+                isNaN(value)
+            ) {
+
+                value = 3;
+
+            }
+
+
+            if (
+                value < 0
+            ) {
+
+                value = 0;
+
+            }
+
+
+            if (
+                value > 4
+            ) {
+
+                value = 4;
+
+            }
+
+
+            maxToleranceAuto.value =
+                value;
+
+        }
+    );
+
+
+
+    // =========================================
+    // INIT
+    // =========================================
+
+    updateAutoControl();
 
 </script>
+
 </body>
 </html>
