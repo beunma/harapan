@@ -27,7 +27,7 @@ details{border-top:1px solid var(--line);padding:9px 0}summary{cursor:pointer;co
 .lesson-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}.lesson{padding:14px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}.lesson h3{color:var(--cyan);margin:0 0 6px}.lesson p{margin:6px 0}
 .qcard{border:1px solid var(--line);background:var(--panel2);padding:16px;border-radius:12px;margin:12px 0}.choice{display:block;padding:9px;border:1px solid var(--line);border-radius:8px;margin:7px 0;cursor:pointer}.choice input{width:auto;margin-right:8px}
 .feedback{margin-top:10px;padding:10px;border-radius:8px;border:1px solid var(--line)}.colblock{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:var(--panel2)}.footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
-.dt td{text-align:center;padding:5px 10px;font:12.5px ui-monospace,Consolas,monospace}.dt td:first-child{color:var(--muted);text-align:left}\n.digit-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:7px 0 10px}.digit-count{font-weight:700;color:var(--green)}.conclusion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.conclusion-item{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:15px}.conclusion-item h3{margin:0 0 8px;color:var(--cyan)}.conclusion-answer{font-size:clamp(20px,3vw,30px);font-weight:850;color:var(--green);overflow-wrap:anywhere}.conclusion-item button{margin-top:8px}
+.dt td{text-align:center;padding:5px 10px;font:12.5px ui-monospace,Consolas,monospace}.dt td:first-child{color:var(--muted);text-align:left}
 @media(max-width:650px){main{padding:10px}.panel{padding:14px}header{padding:17px}.row>*{flex:1}.tab{flex:1}}
 @media print{header,.tabs,.no-print,button{display:none!important}body{background:#fff;color:#111}.panel{box-shadow:none;break-inside:avoid;background:#fff;color:#111;border-color:#aaa}}
 </style>
@@ -41,10 +41,8 @@ details{border-top:1px solid var(--line);padding:9px 0}summary{cursor:pointer;co
 
 <section id="lab" class="tabpage">
 <div class="panel"><h2>01 · Masukkan soal</h2>
-<p class="muted">Pisahkan suku dengan koma, spasi, titik koma, atau baris baru. Gunakan <b>?</b> untuk suku yang dicari — boleh di akhir, di tengah, atau lebih dari satu. Didukung: angka (desimal pakai titik), negatif, pecahan <code>3/4</code>, huruf <code>A–Z</code>, hari/bulan (<code>Senin, Rabu</code> / <code>Jan, Mar</code>), gabungan <code>AB, CD</code>, <code>A1, B4</code>, <code>2-5, 3-7</code>, dan deret huruf-angka bergantian <code>A, 1, B, 2</code>. Untuk mode khusus, masukkan data 4 digit seperti <code>2341, 0024, 0000</code>; aplikasi akan menganalisis ribuan, ratusan, puluhan, dan satuan secara terpisah.</p>
-<textarea id="seq" spellcheck="false" placeholder="Contoh biasa: 2, 6, 12, 20, 30, ?  |  Mode 4 digit: 1234, 0000, 3455"></textarea>
-<div class="digit-tools"><span>Jumlah data 4 digit: <strong id="digitCount" class="digit-count">0 Data</strong></span><span class="muted">Mode 4 digit aktif otomatis bila semua data berisi tepat 4 angka.</span></div>
-<div class="row" style="margin-top:0"><button id="pasteBtn" type="button">Paste dari Clipboard</button></div>
+<p class="muted">Pisahkan suku dengan koma, spasi, titik koma, atau baris baru. Gunakan <b>?</b> untuk suku yang dicari — boleh di akhir, di tengah, atau lebih dari satu. Didukung: angka (desimal pakai titik), negatif, pecahan <code>3/4</code>, huruf <code>A–Z</code>, hari/bulan (<code>Senin, Rabu</code> / <code>Jan, Mar</code>), gabungan <code>AB, CD</code>, <code>A1, B4</code>, <code>2-5, 3-7</code>, dan deret huruf-angka bergantian <code>A, 1, B, 2</code>.</p>
+<textarea id="seq" spellcheck="false" placeholder="Contoh: 2, 6, 12, 20, 30, ?"></textarea>
 <div class="row"><button class="primary" id="solve">ANALISIS MENYELURUH</button><select id="exSel" style="width:auto;max-width:280px"><option value="">— Pilih contoh soal —</option></select><button id="anomBtn">Cek suku janggal</button><button id="selfTestBtn">Uji mesin</button><button id="copyBtn">Salin laporan</button><button id="clearBtn">Reset</button></div>
 <div class="progress"><div class="bar" id="bar"></div></div><div id="status" class="status">Siap. Masukkan minimal 3 suku yang diketahui; 5–8 suku memberi bukti lebih kuat.</div><div id="selfTestResult" class="status hidden"></div></div>
 <div class="panel"><h2>02 · Pengaturan</h2><div class="grid">
@@ -551,112 +549,14 @@ function render(r,opts){
  box.innerHTML=h;
  lastReport="Soal: "+r.tokens.join(", ")+"\nJawaban: "+r.answers.map(a=>a.label+" = "+a.text).join("; ")+"\nKeyakinan: "+r.conf.level+"\n\n"+(r.cols.length?r.cols.map(c=>c.label+": "+c.res.groups[0].best.name+" — "+c.res.groups[0].best.formula).join("\n"):"");
 }
-function splitInputItems(text){
- return text.trim().split(/[\s,;]+/).filter(Boolean);
-}
-function updateDigitCount(){
- const items=splitInputItems($("seq").value);
- const valid=items.length>0&&items.every(x=>/^\d{4}$/.test(x));
- $("digitCount").textContent=items.length+" Data"+(items.length&&!valid?" · format biasa":"");
- $("digitCount").style.color=items.length&&valid?"var(--green)":"var(--muted)";
-}
-$("seq").addEventListener("input",updateDigitCount);
-$("pasteBtn").onclick=async()=>{
- try{
-  if(!navigator.clipboard||!navigator.clipboard.readText)throw new Error("Clipboard tidak diizinkan");
-  const pasted=await navigator.clipboard.readText();
-  if(!pasted)return;
-  $("seq").value=pasted;
-  updateDigitCount();
-  $("status").textContent="Data berhasil ditempel dari clipboard.";
- }catch(e){
-  $("status").textContent="Clipboard tidak dapat dibaca. Izinkan akses clipboard pada browser, atau tempelkan dengan Ctrl+V.";
-  $("seq").focus();
- }
-};
-function analyzeFourDigit(items,opts){
- if(items.length<3)return{error:"Mode 4 digit memerlukan minimal 3 data agar mesin dapat mencari pola. Tambahkan data lagi."};
- if(items.length>60)return{error:"Maksimal 60 data 4 digit."};
- if(!items.every(x=>/^\d{4}$/.test(x)))return{error:"Mode 4 digit hanya menerima setiap data tepat 4 angka, termasuk nol di depan (contoh 0024)."};
- const places=[
-  {key:"ribuan",label:"RIBUAN",pos:0},
-  {key:"ratusan",label:"RATUSAN",pos:1},
-  {key:"puluhan",label:"PULUHAN",pos:2},
-  {key:"satuan",label:"SATUAN",pos:3}
- ];
- const analyses=[];
- for(const place of places){
-  const seq=items.map(x=>x[place.pos]).join(", ");
-  const result=analyzeText(seq,opts);
-  if(result.error)return{error:"Deret "+place.label+" belum dapat dianalisis: "+result.error+" Data "+place.label.toLowerCase()+": "+seq};
-  analyses.push({...place,seq,result});
- }
- return{items,analyses};
-}
-function conclusionOneDigit(value){
- // Normalisasi hanya untuk KESIMPULAN; hasil analisis asli tetap tidak berubah.
- let raw=String(value??"").trim().replace(/−/g,"-");
- // Ambil ekspresi angka/pecahan pertama jika jawaban juga memuat teks tambahan.
- const match=raw.match(/[+-]?\d+(?:[.,]\d+)?(?:\s*\/\s*[+-]?\d+(?:[.,]\d+)?)?/);
- if(!match)return raw;
- const expr=match[0].replace(/,/g,".").replace(/\s/g,"");
- let n;
- if(expr.includes("/")){
-  const parts=expr.split("/");
-  const denominator=Number(parts[1]);
-  if(!Number.isFinite(denominator)||denominator===0)return raw;
-  n=Number(parts[0])/denominator;
- }else n=Number(expr);
- if(!Number.isFinite(n))return raw;
- // Untuk nilai negatif: ambil satuan bertanda, tambah 10, lalu bulatkan.
- const normalized=n<0?((n%10)+10)%10:n%10;
- // Math.round mengikuti contoh: 8.5 -> 9; 9.5 -> 10.
- const rounded=Math.round(normalized);
- return String(((rounded%10)+10)%10);
-}
-function renderFourDigit(bundle,opts){
- const box=$("results");box.classList.remove("hidden");
- const conclusion=bundle.analyses.map(a=>{
-  const answer=a.result.answers.map(x=>conclusionOneDigit(x.text)).join(" | ");
-  return {label:a.label,answer,full:a.result.answers.map(x=>x.label+" = "+x.text).join("\n")};
- });
- let html='<div class="panel"><h2>KESIMPULAN</h2><p class="muted">Jawaban kesimpulan dinormalisasi menjadi satu digit (pecahan dihitung, nilai negatif disesuaikan, lalu dibulatkan). Hasil asli tetap tersedia pada bagian <b>03 · Hasil</b> di setiap deret.</p><div class="conclusion-grid">';
- conclusion.forEach((c,i)=>{
-  html+='<div class="conclusion-item"><h3>JAWABAN DERET '+esc(c.label)+'</h3><div class="conclusion-answer">'+esc(c.answer)+'</div><div class="muted">'+esc(c.full)+'</div><button type="button" data-copy-conclusion="'+i+'">Salin jawaban</button></div>';
- });
- html+='</div></div>';
- let combinedReport="ANALISIS DATA 4 DIGIT\nData: "+bundle.items.join(", ")+"\n\nKESIMPULAN\n"+conclusion.map(c=>c.label+": "+c.answer+"\n"+c.full).join("\n\n")+"\n\n";
- bundle.analyses.forEach((a,i)=>{
-  render(a.result,opts);
-  html+='<div class="digit-result" data-digit-result="'+i+'"><div class="panel"><h2>DERET '+esc(a.label)+' — HASIL ANALISIS</h2><p class="muted">Data yang dianalisis: '+esc(a.seq)+'</p></div>'+$("results").innerHTML+'</div>';
-  combinedReport+="\nDERET "+a.label+"\nData: "+a.seq+"\nJawaban: "+a.result.answers.map(x=>x.label+" = "+x.text).join("; ")+"\nKeyakinan: "+a.result.conf.level+"\n\n"+(a.result.cols.length?a.result.cols.map(c=>c.label+": "+c.res.groups[0].best.name+" — "+c.res.groups[0].best.formula).join("\n"):"")+"\n";
- });
- box.innerHTML=html;
- box.querySelectorAll("[data-copy-conclusion]").forEach(btn=>{
-  btn.onclick=async()=>{
-   const c=conclusion[+btn.dataset.copyConclusion];
-   try{await navigator.clipboard.writeText("JAWABAN DERET "+c.label+"\n"+c.answer+"\n"+c.full);$("status").textContent="Jawaban deret "+c.label.toLowerCase()+" disalin."}
-   catch(e){$("status").textContent="Clipboard tidak tersedia. Salin jawaban dari kotak KESIMPULAN secara manual."}
-  };
- });
- lastReport=combinedReport;
-}
 function analyze(){
  const text=$("seq").value;$("results").classList.add("hidden");$("bar").style.width="20%";$("status").textContent="Menganalisis… (menyusun dan memvalidasi keluarga pola)";
- setTimeout(()=>{const t0=performance.now();const opts={K:+$("optK").value,lvl:+$("optLvl").value},items=splitInputItems(text);
-  const isFourDigit=items.length>0&&items.every(x=>/^\d{4}$/.test(x));
-  if(isFourDigit){
-   const bundle=analyzeFourDigit(items,opts);
-   if(bundle.error){$("status").textContent=bundle.error;$("bar").style.width="0%";return}
-   try{renderFourDigit(bundle,{top:+$("optTop").value})}catch(e){console.error(e);$("status").textContent="Gagal menampilkan hasil: "+e.message;return}
-  }else{
-   const r=analyzeText(text,opts);
-   if(r.error){$("status").textContent=r.error;$("bar").style.width="0%";return}
-   try{render(r,{top:+$("optTop").value})}catch(e){console.error(e);$("status").textContent="Gagal menampilkan hasil: "+e.message;return}
-  }
+ setTimeout(()=>{const t0=performance.now();const r=analyzeText(text,{K:+$("optK").value,lvl:+$("optLvl").value});
+  if(r.error){$("status").textContent=r.error;$("bar").style.width="0%";return}
+  try{render(r,{top:+$("optTop").value})}catch(e){console.error(e);$("status").textContent="Gagal menampilkan hasil: "+e.message;return}
   $("bar").style.width="100%";$("status").textContent="Selesai dalam "+Math.round(performance.now()-t0)+" ms. Bandingkan juga jawaban alternatif — jangan hanya mengambil peringkat pertama."},30);
 }
-$("solve").onclick=analyze;$("clearBtn").onclick=()=>{$("seq").value="";updateDigitCount();$("results").classList.add("hidden");$("status").textContent="Direset.";$("bar").style.width="0"};
+$("solve").onclick=analyze;$("clearBtn").onclick=()=>{$("seq").value="";$("results").classList.add("hidden");$("status").textContent="Direset.";$("bar").style.width="0"};
 $("copyBtn").onclick=async()=>{if(!lastReport)return alert("Jalankan analisis dulu.");try{await navigator.clipboard.writeText(lastReport);$("status").textContent="Laporan disalin."}catch(e){alert("Clipboard tidak tersedia.")}};
 $("anomBtn").onclick=()=>{
  const toks=tokenize($("seq").value),vals=toks.map(t=>/^[-+]?\d+(\.\d+)?$/.test(t)?+t:NaN);
@@ -714,6 +614,6 @@ $("selfTestBtn").onclick=()=>{const el=$("selfTestResult");el.classList.remove("
  setTimeout(()=>{const r=runTests();let g=0,gt=0;const gfail=[];for(const lv of["easy","medium","hard"])for(let k=0;k<12;k++){const q=makeQ(lv,k%4===3);const res=analyzeText(q.terms.join(", "),{K:1});const got=res.error?"ERR":res.answers.map(a=>a.text).join("|");gt++;if(got.toLowerCase()===q.ans.toLowerCase())g++;else gfail.push(q.terms.join(", ")+" → mesin: "+got+" | kunci: "+q.ans)}
   el.className="status "+(r.pass===r.total&&g===gt?"good":"warn");
   el.textContent="UJI REGRESI TETAP: "+r.pass+"/"+r.total+" lulus ("+r.ms+" ms)\n"+r.rows.filter(x=>!x.ok).map(x=>"GAGAL: "+x.inp+" → "+x.got+" (harusnya "+x.exp+")").join("\n")+"\n\nUJI SOAL ACAK: "+g+"/"+gt+" cocok dengan kunci generator"+(gfail.length?"\n"+gfail.join("\n"):"")+"\n\nCatatan: lulus uji ini bukan bukti bahwa semua jenis soal tercakup — hanya bahwa jenis yang diuji ditangani benar.";},40)};
-showProgress();updateDigitCount();
+showProgress();
 </script>
 </body></html>
