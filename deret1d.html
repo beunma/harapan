@@ -2,240 +2,618 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PROSPEK APEX — Laboratorium Deret Psikotes</title>
+<title>PROSPEK APEX 4.0 — Mesin Deret Psikotes Universal</title>
 <style>
 :root{--bg:#08111f;--panel:#101d30;--panel2:#0b1728;--line:#29415f;--text:#e9f2ff;--muted:#a9bbd2;--cyan:#56d5ff;--green:#69e6ad;--amber:#ffd278;--red:#ff8796;--purple:#b8a4ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#122b48 0,#08111f 52%);color:var(--text);font:15px/1.6 system-ui,Segoe UI,Arial,sans-serif}body.light{--bg:#f2f6fb;--panel:#fff;--panel2:#f5f8fc;--line:#d5e0ed;--text:#17283d;--muted:#536981;--cyan:#087da8;--green:#087c50;--amber:#925b00;--red:#b42335;--purple:#6748c7;background:#f2f6fb}
-header{padding:25px max(18px,calc((100vw - 1450px)/2));border-bottom:1px solid var(--line);background:#07101ddd;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}body.light header{background:#e9f1fa}
-.brand h1{margin:0;color:var(--cyan);font-size:clamp(23px,3vw,34px);letter-spacing:.4px}.brand p{margin:5px 0 0;color:var(--muted);max-width:850px}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#122b48 0,#08111f 52%);color:var(--text);font:15px/1.6 system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+body.light{--bg:#f2f6fb;--panel:#fff;--panel2:#f5f8fc;--line:#d5e0ed;--text:#17283d;--muted:#536981;--cyan:#087da8;--green:#087c50;--amber:#925b00;--red:#b42335;--purple:#6748c7;background:#f2f6fb}
+header{padding:22px max(18px,calc((100vw - 1450px)/2));border-bottom:1px solid var(--line);background:#07101ddd;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}body.light header{background:#e9f1fa}
+.brand h1{margin:0;color:var(--cyan);font-size:clamp(22px,3vw,32px)}.brand p{margin:5px 0 0;color:var(--muted);max-width:900px;font-size:13px}.header-actions{display:flex;gap:8px;flex-wrap:wrap}
 main{max-width:1450px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:10px 14px;border-radius:10px;cursor:pointer}.tab.active{background:#123a58;color:#fff;border-color:var(--cyan)}body.light .tab.active{background:#d7f2ff;color:#07506b}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 12px 30px #0002}.panel h2{margin:0 0 13px;font-size:18px;color:var(--cyan)}h3{font-size:15px;margin:15px 0 8px}.muted,.note{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}textarea,input,select{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px;padding:11px;font:inherit}textarea{min-height:105px;resize:vertical;line-height:1.7}button{border:1px solid var(--line);background:#1b3049;color:var(--text);padding:10px 14px;border-radius:9px;cursor:pointer;font:600 13px system-ui}body.light button{background:#eaf1f8}button:hover{filter:brightness(1.13)}button.primary{background:#087ea8;border-color:#16a8d5;color:white}button.goodbtn{background:#126445;color:white}button:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.row>*{flex:0 0 auto}.status{padding:11px 13px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-top:12px;white-space:pre-wrap;color:var(--muted)}.progress{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .2s}
-.answerbox{padding:22px;border-radius:14px;background:linear-gradient(120deg,#0b344a,#22204b);border:1px solid #3a6c91;text-align:center;margin:12px 0}body.light .answerbox{background:linear-gradient(120deg,#e2f8ff,#eeeaff)}.answer{font-size:clamp(32px,5vw,48px);font-weight:850;color:var(--green);overflow-wrap:anywhere}.tag{display:inline-block;border:1px solid var(--line);background:var(--panel2);border-radius:99px;padding:4px 9px;font-size:11px;margin:3px;color:var(--cyan)}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:14px 0}.stat{border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:12px}.stat strong{display:block;font-size:22px;color:var(--cyan)}.stat span{font-size:11px;color:var(--muted)}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px;font-size:12px}th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}th{color:var(--cyan);position:sticky;top:0;background:var(--panel)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:12px;font:12px/1.7 ui-monospace,Consolas,monospace}details{border-top:1px solid var(--line);padding:10px 0}summary{cursor:pointer;color:var(--cyan);font-weight:650}.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.hidden{display:none!important}.callout{border-left:3px solid var(--amber);padding:10px 13px;background:var(--panel2);color:var(--muted);font-size:13px}.lesson-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.lesson{padding:14px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}.lesson h3{color:var(--cyan);margin:0 0 6px}.lesson p{margin:6px 0}.qcard{border:1px solid var(--line);background:var(--panel2);padding:16px;border-radius:12px;margin:12px 0}.choice{display:block;padding:9px;border:1px solid var(--line);border-radius:8px;margin:7px 0;cursor:pointer}.choice input{width:auto;margin-right:8px}.feedback{margin-top:10px;padding:10px;border-radius:8px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 12px 30px #0002}.panel h2{margin:0 0 13px;font-size:18px;color:var(--cyan)}h3{font-size:15px;margin:15px 0 8px}
+.muted,.note{color:var(--muted);font-size:12.5px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+textarea,input,select{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px;padding:11px;font:inherit}textarea{min-height:100px;resize:vertical;line-height:1.7;font-family:ui-monospace,Consolas,monospace}
+button{border:1px solid var(--line);background:#1b3049;color:var(--text);padding:10px 14px;border-radius:9px;cursor:pointer;font:600 13px system-ui}body.light button{background:#eaf1f8}button:hover{filter:brightness(1.13)}button.primary{background:#087ea8;border-color:#16a8d5;color:#fff}button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.row>*{flex:0 0 auto}.status{padding:11px 13px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-top:12px;white-space:pre-wrap;color:var(--muted)}
+.progress{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .2s}
+.answerbox{padding:22px;border-radius:14px;background:linear-gradient(120deg,#0b344a,#22204b);border:1px solid #3a6c91;text-align:center;margin:12px 0}body.light .answerbox{background:linear-gradient(120deg,#e2f8ff,#eeeaff)}
+.answer{font-size:clamp(30px,5vw,46px);font-weight:850;color:var(--green);overflow-wrap:anywhere}.answer small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+.tag{display:inline-block;border:1px solid var(--line);background:var(--panel2);border-radius:99px;padding:4px 10px;font-size:11.5px;margin:3px;color:var(--cyan)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:14px 0}.stat{border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:12px}.stat strong{display:block;font-size:21px;color:var(--cyan)}.stat span{font-size:11px;color:var(--muted)}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:680px;font-size:12.5px}th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{color:var(--cyan)}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:12px;font:12.5px/1.75 ui-monospace,Consolas,monospace;margin:8px 0}
+details{border-top:1px solid var(--line);padding:9px 0}summary{cursor:pointer;color:var(--cyan);font-weight:650}
+.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.hidden{display:none!important}.callout{border-left:3px solid var(--amber);padding:10px 13px;background:var(--panel2);color:var(--muted);font-size:13px;margin:10px 0}
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}.lesson{padding:14px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}.lesson h3{color:var(--cyan);margin:0 0 6px}.lesson p{margin:6px 0}
+.qcard{border:1px solid var(--line);background:var(--panel2);padding:16px;border-radius:12px;margin:12px 0}.choice{display:block;padding:9px;border:1px solid var(--line);border-radius:8px;margin:7px 0;cursor:pointer}.choice input{width:auto;margin-right:8px}
+.feedback{margin-top:10px;padding:10px;border-radius:8px;border:1px solid var(--line)}.colblock{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:var(--panel2)}.footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+.dt td{text-align:center;padding:5px 10px;font:12.5px ui-monospace,Consolas,monospace}.dt td:first-child{color:var(--muted);text-align:left}
 @media(max-width:650px){main{padding:10px}.panel{padding:14px}header{padding:17px}.row>*{flex:1}.tab{flex:1}}
-@media print{header,.tabs,.no-print,button{display:none!important}body{background:white;color:#111}.panel{box-shadow:none;break-inside:avoid;background:white;color:#111;border-color:#aaa}#results{display:block!important}}
+@media print{header,.tabs,.no-print,button{display:none!important}body{background:#fff;color:#111}.panel{box-shadow:none;break-inside:avoid;background:#fff;color:#111;border-color:#aaa}}
 </style>
 </head>
 <body>
-<header><div class="brand"><h1>PROSPEK APEX</h1><p>Laboratorium pengajaran deret psikotes — analisis pola, bukti langkah demi langkah, latihan adaptif, simulasi waktu, dan laporan kemajuan. Berjalan lokal di browser.</p></div><div class="header-actions"><button id="themeBtn">☼ Tema</button><button id="printBtn">Cetak / PDF</button></div></header>
+<header><div class="brand"><h1>PROSPEK APEX 4.0</h1><p>Mesin deret psikotes universal — angka, huruf, hari/bulan, pecahan, campuran huruf-angka, suku kosong di mana saja, tabel/matriks, deteksi suku janggal. Semua dihitung lokal di browser; setiap jawaban disertai bukti yang bisa diperiksa.</p></div><div class="header-actions"><button id="themeBtn">☼ Tema</button><button id="printBtn">Cetak / PDF</button></div></header>
 <main>
 <div class="tabs no-print">
-<button class="tab active" data-tab="lab">🔬 Laboratorium</button><button class="tab" data-tab="learn">📚 Akademi Pola</button><button class="tab" data-tab="practice">🎯 Latihan Adaptif</button><button class="tab" data-tab="exam">⏱ Simulasi Tes</button><button class="tab" data-tab="progressTab">📈 Kemajuan</button><button class="tab" data-tab="teacher">🧑‍🏫 Studio Guru</button>
+<button class="tab active" data-tab="lab">🔬 Pemecah Deret</button><button class="tab" data-tab="tabel">▦ Tabel / Matriks</button><button class="tab" data-tab="learn">📚 Akademi Pola</button><button class="tab" data-tab="practice">🎯 Latihan Acak</button><button class="tab" data-tab="exam">⏱ Simulasi Tes</button><button class="tab" data-tab="progressTab">📈 Kemajuan</button><button class="tab" data-tab="teacher">🧑‍🏫 Studio Guru</button>
 </div>
-<section id="lab" class="tabpage">
-<div class="panel"><h2>01 · Masukkan deret</h2><p class="muted">Pisahkan suku dengan koma, spasi, titik koma, atau baris baru. Masukkan tanda ? di akhir bila diinginkan. Mendukung angka, desimal, pecahan seperti 3/2, dan huruf A–Z.</p>
-<textarea id="sequence" spellcheck="false" placeholder="Contoh: 2, 6, 12, 20, 30, ?"></textarea>
-<div class="row"><button class="primary" id="solve">ANALISIS MENYELURUH</button><button id="exampleBtn">Contoh: kuadrat</button><button id="altExample">Contoh: selang-seling</button><button id="letterExample">Contoh: huruf</button><button id="selfTestBtn">Uji mesin (tes acuan)</button><button id="clearBtn">Reset</button><button id="copyBtn">Salin laporan</button></div><div class="progress"><div class="bar" id="bar"></div></div><div id="status" class="status">Siap. Masukkan minimal 3 suku; 5–8 suku biasanya memberi lebih banyak bukti pola.</div><div id="selfTestResult" class="status hidden"></div></div>
-<div class="panel"><h2>02 · Pengaturan analisis</h2><div class="grid">
-<div class="field"><label>Kedalaman beda hingga</label><select id="depth"><option value="2">2 tingkat</option><option value="3">3 tingkat</option><option value="4">4 tingkat</option><option value="5">5 tingkat</option><option value="7" selected>7 tingkat</option></select></div>
-<div class="field"><label>Derajat polinomial maksimum</label><select id="poly"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option></select></div>
-<div class="field"><label>Toleransi validasi</label><select id="tol"><option value="0" selected>Eksak (0)</option><option value="0.01">0,01</option><option value="0.1">0,1</option><option value="1">1</option><option value="2">2</option></select></div>
-<div class="field"><label>Prioritas model</label><select id="occam"><option value="strict">Sederhana dahulu</option><option value="balanced">Seimbang</option><option value="explore" selected>Eksplorasi</option></select></div>
-<div class="field"><label>Jumlah peringkat</label><select id="topN"><option>10</option><option>25</option><option>50</option><option selected>100</option></select></div>
-<div class="field"><label>Interpretasi hasil</label><select id="numericMode"><option value="integer" selected>Utamakan bilangan bulat</option><option value="all">Izinkan desimal/pecahan</option></select></div>
-</div><p class="callout">Catatan ilmiah: beberapa aturan dapat menghasilkan suku berikutnya yang berbeda meskipun cocok dengan semua suku yang diberikan. Skor adalah alat bantu pemeringkatan, bukan probabilitas kebenaran. Gunakan konteks soal dan aturan paling sederhana yang menjelaskan data.</p></div>
-<section id="results" class="hidden">
-<div class="panel"><h2>03 · Hasil utama dan interpretasi</h2><div class="answerbox"><div class="muted">PREDIKSI MODEL PERINGKAT TERATAS</div><div class="answer" id="answer">—</div><div id="tags"></div></div><div id="explanation" class="status"></div><div class="stats"><div class="stat"><strong id="modelCount">0</strong><span>Model kandidat</span></div><div class="stat"><strong id="testedCount">0</strong><span>Model tervalidasi</span></div><div class="stat"><strong id="exactCount">0</strong><span>Model cocok pada seluruh titik uji</span></div><div class="stat"><strong id="consensus">—</strong><span>Konsensus nilai di peringkat atas</span></div></div></div>
-<div class="panel"><h2>04 · Peringkat hipotesis</h2><div class="tablewrap"><table><thead><tr><th>#</th><th>Prediksi</th><th>Model dan rumus</th><th>Validasi walk-forward</th><th>MAE</th><th>Kompleksitas</th><th>Skor</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
-<div class="panel"><h2>05 · Tabel beda hingga</h2><div id="structure"></div></div>
-<div class="panel"><h2>06 · Jejak perhitungan dan penjelasan mengajar</h2><div id="formulaDetails"></div></div>
-<div class="panel"><h2>07 · Diagnostik dan batas kepastian</h2><div id="diagnostics"></div></div></section>
-</section>
-<section id="learn" class="tabpage hidden">
-<div class="panel"><h2>Akademi Pola: urutan pemeriksaan yang sistematis</h2><p>Ajarkan peserta didik menguji pola dari yang paling sederhana ke yang lebih kompleks. Jangan langsung menebak operasi tanpa memeriksa selisih.</p><div class="lesson-grid">
-<div class="lesson"><h3>1. Selisih tetap</h3><p>Kurangi setiap suku dengan suku sebelumnya.</p><pre>4, 7, 10, 13, ?\nΔ: 3, 3, 3, 3\nBerikutnya: 16</pre><p class="muted">Kata kunci: tambah/kurang bilangan yang sama.</p></div>
-<div class="lesson"><h3>2. Rasio tetap</h3><pre>3, 6, 12, 24, ?\n×2, ×2, ×2\nBerikutnya: 48</pre><p>Periksa pembagian suku berurutan; hati-hati jika ada nol atau tanda negatif.</p></div>
-<div class="lesson"><h3>3. Beda kedua</h3><pre>2, 6, 12, 20, 30, ?\nΔ¹: 4, 6, 8, 10\nΔ²: 2, 2, 2\nΔ berikut: 12\nJawaban: 42</pre><p>Selisih pertama belum tetap, tetapi selisih keduanya tetap.</p></div>
-<div class="lesson"><h3>4. Dua jalur selang-seling</h3><pre>2, 10, 4, 20, 6, 30, ?\nJalur ganjil: 2, 4, 6, 8\nJalur genap: 10, 20, 30\nJawaban: 8</pre><p>Pisahkan suku posisi ganjil dan genap; masing-masing dapat memiliki aturan sendiri.</p></div>
-<div class="lesson"><h3>5. Pola bertingkat</h3><p>Jika selisih kedua tidak tetap, cari selisih ketiga. Namun semakin tinggi tingkatnya, semakin sedikit bukti dan semakin mudah terjadi kecocokan kebetulan.</p></div>
-<div class="lesson"><h3>6. Pola khusus</h3><p>Kenali kuadrat, kubik, bilangan segitiga, prima, Fibonacci, faktorial, pangkat, dan pola digit. Cocokkan beberapa suku sekaligus sebelum menyimpulkan.</p></div>
-<div class="lesson"><h3>7. Huruf</h3><pre>A, C, F, J, O, ?\nPosisi: 1, 3, 6, 10, 15\nSelisih: 2, 3, 4, 5\nBerikutnya: 21 = U</pre><p>Konversi huruf ke posisi alfabet, lalu analisis pola numeriknya.</p></div>
-<div class="lesson"><h3>8. Uji jawaban</h3><p>Setelah menemukan dugaan, terapkan aturan pada seluruh suku. Jika satu suku tidak cocok, cari model lain. Pilih aturan yang paling wajar dan hemat asumsi.</p></div>
-</div></div>
-<div class="panel"><h2>Checklist peserta didik</h2><div id="checklist"><label class="choice"><input type="checkbox"> Saya hitung selisih pertama.</label><label class="choice"><input type="checkbox"> Saya memeriksa rasio atau perkalian.</label><label class="choice"><input type="checkbox"> Saya memeriksa beda kedua/ketiga bila perlu.</label><label class="choice"><input type="checkbox"> Saya mencoba jalur ganjil-genap.</label><label class="choice"><input type="checkbox"> Saya menguji pola khusus dan semua suku.</label><label class="choice"><input type="checkbox"> Saya dapat menjelaskan alasan, bukan hanya jawaban.</label></div></div>
-</section>
-<section id="practice" class="tabpage hidden"><div class="panel"><h2>Latihan adaptif</h2><p class="muted">Pilih tingkat dan jumlah soal. Jawaban serta pembahasan baru muncul setelah diperiksa.</p><div class="grid"><div class="field"><label>Tingkat</label><select id="practiceLevel"><option value="easy">Dasar</option><option value="medium" selected>Menengah</option><option value="hard">Menantang</option><option value="mixed">Campuran</option></select></div><div class="field"><label>Jumlah soal</label><select id="practiceCount"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div></div><div class="row"><button class="primary" id="startPractice">Buat set latihan</button><button id="checkPractice">Nilai jawaban</button><button id="newPractice">Set baru</button></div><div id="practiceArea"></div><div id="practiceResult" class="status hidden"></div></div></section>
-<section id="exam" class="tabpage hidden"><div class="panel"><h2>Simulasi tes berwaktu</h2><p>Mode ujian menyembunyikan pembahasan sampai dikumpulkan. Ini latihan strategi pengerjaan, bukan alat diagnosis psikologis.</p><div class="grid"><div class="field"><label>Durasi</label><select id="examMinutes"><option value="3">3 menit</option><option value="5" selected>5 menit</option><option value="10">10 menit</option><option value="15">15 menit</option></select></div><div class="field"><label>Jumlah soal</label><select id="examCount"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></div></div><div class="row"><button class="primary" id="startExam">Mulai simulasi</button><button id="submitExam" disabled>Kumpulkan jawaban</button></div><div class="answerbox"><div class="muted">SISA WAKTU</div><div class="answer" id="timer">05:00</div></div><div id="examArea"></div><div id="examResult" class="status hidden"></div></div></section>
-<section id="teacher" class="tabpage hidden">
-<div class="panel"><h2>Studio Guru · Rancang sesi pengajaran</h2><p class="muted">Buat kerangka pembelajaran yang dapat disesuaikan untuk kelas. Ini rancangan bantu, bukan pengganti penilaian guru.</p><div class="grid">
-<div class="field"><label>Fokus kompetensi</label><select id="lessonFocus"><option value="selisih">Selisih dan beda bertingkat</option><option value="rasio">Rasio dan perubahan multiplikatif</option><option value="selang">Pola selang-seling / dua jalur</option><option value="khusus">Pola khusus (kuadrat, prima, Fibonacci)</option><option value="huruf">Deret huruf dan posisi alfabet</option><option value="strategi">Strategi pemecahan masalah terpadu</option></select></div>
-<div class="field"><label>Durasi sesi</label><select id="lessonDuration"><option value="30">30 menit</option><option value="45" selected>45 menit</option><option value="60">60 menit</option><option value="90">90 menit</option></select></div>
-<div class="field"><label>Profil kelas</label><select id="lessonLevel"><option value="dasar">Dasar / baru belajar</option><option value="campuran" selected>Campuran</option><option value="mahir">Mahir / pengayaan</option></select></div></div><div class="row"><button class="primary" id="makeLesson">Susun rancangan sesi</button><button id="copyLesson">Salin rancangan</button></div><div id="lessonOutput" class="status">Pilih fokus dan tekan “Susun rancangan sesi”.</div></div>
-<div class="panel"><h2>Bank soal · Lembar kerja siap pakai</h2><p class="muted">Pilih topik, jumlah soal, lalu buat lembar kerja beserta kunci dan pembahasan. Soal berasal dari bank internal aplikasi; guru sebaiknya meninjau kesesuaian tingkat kesulitan sebelum dibagikan.</p><div class="grid"><div class="field"><label>Kesulitan</label><select id="worksheetLevel"><option value="easy">Dasar</option><option value="medium">Menengah</option><option value="hard">Menantang</option><option value="mixed" selected>Campuran</option></select></div><div class="field"><label>Jumlah soal</label><select id="worksheetCount"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div><div class="field"><label>Kunci jawaban</label><select id="worksheetKey"><option value="separate">Kunci terpisah di bagian akhir</option><option value="none">Tanpa kunci (untuk peserta)</option></select></div></div><div class="row"><button class="primary" id="makeWorksheet">Buat lembar kerja</button><button id="downloadWorksheet">Unduh TXT</button><button id="printWorksheet">Cetak lembar kerja</button></div><div id="worksheetOutput" class="status">Lembar kerja belum dibuat.</div></div>
-<div class="panel"><h2>Prinsip pengajaran yang disarankan</h2><div class="lesson-grid"><div class="lesson"><h3>Ajarkan proses, bukan tebakan</h3><p>Peserta didik menyebutkan hipotesis, menunjukkan bukti dari beberapa suku, lalu menguji apakah aturan konsisten.</p></div><div class="lesson"><h3>Gunakan kesalahan sebagai data</h3><p>Minta siswa mengelompokkan kesalahan: salah hitung, salah mengenali pola, terburu-buru, atau tidak memeriksa seluruh suku.</p></div><div class="lesson"><h3>Kurangi bantuan bertahap</h3><p>Mulai dari contoh berpikir keras oleh guru, lanjut petunjuk, lalu latihan mandiri tanpa petunjuk.</p></div><div class="lesson"><h3>Uji transfer</h3><p>Setelah latihan satu pola, berikan soal dengan tampilan berbeda agar siswa membuktikan pemahaman, bukan menghafal contoh.</p></div></div><p class="callout">Etika penggunaan AI: gunakan AI untuk mengusulkan penjelasan atau variasi soal, lalu verifikasi. Untuk soal deret yang kurang menentukan, mungkin ada lebih dari satu kelanjutan yang masuk akal. Jangan menyatakan skor aplikasi sebagai diagnosis IQ atau jaminan kelulusan.</p></div>
-</section>
-<section id="progressTab" class="tabpage hidden"><div class="panel"><h2>Dashboard kemajuan lokal</h2><p class="muted">Ringkasan disimpan di browser perangkat ini. Data tidak dikirim ke server. Menghapus data browser dapat menghapus riwayat.</p><div class="stats"><div class="stat"><strong id="attempts">0</strong><span>Sesi latihan/ujian</span></div><div class="stat"><strong id="accuracy">—</strong><span>Akurasi rata-rata</span></div><div class="stat"><strong id="bestScore">—</strong><span>Skor terbaik</span></div><div class="stat"><strong id="streak">0</strong><span>Jawaban benar beruntun terakhir</span></div></div><div id="history"></div><div class="row"><button id="exportProgress">Ekspor riwayat JSON</button><button id="clearProgress">Hapus riwayat lokal</button></div></div></section>
-<div class="footer">PROSPEK APEX 3.0 · Laboratorium belajar offline · Gunakan pembahasan untuk membangun strategi, bukan sekadar menghafal jawaban.</div>
-</main>
-<script>
-"use strict";
-const $=id=>document.getElementById(id);let lastReport="",practiceSet=[],examSet=[],timerId=null,secondsLeft=0,examStarted=false;
-const fmt=x=>{if(!Number.isFinite(x))return "—";if(Math.abs(x)<1e-10)return "0";if(Math.abs(x-Math.round(x))<1e-8)return String(Math.round(x));for(let d=2;d<=100;d++){let n=Math.round(x*d);if(Math.abs(n/d-x)<1e-8)return n+"/"+d;}return Number(x.toPrecision(9)).toString()};
-const same=(a,b,t=1e-8)=>Math.abs(a-b)<=t*Math.max(1,Math.abs(a),Math.abs(b));
-const diff=a=>a.slice(1).map((v,i)=>v-a[i]);
-function tokenize(s){return s.trim().replace(/[?？]/g,"").split(/[\s,;，、]+/).filter(Boolean)}
-function parse(s){if(/^[-+]?\d+\/\d+$/.test(s)){let [a,b]=s.split("/").map(Number);return b? a/b:null}if(/^[-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?$/i.test(s)){let n=Number(s);return Number.isFinite(n)?n:null}if(/^[a-z]$/i.test(s))return s.toUpperCase().charCodeAt(0)-65;return null}
-function diffs(a,depth=7){let out=[a.slice()];for(let i=0;i<depth&&out.at(-1).length>1;i++)out.push(diff(out.at(-1)));return out}
-function nextDiff(a,k){let lv=diffs(a,k);if(!lv[k].length||!lv[k].every(v=>same(v,lv[k][0])))return null;let z=lv.map(x=>x.slice());for(let j=k-1;j>=0;j--)z[j].push(z[j].at(-1)+z[j+1].at(-1));return z[0].at(-1)}
-function solveLinear(A,b){let n=b.length,M=A.map((r,i)=>r.slice().concat(b[i]));for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-11)return null;[M[c],M[p]]=[M[p],M[c]];let v=M[c][c];for(let j=c;j<=n;j++)M[c][j]/=v;for(let r=0;r<n;r++)if(r!==c){let f=M[r][c];for(let j=c;j<=n;j++)M[r][j]-=f*M[c][j]}}return M.map(r=>r[n])}
-function polyFit(a,d){if(a.length<=d)return null;let x=a.map((_,i)=>i-(a.length-1)),X=x.map(t=>Array.from({length:d+1},(_,k)=>t**k)),A=[],b=[];for(let i=0;i<=d;i++){A[i]=[];for(let j=0;j<=d;j++)A[i][j]=X.reduce((s,r)=>s+r[i]*r[j],0);b[i]=X.reduce((s,r,k)=>s+r[i]*a[k],0)}let co=solveLinear(A,b);if(!co)return null;let pred=t=>co.reduce((s,c,k)=>s+c*t**k,0),err=a.reduce((s,v,i)=>s+Math.abs(pred(x[i])-v),0);return err<1e-5*Math.max(1,a.reduce((s,v)=>s+Math.abs(v),0))?{co,next:pred(1),formula:co.map((c,i)=>fmt(c)+(i?"·x"+(i>1?"^"+i:""):"")).join(" + ")}:null}
-function isPrime(n){if(n<2||!Number.isInteger(n))return false;for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true}
-function modelsFor(a,opts){let out=[],add=(name,formula,next,c=1,explain="")=>{if(Number.isFinite(next)&&Math.abs(next)<1e15&&!out.some(m=>m.name===name&&same(m.next,next)))out.push({name,formula,next,c,explain})};let n=a.length,d=diff(a);
-if(a.every(v=>same(v,a[0])))add("Konstan","a(n)=c",a.at(-1),.3,"Semua suku sama.");
-if(d.length&&d.every(v=>same(v,d[0])))add("Aritmetika","a(n+1)=a(n)+d; d="+fmt(d[0]),a.at(-1)+d[0],.7,"Selisih pertama tetap.");
-if(a[0]!==0){let r=a[1]/a[0];if(a.slice(1).every((v,i)=>same(v,a[i]*r)))add("Geometri","a(n+1)=r·a(n); r="+fmt(r),a.at(-1)*r,1,"Rasio antar suku tetap.")}
-for(let k=2;k<=Math.min(Number(opts.depth),n-1);k++){let p=nextDiff(a,k);if(p!==null)add("Beda hingga tingkat "+k,"Δ^"+k+" a(n) konstan",p,1+k*.5,"Periksa tabel beda hingga.")}
-for(let k=1;k<=Math.min(Number(opts.poly),n-2);k++){let p=polyFit(a,k);if(p)add("Polinomial derajat "+k,p.formula,p.next,1+k*.8,"Model polinomial yang cocok dengan seluruh suku.")}
-if(n>=4){
-// Pecah deret menjadi jalur modulo; setiap jalur wajib punya sedikitnya 2 suku dan beda konstan.
-for(let period=2;period<=Math.min(5,Math.floor(n/2));period++){
- let streams=Array.from({length:period},()=>[]);
- a.forEach((v,i)=>streams[i%period].push(v));
- let steps=streams.map(stream=>{let ds=diff(stream);return stream.length>=2&&ds.length&&ds.every(v=>same(v,ds[0]))?ds[0]:null});
- if(steps.every(v=>v!==null)){
-  let lane=n%period, stream=streams[lane], next=stream[stream.length-1]+steps[lane];
-  add(period===2?"Dua subderet selang-seling":"Selang-seling periode "+period,"pisahkan menjadi "+period+" jalur; beda tiap jalur tetap",next,period===2?1.8:2.4,"Setiap jalur diuji secara terpisah; prediksi berasal dari jalur yang mendapat giliran berikutnya.");
- }
-}
-}
-let special=(fn,label,formula,c=1)=>{let seq=a.map((_,i)=>fn(i+1));if(seq.every((v,i)=>same(v,a[i])))add(label,formula,fn(n+1),c,"Pola khusus dikenali dan cocok dengan semua suku.")};
-special(i=>i*i,"Kuadrat sempurna","a(n)=n²",.8);special(i=>i*i*i,"Kubik","a(n)=n³",1.1);special(i=>i*(i+1)/2,"Bilangan segitiga","a(n)=n(n+1)/2",.9);
-// Rekurensi jumlah dua suku sebelumnya: menerima seed berbeda, tetapi memverifikasi semua suku.
-if(n>=3&&a.slice(2).every((v,i)=>same(v,a[i]+a[i+1]))){
- let next=a[n-1]+a[n-2];
- add("Rekurensi jumlah dua suku (Fibonacci umum)","a(n)=a(n−1)+a(n−2); semua suku teramati memenuhi aturan",next,1.0,"Diverifikasi pada setiap suku mulai suku ketiga; seed tidak harus 1,1.");
-}
-let primes=[];for(let i=2;primes.length<n+1&&i<100000;i++)if(isPrime(i))primes.push(i);if(a.every((v,i)=>same(v,primes[i])))add("Bilangan prima","urutan bilangan prima",primes[n],1.1);
-let fact=[1];for(let i=1;i<=18;i++)fact.push(fact.at(-1)*i);for(let st=0;st+n<fact.length;st++)if(a.every((v,i)=>same(v,fact[st+i])))add("Faktorial","urutan n!",fact[st+n],1.3);
-if(a.every(v=>Number.isInteger(v)&&v>=0&&v<=999999)){let sums=a.map(v=>String(v).split("").reduce((s,c)=>s+Number(c),0)),ds=diff(sums);if(ds.length&&ds.every(v=>same(v,ds[0])))add("Jumlah digit berselisih tetap","jumlah digit tiap suku lalu beda tetap",sums.at(-1)+ds[0],2.4,"Hipotesis jumlah digit; verifikasi apakah memang wajar dalam konteks soal.")}
-// Pola selisih berulang: mendeteksi siklus pendek pada beda pertama (contoh +1,+2,+1,+2,...).
-let maxPeriod=Math.min(4,Math.floor(d.length/2));
-for(let period=2;period<=maxPeriod;period++){
- if(d.length>=period*2 && d.every((v,i)=>i<period||same(v,d[i%period]))){
-  let next=a.at(-1)+d[d.length%period];
-  add("Siklus selisih periode "+period,"beda pertama berulang: "+d.slice(0,period).map(fmt).join(", "),next,1.5+period*.35,"Siklus beda teruji pada semua beda yang tersedia; tetap bandingkan dengan aturan alternatif.");
- }
-}
-// Dua jalur geometri: pola ganjil dan genap dapat memiliki rasio tetap yang berbeda.
-if(n>=5){
- for(let period=2;period<=3;period++){
-  let streams=Array.from({length:period},()=>[]);a.forEach((v,i)=>streams[i%period].push(v));
-  let ratios=streams.map(st=>{if(st.length<2||st.some((v,i)=>i>0&&same(v,0)))return null;let r=st[1]/st[0];return st.slice(1).every((v,i)=>same(v,st[i]*r))?r:null});
-  if(ratios.every(r=>r!==null)){
-   let lane=n%period,st=streams[lane];add(period===2?"Dua subderet geometri":"Subderet geometri periode "+period,"pisahkan jalur; rasio tiap jalur tetap: "+ratios.map(fmt).join(", "),st.at(-1)*ratios[lane],2.0+period*.4,"Setiap jalur diuji dengan rasio tetap; perlu cukup suku untuk membedakan hipotesis.");
-  }
- }
-}
-// Kuadrat/kubik dengan konstanta tetap, sering muncul sebagai n²±c atau n³±c.
-for(let c=-30;c<=30;c++){
- if(a.every((v,i)=>same(v,(i+1)*(i+1)+c)))add("Kuadrat dengan offset","a(n)=n²"+(c>=0?"+":"")+c,(n+1)*(n+1)+c,1.2,"Kuadrat bergeser dengan offset konstan; indeks dimulai dari n=1.");
- if(a.every((v,i)=>same(v,(i+1)**3+c)))add("Kubik dengan offset","a(n)=n³"+(c>=0?"+":"")+c,(n+1)**3+c,1.6,"Kubik bergeser dengan offset konstan; indeks dimulai dari n=1.");
-}
-// Bilangan prima dengan offset konstan.
-if(a.every(Number.isInteger)){
- let primes=[];for(let i=2;primes.length<n+1&&i<100000;i++)if(isPrime(i))primes.push(i);
- for(let off=-30;off<=30;off++)if(a.every((v,i)=>same(v,primes[i]+off)))add("Bilangan prima dengan offset","p(n)+("+off+")",primes[n]+off,1.7,"Urutan prima bergeser dengan konstanta; indeks mengikuti urutan prima standar.");
-}
-if(opts.numericMode==="integer")out=out.filter(m=>Math.abs(m.next-Math.round(m.next))<1e-8);
-return out}
-function validate(m,a,opts){let checks=[],start=Math.max(2,Number(opts.minTrain||3));for(let i=start;i<a.length;i++){let prefix=a.slice(0,i),ms=modelsFor(prefix,{...opts,depth:Math.min(3,opts.depth),poly:Math.min(3,opts.poly)}),found=ms.find(x=>x.name===m.name);if(found){let e=Math.abs(found.next-a[i]);checks.push({index:i+1,actual:a[i],pred:found.next,error:e,ok:e<=opts.tol})}}let correct=checks.filter(c=>c.ok).length,mae=checks.length?checks.reduce((s,c)=>s+c.error,0)/checks.length:Infinity,rate=checks.length?correct/checks.length:0,pen=(opts.occam==="strict"?4:opts.occam==="balanced"?2:0.7)*m.c,score=checks.length?100*rate+Math.min(8,checks.length*2)-Math.log1p(mae)*2-pen:-10-pen;return {...m,checks,correct,tested:checks.length,rate,mae,score,complexity:m.c,allExact:checks.length>0&&correct===checks.length}}
-function analyze(){let raw=tokenize($("sequence").value);$("results").classList.add("hidden");$("bar").style.width="0%";if(raw.length<3){$("status").textContent="Masukkan minimal 3 suku.";return}if(raw.length>100){$("status").textContent="Maksimal 100 suku untuk menjaga kestabilan perhitungan.";return}let a=raw.map(parse);if(a.some(v=>v===null)){ $("status").textContent="Token tidak valid. Gunakan angka, pecahan, atau huruf A–Z satu per suku.";return}let opts={depth:Number($("depth").value),poly:Number($("poly").value),tol:Number($("tol").value),occam:$("occam").value,topN:Number($("topN").value),numericMode:$("numericMode").value};$("bar").style.width="30%";$("status").textContent="Membangun dan memvalidasi keluarga pola...";setTimeout(()=>{try{let ms=modelsFor(a,opts).map(m=>validate(m,a,opts)).sort((x,y)=>y.score-x.score||x.complexity-y.complexity);render(a,ms,opts);$("bar").style.width="100%";$("status").textContent="Analisis selesai: "+ms.length+" model kandidat. Bandingkan beberapa hipotesis, jangan hanya mengambil peringkat pertama."}catch(e){console.error("PROSPEK APEX analysis error",e);$("status").textContent="Analisis gagal: "+(e&&e.message?e.message:String(e))+". Coba muat ulang halaman; jika berulang, simpan pesan ini untuk pemeriksaan.";$("bar").style.width="0%"}},30)}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function render(a,ms,o){$("results").classList.remove("hidden");$("modelCount").textContent=ms.length;$("testedCount").textContent=ms.filter(m=>m.tested).length;$("exactCount").textContent=ms.filter(m=>m.allExact).length;let best=ms[0];if(!best){$("answer").textContent="Belum ditemukan";$("explanation").textContent="Tidak ada model dalam keluarga yang diuji. Periksa input atau gunakan penalaran manual.";["ranking","formulaDetails","diagnostics"].forEach(id=>$(id).innerHTML="");$("structure").innerHTML=diffs(a,Number(o.depth)).map((v,i)=>`<details><summary>Beda tingkat ${i}</summary><pre>${v.map(fmt).join(", ")}</pre></details>`).join("");return}
-$("answer").textContent=fmt(best.next);$("tags").innerHTML=[`Model: ${best.name}`,`Skor: ${best.score.toFixed(1)}`,`Validasi: ${best.correct}/${best.tested}`,best.allExact?"Seluruh titik uji cocok":"Bukti historis terbatas"].map(s=>`<span class="tag">${esc(s)}</span>`).join("");
-let groups={};ms.slice(0,10).forEach(m=>groups[fmt(m.next)]=(groups[fmt(m.next)]||0)+1);let cons=Object.entries(groups).sort((a,b)=>b[1]-a[1])[0];$("consensus").textContent=cons?cons[0]+" ("+cons[1]+"/"+Math.min(10,ms.length)+")":"—";
-$("explanation").textContent=`Hipotesis teratas: ${best.name}\nRumus/aturan: ${best.formula}\nSuku berikutnya menurut model: ${fmt(best.next)}\nValidasi walk-forward: ${best.correct}/${best.tested} cocok dengan toleransi ${fmt(o.tol)}.\nMAE: ${Number.isFinite(best.mae)?fmt(best.mae):"belum tersedia"}\n\nCara mengajar: minta peserta menjelaskan operasi dari satu suku ke suku berikutnya, tunjukkan bukti pada seluruh data, lalu bandingkan model alternatif. Skor tidak sama dengan probabilitas benar.`;
-$("ranking").innerHTML=ms.slice(0,Number(o.topN)).map((m,i)=>`<tr><td>${i+1}</td><td><b>${fmt(m.next)}</b></td><td><b>${esc(m.name)}</b><div class="muted">${esc(m.formula)}</div></td><td>${m.correct}/${m.tested} · ${(100*m.rate).toFixed(0)}% ${m.allExact?'<span class="good">✓</span>':""}</td><td>${Number.isFinite(m.mae)?fmt(m.mae):"—"}</td><td>${m.complexity.toFixed(2)}</td><td>${m.score.toFixed(2)}</td></tr>`).join("");
-$("structure").innerHTML=diffs(a,Math.min(Number(o.depth),a.length-1)).map((v,i)=>`<details ${i===0?"open":""}><summary>Tingkat ${i} ${i===0?"(deret asli)":"(beda ke-"+i+")"}</summary><pre>${v.map(fmt).join("    ")}</pre></details>`).join("");
-$("formulaDetails").innerHTML=ms.slice(0,Math.min(20,Number(o.topN))).map((m,i)=>`<details ${i===0?"open":""}><summary>#${i+1} · ${esc(m.name)} → ${fmt(m.next)}</summary><pre>Aturan: ${esc(m.formula)}\nPrediksi: ${fmt(m.next)}\nKompleksitas relatif: ${m.complexity}\nValidasi: ${m.correct}/${m.tested}\nRincian titik uji:\n${m.checks.map(c=>`Suku ${c.index}: prediksi ${fmt(c.pred)}, aktual ${fmt(c.actual)}, galat ${fmt(c.error)} — ${c.ok?"cocok":"tidak cocok"}`).join("\n")||"Belum cukup data untuk validasi."}</pre></details>`).join("");
-$("diagnostics").innerHTML=`<div class="stats"><div class="stat"><strong>${a.length}</strong><span>Jumlah suku input</span></div><div class="stat"><strong>${fmt(Math.min(...a))}</strong><span>Nilai minimum</span></div><div class="stat"><strong>${fmt(Math.max(...a))}</strong><span>Nilai maksimum</span></div><div class="stat"><strong>${new Set(ms.map(m=>fmt(m.next))).size}</strong><span>Nilai prediksi berbeda</span></div></div><p>Deret: ${a.map(fmt).join(", ")}</p><p>Beda pertama: ${diff(a).map(fmt).join(", ")||"—"}</p><p class="callout">Keterbatasan: mesin ini memakai keluarga pola terpilih, bukan seluruh kemungkinan aturan. Tidak ditemukannya model bukan berarti soal tidak punya jawaban; ditemukannya model juga tidak membuktikan jawaban unik.</p>`;
-lastReport=$("explanation").textContent+"\n\nPERINGKAT\n"+ms.map((m,i)=>`${i+1}. ${fmt(m.next)} | ${m.name} | ${m.correct}/${m.tested} | ${m.score.toFixed(2)}`).join("\n")}
-$("solve").onclick=analyze;$("exampleBtn").onclick=()=>{$("sequence").value="2, 6, 12, 20, 30, 42";analyze()};$("altExample").onclick=()=>{$("sequence").value="2, 10, 4, 20, 6, 30";analyze()};$("letterExample").onclick=()=>{$("sequence").value="A, C, F, J, O";analyze()};$("clearBtn").onclick=()=>{$("sequence").value="";$("results").classList.add("hidden");$("status").textContent="Input direset."; $("bar").style.width="0"};$("copyBtn").onclick=async()=>{if(!lastReport)return alert("Jalankan analisis terlebih dahulu.");try{await navigator.clipboard.writeText(lastReport);$("status").textContent="Laporan disalin."}catch(e){alert("Clipboard tidak tersedia pada browser ini.")}};$("themeBtn").onclick=()=>document.body.classList.toggle("light");$("printBtn").onclick=()=>window.print();
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".tabpage").forEach(x=>x.classList.toggle("hidden",x.id!==b.dataset.tab));if(b.dataset.tab==="progressTab")showProgress()});
-const bank=[
-{q:"3, 7, 11, 15, ?",a:["18","19","20","21"],k:1,why:"Selisihnya +4 secara konsisten: 15+4=19.",l:"easy"},
-{q:"2, 6, 12, 20, 30, ?",a:["40","41","42","44"],k:2,why:"Selisih 4,6,8,10; selisih kedua tetap +2, jadi beda berikut 12 dan jawaban 42.",l:"medium"},
-{q:"5, 10, 20, 40, ?",a:["60","70","80","100"],k:2,why:"Setiap suku dikali 2; 40×2=80.",l:"easy"},
-{q:"1, 1, 2, 3, 5, 8, ?",a:["11","12","13","15"],k:2,why:"Fibonacci: setiap suku adalah jumlah dua suku sebelumnya; 5+8=13.",l:"medium"},
-{q:"2, 10, 4, 20, 6, 30, ?",a:["7","8","12","40"],k:1,why:"Pisahkan posisi ganjil: 2,4,6,8; posisi genap: 10,20,30.",l:"medium"},
-{q:"1, 4, 9, 16, 25, ?",a:["30","35","36","49"],k:2,why:"Kuadrat 1²,2²,3²,4²,5²; berikutnya 6²=36.",l:"easy"},
-{q:"2, 3, 5, 7, 11, ?",a:["12","13","15","17"],k:1,why:"Bilangan prima berurutan; setelah 11 adalah 13.",l:"medium"},
-{q:"A, C, F, J, O, ?",a:["S","T","U","V"],k:2,why:"Posisi alfabet 1,3,6,10,15; tambah 2,3,4,5 lalu +6 menjadi 21 = U.",l:"medium"},
-{q:"2, 5, 10, 17, 26, ?",a:["35","36","37","38"],k:2,why:"Beda 3,5,7,9; beda berikut 11 sehingga 26+11=37.",l:"hard"},
-{q:"81, 27, 9, 3, ?",a:["0","1","1.5","-3"],k:1,why:"Setiap suku dibagi 3; 3÷3=1.",l:"easy"},
-{q:"1, 8, 27, 64, ?",a:["100","121","125","216"],k:2,why:"Kubik 1³,2³,3³,4³; berikutnya 5³=125.",l:"medium"},
-{q:"3, 6, 11, 18, 27, ?",a:["36","38","40","42"],k:1,why:"Beda 3,5,7,9; berikutnya +11, hasil 38.",l:"hard"},
-{q:"7, 14, 12, 24, 22, 44, ?",a:["40","42","46","48"],k:1,why:"Operasi bergantian ×2, −2: 7→14→12→24→22→44→42.",l:"hard"},
-{q:"1, 2, 6, 24, 120, ?",a:["600","620","720","840"],k:2,why:"Faktorial: 1!,2!,3!,4!,5!; berikutnya 6!=720.",l:"hard"},
-{q:"4, 9, 16, 25, 36, ?",a:["42","45","49","64"],k:2,why:"Kuadrat 2²,3²,4²,5²,6²; berikutnya 7²=49.",l:"medium"},
-{q:"10, 13, 19, 28, 40, ?",a:["52","55","56","58"],k:1,why:"Beda 3,6,9,12; berikutnya +15 sehingga 55.",l:"hard"},
-{q:"1, 3, 6, 10, 15, ?",a:["20","21","22","24"],k:1,why:"Bilangan segitiga; tambah 2,3,4,5 lalu +6, hasil 21.",l:"medium"},
-{q:"64, 32, 16, 8, ?",a:["2","4","6","0"],k:1,why:"Setiap suku dibagi 2; berikutnya 4.",l:"easy"},
-{q:"2, 4, 8, 14, 22, ?",a:["30","32","34","36"],k:1,why:"Beda 2,4,6,8; berikutnya +10 sehingga 32.",l:"hard"},
-{q:"Z, X, U, Q, L, ?",a:["F","G","H","I"],k:0,why:"Posisi alfabet 26,24,21,17,12; selisih −2,−3,−4,−5; berikut −6 menjadi 6 = F.",l:"hard"},
-{q:"6, 11, 18, 27, 38, ?",a:["49","50","51","52"],k:2,why:"Beda 5,7,9,11; beda berikut 13, sehingga 38+13=51.",l:"medium"},
-{q:"100, 90, 81, 73, 66, ?",a:["58","59","60","61"],k:2,why:"Beda −10,−9,−8,−7; berikutnya −6, jadi 66−6=60.",l:"hard"},
-{q:"1, 4, 13, 40, 121, ?",a:["242","363","364","366"],k:2,why:"Setiap suku dikali 3 lalu ditambah 1: 121×3+1=364.",l:"hard"},
-{q:"9, 16, 25, 36, 49, ?",a:["56","60","64","81"],k:2,why:"Kuadrat 3²,4²,5²,6²,7²; berikutnya 8²=64.",l:"easy"},
-{q:"2, 3, 6, 11, 18, ?",a:["25","26","27","28"],k:2,why:"Beda 1,3,5,7; berikutnya +9 sehingga 18+9=27.",l:"medium"},
-{q:"1, 2, 4, 7, 11, 16, ?",a:["20","21","22","23"],k:2,why:"Beda +1,+2,+3,+4,+5; berikutnya +6 sehingga 16+6=22.",l:"medium"},
-{q:"3, 9, 27, 81, ?",a:["162","189","243","324"],k:2,why:"Setiap suku dikali 3; 81×3=243.",l:"easy"},
-{q:"B, E, H, K, ?",a:["M","N","O","P"],k:1,why:"Posisi alfabet 2,5,8,11; tambah 3, berikutnya posisi 14 = N.",l:"easy"},
-{q:"2, 3, 5, 8, 12, 17, ?",a:["21","22","23","24"],k:2,why:"Beda +1,+2,+3,+4,+5; berikutnya +6, hasil 23.",l:"medium"},
-{q:"121, 100, 81, 64, ?",a:["36","49","50","56"],k:1,why:"Kuadrat menurun 11²,10²,9²,8²; berikutnya 7²=49.",l:"medium"},
-{q:"5, 8, 14, 23, 35, ?",a:["47","48","50","52"],k:2,why:"Beda +3,+6,+9,+12; berikutnya +15, sehingga 35+15=50.",l:"hard"},
-{q:"1, 4, 2, 8, 3, 12, ?",a:["4","5","6","16"],k:0,why:"Dua jalur: posisi ganjil 1,2,3,4; posisi genap 4,8,12. Jadi suku ketujuh 4.",l:"medium"},
-{q:"144, 72, 36, 18, ?",a:["6","8","9","12"],k:2,why:"Setiap suku dibagi 2; 18÷2=9.",l:"easy"},
-{q:"4, 6, 9, 13, 18, ?",a:["22","23","24","25"],k:2,why:"Beda +2,+3,+4,+5; berikutnya +6 sehingga 18+6=24.",l:"medium"}
-];
-function shuffle(arr){let a=arr.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function makeSet(level,count){let arr=bank.filter(q=>level==="mixed"||q.l===level);if(arr.length<count)arr=bank.slice();return shuffle(arr).slice(0,Math.min(count,arr.length))}
-function drawQuestions(area,set,prefix,exam=false){$(area).innerHTML=set.map((q,i)=>{let opts=shuffle(q.a.map((v,j)=>({v,j})));return `<div class="qcard"><b>${i+1}. ${esc(q.q)}</b>${opts.map(o=>`<label class="choice"><input type="radio" name="${prefix}${i}" value="${o.j}"> ${esc(o.v)}</label>`).join("")}${exam?"":`<div class="muted">Pilih satu jawaban.</div>`}</div>`}).join("")}
-function grade(set,prefix,show){document.querySelectorAll("#practiceArea .feedback").forEach(x=>x.remove());let score=0,answers=[];set.forEach((q,i)=>{let el=document.querySelector(`input[name="${prefix}${i}"]:checked`),v=el?Number(el.value):-1,ok=v===q.k;if(ok)score++;answers.push({q,chosen:v,ok});if(show){let card=el?.closest(".qcard")||document.querySelectorAll("#"+(prefix==="p"?"practiceArea":"examArea")+" .qcard")[i];if(card){let fb=document.createElement("div");fb.className="feedback "+(ok?"good":"bad");fb.textContent=(ok?"Benar. ":"Belum tepat. ")+q.why;card.appendChild(fb)}}});return {score,total:set.length,answers,percent:Math.round(score/Math.max(1,set.length)*100)}}
-function record(result,kind){let h=JSON.parse(localStorage.getItem("apexHistory")||"[]");h.push({date:new Date().toLocaleString("id-ID"),kind,score:result.score,total:result.total,percent:result.percent});localStorage.setItem("apexHistory",JSON.stringify(h.slice(-100)));showProgress()}
-$("startPractice").onclick=()=>{practiceSet=makeSet($("practiceLevel").value,Number($("practiceCount").value));drawQuestions("practiceArea",practiceSet,"p");$("practiceResult").classList.add("hidden")};
-$("newPractice").onclick=()=>$("startPractice").click();
-$("checkPractice").onclick=()=>{if(!practiceSet.length)return alert("Buat set latihan terlebih dahulu.");let r=grade(practiceSet,"p",true);$("practiceResult").classList.remove("hidden");$("practiceResult").textContent=`Hasil: ${r.score}/${r.total} (${r.percent}%). Pelajari pembahasan pada tiap soal, kemudian ulangi soal yang salah.`;record(r,"Latihan")};
-function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}}
-function displayTime(){let m=Math.floor(secondsLeft/60),s=secondsLeft%60;$("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
-$("startExam").onclick=()=>{stopTimer();examSet=makeSet("mixed",Number($("examCount").value));drawQuestions("examArea",examSet,"e",true);secondsLeft=Number($("examMinutes").value)*60;examStarted=true;$("submitExam").disabled=false;$("examResult").classList.add("hidden");displayTime();timerId=setInterval(()=>{secondsLeft--;displayTime();if(secondsLeft<=0){stopTimer();submitExam(true)}},1000)};
-function submitExam(auto=false){if(!examStarted)return;stopTimer();examStarted=false;$("submitExam").disabled=true;let r=grade(examSet,"e",false);$("examResult").classList.remove("hidden");$("examResult").textContent=`${auto?"Waktu habis. ":""}Skor simulasi: ${r.score}/${r.total} (${r.percent}%). Setelah ujian, telaah pembahasan berikut untuk belajar.`;examSet.forEach((q,i)=>{let card=$("examArea").querySelectorAll(".qcard")[i],el=document.querySelector(`input[name="e${i}"]:checked`),fb=document.createElement("div");fb.className="feedback "+((el&&Number(el.value)===q.k)?"good":"bad");fb.textContent=q.why;card.appendChild(fb);card.querySelectorAll("input").forEach(x=>x.disabled=true)});record(r,"Simulasi tes")}
-$("submitExam").onclick=()=>submitExam(false);
-function showProgress(){let h=JSON.parse(localStorage.getItem("apexHistory")||"[]");$("attempts").textContent=h.length;$("accuracy").textContent=h.length?Math.round(h.reduce((s,x)=>s+x.percent,0)/h.length)+"%":"—";$("bestScore").textContent=h.length?Math.max(...h.map(x=>x.percent))+"%":"—";let streak=0;for(let x of h.slice().reverse()){if(x.percent>=70)streak++;else break}$("streak").textContent=streak;$("history").innerHTML=h.length?`<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Jenis</th><th>Skor</th><th>Persentase</th></tr></thead><tbody>${h.slice().reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.kind)}</td><td>${x.score}/${x.total}</td><td>${x.percent}%</td></tr>`).join("")}</tbody></table></div>`:"<p class='muted'>Belum ada riwayat. Selesaikan latihan atau simulasi tes untuk mulai membangun dashboard.</p>"}
-$("exportProgress").onclick=()=>{let blob=new Blob([localStorage.getItem("apexHistory")||"[]"],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="prospek-apex-riwayat.json";a.click();URL.revokeObjectURL(a.href)};
-$("clearProgress").onclick=()=>{if(confirm("Hapus semua riwayat latihan lokal?")){localStorage.removeItem("apexHistory");showProgress()}};
 
-const focusGuides={
-selisih:{title:"Selisih dan beda bertingkat",goal:"Peserta mampu menghitung beda pertama dan menguji apakah beda tingkat berikutnya stabil.",steps:["5 menit — pemantik: bandingkan 4, 7, 10, 13.","10 menit — guru memodelkan tabel beda pertama dan kedua.","15 menit — latihan berpasangan; siswa menulis bukti, bukan hanya jawaban.","10 menit — soal transfer dengan beda yang bertambah teratur.","5 menit — refleksi: kapan beda hingga bisa menyesatkan?"],check:"Siswa dapat menunjukkan beda, memprediksi beda berikutnya, dan memverifikasi hasil."},
-rasio:{title:"Rasio dan perubahan multiplikatif",goal:"Peserta membedakan perubahan aditif dengan multiplikatif dan memeriksa rasio secara hati-hati.",steps:["5 menit — bandingkan 3,6,9 dengan 3,6,12.","10 menit — modelkan selisih dan rasio.","15 menit — latihan ×k, ÷k, serta pola operasi berulang.","10 menit — soal transfer dengan bilangan negatif atau pecahan.","5 menit — exit ticket: jelaskan bukti rasio tetap."],check:"Siswa menghitung rasio berurutan dengan benar dan menyebutkan keterbatasannya saat ada nol."},
-selang:{title:"Pola selang-seling / dua jalur",goal:"Peserta mengenali bahwa suku pada posisi ganjil dan genap dapat mengikuti aturan berbeda.",steps:["5 menit — tampilkan 2,10,4,20,6,30.","10 menit — tandai posisi ganjil dan genap dengan dua warna.","15 menit — latihan memisahkan dua jalur.","10 menit — variasi dengan operasi berbeda pada tiap jalur.","5 menit — siswa menjelaskan mengapa satu aturan tunggal kurang sesuai."],check:"Siswa dapat memisahkan jalur dan memeriksa pola pada masing-masing jalur."},
-khusus:{title:"Pola khusus",goal:"Peserta mengenali kandidat kuadrat, kubik, prima, Fibonacci, faktorial, dan bilangan segitiga tanpa asal menebak.",steps:["5 menit — observasi pola visual/numerik.","10 menit — bangun kartu pola dan ciri pembeda.","15 menit — latihan identifikasi lalu verifikasi semua suku.","10 menit — bandingkan pola khusus dengan beda hingga.","5 menit — refleksi tentang hipotesis alternatif."],check:"Siswa memberi nama pola beserta bukti, bukan sekadar menebak berdasarkan dua suku."},
-huruf:{title:"Deret huruf dan posisi alfabet",goal:"Peserta mengubah huruf ke posisi alfabet, menguji beda, dan menangani arah maju/mundur.",steps:["5 menit — A=1 sampai Z=26.","10 menit — contoh B,E,H,K.","15 menit — latihan deret huruf maju, mundur, dan bertingkat.","10 menit — cek batas alfabet dan aturan siklis jika dijelaskan.","5 menit — exit ticket dengan alasan tertulis."],check:"Siswa mengonversi huruf secara konsisten dan menjelaskan pergeseran."},
-strategi:{title:"Strategi pemecahan masalah terpadu",goal:"Peserta menggunakan urutan pemeriksaan sistematis, membandingkan hipotesis, dan mengelola waktu.",steps:["5 menit — siswa memprediksi tanpa kalkulator dan mencatat hipotesis awal.","10 menit — guru memodelkan urutan selisih → rasio → beda bertingkat → selang-seling → pola khusus.","15 menit — kelompok memecahkan soal dan memberi bukti.","10 menit — latihan mandiri dengan batas waktu.","5 menit — refleksi kesalahan dan strategi berikutnya."],check:"Siswa menyatakan minimal dua kandidat bila soal ambigu, lalu memilih yang paling sederhana dan sesuai konteks."}}
-let worksheetText="",lessonText="";
-$("makeLesson").onclick=()=>{let g=focusGuides[$("lessonFocus").value],mins=Number($("lessonDuration").value),level=$("lessonLevel").value;let scale=mins/45;let lines=["PROSPEK APEX — RANCANGAN SESI PENGAJARAN","Fokus: "+g.title,"Durasi: "+mins+" menit","Profil: "+level,"", "TUJUAN PEMBELAJARAN",g.goal,"", "ALUR SESI"];let steps=g.steps.map((x,i)=>{let m=Math.max(2,Math.round(parseInt(x,10)*scale));return (i+1)+". "+m+" menit — "+x.replace(/^\d+ menit — /,"")});lines.push(...steps,"","CEK PEMAHAMAN",g.check,"","DIFERENSIASI",level==="dasar"?"Berikan contoh worked-example, garis bantu, dan pertanyaan pemandu sebelum latihan mandiri.":level==="mahir"?"Minta siswa membandingkan dua hipotesis yang sama-sama cocok dan mempertahankan pilihan dengan bukti.":"Pasangkan siswa secara fleksibel; berikan petunjuk bertahap untuk yang perlu dukungan dan soal transfer untuk yang siap.","","CATATAN GURU","Nilai proses, ketepatan, dan kemampuan menjelaskan. Jangan menyamakan hasil latihan dengan diagnosis IQ.");lessonText=lines.join("\n");$("lessonOutput").textContent=lessonText};
-$("copyLesson").onclick=async()=>{if(!lessonText)return alert("Susun rancangan terlebih dahulu.");try{await navigator.clipboard.writeText(lessonText);alert("Rancangan disalin.")}catch(e){alert("Salin manual dari teks rancangan.")}};
-$("makeWorksheet").onclick=()=>{let set=makeSet($("worksheetLevel").value,Number($("worksheetCount").value));let out=["PROSPEK APEX — LEMBAR KERJA DERET PSIKOTES","Nama: ____________________   Tanggal: ______________","Petunjuk: tentukan suku berikutnya dan tulis aturan/pembuktian singkat. Setiap soal dapat memerlukan penalaran berbeda.",""];set.forEach((q,i)=>out.push((i+1)+". "+q.q.replace(/, \?$/,", …"),"   Jawaban: ____________________","   Alasan/aturan: ______________________________________________",""));if($("worksheetKey").value==="separate"){out.push("KUNCI JAWABAN DAN PEMBAHASAN (pisahkan sebelum dibagikan)");set.forEach((q,i)=>out.push((i+1)+". "+q.a[q.k]+" — "+q.why))}worksheetText=out.join("\n");$("worksheetOutput").textContent=worksheetText};
-$("downloadWorksheet").onclick=()=>{if(!worksheetText)return alert("Buat lembar kerja terlebih dahulu.");let blob=new Blob([worksheetText],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="PROSPEK_APEX_Lembar_Kerja.txt";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-$("printWorksheet").onclick=()=>{if(!worksheetText)return alert("Buat lembar kerja terlebih dahulu.");let w=window.open("","_blank");if(!w)return alert("Izinkan pop-up untuk mencetak lembar kerja.");let safe=worksheetText.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");w.document.write(`<!doctype html><html lang="id"><meta charset="utf-8"><title>Lembar Kerja PROSPEK APEX</title><style>body{font:12pt/1.55 Arial,sans-serif;max-width:800px;margin:30px auto;white-space:pre-wrap}h1{font-size:18pt}@media print{body{margin:0}}</style><body>${safe}</body></html>`);w.document.close();w.focus();w.print()};
-function runSelfTests(){
- const tests=[
-  {name:"Aritmetika",a:[3,6,9,12],model:"Aritmetika",next:15},
-  {name:"Geometri",a:[2,4,8,16],model:"Geometri",next:32},
-  {name:"Fibonacci klasik",a:[1,1,2,3,5,8],model:"Rekurensi jumlah dua suku (Fibonacci umum)",next:13},
-  {name:"Fibonacci seed berbeda",a:[1,2,3,5,8],model:"Rekurensi jumlah dua suku (Fibonacci umum)",next:13},
-  {name:"Kuadrat",a:[1,4,9,16],model:"Kuadrat sempurna",next:25},
-  {name:"Bilangan segitiga",a:[1,3,6,10],model:"Bilangan segitiga",next:15},
-  {name:"Bilangan prima",a:[2,3,5,7,11],model:"Bilangan prima",next:13},
-  {name:"Selang-seling aritmetika",a:[2,10,4,20,6,30],model:"Dua subderet selang-seling",next:8},
-  {name:"Siklus selisih",a:[1,2,4,5,7,8],model:"Siklus selisih periode 2",next:10},
-  {name:"Deret Fibonacci yang menyimpang",a:[1,2,3,5,8,11],model:"Rekurensi jumlah dua suku (Fibonacci umum)",mustNotMatch:true}
- ];
- let pass=0,rows=[];
- for(const t of tests){let ms=modelsFor(t.a,{depth:5,poly:3,numericMode:"all"});let m=ms.find(x=>x.name===t.model);let ok=t.mustNotMatch?!m:!!m&&same(m.next,t.next);if(ok)pass++;rows.push((ok?"LULUS":"GAGAL")+" — "+t.name+(m?" ("+m.name+" → "+fmt(m.next)+")":" (model tidak ditemukan)"));}
- const el=$("selfTestResult");el.classList.remove("hidden");el.textContent="UJI REGRESI: "+pass+"/"+tests.length+" lulus\n"+rows.join("\n")+"\n\nCatatan: tes acuan ini hanya mencakup contoh yang tercantum, bukan bukti bahwa semua jenis soal psikotes sudah tercakup.";
- el.className="status "+(pass===tests.length?"good":"warn");
+<section id="lab" class="tabpage">
+<div class="panel"><h2>01 · Masukkan soal</h2>
+<p class="muted">Pisahkan suku dengan koma, spasi, titik koma, atau baris baru. Gunakan <b>?</b> untuk suku yang dicari — boleh di akhir, di tengah, atau lebih dari satu. Didukung: angka (desimal pakai titik), negatif, pecahan <code>3/4</code>, huruf <code>A–Z</code>, hari/bulan (<code>Senin, Rabu</code> / <code>Jan, Mar</code>), gabungan <code>AB, CD</code>, <code>A1, B4</code>, <code>2-5, 3-7</code>, dan deret huruf-angka bergantian <code>A, 1, B, 2</code>.</p>
+<textarea id="seq" spellcheck="false" placeholder="Contoh: 2, 6, 12, 20, 30, ?"></textarea>
+<div class="row"><button class="primary" id="solve">ANALISIS MENYELURUH</button><select id="exSel" style="width:auto;max-width:280px"><option value="">— Pilih contoh soal —</option></select><button id="anomBtn">Cek suku janggal</button><button id="selfTestBtn">Uji mesin</button><button id="copyBtn">Salin laporan</button><button id="clearBtn">Reset</button></div>
+<div class="progress"><div class="bar" id="bar"></div></div><div id="status" class="status">Siap. Masukkan minimal 3 suku yang diketahui; 5–8 suku memberi bukti lebih kuat.</div><div id="selfTestResult" class="status hidden"></div></div>
+<div class="panel"><h2>02 · Pengaturan</h2><div class="grid">
+<div class="field"><label>Jumlah suku yang diprediksi (bila tanpa ?)</label><select id="optK"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+<div class="field"><label>Kedalaman pola bersarang</label><select id="optLvl"><option value="1">1 — cepat</option><option value="2" selected>2 — lengkap (disarankan)</option></select></div>
+<div class="field"><label>Jumlah model ditampilkan</label><select id="optTop"><option>10</option><option selected>25</option><option>50</option><option>100</option></select></div>
+</div><p class="callout">Prinsip kerja: mesin hanya menerima model yang <b>cocok persis pada semua suku</b> dan masih punya <b>suku sisa sebagai bukti</b> (jumlah suku − jumlah parameter bebas ≥ 1). Model diurutkan menurut kesederhanaannya (Occam). Karena beberapa soal memang punya lebih dari satu kelanjutan yang sah, mesin menampilkan jawaban alternatif dan tingkat keyakinan — bukan klaim kepastian.</p></div>
+<section id="results" class="hidden"></section>
+</section>
+
+<section id="tabel" class="tabpage hidden">
+<div class="panel"><h2>Tabel / matriks / segitiga angka</h2>
+<p class="muted">Satu baris per baris soal (atau pisahkan dengan <b>;</b>). Tandai sel yang dicari dengan <b>?</b>. Mesin mencari rumus antar-kolom (mis. kolom 3 = kolom 1 × kolom 2 + 1), rumus antar-baris, deret di kolom/baris, serta jumlah/hasil kali tetap.</p>
+<textarea id="tblIn" spellcheck="false" placeholder="3 4 13&#10;5 2 29&#10;6 3 ?"></textarea>
+<div class="row"><button class="primary" id="tblSolve">Selesaikan tabel</button><select id="tblEx" style="width:auto;max-width:300px"><option value="">— Contoh —</option><option value="2 3 7&#10;4 5 21&#10;6 7 ?">Kolom 3 = A×B+1</option><option value="8 3 5&#10;9 4 5&#10;12 5 ?">Kolom 3 = A−B</option><option value="2 7 6&#10;9 5 1&#10;4 ? 8">Kotak ajaib (jumlah baris tetap)</option><option value="1 2 3&#10;4 5 6&#10;5 7 ?">Baris 3 = baris 1 + baris 2</option><option value="2 4 8 ?&#10;3 9 27 81">Pola di dalam baris</option></select></div>
+<div id="tblOut" class="status">Belum ada hasil.</div></div></section>
+
+<section id="learn" class="tabpage hidden">
+<div class="panel"><h2>Akademi Pola: urutan pemeriksaan yang sistematis</h2><p>Periksa dari yang paling sederhana ke yang kompleks. Selalu verifikasi dugaan pada <b>semua</b> suku.</p><div class="lesson-grid">
+<div class="lesson"><h3>1. Selisih tetap</h3><pre>4, 7, 10, 13, ?\nΔ: 3, 3, 3 → 16</pre></div>
+<div class="lesson"><h3>2. Rasio tetap</h3><pre>3, 6, 12, 24, ?\n×2 → 48</pre><p class="muted">Rasio negatif/pecahan juga mungkin: −2, 4, −8 atau 81, 27, 9.</p></div>
+<div class="lesson"><h3>3. Beda bertingkat</h3><pre>2, 6, 12, 20, 30, ?\nΔ¹: 4 6 8 10\nΔ²: 2 2 2 → Δ¹ berikut 12 → 42</pre></div>
+<div class="lesson"><h3>4. Selisih berpola</h3><pre>5, 7, 11, 19, 35, ?\nΔ: 2 4 8 16 (×2) → 32 → 67</pre><p class="muted">Selisih bisa geometri, kuadrat, bilangan prima, dll.</p></div>
+<div class="lesson"><h3>5. Rasio bertingkat</h3><pre>1, 2, 6, 24, 120, ?\n×2 ×3 ×4 ×5 → ×6 → 720</pre></div>
+<div class="lesson"><h3>6. Dua / tiga jalur</h3><pre>2, 10, 4, 20, 6, 30, ?\nganjil: 2 4 6 (8)\ngenap : 10 20 30</pre></div>
+<div class="lesson"><h3>7. Operasi bergantian</h3><pre>7, 14, 12, 24, 22, 44, ?\n×2, −2, ×2, −2 → 42</pre></div>
+<div class="lesson"><h3>8. Rekurensi</h3><pre>1, 2, 3, 5, 8, ?   (jumlah 2 suku)\n1, 4, 13, 40, ?    (×3 + 1)\n1,1,2,4,7,13, ?    (jumlah 3 suku)</pre></div>
+<div class="lesson"><h3>9. Pola khusus</h3><p>Kuadrat, kubik, segitiga, prima, komposit, Fibonacci, Lucas, faktorial, pangkat, nⁿ, n²±c, p(n)±c.</p></div>
+<div class="lesson"><h3>10. Huruf</h3><pre>A, C, F, J, O, ?\n1 3 6 10 15 → +6 = 21 = U</pre><p class="muted">Alfabet bersifat siklik: setelah Z kembali ke A.</p></div>
+<div class="lesson"><h3>11. Hari / bulan</h3><pre>Senin, Rabu, Jumat, ?\n1 3 5 → 7 = Minggu</pre></div>
+<div class="lesson"><h3>12. Suku kosong di tengah</h3><pre>2, 5, ?, 17, 26\nn²+1 → 10</pre></div>
+<div class="lesson"><h3>13. Angka digit</h3><pre>1, 12, 123, 1234, ?\n9, 99, 999, ?</pre></div>
+<div class="lesson"><h3>14. Pecahan</h3><p>Pisahkan pembilang dan penyebut; masing-masing punya pola sendiri.</p></div>
+<div class="lesson"><h3>15. Tabel & matriks</h3><p>Cari hubungan antar-kolom pada tiap baris, lalu uji pada baris yang lengkap.</p></div>
+<div class="lesson"><h3>16. Suku janggal</h3><p>Jika semua pola gagal, mungkin satu suku salah. Coba kosongkan tiap suku dan lihat apakah polanya jadi bersih.</p></div>
+</div></div></section>
+
+<section id="practice" class="tabpage hidden"><div class="panel"><h2>Latihan acak (soal dibangkitkan otomatis)</h2><p class="muted">Setiap set baru berisi soal baru dengan parameter acak. Pembahasan muncul setelah dinilai.</p><div class="grid"><div class="field"><label>Tingkat</label><select id="practiceLevel"><option value="easy">Dasar</option><option value="medium" selected>Menengah</option><option value="hard">Menantang</option><option value="mixed">Campuran</option></select></div><div class="field"><label>Jumlah soal</label><select id="practiceCount"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div></div><div class="row"><button class="primary" id="startPractice">Buat set latihan</button><button id="checkPractice">Nilai jawaban</button></div><div id="practiceArea"></div><div id="practiceResult" class="status hidden"></div></div></section>
+
+<section id="exam" class="tabpage hidden"><div class="panel"><h2>Simulasi tes berwaktu</h2><p>Pembahasan baru muncul setelah dikumpulkan. Latihan strategi waktu, bukan alat diagnosis psikologis.</p><div class="grid"><div class="field"><label>Durasi</label><select id="examMinutes"><option value="3">3 menit</option><option value="5" selected>5 menit</option><option value="10">10 menit</option><option value="15">15 menit</option></select></div><div class="field"><label>Jumlah soal</label><select id="examCount"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></div></div><div class="row"><button class="primary" id="startExam">Mulai simulasi</button><button id="submitExam" disabled>Kumpulkan jawaban</button></div><div class="answerbox"><div class="muted">SISA WAKTU</div><div class="answer" id="timer">05:00</div></div><div id="examArea"></div><div id="examResult" class="status hidden"></div></div></section>
+
+<section id="progressTab" class="tabpage hidden"><div class="panel"><h2>Dashboard kemajuan lokal</h2><p class="muted">Disimpan di browser perangkat ini, tidak dikirim ke server.</p><div class="stats"><div class="stat"><strong id="attempts">0</strong><span>Sesi</span></div><div class="stat"><strong id="accuracy">—</strong><span>Akurasi rata-rata</span></div><div class="stat"><strong id="bestScore">—</strong><span>Skor terbaik</span></div><div class="stat"><strong id="streak">0</strong><span>Sesi ≥70% beruntun</span></div></div><div id="history"></div><div class="row"><button id="exportProgress">Ekspor JSON</button><button id="clearProgress">Hapus riwayat</button></div></div></section>
+
+<section id="teacher" class="tabpage hidden">
+<div class="panel"><h2>Studio Guru · Rancangan sesi</h2><div class="grid">
+<div class="field"><label>Fokus</label><select id="lessonFocus"><option value="selisih">Selisih & beda bertingkat</option><option value="rasio">Rasio & perubahan multiplikatif</option><option value="selang">Dua jalur / operasi bergantian</option><option value="khusus">Pola khusus & rekurensi</option><option value="huruf">Huruf, hari, bulan (siklik)</option><option value="strategi">Strategi terpadu & suku janggal</option></select></div>
+<div class="field"><label>Durasi</label><select id="lessonDuration"><option value="30">30 menit</option><option value="45" selected>45 menit</option><option value="60">60 menit</option><option value="90">90 menit</option></select></div>
+<div class="field"><label>Profil kelas</label><select id="lessonLevel"><option value="dasar">Dasar</option><option value="campuran" selected>Campuran</option><option value="mahir">Mahir</option></select></div></div>
+<div class="row"><button class="primary" id="makeLesson">Susun rancangan</button><button id="copyLesson">Salin</button></div><div id="lessonOutput" class="status">Pilih fokus lalu tekan “Susun rancangan”.</div></div>
+<div class="panel"><h2>Lembar kerja otomatis</h2><div class="grid"><div class="field"><label>Kesulitan</label><select id="wsLevel"><option value="easy">Dasar</option><option value="medium">Menengah</option><option value="hard">Menantang</option><option value="mixed" selected>Campuran</option></select></div><div class="field"><label>Jumlah soal</label><select id="wsCount"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div><div class="field"><label>Kunci jawaban</label><select id="wsKey"><option value="separate">Terpisah di akhir</option><option value="none">Tanpa kunci</option></select></div></div>
+<div class="row"><button class="primary" id="makeWs">Buat lembar kerja</button><button id="dlWs">Unduh TXT</button><button id="prWs">Cetak</button></div><div id="wsOut" class="status">Belum dibuat.</div></div>
+<div class="panel"><h2>Prinsip pengajaran</h2><div class="lesson-grid"><div class="lesson"><h3>Ajarkan proses</h3><p>Siswa menyebut hipotesis, bukti dari beberapa suku, lalu uji konsistensi.</p></div><div class="lesson"><h3>Kesalahan sebagai data</h3><p>Kelompokkan: salah hitung, salah pola, terburu-buru, tidak memeriksa semua suku.</p></div><div class="lesson"><h3>Bantuan bertahap</h3><p>Contoh berpikir keras → petunjuk → latihan mandiri.</p></div><div class="lesson"><h3>Uji transfer</h3><p>Ganti tampilan soal (angka→huruf→hari) untuk menguji pemahaman, bukan hafalan.</p></div></div><p class="callout">Etika: skor aplikasi bukan diagnosis IQ atau jaminan kelulusan. Soal kurang-menentukan dapat memiliki lebih dari satu kelanjutan sah.</p></div>
+</section>
+<div class="footer">PROSPEK APEX 4.0 · Laboratorium deret offline · Gunakan pembahasan untuk membangun strategi, bukan menghafal jawaban.</div>
+</main>
+
+<script>
+/*ENGINE_START*/
+"use strict";
+const NEAR=(a,b,t=1e-7)=>Math.abs(a-b)<=t*Math.max(1,Math.abs(a),Math.abs(b));
+const BIG=1e15,okN=x=>Number.isFinite(x)&&Math.abs(x)<BIG,isInt=x=>Math.abs(x-Math.round(x))<1e-9*Math.max(1,Math.abs(x));
+const dif=a=>a.slice(1).map((v,i)=>v-a[i]);
+function frac(x,D=64){if(!Number.isFinite(x))return null;for(let d=1;d<=D;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<=1e-9*Math.max(1,Math.abs(x)))return[n,d]}return null}
+function fmt(x){if(!Number.isFinite(x))return"—";if(Math.abs(x)<1e-12)return"0";if(isInt(x))return String(Math.round(x));const t=Math.round(x*1e4)/1e4;if(Math.abs(t-x)<1e-9)return String(t);const f=frac(x);if(f&&f[1]<=40)return f[0]+"/"+f[1];return String(+x.toPrecision(8))}
+const cc=c=>{if(NEAR(Math.abs(c),1))return 0;if(isInt(c))return Math.abs(c)<=10?.2:.5;const f=frac(c,12);return .5+.08*(f?f[1]:12)};
+const nice=c=>Number.isFinite(c)&&Math.abs(c)>1e-9&&Math.abs(c)<=1e4&&!!frac(c,12);
+function lin(t){let s="";t.forEach(([c,l],i)=>{const ng=c<0,ac=Math.abs(c);const b=l===""?fmt(ac):(NEAR(ac,1)?l:fmt(ac)+"·"+l);s+=i===0?(ng?"−":"")+b:(ng?" − ":" + ")+b});return s||"0"}
+function gauss(A,b){const n=b.length;let sc=0;for(const r of A)for(const x of r)sc=Math.max(sc,Math.abs(x));if(sc===0)return null;const M=A.map((r,i)=>[...r,b[i]]);for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-12*sc)return null;if(p!==c){const t=M[c];M[c]=M[p];M[p]=t}const v=M[c][c];for(let j=c;j<=n;j++)M[c][j]/=v;for(let r=0;r<n;r++)if(r!==c){const f=M[r][c];if(f!==0)for(let j=c;j<=n;j++)M[r][j]-=f*M[c][j]}}return M.map(r=>r[n])}
+function solveSet(Xs,ys,m){const k=Xs.length;for(let w=0;w<3&&w+k<=m;w++){const A=[],b=[];for(let r=0;r<k;r++){A.push(Xs.map(x=>x[w+r]));b.push(ys[w+r])}const c=gauss(A,b);if(!c)continue;if(!c.every(Number.isFinite))return null;for(let r=0;r<m;r++){let s=0;for(let j=0;j<k;j++)s+=c[j]*Xs[j][r];if(!NEAR(s,ys[r]))return null}return c}return null}
+
+/* ---------- Pustaka deret khusus & basis ---------- */
+const LN=64,LNX=LN+8,capA=a=>a.map(v=>okN(v)?v:NaN);
+const mkRec=(init,f)=>{const a=init.slice();while(a.length<LNX)a.push(f(a));return capA(a)};
+const EO=o=>"n"+(o>0?"+"+o:o<0?"−"+(-o):"");
+const SPEC=[];
+(function(){
+ const pr=[];for(let i=2;pr.length<LNX;i++){let p=1;for(let j=2;j*j<=i;j++)if(i%j===0){p=0;break}if(p)pr.push(i)}
+ const co=[];for(let i=4;co.length<LNX;i++){let p=0;for(let j=2;j*j<=i;j++)if(i%j===0){p=1;break}if(p)co.push(i)}
+ const sp=[];for(let i=4;sp.length<LNX;i++){let c=0,x=i;for(let j=2;j*j<=x;j++)while(x%j===0){x/=j;c++}if(x>1)c++;if(c===2)sp.push(i)}
+ const fa=capA(Array.from({length:LNX},(_,i)=>{let f=1;for(let k=2;k<=i;k++)f*=k;return f}));
+ const ca=[1];for(let i=0;i<LNX;i++)ca.push(Math.round(ca[i]*2*(2*i+1)/(i+2)));
+ const be=[1];{let row=[1];for(let i=1;i<24;i++){const nr=[row[row.length-1]];for(let j=0;j<row.length;j++)nr.push(nr[j]+row[j]);row=nr;be.push(row[0])}}while(be.length<LNX)be.push(NaN);
+ const rk=[],cn=[];for(let k=1;rk.length<LNX;k++){for(let j=0;j<k;j++){rk.push(k);cn.push(j+1)}}
+ SPEC.push(
+ {id:"F",lab:e=>"F("+e+")",base:0,c:1.5,arr:mkRec([0,1],a=>a.at(-1)+a.at(-2)),sh:[0,1,2,3,4]},
+ {id:"L",lab:e=>"Lucas("+e+")",base:0,c:1.7,arr:mkRec([2,1],a=>a.at(-1)+a.at(-2))},
+ {id:"Pell",lab:e=>"Pell("+e+")",base:0,c:1.8,arr:mkRec([0,1],a=>2*a.at(-1)+a.at(-2))},
+ {id:"T",lab:e=>"Trib("+e+")",base:0,c:1.8,arr:mkRec([0,0,1],a=>a.at(-1)+a.at(-2)+a.at(-3))},
+ {id:"Cat",lab:e=>"Catalan("+e+")",base:0,c:1.8,arr:capA(ca.slice(0,LNX))},
+ {id:"Bell",lab:e=>"Bell("+e+")",base:0,c:1.9,arr:be},
+ {id:"!",lab:e=>"("+e+")!",base:0,c:1.4,arr:fa},
+ {id:"P",lab:e=>"P("+e+")",base:1,c:1.0,arr:pr},
+ {id:"K",lab:e=>"Komposit("+e+")",base:1,c:1.5,arr:co},
+ {id:"P2",lab:e=>"P("+e+")²",base:1,c:1.7,arr:pr.map(p=>p*p)},
+ {id:"SP",lab:e=>"Semiprima("+e+")",base:1,c:1.9,arr:sp},
+ {id:"nn",lab:e=>"("+e+")^("+e+")",base:1,c:1.6,arr:capA(Array.from({length:LNX},(_,i)=>(i+1)**(i+1))),sh:[0,1]},
+ {id:"RK",lab:e=>"k-diulang-k-kali("+e+")",base:1,c:1.7,arr:rk,sh:[0,1,2]},
+ {id:"CN",lab:e=>"hitung-ulang-1..k("+e+")",base:1,c:1.8,arr:cn,sh:[0,1,2]});
+})();
+const PLAIN=[
+ {l:"",c:.3,f:i=>1},{l:"n",c:.5,f:i=>i+1},{l:"n²",c:.8,f:i=>(i+1)**2},{l:"n³",c:1.1,f:i=>(i+1)**3},{l:"n⁴",c:1.5,f:i=>(i+1)**4},
+ {l:"2ⁿ",c:.9,f:i=>2**i},{l:"3ⁿ",c:1,f:i=>3**i},{l:"4ⁿ",c:1.1,f:i=>4**i},{l:"5ⁿ",c:1.2,f:i=>5**i},{l:"10ⁿ",c:1.1,f:i=>10**i},
+ {l:"(−1)ⁿ",c:.8,f:i=>(-1)**i},{l:"n·(−1)ⁿ",c:1.1,f:i=>(i+1)*(-1)**i},{l:"(−2)ⁿ",c:1.2,f:i=>(-2)**i},{l:"n·2ⁿ",c:1.4,f:i=>(i+1)*2**i},{l:"n·3ⁿ",c:1.6,f:i=>(i+1)*3**i},
+ {l:"⌊n/2⌋",c:1.1,f:i=>Math.floor((i+1)/2)},{l:"⌈n/2⌉",c:1.1,f:i=>Math.floor((i+2)/2)},{l:"⌊n/3⌋",c:1.2,f:i=>Math.floor((i+1)/3)},{l:"⌈n/3⌉",c:1.2,f:i=>Math.floor((i+3)/3)},
+ {l:"(n mod 2)",c:1,f:i=>(i+1)%2},{l:"(n mod 3)",c:1.1,f:i=>(i+1)%3},{l:"(n mod 4)",c:1.2,f:i=>(i+1)%4}];
+const BAS=[];
+PLAIN.forEach(p=>BAS.push({l:p.l,c:p.c,plain:true,v:Float64Array.from({length:LN},(_,i)=>p.f(i))}));
+SPEC.forEach(s=>{for(const sh of(s.sh||[0,1,2,3]))BAS.push({l:s.lab(EO(sh+s.base-1)),c:s.c,plain:false,v:Float64Array.from({length:LN},(_,i)=>s.arr[i+sh])})});
+
+function fitBasis(pts,bm,minS){
+ const m=pts.length,out=[];if(m<2||pts[m-1][0]>=LN)return out;
+ const ys=pts.map(p=>p[1]),X=BAS.map(b=>Float64Array.from(pts,p=>b.v[p[0]]));
+ const pl=[],sp=[];BAS.forEach((b,j)=>{if(X[j].every(Number.isFinite))(b.plain?pl:sp).push(j)});
+ const tryS=ids=>{const k=ids.length;if(m-k<minS)return;const c=solveSet(ids.map(j=>X[j]),ys,m);if(!c||!c.every(nice))return;
+  let cost=.5+.25*(k-1);ids.forEach((j,t)=>{cost+=BAS[j].c+cc(c[t])});
+  out.push({ids,c,cost,surplus:m-k,formula:lin(ids.map((j,t)=>[c[t],BAS[j].l])),ev:i=>ids.reduce((s,j,t)=>s+c[t]*BAS[j].v[i],0)})};
+ const maxK=bm==="full"?3:2,nz=pl.filter(j=>j!==0);
+ nz.forEach(j=>tryS([j]));
+ for(let i=0;i<pl.length;i++)for(let j=i+1;j<pl.length;j++){tryS([pl[i],pl[j]]);if(maxK>=3)for(let k=j+1;k<pl.length;k++)tryS([pl[i],pl[j],pl[k]])}
+ for(const s of sp){tryS([s]);tryS([0,s]);if(bm!=="lite"){for(const a of nz)tryS([a,s]);if(bm==="full")for(let i=0;i<pl.length;i++)for(let j=i+1;j<pl.length;j++)tryS([pl[i],pl[j],s])}}
+ return out.sort((x,y)=>x.cost-y.cost);
 }
-$("selfTestBtn").onclick=runSelfTests;
+
+function recModels(a,bm,minS){
+ const n=a.length,out=[];if(n<4)return out;const maxK=bm==="full"?3:2;
+ const dsf=x=>isInt(x)&&x>=0&&x<1e15?String(Math.round(x)).split("").reduce((s,c)=>s+ +c,0):NaN;
+ const rvf=x=>isInt(x)&&x>=0&&x<1e15?+String(Math.round(x)).split("").reverse().join(""):NaN;
+ const F=[{l:"a(n−1)",lag:1,c:.5,f:(r,i)=>r[i-1]},{l:"a(n−2)",lag:2,c:.8,f:(r,i)=>r[i-2]},{l:"a(n−3)",lag:3,c:1.1,f:(r,i)=>r[i-3]},{l:"",lag:0,c:.3,f:()=>1},{l:"n",lag:0,c:.5,f:(r,i)=>i+1},{l:"n²",lag:0,c:.8,f:(r,i)=>(i+1)**2},
+ {l:"n·a(n−1)",lag:1,c:1,f:(r,i)=>(i+1)*r[i-1]},{l:"a(n−1)²",lag:1,c:1,f:(r,i)=>r[i-1]**2},{l:"a(n−1)·a(n−2)",lag:2,c:1.2,f:(r,i)=>r[i-1]*r[i-2]},{l:"(−1)ⁿ",lag:0,c:.8,f:(r,i)=>(-1)**i},
+ {l:"S(a(n−1))",lag:1,c:1.6,f:(r,i)=>dsf(r[i-1])},{l:"balik(a(n−1))",lag:1,c:1.6,f:(r,i)=>rvf(r[i-1])}];
+ for(let m=1;m<=3;m++){
+  const R=n-m;if(R<1+minS)continue;const okv=[],V={};
+  F.forEach((f,j)=>{if(f.lag<=m){const v=Float64Array.from({length:R},(_,r)=>f.f(a,m+r));if(v.every(Number.isFinite)){V[j]=v;okv.push(j)}}});
+  const ys=Float64Array.from({length:R},(_,r)=>a[m+r]);
+  const test=ids=>{const k=ids.length;if(R-k<minS)return;if(Math.max(...ids.map(j=>F[j].lag))!==m)return;const c=solveSet(ids.map(j=>V[j]),ys,R);if(!c||!c.every(nice))return;
+   let cost=1.2+.25*(k-1);ids.forEach((j,t)=>{cost+=F[j].c+cc(c[t])});
+   const fl=ids.map(j=>F[j].l),formula="a(n) = "+lin(ids.map((j,t)=>[c[t],F[j].l]));let name="Rekurensi linear";
+   if(k===2&&fl.includes("a(n−1)")&&fl.includes("a(n−2)")&&c.every(x=>NEAR(x,1)))name="Fibonacci umum (jumlah dua suku sebelumnya)";
+   else if(k===3&&fl.includes("a(n−3)")&&c.every(x=>NEAR(x,1)))name="Tribonacci umum (jumlah tiga suku sebelumnya)";
+   else if(fl.includes("a(n−1)²"))name="Rekurensi kuadrat";else if(fl.includes("n·a(n−1)"))name="Rekurensi berfaktor n";else if(fl.includes("a(n−1)·a(n−2)"))name="Rekurensi hasil kali";
+   else if(fl.some(x=>/S\(|balik/.test(x)))name="Rekurensi digit";else if(k===2&&fl.includes("a(n−1)")&&fl.includes(""))name="Kali-lalu-tambah (a(n) = r·a(n−1) + c)";
+   out.push({fam:"rec",name,formula,cost,surplus:R-k,
+    full:L=>{const r=a.slice(0,Math.min(L,m));for(let i=m;i<L;i++){let s=0;for(let t=0;t<k;t++)s+=c[t]*F[ids[t]].f(r,i);r.push(okN(s)?s:NaN)}return r},
+    ex:(s,N)=>["Setiap suku dibentuk dari suku-suku sebelumnya: "+formula+".","Penerapan: a("+(N+1)+") = "+lin(ids.map((j,t)=>[c[t],F[j].l===""?"":"("+fmt(F[j].f(s,N))+")"]))+" = "+fmt(s[N])+"."]})};
+  const L=okv.length;for(let i=0;i<L;i++){test([okv[i]]);for(let j=i+1;j<L;j++){test([okv[i],okv[j]]);if(maxK>=3)for(let k=j+1;k<L;k++)test([okv[i],okv[j],okv[k]])}}
+ }
+ return out;
+}
+
+/* ---------- Inti pemecah (deret lengkap tanpa celah) ---------- */
+const MEMO=new Map();
+function solveSub(l,lvl){
+ if(l.length===1)return{fam:"const",v:l[0],name:"Konstan",formula:"= "+fmt(l[0]),cost:.3,surplus:0,full:L=>Array(L).fill(l[0]),ex:()=>[]};
+ const r=core(l,{lvl,bm:lvl>=1?"mid":"lite",minS:0});let best=null,bc=1e9;for(const m of r){const c=m.cost+(m.surplus<1?1:0);if(c<bc){bc=c;best=m}}return best}
+function core(a,o){
+ o=o||{};const lvl=o.lvl??2,bm=o.bm||"full",minS=o.minS??1,n=a.length;
+ const key=lvl+bm+minS+"|"+a.join(",");if(MEMO.has(key))return MEMO.get(key);
+ const out=[];MEMO.set(key,out);
+ const add=m=>{if(m.surplus<minS||!Number.isFinite(m.cost))return;try{const f=m.full(n);if(!f||f.length<n)return;for(let i=0;i<n;i++)if(!NEAR(f[i],a[i]))return}catch(e){return}out.push(m)};
+ if(n<2)return out;
+ const nb=lvl>=2?"mid":"lite";
+ const d0=a[1]-a[0];
+ if(a.every(v=>NEAR(v,a[0])))add({fam:"const",v:a[0],name:"Konstan",formula:"a(n) = "+fmt(a[0]),cost:.3,surplus:n-1,full:L=>Array(L).fill(a[0]),ex:()=>["Semua suku bernilai sama: "+fmt(a[0])+"."]});
+ else{
+  if(a.every((v,i)=>i===0||NEAR(v-a[i-1],d0)))add({fam:"arith",d:d0,name:"Barisan aritmetika",formula:"a(n) = "+fmt(a[0])+(d0<0?" − ":" + ")+fmt(Math.abs(d0))+"·(n−1)",cost:1,surplus:n-2,full:L=>Array.from({length:L},(_,i)=>a[0]+i*d0),
+   ex:(s,N)=>["Selisih antar suku selalu sama: "+dif(a).map(fmt).join(", ")+" → beda tetap = "+fmt(d0)+".","Suku berikutnya = "+fmt(a[N-1])+(d0<0?" − ":" + ")+fmt(Math.abs(d0))+" = "+fmt(s[N])+"."]});
+  if(a.every(v=>v!==0)){const r=a[1]/a[0];if(!NEAR(r,1)&&a.every((v,i)=>i===0||NEAR(v,a[i-1]*r)))add({fam:"geo",r,name:"Barisan geometri",formula:"a(n) = "+fmt(a[0])+"·("+fmt(r)+")^(n−1)",cost:1.3,surplus:n-2,full:L=>Array.from({length:L},(_,i)=>a[0]*r**i),
+   ex:(s,N)=>["Rasio antar suku selalu sama: "+a.slice(1).map((v,i)=>fmt(v/a[i])).join(", ")+" → pengali tetap = "+fmt(r)+".","Suku berikutnya = "+fmt(a[N-1])+" × "+fmt(r)+" = "+fmt(s[N])+"."]})}
+ }
+ /* beda tingkat-k konstan */
+ const tb=[a.slice()];for(let k=1;k<=Math.min(7,n-1);k++)tb.push(dif(tb[k-1]));
+ for(let k=2;k<=Math.min(7,n-2);k++){const Lk=tb[k];if(Lk.length>=2&&!NEAR(Lk[0],0)&&Lk.every(v=>NEAR(v,Lk[0])))add({fam:"diffk",k,name:"Beda tingkat "+k+" konstan (polinomial derajat "+k+")",formula:"Δ"+k+" a(n) = "+fmt(Lk[0])+" (selalu sama)",cost:1.2+.8*k,surplus:n-k-1,
+  full:L=>{const cur=tb.map(t=>t[t.length-1]);const r=a.slice(0,L);for(let s=n;s<L;s++){for(let j=k-1;j>=0;j--)cur[j]+=cur[j+1];r.push(cur[0])}return r},
+  ex:(s,N)=>[...tb.slice(1,k+1).map((t,j)=>"Selisih tingkat "+(j+1)+": "+t.map(fmt).join(", ")),"Selisih tingkat "+k+" selalu "+fmt(Lk[0])+" → perpanjang tabel ke kanan: suku berikutnya = "+fmt(s[N])+"."]})}
+ /* selisih / rasio berpola (rekursif) */
+ if(lvl>=1&&n>=4){
+  const d=dif(a);core(d,{lvl:lvl-1,bm:nb,minS}).filter(s=>!["const","arith","diffk"].includes(s.fam)).slice(0,10).forEach(s=>add({fam:"diffrec",name:"Selisih berpola → "+s.name,formula:"Δa(n) mengikuti: "+s.formula,cost:s.cost+.8,surplus:s.surplus,
+   full:L=>{const f=s.full(L-1),r=[a[0]];for(let i=0;i<L-1;i++)r.push(r[i]+f[i]);return r},
+   ex:(q,N)=>["Hitung selisih antar suku: "+d.map(fmt).join(", ")+" — selisihnya sendiri membentuk deret.","Deret selisih: "+s.name+" ("+s.formula+").",...(s.ex?s.ex(s.full(q.length-1),N-1).map(x=>"   ↳ "+x):[]),"Selisih berikutnya = "+fmt(q[N]-q[N-1])+" → suku berikutnya = "+fmt(q[N-1])+" + "+fmt(q[N]-q[N-1])+" = "+fmt(q[N])+"."]}));
+  if(a.every(v=>v!==0)){const r=a.slice(1).map((v,i)=>v/a[i]);core(r,{lvl:lvl-1,bm:nb,minS}).filter(s=>s.fam!=="const").slice(0,10).forEach(s=>add({fam:"ratiorec",name:"Rasio berpola → "+s.name,formula:"a(n+1)/a(n) mengikuti: "+s.formula,cost:s.cost+1,surplus:s.surplus,
+   full:L=>{const f=s.full(L-1),q=[a[0]];for(let i=0;i<L-1;i++)q.push(q[i]*f[i]);return q},
+   ex:(q,N)=>["Hitung rasio suku berurutan: "+r.map(fmt).join(", ")+" — rasio itu sendiri membentuk deret.","Deret rasio: "+s.name+" ("+s.formula+").","Rasio berikutnya = "+fmt(q[N]/q[N-1])+" → suku berikutnya = "+fmt(q[N-1])+" × "+fmt(q[N]/q[N-1])+" = "+fmt(q[N])+"."]}))}
+ }
+ /* beberapa jalur (selang-seling) */
+ if(lvl>=1)for(let p=2;p<=4;p++){if(n<2*p)continue;
+  const st=Array.from({length:p},(_,j)=>a.filter((_,i)=>i%p===j)),subs=st.map(s=>solveSub(s,lvl-1));if(subs.some(s=>!s))continue;
+  add({fam:"stream",name:p===2?"Dua deret selang-seling":p+" deret selang-seling",formula:subs.map((s,j)=>"jalur "+(j+1)+": "+s.formula).join("  ‖  "),cost:1+.65*subs.reduce((t,s)=>t+s.cost+(s.surplus<1?.8:0),0),surplus:subs.reduce((t,s)=>t+s.surplus,0),
+   full:L=>{const e=subs.map(s=>s.full(Math.ceil(L/p)+1)),r=[];for(let i=0;i<L;i++)r.push(e[i%p][Math.floor(i/p)]);return r},
+   ex:(s,N)=>[...st.map((x,j)=>"Jalur "+(j+1)+" (suku ke-"+(j+1)+", "+(j+1+p)+", …): "+x.map(fmt).join(", ")+" → "+subs[j].name),"Suku berikutnya berada di jalur "+(N%p+1)+": "+fmt(s[N])+"."]})}
+ /* operasi bergantian */
+ if(lvl>=1)for(let p=2;p<=3;p++){if(n<2*p+1)continue;
+  for(let mask=1;mask<(1<<p)-1;mask++){const L=Array.from({length:p},()=>[]);let bad=false;
+   for(let i=0;i<n-1;i++){const j=i%p;if((mask>>j)&1){if(NEAR(a[i],0)){bad=true;break}L[j].push(a[i+1]/a[i])}else L[j].push(a[i+1]-a[i])}
+   if(bad)continue;const subs=L.map(l=>solveSub(l,lvl-1));if(subs.some(s=>!s))continue;
+   const desc=subs.map((s,j)=>((mask>>j)&1?"×":"+")+" "+(s.fam==="const"?fmt(s.v):"("+s.name+")"));
+   add({fam:"altop",name:"Operasi bergantian",formula:"langkah bergilir: "+desc.join(" , "),cost:1.4+.6*subs.reduce((t,s)=>t+s.cost+(s.surplus<1?.8:0),0),surplus:subs.reduce((t,s)=>t+s.surplus,0),
+    full:LL=>{const e=subs.map(s=>s.full(Math.ceil(LL/p)+1)),r=[a[0]];for(let i=0;i<LL-1;i++){const j=i%p,v=e[j][Math.floor(i/p)];r.push((mask>>j)&1?r[i]*v:r[i]+v)}return r},
+    ex:(s,N)=>["Operasi berganti secara bergilir tiap langkah: "+desc.join(" → ")+" → (berulang).","Langkah berikutnya memakai operasi "+desc[(N-1)%p]+" → "+fmt(s[N])+"."]})}}
+ /* periodik */
+ for(let p=2;p<=Math.floor(n/2);p++){if(n-p<2)continue;let ok=true;for(let i=p;i<n;i++)if(!NEAR(a[i],a[i-p])){ok=false;break}
+  if(ok){add({fam:"periodic",name:"Berulang periode "+p,formula:"blok yang berulang: "+a.slice(0,p).map(fmt).join(", "),cost:1.1+.12*p,surplus:n-p,full:L=>Array.from({length:L},(_,i)=>a[i%p]),ex:(s,N)=>["Blok "+a.slice(0,p).map(fmt).join(", ")+" berulang terus-menerus.","Suku berikutnya = suku ke-"+(N%p+1)+" blok = "+fmt(s[N])+"."]});break}}
+ /* transformasi */
+ if(lvl>=1&&n>=3){
+  const tr=(label,list,inv)=>core(list,{lvl:lvl-1,bm:nb,minS}).filter(s=>s.fam!=="const"&&s.fam!=="arith").slice(0,8).forEach(s=>add({fam:"trans",name:label+" → "+s.name,formula:label+": "+s.formula,cost:s.cost+1,surplus:s.surplus,full:L=>s.full(L).map(inv),ex:(q,N)=>[label+": "+list.map(fmt).join(", ")+" membentuk deret ("+s.name+").","Kembalikan ke bentuk semula → "+fmt(q[N])+"."]}));
+  if(a.every(v=>v>=0&&isInt(v)&&isInt(Math.sqrt(v))))tr("Akar kuadrat tiap suku",a.map(Math.sqrt),x=>x*x);
+  if(a.every(v=>isInt(v)&&isInt(Math.cbrt(v))))tr("Akar pangkat tiga tiap suku",a.map(Math.cbrt),x=>x*x*x);
+  for(const b of[2,3,5,10])if(a.every(v=>v>0&&isInt(v)&&isInt(Math.log(v)/Math.log(b))))tr("Eksponen basis "+b,a.map(v=>Math.round(Math.log(v)/Math.log(b))),x=>b**x);
+  /* penggabungan digit: 1, 12, 123 / 1, 21, 321 */
+  if(a.every(v=>isInt(v)&&v>0&&v<1e15)){const s=a.map(v=>String(Math.round(v)));
+   for(const mode of["ap","pre"]){const okc=s.every((x,i)=>i===0||(mode==="ap"?x.startsWith(s[i-1]):x.endsWith(s[i-1]))&&x.length>s[i-1].length);
+    if(okc){const ch=s.map((x,i)=>i===0?+x:+(mode==="ap"?x.slice(s[i-1].length):x.slice(0,x.length-s[i-1].length)));
+     core(ch,{lvl:lvl-1,bm:nb,minS}).slice(0,6).forEach(sb=>add({fam:"concat",name:"Penggabungan angka → "+sb.name,formula:"tiap suku = suku sebelumnya "+(mode==="ap"?"ditambah di belakang":"ditambah di depan")+" dengan blok: "+sb.formula,cost:sb.cost+1.2,surplus:sb.surplus,
+      full:L=>{const f=sb.full(L);let t="";return f.slice(0,L).map(c=>{if(!okN(c)||c<0||!isInt(c))return NaN;t=mode==="ap"?t+String(Math.round(c)):String(Math.round(c))+t;return +t})},
+      ex:(q,N)=>["Setiap suku memuat suku sebelumnya, lalu ditambah blok baru: "+ch.map(fmt).join(", ")+" ("+sb.name+").","Suku berikutnya = "+fmt(q[N])+"."]}))}}
+   if(s.every(x=>/^(\d)\1*$/.test(x))){const dg=s.map(x=>+x[0]),ln=s.map(x=>x.length),sd=solveSub(dg,lvl-1),sl=solveSub(ln,lvl-1);
+    if(sd&&sl)add({fam:"repdig",name:"Digit berulang",formula:"digit: "+sd.formula+"; panjang: "+sl.formula,cost:1.4+.65*(sd.cost+sl.cost),surplus:sd.surplus+sl.surplus,
+     full:L=>{const x=sd.full(L),y=sl.full(L);return x.map((d,i)=>d>=1&&d<=9&&isInt(d)&&y[i]>=1&&y[i]<=15&&isInt(y[i])?+String(Math.round(d)).repeat(Math.round(y[i])):NaN)},ex:(q,N)=>["Tiap suku adalah satu digit yang diulang; digit dan banyak pengulangannya masing-masing berpola.","Suku berikutnya = "+fmt(q[N])+"."]})}}
+ }
+ /* rekurensi & rumus suku ke-n */
+ if(n>=4)recModels(a,lvl>=2?"full":bm,minS).forEach(add);
+ if(n>=3&&n<=LN-6)fitBasis(a.map((v,i)=>[i,v]),bm,minS).slice(0,60).forEach(f=>add({fam:"basis",name:"Rumus suku ke-n",formula:"a(n) = "+f.formula,cost:f.cost,surplus:f.surplus,full:L=>Array.from({length:L},(_,i)=>f.ev(i)),
+  ex:(s,N)=>["Cocokkan rumus pada semua suku (n = 1, 2, 3, …): a(n) = "+f.formula+".","Untuk n = "+(N+1)+": a("+(N+1)+") = "+lin(f.ids.map((j,t)=>[f.c[t],BAS[j].l===""?"":"("+fmt(BAS[j].v[N])+")"]))+" = "+fmt(s[N])+"."]}));
+ out.sort((x,y)=>x.cost-y.cost||y.surplus-x.surplus);
+ return out;
+}
+
+/* ---------- Penanganan suku kosong ---------- */
+function candFor(body,m,o){
+ const sc=[],add=(v,w)=>{if(!okN(v))return;if(o.intOnly&&!isInt(v))return;for(const e of sc)if(NEAR(e[0],v)){e[1]+=w;return}sc.push([v,w])};
+ const n=body.length;let s=m;while(s>0&&body[s-1]!==null)s--;const pre=body.slice(s,m);
+ if(pre.length>=3)core(pre,{lvl:1,bm:"lite",minS:1}).slice(0,8).forEach((md,r)=>add(md.full(pre.length+1)[pre.length],3-r*.2));
+ let e=m+1;while(e<n&&body[e]!==null)e++;const suf=body.slice(m+1,e).reverse();
+ if(suf.length>=3)core(suf,{lvl:1,bm:"lite",minS:1}).slice(0,8).forEach((md,r)=>add(md.full(suf.length+1)[suf.length],3-r*.2));
+ const l=m>0?body[m-1]:null,rr=m<n-1?body[m+1]:null;
+ if(l!==null&&rr!==null){add((l+rr)/2,1);if(l*rr>0)add(Math.sign(l)*Math.sqrt(l*rr),1)}
+ const pts=[];body.forEach((v,i)=>{if(v!==null)pts.push([i,v])});
+ if(pts.length>=3)fitBasis(pts,"full",1).slice(0,10).forEach((f,r)=>add(f.ev(m),2.5-r*.15));
+ if(!o.noStream)for(let p=2;p<=3;p++){const st=[];let pos=-1;for(let i=m%p;i<n;i+=p){if(i===m)pos=st.length;st.push(body[i])}if(st.length>=4)candFor(st,pos,{...o,noStream:true}).slice(0,4).forEach(([v,w])=>add(v,w*.8))}
+ return sc.sort((x,y)=>y[1]-x[1]);
+}
+function grouping(list){
+ const gs=new Map();
+ for(const r of list){const key=r.fills.concat(r.next).map(v=>Math.round(v*1e6)).join("|");let g=gs.get(key);if(!g){g={key,next:r.next,fills:r.fills,list:[],cost:Infinity,best:null};gs.set(key,g)}g.list.push(r);if(r.cost<g.cost){g.cost=r.cost;g.best=r}}
+ const arr=[...gs.values()];arr.forEach(g=>g.list.sort((x,y)=>x.cost-y.cost));return arr.sort((x,y)=>x.cost-y.cost);
+}
+function confidence(groups,spec){
+ if(!groups.length)return{level:"Tidak ada",rank:-1,warn:[]};
+ const b=groups[0].best,s=b.surplus,mg=groups.length>1?groups[1].cost-groups[0].cost:99,warn=[];let level;
+ if(spec){level="Sangat rendah";warn.push("Hanya ada model dengan bukti nol (menghafal suku yang ada). Tambahkan suku untuk memastikan.")}
+ else if(mg<.35){level="Ambigu";warn.push("Jawaban lain hampir sama masuk akalnya ("+groups[1].next.concat(groups[1].fills).map(fmt).join(", ")+" — "+groups[1].best.name+"). Soal ini kurang menentukan.")}
+ else if(s>=3&&mg>=1)level="Tinggi";else if(s>=2&&mg>=.5)level="Cukup tinggi";else level="Sedang";
+ if(s<2&&!spec)warn.push("Bukti sedikit (suku sisa = "+s+"). Lebih banyak suku akan memperkuat kesimpulan.");
+ return{level,rank:["Sangat rendah","Ambigu","Sedang","Cukup tinggi","Tinggi"].indexOf(level),warn};
+}
+function solveSeq(vals,o){
+ o=o||{};const n=vals.length;let end=n;while(end>0&&vals[end-1]===null)end--;
+ const trail=n-end,body=vals.slice(0,end),miss=[];body.forEach((v,i)=>{if(v===null)miss.push(i)});const K=trail||(miss.length&&o.K!==-1?0:(o.K||1));
+ const known=body.filter(v=>v!==null);
+ if(known.length<3)return{error:"Minimal 3 suku harus diketahui.",groups:[],list:[]};
+ const allInt=known.every(isInt);let raw=[],spec=false;
+ if(!miss.length){raw=core(body,{lvl:o.lvl??2,bm:"full",minS:1}).slice(0,250).map(m=>({m,fills:[]}));
+  if(!raw.length){spec=true;raw=core(body,{lvl:1,bm:"mid",minS:0}).slice(0,60).map(m=>({m,fills:[]}))}}
+ else{
+  const lists=miss.map(i=>candFor(body,i,{intOnly:allInt}).map(x=>x[0]).slice(0,6));
+  if(lists.some(l=>!l.length))return{error:"Tidak ditemukan nilai kandidat untuk suku yang kosong (data terlalu sedikit/terputus).",groups:[],list:[]};
+  const cap=o.combos||48;while(lists.reduce((t,l)=>t*l.length,1)>cap){let j=0;lists.forEach((l,i)=>{if(l.length>lists[j].length)j=i});if(lists[j].length<=1)break;lists[j].pop()}
+  const combos=[[]];lists.forEach(l=>{const c=combos.splice(0);c.forEach(x=>l.forEach(v=>combos.push([...x,v])))});
+  for(const cb of combos){const f=body.slice();miss.forEach((i,t)=>f[i]=cb[t]);core(f,{lvl:o.gapLvl??1,bm:"mid",minS:1+miss.length}).slice(0,12).forEach(m=>raw.push({m,fills:cb}))}
+ }
+ let res=[];
+ for(const r of raw){let f;try{f=r.m.full(end+K)}catch(e){continue}const nx=f.slice(end,end+K);if(nx.length<K||nx.some(x=>!okN(x)))continue;
+  res.push({m:r.m,name:r.m.name,formula:r.m.formula,cost:r.m.cost+(spec?3:0),surplus:r.m.surplus-miss.length,fills:r.fills,next:nx,seq:f.slice(0,end+K),ex:r.m.ex,fam:r.m.fam})}
+ if(allInt){const ki=res.filter(x=>x.next.every(isInt)&&x.fills.every(isInt));if(ki.length){const bi=Math.min(...ki.map(x=>x.cost)),ba=Math.min(...res.map(x=>x.cost));if(bi<=ba+.8)res=ki}}
+ return{list:res,spec,end,K,miss,trail,body,groups:null};
+}
+function finishSeq(r){if(r.error)return r;r.groups=grouping(r.list);r.conf=confidence(r.groups,r.spec);return r}
+const unwrap=(v,M,dir)=>{let prev=null;return v.map(x=>{if(x===null)return null;if(prev===null){prev=x;return x}let y=x;if(dir>0)while(y<prev)y+=M;else while(y>prev)y-=M;prev=y;return y})};
+function solveColumn(vals,o){
+ o=o||{};if(!o.M)return finishSeq(solveSeq(vals,o));
+ const M=o.M,back=v=>((Math.round(v)-1)%M+M)%M+1;
+ const vars=[["raw",vals,0]],up=unwrap(vals,M,1),dn=unwrap(vals,M,-1);
+ if(up.some((v,i)=>v!==vals[i]))vars.push(["siklik naik",up,.35]);if(dn.some((v,i)=>v!==vals[i]))vars.push(["siklik turun",dn,.35]);
+ let all=[],meta=null,err=null;
+ for(const[tag,v,pen]of vars){const r=solveSeq(v,o);if(r.error){err=err||r;continue}meta=meta||r;r.list.forEach(x=>{x.cost+=pen;x.next=x.next.map(back);x.fills=x.fills.map(back);x.seq=x.seq.map(back);if(pen)x.name+=" ["+tag+" mod "+M+"]";all.push(x)})}
+ if(!meta)return finishSeq(err);meta.list=all;return finishSeq(meta);
+}
+
+/* ---------- Lapisan token: huruf, hari/bulan, pecahan, kolom, jalur bertipe ---------- */
+const UNK=/^(\?+|_+|…|\.{2,})$/;
+const DAYS=[["senin","mon","monday"],["selasa","tue","tuesday","sel"],["rabu","wed","wednesday"],["kamis","thu","thursday","kam"],["jumat","jum'at","fri","friday","jum"],["sabtu","sat","saturday"],["minggu","ahad","sun","sunday","min"]];
+const MONTHS=[["januari","jan","january"],["februari","feb","pebruari","february"],["maret","mar","march"],["april","apr"],["mei","may"],["juni","jun","june"],["juli","jul","july"],["agustus","agu","agt","aug","august"],["september","sep","sept"],["oktober","okt","oct","october"],["november","nov","nop"],["desember","des","dec","december"]];
+const VOC=new Map(),VNAME={hari:DAYS.map(d=>d[0]),bulan:MONTHS.map(d=>d[0])};
+DAYS.forEach((ws,i)=>ws.forEach(w=>VOC.set(w,["hari",7,i+1])));MONTHS.forEach((ws,i)=>ws.forEach(w=>VOC.set(w,["bulan",12,i+1])));
+const cap1=s=>s[0].toUpperCase()+s.slice(1);
+function classify(tok,noCyc){
+ if(UNK.test(tok))return{t:"unk"};
+ if(/^[-+]?\d+(\.\d+)?$/.test(tok))return{t:"num",v:+tok};
+ const m=tok.match(/^([-+]?\d+)\/(\d+)$/);if(m&&+m[2]>0)return{t:"frac",nu:+m[1],de:+m[2]};
+ const lw=tok.toLowerCase();if(!noCyc&&lw.length>=3&&VOC.has(lw)){const[vn,M,v]=VOC.get(lw);return{t:"cyc",vn,M,v}}
+ const segs=tok.match(/[A-Za-z]|\d+(?:\.\d+)?|[^A-Za-z\d]/g);if(!segs)return null;
+ return{t:"seg",segs,sig:segs.map(s=>/^[A-Za-z]$/.test(s)?"L":/^\d/.test(s)?"N":"P"+s).join("|")};
+}
+function tokenize(text){
+ let t=text.replace(/[−–—]/g,"-").replace(/[→⇒=|]/g," ").replace(/[()\[\]{}]/g," ").trim();
+ const toks=t.split(/[\s,;]+/).filter(Boolean);while(toks.length&&/^(\.{2,}|…)$/.test(toks[toks.length-1]))toks.pop();return toks;
+}
+const letterOf=(v,lower)=>{if(!isInt(v)||v<1||v>26)return"?";const c=String.fromCharCode(64+Math.round(v));return lower?c.toLowerCase():c};
+function bestOf(res){return res.groups&&res.groups.length?res.groups[0]:null}
+function analyzeItems(toks,opts,depth){
+ depth=depth||0;let cls=toks.map(t=>classify(t));if(cls.some(c=>!c))return{error:"Ada token yang tidak dikenali."};
+ const n=cls.length;let end=n;while(end>0&&cls[end-1].t==="unk")end--;
+ const trail=n-end;let K=trail||opts.K||1;
+ const kn=()=>cls.slice(0,end).filter(c=>c.t!=="unk");
+ if(kn().length<3)return{error:"Minimal 3 suku harus diketahui (selain tanda ?)."};
+ const cy=kn().filter(c=>c.t==="cyc");
+ if(cy.length&&!(cy.length===kn().length&&cy.every(c=>c.vn===cy[0].vn)))cls=cls.map((c,i)=>c.t==="cyc"?classify(toks[i],true):c);
+ const miss=[];for(let i=0;i<end;i++)if(cls[i].t==="unk")miss.push(i);if(!trail&&miss.length)K=0;
+ const kt=new Set(kn().map(c=>c.t)),so={K,M:0,lvl:opts.lvl,combos:opts.combos};
+ let cols=null,mode=null,render=null,extra=null;
+ const sigs=new Set(kn().filter(c=>c.t==="seg").map(c=>c.sig));
+ if(kt.size===1&&kt.has("num")){
+  mode="num";cols=[{label:"Nilai",kind:"num",vals:cls.slice(0,end).map(c=>c.t==="unk"?null:c.v)}];render=v=>fmt(v[0]);
+ }else if([...kt].every(t=>t==="num"||t==="frac")){
+  mode="frac";const bad=kn().some(c=>c.t==="num"&&!isInt(c.v));if(bad)return{error:"Campuran pecahan dan desimal tidak didukung; ubah semuanya ke pecahan a/b."};
+  const g=f=>cls.slice(0,end).map(c=>c.t==="unk"?null:(c.t==="frac"?c[f]:(f==="nu"?c.v:1)));
+  cols=[{label:"Pembilang",kind:"num",vals:g("nu")},{label:"Penyebut",kind:"num",vals:g("de")}];
+  render=v=>!isInt(v[0])||!isInt(v[1])||Math.round(v[1])===0?"?":(Math.round(v[1])===1?String(Math.round(v[0])):Math.round(v[0])+"/"+Math.round(v[1]));
+  const dec=cls.slice(0,end).map(c=>c.t==="unk"?null:(c.t==="frac"?c.nu/c.de:c.v));extra={label:"Sebagai nilai desimal",vals:dec};
+ }else if(kt.size===1&&kt.has("cyc")){
+  const vn=cy[0].vn,M=cy[0].M;mode="cyc";cols=[{label:"Urutan "+vn,kind:"cyc",M,vals:cls.slice(0,end).map(c=>c.t==="unk"?null:c.v)}];render=v=>isInt(v[0])?cap1(VNAME[vn][Math.round(v[0])-1]):"?";
+ }else if(kt.size===1&&kt.has("seg")&&sigs.size===1){
+  mode="kolom";const first=kn()[0],sg=first.segs,sigA=first.sig.split("|");const lower=sg.filter(s=>/^[A-Za-z]$/.test(s)).every(s=>s===s.toLowerCase());
+  const colIdx=[];sigA.forEach((s,i)=>{if(s==="L"||s==="N")colIdx.push(i)});
+  const lit=sigA.map((s,i)=>s[0]==="P"?sg[i]:null);
+  cols=colIdx.map(ci=>({label:sigA[ci]==="L"?"Huruf ke-"+(colIdx.filter(x=>x<=ci&&sigA[x]==="L").length):"Angka",kind:sigA[ci]==="L"?"let":"num",M:sigA[ci]==="L"?26:0,
+   vals:cls.slice(0,end).map(c=>c.t==="unk"?null:(sigA[ci]==="L"?c.segs[ci].toUpperCase().charCodeAt(0)-64:+c.segs[ci]))}));
+  render=v=>{let k=0;return sigA.map((s,i)=>s==="L"?letterOf(v[k++],lower):s==="N"?fmt(v[k++]):lit[i]).join("")};
+ }else{
+  if(depth>0)return{error:"Format campuran tidak dikenali."};
+  const key=c=>c.t==="seg"?"seg:"+c.sig:c.t==="cyc"?"cyc:"+c.vn:c.t;
+  for(let p=2;p<=4;p++){
+   const ks=[];let okp=true;for(let j=0;j<p&&okp;j++){const s=new Set();for(let i=j;i<end;i+=p)if(cls[i].t!=="unk")s.add(key(cls[i]));if(s.size!==1)okp=false;else ks.push([...s][0])}
+   if(!okp||new Set(ks).size<2&&p>1&&ks.every(k=>k===ks[0]))continue;
+   const subs=[];let bad=null;
+   for(let j=0;j<p;j++){const st=[];for(let i=j;i<end;i+=p)st.push(toks[i]);const Kj=Math.ceil(K/p)+1;const r=analyzeItems(st,{...opts,K:Kj},1);if(r.error){bad=r.error;break}subs.push(r)}
+   if(bad)continue;
+   const answers=[];
+   miss.forEach(g=>{const j=g%p,q=Math.floor(g/p),a=subs[j].innerTexts[q];answers.push({label:"Suku ke-"+(g+1)+" (?)",text:a===undefined?"?":a})});
+   for(let t=0;t<K;t++){const pos=end+t,j=pos%p,lj=Math.ceil((end-j)/p),q=Math.floor((pos-j)/p)-lj;answers.push({label:"Suku ke-"+(pos+1),text:subs[j].nextTexts[q]??"?"})}
+   const rank=Math.min(...subs.map(s=>s.conf.rank));
+   const names=["Sangat rendah","Ambigu","Sedang","Cukup tinggi","Tinggi"];
+   return{mode:"jalur-bertipe",p,tokens:toks,end,trail,K,miss,answers,conf:{level:names[rank]||"Sedang",rank,warn:subs.flatMap(s=>s.conf.warn)},streams:subs,innerTexts:{},nextTexts:[],cols:[]};
+  }
+  return{error:"Format deret tidak dikenali. Pastikan semua suku bertipe sama (angka / huruf / hari / bulan / pecahan), atau bergantian dengan pola tetap (mis. A, 1, B, 2)."};
+ }
+ const results=cols.map(c=>solveColumn(c.vals,{...so,M:c.M||0,K}));
+ const err=results.find(r=>r.error);if(err)return{error:err.error};
+ for(const r of results)if(!r.groups.length)return{error:"Tidak ditemukan pola yang cocok pada salah satu kolom ("+cols[results.indexOf(r)].label+"). Coba tambah suku, periksa kemungkinan suku janggal, atau perbesar kedalaman pola."};
+ results.forEach((r,i)=>cols[i].res=r);
+ const tops=results.map(r=>r.groups[0]),answers=[],innerTexts={},nextTexts=[];
+ miss.forEach((g,t)=>{const tx=render(tops.map(x=>x.fills[t]));innerTexts[g]=tx;answers.push({label:"Suku ke-"+(g+1)+" (?)",text:tx})});
+ for(let t=0;t<K;t++){const tx=render(tops.map(x=>x.next[t]));nextTexts.push(tx);answers.push({label:"Suku ke-"+(end+t+1),text:tx})}
+ const rank=Math.min(...results.map(r=>r.conf.rank)),names=["Sangat rendah","Ambigu","Sedang","Cukup tinggi","Tinggi"];
+ let altDec=null;if(extra){const r=solveColumn(extra.vals,{...so,K});if(!r.error&&r.groups.length)altDec={label:extra.label,res:r}}
+ return{mode,tokens:toks,end,trail,K,miss,cols,answers,innerTexts,nextTexts,altDec,conf:{level:names[rank],rank,warn:results.flatMap(r=>r.conf.warn)}};
+}
+function analyzeText(text,opts){
+ MEMO.clear();opts=Object.assign({K:1,lvl:2},opts||{});const toks=tokenize(text);
+ if(toks.length<3)return{error:"Masukkan minimal 3 suku."};if(toks.length>60)return{error:"Maksimal 60 suku."};
+ try{return analyzeItems(toks,opts,0)}catch(e){return{error:"Terjadi kesalahan internal: "+(e&&e.message?e.message:e)}}
+}
+function detectAnomaly(vals){
+ const n=vals.length,out=[];MEMO.clear();
+ const base=solveSeq(vals,{K:1,lvl:2});
+ if(base.list&&base.list.length){const g=grouping(base.list)[0];if(g&&g.best.surplus>=2&&g.cost<5)return{clean:true,best:g.best,out}}
+ for(let i=0;i<n;i++){const v=vals.slice();v[i]=null;const r=solveSeq(v,{K:1,combos:12,lvl:1});if(!r.list||!r.list.length)continue;const gs=grouping(r.list),g=gs[0],b=g.best;
+  const fix=i===n-1?g.next[0]:g.fills[0];if(b.surplus>=2&&b.cost<5.5&&!NEAR(fix,vals[i]))out.push({i,old:vals[i],fix,cost:b.cost,name:b.name,formula:b.formula})}
+ return{clean:false,out:out.sort((a,b)=>a.cost-b.cost)};
+}
+
+/* ---------- Mode tabel / matriks ---------- */
+function enumExpr(cases,target,names,maxSize){
+ const R=target.length,T=cases.length,levels=[[],[]],seen=new Set(),sols=[];let total=0;
+ const push=(s,v,t)=>{for(let i=0;i<T;i++)if(!Number.isFinite(v[i])||Math.abs(v[i])>1e9)return;let k="";for(let i=0;i<T;i++)k+=Math.round(v[i]*1e5)+",";if(seen.has(k))return;seen.add(k);levels[s].push({v,t});total++;
+  for(let i=0;i<R;i++)if(!NEAR(v[i],target[i],1e-9))return;sols.push({t,ans:v[T-1],size:s})};
+ for(let j=0;j<cases[0].length;j++)push(1,Float64Array.from(cases,r=>r[j]),names[j]);
+ for(const c of[1,2,3,4,5,10])push(1,Float64Array.from(cases,()=>c),String(c));
+ for(let s=2;s<=maxSize&&total<250000;s++){levels[s]=[];
+  for(const x of levels[s-1]){push(s,x.v.map(a=>a*a),"("+x.t+")²");push(s,x.v.map(a=>a*a*a),"("+x.t+")³");push(s,x.v.map(a=>Math.sqrt(a)),"√("+x.t+")")}
+  for(let sa=1;sa<=s-2;sa++){const sb=s-1-sa;if(sb<1)continue;for(const x of levels[sa])for(const y of levels[sb]){
+   push(s,x.v.map((a,i)=>a+y.v[i]),"("+x.t+" + "+y.t+")");push(s,x.v.map((a,i)=>a*y.v[i]),"("+x.t+" × "+y.t+")");push(s,x.v.map((a,i)=>a-y.v[i]),"("+x.t+" − "+y.t+")");push(s,x.v.map((a,i)=>a/y.v[i]),"("+x.t+" ÷ "+y.t+")")}}
+  if(sols.length)break}
+ return sols;
+}
+function analyzeTable(text){
+ MEMO.clear();const rows=text.split(/\n|;/).map(l=>l.trim()).filter(Boolean).map(l=>l.replace(/[,|]/g," ").split(/\s+/).map(t=>UNK.test(t)?null:(/^[-+]?\d+(\.\d+)?$/.test(t)?+t:NaN)));
+ if(rows.length<2)return{error:"Butuh minimal 2 baris."};const W=rows[0].length;if(rows.some(r=>r.length!==W))return{error:"Setiap baris harus punya jumlah kolom yang sama."};
+ if(rows.some(r=>r.some(v=>Number.isNaN(v))))return{error:"Gunakan angka dan tanda ? saja."};
+ const unk=[];rows.forEach((r,i)=>r.forEach((v,j)=>{if(v===null)unk.push([i,j])}));if(!unk.length)return{error:"Tandai sel yang dicari dengan ?."};
+ const[r0,c0]=unk[0],found=[],letters=j=>String.fromCharCode(65+j);
+ const rowFn=(tbl,r,c,names,label)=>{const comp=tbl.filter((row,i)=>i!==r&&row.every(v=>v!==null));if(comp.length<2)return;const tr=tbl[r];if(tr.some((v,j)=>j!==c&&v===null))return;
+  const cols=[...Array(tbl[0].length).keys()].filter(j=>j!==c);const cases=[...comp,tr].map(row=>cols.map(j=>row[j]));
+  enumExpr(cases,comp.map(row=>row[c]),cols.map(j=>names(j)),5).slice(0,6).forEach(s=>found.push({method:label,ans:s.ans,why:names(c)+" = "+s.t+"  (diuji pada "+comp.length+" baris/kolom lengkap)",w:s.size}))};
+ rowFn(rows,r0,c0,letters,"Rumus antar-kolom");
+ const tT=rows[0].map((_,j)=>rows.map(r=>r[j]));rowFn(tT,c0,r0,j=>"baris"+(j+1),"Rumus antar-baris");
+ const colv=rows.map(r=>r[c0]);if(colv.filter(v=>v!==null).length>=3&&rows.length>=4){const r=solveSeq(colv,{K:1,combos:24,lvl:1});if(r.list&&r.list.length){const g=grouping(r.list)[0];const v=r0===rows.length-1?g.next[0]:g.fills[0];found.push({method:"Deret pada kolom "+letters(c0),ans:v,why:g.best.name+" — "+g.best.formula,w:g.cost})}}
+ if(W>=4&&rows[r0].filter(v=>v!==null).length>=3){const r=solveSeq(rows[r0],{K:1,combos:24,lvl:1});if(r.list&&r.list.length){const g=grouping(r.list)[0];const v=c0===W-1?g.next[0]:g.fills[0];found.push({method:"Deret pada baris "+(r0+1),ans:v,why:g.best.name+" — "+g.best.formula,w:g.cost})}}
+ const cst=(lines,label,idx,lenOf)=>{const full=lines.filter(l=>l.every(v=>v!==null));if(full.length<2)return;const tgt=lines[idx];if(tgt.filter(v=>v===null).length!==1)return;
+  const sums=full.map(l=>l.reduce((s,v)=>s+v,0)),prods=full.map(l=>l.reduce((s,v)=>s*v,1)),ks=tgt.filter(v=>v!==null);
+  if(sums.every(s=>NEAR(s,sums[0])))found.push({method:label+" berjumlah tetap",ans:sums[0]-ks.reduce((s,v)=>s+v,0),why:"Jumlah "+label+" lengkap selalu "+fmt(sums[0]),w:6});
+  if(prods.every(s=>NEAR(s,prods[0]))&&!NEAR(ks.reduce((s,v)=>s*v,1),0))found.push({method:label+" berhasil-kali tetap",ans:prods[0]/ks.reduce((s,v)=>s*v,1),why:"Hasil kali "+label+" lengkap selalu "+fmt(prods[0]),w:6})};
+ cst(rows,"baris",r0,0);cst(tT,"kolom",c0,0);
+ found.sort((a,b)=>a.w-b.w);return{rows,r0,c0,found,unk};
+}
+
+/* ---------- Generator soal acak & uji ---------- */
+const RI=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const GENS={
+easy:[
+ ()=>{const a=RI(1,30),d=RI(2,9)*(Math.random()<.2?-1:1),t=Array.from({length:6},(_,i)=>a+i*d);return{t,why:"Selisih tetap "+(d>0?"+":"")+d+" pada setiap langkah."}},
+ ()=>{const a=RI(1,5),r=RI(2,4),t=Array.from({length:6},(_,i)=>a*r**i);return{t,why:"Setiap suku dikali "+r+"."}},
+ ()=>{const s=RI(1,8),t=Array.from({length:6},(_,i)=>(s+i)**2);return{t,why:"Kuadrat bilangan berurutan: "+(s)+"², "+(s+1)+"², … ; berikutnya "+(s+5)+"²."}},
+ ()=>{const s=RI(1,6),d=RI(1,3),t=Array.from({length:6},(_,i)=>s+i*d);return{t,L:true,why:"Posisi alfabet bertambah "+d+" tiap langkah."}},
+ ()=>{const r=RI(2,3),c=RI(1,3),t=Array.from({length:6},(_,i)=>c*r**(5-i));return{t,why:"Setiap suku dibagi "+r+"."}}],
+medium:[
+ ()=>{const a=RI(1,6),b=RI(1,4),e=RI(1,3),t=[a];let d=b;for(let i=0;i<6;i++){t.push(t.at(-1)+d);d+=e}return{t,why:"Selisih "+t.slice(1).map((v,i)=>v-t[i]).slice(0,5).join(", ")+" bertambah "+e+" setiap langkah (selisih kedua tetap)."}},
+ ()=>{const x=RI(1,5),y=RI(1,5),t=[x,y];while(t.length<7)t.push(t.at(-1)+t.at(-2));return{t,why:"Setiap suku = jumlah dua suku sebelumnya."}},
+ ()=>{const a=RI(1,9),d=RI(1,4),b=RI(10,30),e=RI(2,7),t=[];for(let i=0;i<4;i++){t.push(a+i*d);t.push(b+i*e)}t.pop();t.pop();t.push(a+3*d);t.push(b+3*e);t.length=7;return{t,why:"Dua jalur bergantian: jalur ganjil +"+d+", jalur genap +"+e+"."}},
+ ()=>{const c=RI(0,4),t=Array.from({length:6},(_,i)=>(i+1)*(i+2)/2+c);return{t,why:"Bilangan segitiga n(n+1)/2 dengan"+(c?" tambahan "+c:"")+"."}},
+ ()=>{const m=RI(2,3),c=RI(1,3),x=RI(1,4),t=[x];while(t.length<6)t.push(t.at(-1)*m+c);return{t,why:"Setiap suku = suku sebelumnya × "+m+" + "+c+"."}},
+ ()=>{const s=RI(0,5),pr=[2,3,5,7,11,13,17,19,23,29,31,37],t=pr.slice(s,s+6);return{t,why:"Bilangan prima berurutan."}},
+ ()=>{const s=RI(1,3),t=[s];for(let i=1;i<6;i++)t.push(t.at(-1)+i);return{t,L:true,why:"Posisi alfabet bertambah 1, 2, 3, 4, … ."}}],
+hard:[
+ ()=>{const a=RI(1,5),k=RI(1,3),t=[a];let d=k;for(let i=0;i<5;i++){t.push(t.at(-1)+d);d*=2}return{t,why:"Selisih "+t.slice(1).map((v,i)=>v-t[i]).slice(0,4).join(", ")+" selalu dikali 2."}},
+ ()=>{const s=RI(1,3),c=RI(-3,5),t=Array.from({length:6},(_,i)=>(s+i)**3+c);return{t,why:"Kubik bilangan berurutan"+(c?(c>0?" + ":" − ")+Math.abs(c):"")+"."}},
+ ()=>{const a=RI(2,6),m=RI(2,3),k=RI(1,4),t=[a];for(let i=0;i<6;i++)t.push(i%2===0?t.at(-1)*m:t.at(-1)-k);return{t,why:"Operasi bergantian: ×"+m+", −"+k+", ×"+m+", −"+k+", …"}},
+ ()=>{const c=RI(0,3),t=Array.from({length:7},(_,i)=>(i+1)**3+(i+1)*c);return{t,why:"Rumus suku ke-n: n³"+(c?" + "+c+"n":"")+" (selisih tingkat 3 tetap)."}},
+ ()=>{const m=RI(1,2),t=[1];for(let i=1;i<6;i++)t.push(t.at(-1)*(i+m));return{t,why:"Pengali bertambah: ×"+(1+m)+", ×"+(2+m)+", ×"+(3+m)+", … ."}},
+ ()=>{const c=RI(1,2),x=RI(1,3),y=RI(1,3),t=[x,y];while(t.length<8)t.push(t.at(-1)+t.at(-2)+c);return{t,why:"Setiap suku = jumlah dua suku sebelumnya + "+c+"."}},
+ ()=>{const s=RI(20,26),t=[s];for(let i=1;i<6;i++)t.push(t.at(-1)-i);return{t,L:true,why:"Posisi alfabet berkurang 1, 2, 3, 4, … ."}},
+ ()=>{const a=RI(1,4),d=RI(1,3),b=RI(5,9),e=RI(1,3),c=RI(20,40),f=RI(2,5),t=[];for(let i=0;i<3;i++){t.push(a+i*d,b+i*e,c+i*f)}return{t:t.slice(0,8),why:"Tiga jalur bergantian, masing-masing aritmetika."}},
+ ()=>{const a=RI(1,4),t=[a];let d=1;for(let i=0;i<5;i++){t.push(t.at(-1)+d*d);d++}return{t,why:"Selisihnya kuadrat berurutan: 1², 2², 3², … ."}}]};
+function buildQ(spec,level,midMissing){
+ const t=spec.t,L=!!spec.L;let ai=t.length-1;
+ if(midMissing&&t.length>=6)ai=RI(2,t.length-2);
+ const ans=t[ai],fm=v=>L?letterOf(v,false):String(v);
+ const shown=t.slice(0,midMissing&&ai<t.length-1?t.length:ai+1).map((v,i)=>i===ai?"?":fm(v));
+ const ds=new Set(),dd=t[ai]-(t[ai-1]??0);
+ const cands=L?[ans-1,ans+1,ans+2,ans-2,ans+3]:[ans+1,ans-1,ans+dd,ans-dd,ans*2,ans+2,ans-2,2*t[ai-1]-t[Math.max(0,ai-2)],ans+3,ans+10];
+ for(const c of shuffle(cands)){if(ds.size>=3)break;if(c===ans||(L&&(c<1||c>26)))continue;ds.add(c)}
+ let k=4;while(ds.size<3){const c=ans+k++;if(c!==ans)ds.add(c)}
+ const opts=shuffle([ans,...ds]);
+ return{q:shown.join(", "),a:opts.map(fm),k:opts.indexOf(ans),why:spec.why+" Jawaban: "+fm(ans)+".",l:level,ans:fm(ans),terms:shown};
+}
+function makeQ(level,mid){const lv=level==="mixed"?pick(["easy","medium","hard"]):level;let spec=pick(GENS[lv]);return buildQ(spec(),lv,mid!==undefined?mid:(lv==="hard"&&Math.random()<.25))}
+function makeSet(level,count){return Array.from({length:count},()=>makeQ(level))}
+const TESTS=[["3,6,9,12,?","15"],["2,4,8,16,?","32"],["2,6,12,20,30,?","42"],["1,1,2,3,5,8,?","13"],["2,10,4,20,6,30,?","8"],["A,C,F,J,O,?","U"],["1,4,9,16,25,?","36"],["2,3,5,7,11,?","13"],["1,2,6,24,120,?","720"],
+["7,14,12,24,22,44,?","42"],["1,4,13,40,121,?","364"],["5,8,14,23,35,?","50"],["Z,X,U,Q,L,?","F"],["2,4,?,16,32","8"],["1,3,7,15,31,?","63"],["1,12,123,1234,?","12345"],["1,2,4,7,11,16,?","22"],["2,5,10,17,26,?","37"],
+["100,90,81,73,66,?","60"],["1,8,27,64,?","125"],["3,5,9,17,33,?","65"],["1,1,2,4,7,13,24,?","44"],["1/2,2/3,3/4,4/5,?","5/6"],["AB,CD,EF,GH,?","IJ"],["A1,B2,C3,?","D4"],["A,1,B,2,C,3,?","D"],["Senin,Rabu,Jumat,?","Minggu"],
+["Jan,Mar,Mei,?","Juli"],["2,3,5,8,12,17,?","23"],["1,2,2,3,3,3,4,4,4,4,?","5"],["1,3,2,6,3,9,?","4"],["81,27,9,3,?","1"],["5,10,20,40,?","80"],["3,9,27,81,?","243"],["1,2,4,7,12,20,?","33"],["1,4,2,8,3,12,?","4"],["6,7,9,12,16,?","21"],
+["10,9,7,4,0,?","-5"],["1,4,10,22,46,?","94"],["64,32,16,8,?","4"],["3,4,6,9,13,18,?","24"],["0,3,8,15,24,?","35"],["1,9,25,49,81,?","121"],["5,7,11,19,35,?","67"],["0.5,1,2,4,?","8"],["-2,4,-8,16,?","-32"],["3,6,5,10,9,18,?","17"],
+["1,2,4,5,10,11,22,?","23"],["2,3,5,9,17,?","33"],["12,15,20,27,36,?","47"],["9,99,999,9999,?","99999"],["1,2,6,15,31,?","56"],["3,5,8,13,21,?","34"],["8,12,18,27,?","40.5"],["20,19,17,14,10,?","5"],["1,2,3,4,3,2,1,2,3,?","4"],["B,D,G,K,P,?","V"],
+["W,Y,A,C,?","E"],["Z,A,Y,B,X,?","C"],["2,5,?,17,26","10"],["3,?,27,81","9"],["1,2,?,8,16","4"],["2,3,5,?,11","7"],["1,1,2,?,5,8","3"],["3,6,?,24,?,96","12|48"],["1,3,5,7,?","9"],["2,2,4,6,10,16,?","26"],["a,c,e,g,?","i"],["1,-2,3,-4,5,?","-6"],["4,9,16,25,36,?","49"]];
+function runTests(){
+ const rows=[];let pass=0;const t0=Date.now();
+ for(const[inp,exp]of TESTS){const t1=Date.now(),r=analyzeText(inp,{K:1}),got=r.error?"ERR":r.answers.map(a=>a.text).join("|"),ok=got.toLowerCase()===exp.toLowerCase();if(ok)pass++;rows.push({inp,exp,got,ok,ms:Date.now()-t1,conf:r.conf?r.conf.level:"-"})}
+ return{pass,total:TESTS.length,rows,ms:Date.now()-t0};
+}
+/*ENGINE_END*/
+</script>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let lastReport="",practiceSet=[],examSet=[],timerId=null,secondsLeft=0,examStarted=false,wsText="",lessonText="";
+const EXAMPLES=[["Kuadrat bertingkat","2, 6, 12, 20, 30, ?"],["Selisih berpola (geometri)","5, 7, 11, 19, 35, ?"],["Selang-seling dua jalur","2, 10, 4, 20, 6, 30, ?"],["Suku kosong di tengah","2, 5, ?, 17, 26"],["Dua suku kosong","3, 6, ?, 24, ?, 96"],["Operasi bergantian","7, 14, 12, 24, 22, 44, ?"],["Rekurensi ×3 + 1","1, 4, 13, 40, 121, ?"],["Fibonacci dengan seed lain","1, 2, 3, 5, 8, ?"],["Jumlah tiga suku (Tribonacci)","1, 1, 2, 4, 7, 13, ?"],["Rasio bertingkat (faktorial)","1, 2, 6, 24, 120, ?"],["Selisih = kuadrat","1, 2, 6, 15, 31, ?"],["Huruf biasa","A, C, F, J, O, ?"],["Huruf melewati Z","W, Y, A, C, ?"],["Huruf menurun","Z, X, U, Q, L, ?"],["Gabungan huruf","AB, CD, EF, GH, ?"],["Huruf + angka kuadrat","A1, C4, E9, G16, ?"],["Huruf-angka bergantian","A, 1, B, 2, C, 3, ?"],["Pecahan","1/2, 2/3, 3/4, 4/5, ?"],["Hari","Senin, Rabu, Jumat, ?"],["Bulan","Jan, Mar, Mei, ?"],["Digit digabung","1, 12, 123, 1234, ?"],["9, 99, 999","9, 99, 999, 9999, ?"],["k diulang k kali","1, 2, 2, 3, 3, 3, 4, 4, 4, ?"],["Prima","2, 3, 5, 7, 11, 13, ?"],["Naik-turun (gelombang)","1, 2, 3, 4, 3, 2, 1, 2, 3, ?"],["Ada suku janggal (klik Cek suku janggal)","3, 6, 9, 13, 15, 18"]];
+const exSel=$("exSel");EXAMPLES.forEach((e,i)=>{const o=document.createElement("option");o.value=i;o.textContent=e[0];exSel.appendChild(o)});
+exSel.onchange=()=>{if(exSel.value==="")return;$("seq").value=EXAMPLES[+exSel.value][1];if(!/janggal/.test(EXAMPLES[+exSel.value][0]))analyze()};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".tabpage").forEach(x=>x.classList.toggle("hidden",x.id!==b.dataset.tab));if(b.dataset.tab==="progressTab")showProgress()});
+$("themeBtn").onclick=()=>document.body.classList.toggle("light");$("printBtn").onclick=()=>window.print();
+
+function diffTable(v){const rows=[v.slice()];while(rows.at(-1).length>1&&rows.length<8)rows.push(dif(rows.at(-1)));let h='<table class="dt" style="min-width:0;width:auto"><tbody>';rows.forEach((r,i)=>{h+="<tr><td>"+(i===0?"deret":"Δ"+i)+"</td>"+"<td></td>".repeat(0)+r.map(x=>"<td>"+esc(fmt(x))+"</td>").join("")+"</tr>"});return h+"</tbody></table>"}
+function colHTML(col,res,end,K,opts){
+ const g=res.groups,b=g[0].best,top=opts.top;let h="";
+ const known=col.vals.slice(0,end);
+ h+='<div class="stats"><div class="stat"><strong>'+res.list.length+'</strong><span>Model cocok persis</span></div><div class="stat"><strong>'+g.length+'</strong><span>Jawaban berbeda</span></div><div class="stat"><strong>'+b.surplus+'</strong><span>Suku sisa (bukti) model teratas</span></div><div class="stat"><strong>'+esc(res.conf.level)+'</strong><span>Keyakinan</span></div></div>';
+ if(res.conf.warn.length)h+='<div class="callout">'+res.conf.warn.map(esc).join("<br>")+"</div>";
+ h+="<h3>Penjelasan langkah demi langkah (model teratas: "+esc(b.name)+")</h3>";
+ const lines=b.ex?b.ex(b.seq,res.end):[];
+ h+="<pre>"+esc("Rumus/aturan: "+b.formula+"\n"+lines.join("\n")+"\n\nBukti pada seluruh suku:\n"+b.seq.slice(0,res.end).map((v,i)=>"  suku "+(i+1)+": model → "+fmt(v)+(known[i]===null?"   (suku kosong yang diisi)":"   = data ✓")).join("\n"))+"</pre>";
+ if(!col.vals.slice(0,end).some(v=>v===null)&&col.kind!=="cyc"&&col.kind!=="let"||(col.kind!=="num"&&!col.vals.some(v=>v===null)))h+="<h3>Tabel beda hingga</h3>"+diffTable(known.filter(v=>v!==null));
+ h+="<h3>Jawaban alternatif (dikelompokkan)</h3><div class='tablewrap'><table><thead><tr><th>#</th><th>Jawaban</th><th>Model terbaik</th><th>Jml model</th><th>Kompleksitas</th></tr></thead><tbody>"+g.slice(0,8).map((x,i)=>"<tr><td>"+(i+1)+"</td><td><b>"+esc((x.fills.length?x.fills.map(fmt).join(", ")+" ; ":"")+x.next.map(fmt).join(", "))+"</b></td><td>"+esc(x.best.name)+'<div class="muted">'+esc(x.best.formula)+"</div></td><td>"+x.list.length+"</td><td>"+x.cost.toFixed(2)+"</td></tr>").join("")+"</tbody></table></div>";
+ h+="<details><summary>Peringkat "+Math.min(top,res.list.length)+" model teratas</summary><div class='tablewrap'><table><thead><tr><th>#</th><th>Prediksi</th><th>Model</th><th>Bukti</th><th>Biaya</th></tr></thead><tbody>"+res.list.slice().sort((x,y)=>x.cost-y.cost).slice(0,top).map((x,i)=>"<tr><td>"+(i+1)+"</td><td><b>"+esc(x.next.map(fmt).join(", "))+"</b></td><td>"+esc(x.name)+'<div class="muted">'+esc(x.formula)+"</div></td><td>"+x.surplus+"</td><td>"+x.cost.toFixed(2)+"</td></tr>").join("")+"</tbody></table></div></details>";
+ return h;
+}
+function render(r,opts){
+ const box=$("results");box.classList.remove("hidden");let h="";
+ const ans=r.answers.map(a=>a.text).join("   |   ");
+ h+='<div class="panel"><h2>03 · Hasil</h2><div class="answerbox"><div class="muted">JAWABAN PALING MASUK AKAL</div><div class="answer">'+esc(ans)+(r.answers.length>1?"<small>"+r.answers.map(a=>esc(a.label)+": <b>"+esc(a.text)+"</b>").join(" · ")+"</small>":"")+'</div><div><span class="tag">Keyakinan: '+esc(r.conf.level)+'</span><span class="tag">Jenis: '+esc(r.mode)+"</span>"+(r.cols[0]&&r.cols[0].res?'<span class="tag">Model: '+esc(r.cols[0].res.groups[0].best.name)+"</span>":"")+"</div></div>";
+ if(r.conf.warn.length)h+='<div class="callout">'+[...new Set(r.conf.warn)].map(esc).join("<br>")+"</div>";
+ h+="</div>";
+ if(r.mode==="jalur-bertipe"){h+='<div class="panel"><h2>04 · Rincian tiap jalur (bergantian '+r.p+" jenis)</h2>"+r.streams.map((s,j)=>'<div class="colblock"><b>Jalur '+(j+1)+"</b>"+s.cols.map(c=>colHTML(c,c.res,c.vals.length,s.K,opts)).join("")+"</div>").join("")+"</div>"}
+ else h+='<div class="panel"><h2>04 · Analisis'+(r.cols.length>1?" per kolom":"")+"</h2>"+r.cols.map(c=>'<div class="colblock">'+(r.cols.length>1?"<b>"+esc(c.label)+"</b> — nilai: "+esc(c.vals.map(v=>v===null?"?":fmt(v)).join(", "))+" → jawaban "+esc(c.res.groups[0].next.map(fmt).join(", "))+(c.res.groups[0].fills.length?" ; isi: "+esc(c.res.groups[0].fills.map(fmt).join(", ")):""):"")+colHTML(c,c.res,r.end,r.K,opts)+"</div>").join("")+(r.altDec?'<div class="colblock"><b>Pembanding: '+esc(r.altDec.label)+"</b> → jawaban "+esc(r.altDec.res.groups[0].next.map(fmt).join(", "))+" ("+esc(r.altDec.res.groups[0].best.name)+")</div>":"")+"</div>";
+ h+='<div class="panel"><h2>05 · Batas kepastian</h2><p class="callout">Mesin menguji: konstan, aritmetika, geometri, beda tingkat-k, selisih/rasio yang berpola (bersarang), 2–4 jalur selang-seling, operasi bergantian, periodik, rekurensi linear/kuadrat/hasil-kali/digit (orde 1–3), rumus suku ke-n (n^k, b^n, (−1)^n, n·b^n, ⌊n/2⌋, mod), deret khusus (Fibonacci F, Lucas, Pell, Tribonacci, Catalan, Bell, faktorial, prima P, komposit, P², semiprima, n^n), penggabungan/pengulangan digit, serta transformasi akar dan eksponen. Notasi: F(0)=0, F(1)=1; P(1)=2. Tidak ditemukannya model bukan bukti soal tak berjawaban, dan ditemukannya model bukan bukti jawaban tunggal — gunakan konteks soal.</p></div>';
+ box.innerHTML=h;
+ lastReport="Soal: "+r.tokens.join(", ")+"\nJawaban: "+r.answers.map(a=>a.label+" = "+a.text).join("; ")+"\nKeyakinan: "+r.conf.level+"\n\n"+(r.cols.length?r.cols.map(c=>c.label+": "+c.res.groups[0].best.name+" — "+c.res.groups[0].best.formula).join("\n"):"");
+}
+function analyze(){
+ const text=$("seq").value;$("results").classList.add("hidden");$("bar").style.width="20%";$("status").textContent="Menganalisis… (menyusun dan memvalidasi keluarga pola)";
+ setTimeout(()=>{const t0=performance.now();const r=analyzeText(text,{K:+$("optK").value,lvl:+$("optLvl").value});
+  if(r.error){$("status").textContent=r.error;$("bar").style.width="0%";return}
+  try{render(r,{top:+$("optTop").value})}catch(e){console.error(e);$("status").textContent="Gagal menampilkan hasil: "+e.message;return}
+  $("bar").style.width="100%";$("status").textContent="Selesai dalam "+Math.round(performance.now()-t0)+" ms. Bandingkan juga jawaban alternatif — jangan hanya mengambil peringkat pertama."},30);
+}
+$("solve").onclick=analyze;$("clearBtn").onclick=()=>{$("seq").value="";$("results").classList.add("hidden");$("status").textContent="Direset.";$("bar").style.width="0"};
+$("copyBtn").onclick=async()=>{if(!lastReport)return alert("Jalankan analisis dulu.");try{await navigator.clipboard.writeText(lastReport);$("status").textContent="Laporan disalin."}catch(e){alert("Clipboard tidak tersedia.")}};
+$("anomBtn").onclick=()=>{
+ const toks=tokenize($("seq").value),vals=toks.map(t=>/^[-+]?\d+(\.\d+)?$/.test(t)?+t:NaN);
+ if(vals.length<6||vals.some(Number.isNaN)){$("status").textContent="Cek suku janggal: masukkan ≥6 angka lengkap (tanpa ?).";return}
+ if(vals.length>14){$("status").textContent="Cek suku janggal: maksimal 14 suku.";return}
+ $("status").textContent="Memeriksa tiap suku satu per satu…";
+ setTimeout(()=>{const r=detectAnomaly(vals);let h="";
+  if(r.clean)h="Deret ini sudah punya pola bersih ("+r.best.name+": "+r.best.formula+") — tidak ada suku janggal yang jelas.";
+  else if(!r.out.length)h="Tidak ditemukan satu suku pun yang, bila diganti, membuat seluruh deret mengikuti pola sederhana. Mungkin lebih dari satu suku keliru, atau polanya di luar keluarga yang diuji.";
+  else h="Kandidat suku janggal (urut dari yang paling meyakinkan):\n"+r.out.slice(0,5).map((x,k)=>(k+1)+". Suku ke-"+(x.i+1)+" ("+fmt(x.old)+") sebaiknya "+fmt(x.fix)+" — "+x.name+": "+x.formula).join("\n");
+  $("status").textContent=h},30)};
+
+/* ---- Tabel ---- */
+$("tblEx").onchange=e=>{if(e.target.value){$("tblIn").value=e.target.value;$("tblSolve").click()}};
+$("tblSolve").onclick=()=>{
+ const r=analyzeTable($("tblIn").value),o=$("tblOut");
+ if(r.error){o.textContent=r.error;return}
+ if(!r.found.length){o.textContent="Belum ditemukan hubungan sederhana pada sel ("+(r.r0+1)+", "+String.fromCharCode(65+r.c0)+"). Tambahkan baris lengkap (≥3 membantu) atau periksa soal.";return}
+ const groups=new Map();r.found.forEach(f=>{const k=fmt(f.ans);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(f)});
+ const best=r.found[0];let t="Sel yang dicari: baris "+(r.r0+1)+", kolom "+String.fromCharCode(65+r.c0)+"\nJAWABAN TERATAS: "+fmt(best.ans)+"\n\n";
+ [...groups.entries()].forEach(([k,fs])=>{t+="• "+k+"  ("+fs.length+" metode)\n"+fs.slice(0,4).map(f=>"    - "+f.method+": "+f.why).join("\n")+"\n"});
+ if(groups.size>1)t+="\nPerhatian: ada lebih dari satu jawaban yang konsisten; utamakan rumus yang paling sederhana dan masuk akal pada soal.";
+ if(r.unk.length>1)t+="\nCatatan: terdapat "+r.unk.length+" sel '?'; hanya yang pertama dipecahkan.";
+ o.textContent=t};
+
+/* ---- Latihan & ujian ---- */
+function drawQuestions(area,set,prefix,exam){$(area).innerHTML=set.map((q,i)=>'<div class="qcard"><b>'+(i+1)+". "+esc(q.q)+"</b>"+q.a.map((v,j)=>'<label class="choice"><input type="radio" name="'+prefix+i+'" value="'+j+'"> '+esc(v)+"</label>").join("")+"</div>").join("")}
+function grade(set,prefix,area,show){document.querySelectorAll("#"+area+" .feedback").forEach(x=>x.remove());let score=0;set.forEach((q,i)=>{const el=document.querySelector('input[name="'+prefix+i+'"]:checked'),ok=el&&+el.value===q.k;if(ok)score++;const card=$(area).querySelectorAll(".qcard")[i];if(show&&card){const fb=document.createElement("div");fb.className="feedback "+(ok?"good":"bad");fb.textContent=(ok?"Benar. ":"Belum tepat. ")+q.why;card.appendChild(fb)}});return{score,total:set.length,percent:Math.round(score/Math.max(1,set.length)*100)}}
+function record(r,kind){let h=[];try{h=JSON.parse(localStorage.getItem("apexHistory")||"[]")}catch(e){}h.push({date:new Date().toLocaleString("id-ID"),kind,score:r.score,total:r.total,percent:r.percent});try{localStorage.setItem("apexHistory",JSON.stringify(h.slice(-100)))}catch(e){}showProgress()}
+$("startPractice").onclick=()=>{practiceSet=makeSet($("practiceLevel").value,+$("practiceCount").value);drawQuestions("practiceArea",practiceSet,"p");$("practiceResult").classList.add("hidden")};
+$("checkPractice").onclick=()=>{if(!practiceSet.length)return alert("Buat set dulu.");const r=grade(practiceSet,"p","practiceArea",true);$("practiceResult").classList.remove("hidden");$("practiceResult").textContent="Hasil: "+r.score+"/"+r.total+" ("+r.percent+"%). Pelajari pembahasan lalu ulangi soal yang salah.";record(r,"Latihan")};
+const stopTimer=()=>{if(timerId){clearInterval(timerId);timerId=null}},showTime=()=>{$("timer").textContent=String(Math.floor(secondsLeft/60)).padStart(2,"0")+":"+String(secondsLeft%60).padStart(2,"0")};
+$("startExam").onclick=()=>{stopTimer();examSet=makeSet("mixed",+$("examCount").value);drawQuestions("examArea",examSet,"e");secondsLeft=+$("examMinutes").value*60;examStarted=true;$("submitExam").disabled=false;$("examResult").classList.add("hidden");showTime();timerId=setInterval(()=>{secondsLeft--;showTime();if(secondsLeft<=0){stopTimer();submitExam(true)}},1000)};
+function submitExam(auto){if(!examStarted)return;stopTimer();examStarted=false;$("submitExam").disabled=true;const r=grade(examSet,"e","examArea",true);$("examResult").classList.remove("hidden");$("examResult").textContent=(auto?"Waktu habis. ":"")+"Skor: "+r.score+"/"+r.total+" ("+r.percent+"%). Telaah pembahasan di tiap soal.";document.querySelectorAll("#examArea input").forEach(x=>x.disabled=true);record(r,"Simulasi")}
+$("submitExam").onclick=()=>submitExam(false);
+function showProgress(){let h=[];try{h=JSON.parse(localStorage.getItem("apexHistory")||"[]")}catch(e){}$("attempts").textContent=h.length;$("accuracy").textContent=h.length?Math.round(h.reduce((s,x)=>s+x.percent,0)/h.length)+"%":"—";$("bestScore").textContent=h.length?Math.max(...h.map(x=>x.percent))+"%":"—";let st=0;for(const x of h.slice().reverse()){if(x.percent>=70)st++;else break}$("streak").textContent=st;$("history").innerHTML=h.length?'<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Jenis</th><th>Skor</th><th>%</th></tr></thead><tbody>'+h.slice().reverse().map(x=>"<tr><td>"+esc(x.date)+"</td><td>"+esc(x.kind)+"</td><td>"+x.score+"/"+x.total+"</td><td>"+x.percent+"%</td></tr>").join("")+"</tbody></table></div>":"<p class='muted'>Belum ada riwayat.</p>"}
+$("exportProgress").onclick=()=>{let v="[]";try{v=localStorage.getItem("apexHistory")||"[]"}catch(e){}const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([v],{type:"application/json"}));a.download="prospek-apex-riwayat.json";a.click()};
+$("clearProgress").onclick=()=>{if(confirm("Hapus semua riwayat?")){try{localStorage.removeItem("apexHistory")}catch(e){}showProgress()}};
+
+/* ---- Studio guru ---- */
+const FG={selisih:{t:"Selisih dan beda bertingkat",g:"Siswa menghitung beda pertama/kedua/ketiga dan menguji kestabilannya.",s:["Pemantik: bandingkan 4,7,10,13 dengan 2,6,12,20.","Guru memodelkan tabel beda.","Latihan berpasangan: tulis bukti, bukan hanya jawaban.","Transfer: selisih yang berpola (2,4,8,16).","Refleksi: kapan beda hingga menyesatkan?"]},
+rasio:{t:"Rasio dan perubahan multiplikatif",g:"Siswa membedakan perubahan aditif vs multiplikatif, termasuk rasio bertingkat (×2,×3,×4).",s:["Bandingkan 3,6,9 dengan 3,6,12.","Modelkan selisih dan rasio.","Latihan ×k, ÷k, dan ×(k+1) bertingkat.","Transfer: bilangan negatif dan pecahan.","Exit ticket: bukti rasio."]},
+selang:{t:"Dua jalur dan operasi bergantian",g:"Siswa mengenali jalur ganjil-genap dan operasi yang bergantian (×2, −1).",s:["Tampilkan 2,10,4,20,6,30.","Warnai posisi ganjil/genap.","Latihan memisahkan jalur.","Bandingkan dengan 7,14,12,24,22,44 (operasi bergantian).","Jelaskan mengapa satu aturan tunggal kurang cocok."]},
+khusus:{t:"Pola khusus dan rekurensi",g:"Siswa mengenali kuadrat, kubik, prima, Fibonacci, faktorial, serta a(n)=r·a(n−1)+c.",s:["Observasi numerik.","Kartu pola dan ciri pembeda.","Identifikasi lalu verifikasi semua suku.","Rekurensi: 1,4,13,40 (×3+1).","Refleksi hipotesis alternatif."]},
+huruf:{t:"Huruf, hari, bulan (siklik)",g:"Siswa mengubah huruf ke posisi alfabet, menangani Z→A, hari (mod 7), bulan (mod 12).",s:["A=1…Z=26.","Contoh B,E,H,K dan W,Y,A,C.","Latihan maju/mundur/bertingkat.","Hari dan bulan sebagai deret mod 7 / mod 12.","Exit ticket dengan alasan tertulis."]},
+strategi:{t:"Strategi terpadu dan suku janggal",g:"Siswa memakai urutan pemeriksaan sistematis, mengelola waktu, dan memeriksa suku yang janggal.",s:["Prediksi tanpa kalkulator + hipotesis awal.","Urutan: selisih → rasio → bertingkat → jalur → rekurensi → khusus.","Kelompok: soal dengan ? di tengah.","Soal dengan satu suku salah: cari dan perbaiki.","Refleksi strategi."]}};
+$("makeLesson").onclick=()=>{const g=FG[$("lessonFocus").value],m=+$("lessonDuration").value,lv=$("lessonLevel").value,sc=m/45;const L=["PROSPEK APEX — RANCANGAN SESI","Fokus: "+g.t,"Durasi: "+m+" menit  |  Profil: "+lv,"","TUJUAN",g.g,"","ALUR"];const w=[5,10,15,10,5];g.s.forEach((x,i)=>L.push((i+1)+". "+Math.max(2,Math.round(w[i]*sc))+" menit — "+x));L.push("","DIFERENSIASI",lv==="dasar"?"Beri contoh terselesaikan, petunjuk bertahap, dan pertanyaan pemandu.":lv==="mahir"?"Minta siswa membandingkan dua hipotesis yang sama-sama cocok dan membela pilihannya.":"Pasangan fleksibel; petunjuk bertahap bagi yang butuh, soal transfer bagi yang siap.","","CATATAN","Nilai proses dan kemampuan menjelaskan. Jangan menyamakan skor latihan dengan IQ.");lessonText=L.join("\n");$("lessonOutput").textContent=lessonText};
+$("copyLesson").onclick=async()=>{if(!lessonText)return alert("Susun dulu.");try{await navigator.clipboard.writeText(lessonText);alert("Disalin.")}catch(e){alert("Salin manual.")}};
+$("makeWs").onclick=()=>{const set=makeSet($("wsLevel").value,+$("wsCount").value);const o=["PROSPEK APEX — LEMBAR KERJA DERET","Nama: ____________________  Tanggal: ____________","Petunjuk: tentukan suku yang diminta (?) dan tulis aturan singkat.",""];set.forEach((q,i)=>o.push((i+1)+". "+q.q,"   Jawaban: ______________   Aturan: ______________________________",""));if($("wsKey").value==="separate"){o.push("KUNCI JAWABAN (pisahkan sebelum dibagikan)");set.forEach((q,i)=>o.push((i+1)+". "+q.ans+" — "+q.why))}wsText=o.join("\n");$("wsOut").textContent=wsText};
+$("dlWs").onclick=()=>{if(!wsText)return alert("Buat dulu.");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([wsText],{type:"text/plain;charset=utf-8"}));a.download="PROSPEK_APEX_Lembar_Kerja.txt";a.click()};
+$("prWs").onclick=()=>{if(!wsText)return alert("Buat dulu.");const w=window.open("","_blank");if(!w)return alert("Izinkan pop-up.");w.document.write('<!doctype html><meta charset="utf-8"><title>Lembar Kerja</title><style>body{font:12pt/1.55 Arial;max-width:800px;margin:30px auto;white-space:pre-wrap}</style><body>'+esc(wsText));w.document.close();w.print()};
+
+/* ---- Uji mesin ---- */
+$("selfTestBtn").onclick=()=>{const el=$("selfTestResult");el.classList.remove("hidden");el.textContent="Menjalankan uji regresi…";
+ setTimeout(()=>{const r=runTests();let g=0,gt=0;const gfail=[];for(const lv of["easy","medium","hard"])for(let k=0;k<12;k++){const q=makeQ(lv,k%4===3);const res=analyzeText(q.terms.join(", "),{K:1});const got=res.error?"ERR":res.answers.map(a=>a.text).join("|");gt++;if(got.toLowerCase()===q.ans.toLowerCase())g++;else gfail.push(q.terms.join(", ")+" → mesin: "+got+" | kunci: "+q.ans)}
+  el.className="status "+(r.pass===r.total&&g===gt?"good":"warn");
+  el.textContent="UJI REGRESI TETAP: "+r.pass+"/"+r.total+" lulus ("+r.ms+" ms)\n"+r.rows.filter(x=>!x.ok).map(x=>"GAGAL: "+x.inp+" → "+x.got+" (harusnya "+x.exp+")").join("\n")+"\n\nUJI SOAL ACAK: "+g+"/"+gt+" cocok dengan kunci generator"+(gfail.length?"\n"+gfail.join("\n"):"")+"\n\nCatatan: lulus uji ini bukan bukti bahwa semua jenis soal tercakup — hanya bahwa jenis yang diuji ditangani benar.";},40)};
 showProgress();
 </script>
 </body></html>
