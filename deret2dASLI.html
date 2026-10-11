@@ -1,0 +1,1415 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mesin Deret</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Konsep tata letak: lembar kerja satu kolom. Deret ditulis di atas kertas milimeter,
+   jawabannya distabilo, dan tabel selisih bertingkat dibuat sebagai segitiga seperti di buku soal. */
+:root {
+  --bg: #EDF0EE;
+  --surface: #F8FAF9;
+  --ink: #16201C;
+  --muted: #586861;
+  --line: #CFD8D3;
+  --grid: #DCE3DF;
+  --accent: #0A6B5C;
+  --accent-ink: #F4FBF8;
+  --mark: #E4EE5A;
+  --mark-ink: #18200F;
+  --good: #1B7F4B; --good-bg: #DCEFE3;
+  --warn: #8F5B00; --warn-bg: #F6E8C8;
+  --bad: #B03A2E; --bad-bg: #F5DAD6;
+  --font-ui: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --font-num: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1512; --surface: #151F1A; --ink: #E4ECE7; --muted: #8FA198; --line: #27372F; --grid: #1D2A24;
+    --accent: #47C9AC; --accent-ink: #06201A; --mark: #D6E54B; --mark-ink: #151A0B;
+    --good: #58C98A; --good-bg: #16301F; --warn: #E0B04F; --warn-bg: #33290F; --bad: #EF8A7F; --bad-bg: #37201D;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1512; --surface: #151F1A; --ink: #E4ECE7; --muted: #8FA198; --line: #27372F; --grid: #1D2A24;
+  --accent: #47C9AC; --accent-ink: #06201A; --mark: #D6E54B; --mark-ink: #151A0B;
+  --good: #58C98A; --good-bg: #16301F; --warn: #E0B04F; --warn-bg: #33290F; --bad: #EF8A7F; --bad-bg: #37201D;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--font-ui); padding-inline: 16px; padding-block: 28px 56px; }
+.wrap { max-width: 860px; margin-inline: auto; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.05; margin: 0; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance; }
+h2 { font-size: 0.78rem; margin: 0 0 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 62ch; margin-top: 10px; text-wrap: pretty; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; min-width: 0; }
+label { display: block; font-weight: 600; margin-bottom: 8px; }
+textarea, input[type="text"] {
+  width: 100%; font: 500 18px/22px var(--font-num); color: var(--ink); background-color: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px; resize: vertical; min-width: 0;
+}
+#q, #list {
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px; background-position: 0 10px;
+}
+textarea:focus-visible, input:focus-visible, button:focus-visible, summary:focus-visible, .chip-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; margin-top: 12px; }
+.hint { color: var(--muted); font-size: 0.86rem; flex: 1 1 260px; min-width: 0; }
+.btn { font: 600 1rem var(--font-ui); border-radius: 8px; padding: 10px 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:disabled { opacity: 0.55; cursor: progress; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip-btn { font: 500 0.82rem var(--font-num); padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+.chip-btn:hover { background: var(--mark); color: var(--mark-ink); border-color: transparent; }
+
+/* Hasil */
+.answer { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.answer .lbl { font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+.hl { background: var(--mark); color: var(--mark-ink); padding: 0 0.28em; border-radius: 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.big { font: 700 clamp(2.2rem, 8vw, 3.8rem)/1.15 var(--font-num); overflow-wrap: anywhere; letter-spacing: -0.02em; }
+.more { font: 500 1rem var(--font-num); color: var(--muted); overflow-wrap: anywhere; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.badge { font-size: 0.82rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.badge.kuat { background: var(--good-bg); color: var(--good); }
+.badge.sedang { background: var(--warn-bg); color: var(--warn); }
+.badge.lemah, .badge.none { background: var(--bad-bg); color: var(--bad); }
+.badge.plain { background: transparent; border: 1px solid var(--line); color: var(--muted); font-weight: 600; }
+.note { margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: var(--warn-bg); color: var(--warn); font-size: 0.92rem; }
+.note.bad { background: var(--bad-bg); color: var(--bad); }
+.strip { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.tile { min-width: 3.4rem; max-width: 100%; padding: 5px 10px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font: 500 1.05rem var(--font-num); display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.tile .idx { font-size: 0.64rem; color: var(--muted); font-weight: 500; }
+.tile.ans { background: var(--mark); color: var(--mark-ink); border-color: transparent; font-weight: 700; }
+.tile.ans .idx { color: var(--mark-ink); opacity: 0.7; }
+.tile.ghost { border-style: dashed; color: var(--muted); background: transparent; }
+.tile.fill { outline: 2px solid var(--mark); outline-offset: 1px; }
+.sub { margin-top: 18px; }
+.chain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.chain li { padding-left: 14px; border-left: 3px solid var(--line); color: var(--muted); overflow-wrap: anywhere; }
+.chain li.final { border-left-color: var(--accent); color: var(--ink); font-weight: 500; }
+.chain li.final .m { font-family: var(--font-num); font-size: 0.95em; }
+.tri { overflow-x: auto; padding-bottom: 4px; }
+.drow { display: flex; align-items: center; gap: 8px; margin-top: 4px; width: max-content; min-width: 100%; }
+.drow .dl { font: 600 0.72rem var(--font-ui); color: var(--muted); width: 3.2rem; flex: none; }
+.drow .cells { display: flex; gap: 6px; margin-left: calc(var(--i) * 1.7rem); }
+.drow .c { min-width: 3.2rem; text-align: center; font: 500 0.95rem var(--font-num); padding: 2px 6px; border-radius: 4px; border: 1px solid transparent; }
+.drow.const .c { background: var(--mark); color: var(--mark-ink); }
+.alts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.alts li { display: grid; grid-template-columns: minmax(4.5rem, auto) 1fr; gap: 4px 14px; align-items: baseline; padding-top: 10px; border-top: 1px solid var(--line); }
+.alts li:first-child { border-top: 0; padding-top: 0; }
+.alts .v { font: 700 1.05rem var(--font-num); overflow-wrap: anywhere; }
+.alts .r { color: var(--muted); font-size: 0.9rem; min-width: 0; overflow-wrap: anywhere; }
+.alts .p { font: 500 0.78rem var(--font-ui); color: var(--muted); display: block; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.stat { display: flex; flex-direction: column; }
+.stat b { font: 700 1.5rem var(--font-num); }
+.stat span { color: var(--muted); font-size: 0.84rem; }
+.wt { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.wt td { padding: 4px 0; border-top: 1px solid var(--line); }
+.wt td:last-child { text-align: right; font-family: var(--font-num); }
+.pos { color: var(--bad); } .neg { color: var(--good); }
+details > summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; align-items: center; gap: 8px; }
+details > summary::before { content: '▸'; color: var(--accent); transition: transform 0.15s; }
+details[open] > summary::before { transform: rotate(90deg); }
+details .inner { display: flex; flex-direction: column; gap: 18px; margin-top: 16px; }
+progress { width: 100%; height: 10px; accent-color: var(--accent); }
+.msg { margin-top: 12px; font-size: 0.92rem; color: var(--ink); overflow-wrap: anywhere; }
+.msg:empty { display: none; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) { details > summary::before { transition: none; } }
+</style>
+
+<main class="wrap">
+  <header>
+    <h1>Mesin Deret</h1>
+    <p class="lede">Tempel deret angka seperti di soal psikotest. Mesin menguji ratusan aturan, memeriksa tiap aturan pada semua angka dengan pecahan eksak, lalu memilih penjelasan paling sederhana. Koreksi dari Anda membuatnya makin jeli.</p>
+  </header>
+
+  <section class="card" aria-labelledby="inLbl">
+    <label for="q" id="inLbl">Deret angka</label>
+    <textarea id="q" rows="3" spellcheck="false" autocomplete="off">2, 3, 5, 8, 13, 21</textarea>
+    <div class="row">
+      <button class="btn primary" id="go" type="button">Analisis</button>
+      <select id="mode" class="btn" aria-label="Cara membaca angka"><option value="auto">Otomatis</option><option value="units">Angka satuan saja (mod 10)</option><option value="plain">Angka biasa</option></select>
+      <p class="hint">Pisahkan dengan koma atau spasi. Tulis ? untuk angka yang hilang. Pecahan (1/2) dan desimal (0.5) boleh. Ctrl+Enter untuk menjalankan. Bila soal hanya mencatat angka satuan hasil hitungan, pilih “Angka satuan saja”.</p>
+    </div>
+    <div class="chips" id="chips" aria-label="Contoh soal"></div>
+  </section>
+
+  <section id="out" aria-live="polite"></section>
+
+  <section class="card" aria-labelledby="teachLbl">
+    <h2 id="teachLbl">Jawaban Anda berbeda?</h2>
+    <p class="muted">Isi jawaban yang benar untuk soal di atas. Mesin menyimpannya, mencari aturan yang cocok, dan menggeser bobot keluarga pola yang salah dipilih.</p>
+    <div class="row">
+      <input type="text" id="truth" inputmode="text" placeholder="Jawaban yang benar" aria-label="Jawaban yang benar" style="flex: 1 1 200px; max-width: 280px;">
+      <button class="btn" id="teach" type="button">Ajari mesin</button>
+    </div>
+    <p class="msg" id="learnMsg"></p>
+  </section>
+
+  <details class="card" id="brainBox">
+    <summary>Apa yang sudah dipelajari mesin</summary>
+    <div class="inner">
+      <div class="grid2" id="stats"></div>
+      <div>
+        <h2>Bobot yang bergeser</h2>
+        <div id="weights"></div>
+      </div>
+      <div>
+        <h2>Latihan mandiri</h2>
+        <p class="muted">Mesin membuat soal acak yang jawabannya ia ketahui, menjawabnya, lalu belajar dari kesalahan. Bobot hanya berubah saat mesin salah.</p>
+        <div class="row"><button class="btn" id="selfTrain" type="button">Latih dengan 120 soal acak</button></div>
+        <progress id="prog" max="100" value="0" hidden></progress>
+        <p class="msg" id="trainMsg"></p>
+      </div>
+      <div>
+        <h2>Latih dari daftar soal Anda</h2>
+        <p class="muted">Satu soal per baris dengan format deret =&gt; jawaban. Mesin menjalankan dua putaran dan melaporkan peningkatannya.</p>
+        <textarea id="list" rows="4" spellcheck="false" placeholder="2,4,8,16 => 32&#10;1,1,2,3,5 => 8"></textarea>
+        <div class="row"><button class="btn" id="listTrain" type="button">Latih dari daftar</button></div>
+        <progress id="prog2" max="100" value="0" hidden></progress>
+        <p class="msg" id="listMsg"></p>
+      </div>
+      <div>
+        <h2>Simpan atau pindahkan otak</h2>
+        <p class="muted">Pelajaran tersimpan di browser ini. Untuk memindahkannya ke perangkat lain, salin teks di bawah lalu tempel dan muat di sana.</p>
+        <textarea id="brainJson" rows="4" spellcheck="false" aria-label="Data otak mesin"></textarea>
+        <div class="row">
+          <button class="btn" id="copyBrain" type="button">Salin</button>
+          <button class="btn" id="loadBrain" type="button">Muat dari kotak</button>
+          <button class="btn" id="resetBrain" type="button">Reset otak</button>
+        </div>
+        <p class="msg" id="brainMsg"></p>
+      </div>
+    </div>
+  </details>
+</main>
+
+<script>
+/* Mesin Deret - mesin hipotesis untuk soal deret angka (psikotest).
+ * Prinsip: bangun banyak hipotesis aturan -> verifikasi eksak (pecahan BigInt)
+ * -> pilih penjelasan terpendek (MDL) -> bobot keluarga pola belajar dari koreksi.
+ */
+(function (root) {
+'use strict';
+
+const K = 8;                       // berapa suku ke depan yang diprediksi (jawaban + 7 lanjutan)
+const BIG = 10n ** 5000n;
+const STATS = { tested: 0 };
+
+/* ---------------- Pecahan eksak ---------------- */
+function bgcd(a, b) { if (a < 0n) a = -a; if (b < 0n) b = -b; while (b !== 0n) { const t = a % b; a = b; b = t; } return a; }
+class Fr {
+  constructor(n, d) {
+    if (d === undefined) d = 1n;
+    if (d === 0n) throw new Error('div0');
+    if (d < 0n) { n = -n; d = -d; }
+    if (d !== 1n) { const g = bgcd(n, d); if (g > 1n) { n /= g; d /= g; } }
+    this.n = n; this.d = d;
+  }
+  add(o) { return new Fr(this.n * o.d + o.n * this.d, this.d * o.d); }
+  sub(o) { return new Fr(this.n * o.d - o.n * this.d, this.d * o.d); }
+  mul(o) { return new Fr(this.n * o.n, this.d * o.d); }
+  div(o) { return new Fr(this.n * o.d, this.d * o.n); }
+  neg() { return new Fr(-this.n, this.d); }
+  abs() { return this.n < 0n ? this.neg() : this; }
+  eq(o) { return this.n === o.n && this.d === o.d; }
+  isZero() { return this.n === 0n; }
+  isInt() { return this.d === 1n; }
+  sign() { return this.n < 0n ? -1 : this.n > 0n ? 1 : 0; }
+  toNumber() { return Number(this.n) / Number(this.d); }
+  toString() { return this.d === 1n ? this.n.toString() : this.n + '/' + this.d; }
+}
+const ZERO = new Fr(0n), ONE = new Fr(1n);
+const FI = (x) => new Fr(BigInt(x));
+function chk(x) { if (x.n > BIG || x.n < -BIG || x.d > BIG) throw new Error('big'); return x; }
+
+/* ---------------- Parsing ---------------- */
+function parseToken(t) {
+  t = t.replace(/[−–—]/g, '-');
+  let m;
+  if ((m = /^([+-]?\d+)\/(\d+)$/.exec(t))) {
+    if (BigInt(m[2]) === 0n) return undefined;
+    return new Fr(BigInt(m[1]), BigInt(m[2]));
+  }
+  if ((m = /^([+-]?)(\d*)\.(\d+)$/.exec(t))) {
+    const n = BigInt((m[2] || '0') + m[3]);
+    return new Fr(m[1] === '-' ? -n : n, 10n ** BigInt(m[3].length));
+  }
+  if (/^[+-]?\d+$/.test(t)) return new Fr(BigInt(t));
+  return undefined;
+}
+function parseInput(text) {
+  let s = String(text || '').replace(/\r/g, ' ').replace(/->|→|⇒/g, ',').replace(/[\[\](){}]/g, ' ');
+  const toks = s.split(/[\s,;|]+/).filter(Boolean);
+  const isUnk = (t) => /^(\?+|_+|x|\.\.\.|…)$/i.test(t);
+  let asked = false;
+  while (toks.length && isUnk(toks[toks.length - 1])) { toks.pop(); asked = true; }
+  const seq = [];
+  for (const t of toks) {
+    if (isUnk(t)) { seq.push(null); continue; }
+    const v = parseToken(t);
+    if (v === undefined) return { error: '"' + t + '" bukan angka yang bisa dibaca. Pisahkan dengan koma atau spasi, desimal pakai titik.' };
+    seq.push(v);
+  }
+  const known = seq.filter((x) => x !== null).length;
+  if (known < 3) return { error: 'Masukkan minimal 3 angka.' };
+  if (seq.length > 40) return { error: 'Maksimal 40 angka.' };
+  if (seq[0] === null) return { error: 'Angka pertama tidak boleh kosong.' };
+  return { seq, asked, gaps: seq.map((x, i) => x === null ? i : -1).filter((i) => i >= 0) };
+}
+
+/* ---------------- Format ---------------- */
+const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+const sup = (k) => String(k).split('').map((c) => SUP[c]).join('');
+function fmtAbs(a) { return a.isInt() ? a.n.toString() : a.n + '/' + a.d; }
+function fmtVal(c) { return c.toString(); }
+function fmtLin(terms) {
+  let s = '';
+  terms.forEach((t, j) => {
+    const neg = t.c.sign() < 0; const a = neg ? t.c.neg() : t.c;
+    let body;
+    if (t.nm === '1') body = fmtAbs(a);
+    else if (a.eq(ONE)) body = t.nm;
+    else body = (a.isInt() ? a.n.toString() : '(' + fmtAbs(a) + ')') + '·' + t.nm;
+    if (j === 0) s += (neg ? '−' : '') + body; else s += (neg ? ' − ' : ' + ') + body;
+  });
+  return s || '0';
+}
+function coefCost(c) {
+  if (c.isZero()) return 0.2;
+  if (c.isInt()) { const a = Number(c.n < 0n ? -c.n : c.n); if (a === 1) return 0.3; return 0.8 + Math.log2(a + 1) * 0.9; }
+  const a = Math.abs(Number(c.n)), b = Number(c.d);
+  return 1.6 + Math.log2(a + 1) * 0.9 + Math.log2(b + 1) * 0.9;
+}
+const pen = (s) => s >= 4 ? 0 : s === 3 ? 1.5 : s === 2 ? 3 : s === 1 ? 6 : Infinity;
+
+/* ---------------- Bilangan pendukung ---------------- */
+const FACT = [1n]; function fact(n) { while (FACT.length <= n) FACT.push(FACT[FACT.length - 1] * BigInt(FACT.length)); return FACT[n]; }
+const FIBS = [0n, 1n]; function fib(n) { while (FIBS.length <= n) FIBS.push(FIBS[FIBS.length - 1] + FIBS[FIBS.length - 2]); return FIBS[n]; }
+function isqrt(n) { if (n < 0n) return null; if (n < 2n) return n; let x = n, y = (x + 1n) / 2n; while (y < x) { x = y; y = (x + n / x) / 2n; } return x; }
+function icbrt(n) {
+  const neg = n < 0n; const m = neg ? -n : n;
+  let x = BigInt(Math.round(Math.cbrt(Number(m))));
+  if (!isFinite(Number(m))) return null;
+  for (let d = -2n; d <= 2n; d++) { const c = x + d; if (c >= 0n && c * c * c === m) return neg ? -c : c; }
+  return null;
+}
+
+/* ---------------- Fitur untuk regresi jarang ---------------- */
+const val = (a, i) => (i >= 0 && i < a.length) ? a[i] : null;
+const FEATS = [
+  { k: '1', nm: '1', prior: 0.3, rank: 99, f: () => ONE },
+  { k: 'n', nm: 'n', prior: 0.7, rank: 60, f: (a, i) => FI(i + 1) },
+  { k: 'n2', nm: 'n²', prior: 1.0, rank: 50, f: (a, i) => { const n = BigInt(i + 1); return new Fr(n * n); } },
+  { k: 'n3', nm: 'n³', prior: 1.4, rank: 40, f: (a, i) => { const n = BigInt(i + 1); return new Fr(n * n * n); } },
+  { k: '2^n', nm: '2ⁿ', prior: 1.0, rank: 30, f: (a, i) => new Fr(2n ** BigInt(i + 1)) },
+  { k: '3^n', nm: '3ⁿ', prior: 1.3, rank: 30, f: (a, i) => new Fr(3n ** BigInt(i + 1)) },
+  { k: '4^n', nm: '4ⁿ', prior: 1.8, rank: 30, f: (a, i) => new Fr(4n ** BigInt(i + 1)) },
+  { k: '5^n', nm: '5ⁿ', prior: 2.0, rank: 30, f: (a, i) => new Fr(5n ** BigInt(i + 1)) },
+  { k: '(-1)^n', nm: '(−1)ⁿ', prior: 1.0, rank: 70, f: (a, i) => ((i + 1) % 2 ? FI(-1) : ONE) },
+  { k: 'n2^n', nm: 'n·2ⁿ', prior: 2.0, rank: 25, f: (a, i) => new Fr(BigInt(i + 1) * 2n ** BigInt(i + 1)) },
+  { k: 'n3^n', nm: 'n·3ⁿ', prior: 2.6, rank: 25, f: (a, i) => new Fr(BigInt(i + 1) * 3n ** BigInt(i + 1)) },
+  { k: 'n!', nm: 'n!', prior: 1.8, rank: 20, f: (a, i) => new Fr(fact(i + 1)) },
+  { k: 'n^n', nm: 'nⁿ', prior: 2.4, rank: 20, f: (a, i) => new Fr(BigInt(i + 1) ** BigInt(i + 1)) },
+  { k: '1/n', nm: '1/n', prior: 1.5, rank: 45, f: (a, i) => new Fr(1n, BigInt(i + 1)) },
+  { k: '1/(n+1)', nm: '1/(n+1)', prior: 1.7, rank: 45, f: (a, i) => new Fr(1n, BigInt(i + 2)) },
+  { k: '1/n(n+1)', nm: '1/(n(n+1))', prior: 2.2, rank: 45, f: (a, i) => new Fr(1n, BigInt(i + 1) * BigInt(i + 2)) },
+  { k: '1/2^n', nm: '1/2ⁿ', prior: 1.8, rank: 45, f: (a, i) => new Fr(1n, 2n ** BigInt(i + 1)) },
+  { k: 'floor(n/2)', nm: '⌊n/2⌋', prior: 2.0, rank: 55, f: (a, i) => FI(Math.floor((i + 1) / 2)) },
+  { k: 'n mod 3', nm: '(n mod 3)', prior: 2.2, rank: 55, f: (a, i) => FI((i + 1) % 3) },
+  { k: 'fib(n)', nm: 'Fib(n)', prior: 2.0, rank: 25, f: (a, i) => new Fr(fib(i + 1)) },
+  // fitur suku sebelumnya
+  { k: 'a1', nm: 'a(n−1)', prior: 0.6, rank: 0, f: (a, i) => val(a, i - 1) },
+  { k: 'a2', nm: 'a(n−2)', prior: 1.0, rank: 1, f: (a, i) => val(a, i - 2) },
+  { k: 'a3', nm: 'a(n−3)', prior: 1.6, rank: 2, f: (a, i) => val(a, i - 3) },
+  { k: 'a1*a2', nm: 'a(n−1)·a(n−2)', prior: 2.0, rank: 3, f: (a, i) => { const p = val(a, i - 1), q = val(a, i - 2); return p && q ? p.mul(q) : null; } },
+  { k: 'a1^2', nm: 'a(n−1)²', prior: 2.0, rank: 3, f: (a, i) => { const p = val(a, i - 1); return p ? p.mul(p) : null; } },
+  { k: 'a2^2', nm: 'a(n−2)²', prior: 2.6, rank: 3, f: (a, i) => { const p = val(a, i - 2); return p ? p.mul(p) : null; } },
+  { k: 'n*a1', nm: 'n·a(n−1)', prior: 1.8, rank: 3, f: (a, i) => { const p = val(a, i - 1); return p ? p.mul(FI(i + 1)) : null; } },
+  { k: 'sum', nm: 'jumlah semua suku sebelumnya', prior: 2.4, rank: 4, f: (a, i) => { if (i < 1) return null; let s = ZERO; for (let j = 0; j < i; j++) { if (!a[j]) return null; s = s.add(a[j]); } return s; } },
+  { k: 'prod', nm: 'hasil kali semua suku sebelumnya', prior: 2.8, rank: 4, f: (a, i) => { if (i < 1) return null; let s = ONE; for (let j = 0; j < i; j++) { if (!a[j]) return null; s = chk(s.mul(a[j])); } return s; } },
+];
+const NF = FEATS.length;
+
+/* penyelesaian sistem linear */
+function floatConsistent(rows, sub, cols, y) {
+  const k = sub.length, R = rows.length;
+  const cs = new Array(k).fill(0); let ys = 0;
+  for (const i of rows) { for (let j = 0; j < k; j++) cs[j] = Math.max(cs[j], Math.abs(cols[sub[j]][i])); ys = Math.max(ys, Math.abs(y[i])); }
+  for (let j = 0; j < k; j++) if (!isFinite(cs[j]) || cs[j] === 0) return false;
+  if (!isFinite(ys)) return false;
+  if (ys === 0) ys = 1;
+  const M = rows.map((i) => { const r = new Float64Array(k + 1); for (let j = 0; j < k; j++) r[j] = cols[sub[j]][i] / cs[j]; r[k] = y[i] / ys; return r; });
+  let r0 = 0;
+  for (let c = 0; c < k; c++) {
+    let p = -1, mx = 0;
+    for (let r = r0; r < R; r++) { const a = Math.abs(M[r][c]); if (a > mx) { mx = a; p = r; } }
+    if (p < 0 || mx < 1e-10) return false;
+    const t = M[p]; M[p] = M[r0]; M[r0] = t;
+    for (let r = 0; r < R; r++) {
+      if (r === r0) continue;
+      const f = M[r][c] / M[r0][c];
+      if (f !== 0) for (let cc = c; cc <= k; cc++) M[r][cc] -= f * M[r0][cc];
+    }
+    r0++;
+  }
+  for (let r = k; r < R; r++) if (Math.abs(M[r][k]) > 1e-6) return false;
+  return true;
+}
+function exactSolve(rows, sub, ecols, seq) {
+  const k = sub.length;
+  const M = rows.map((i) => { const r = []; for (let j = 0; j < k; j++) r.push(ecols[sub[j]][i]); r.push(seq[i]); return r; });
+  const R = M.length; let r0 = 0;
+  for (let c = 0; c < k; c++) {
+    let p = -1;
+    for (let r = r0; r < R; r++) if (!M[r][c].isZero()) { p = r; break; }
+    if (p < 0) return null;
+    const t = M[p]; M[p] = M[r0]; M[r0] = t;
+    const pv = M[r0][c];
+    for (let cc = c; cc <= k; cc++) M[r0][cc] = M[r0][cc].div(pv);
+    for (let r = 0; r < R; r++) {
+      if (r === r0) continue;
+      const f = M[r][c];
+      if (!f.isZero()) for (let cc = c; cc <= k; cc++) M[r][cc] = M[r][cc].sub(f.mul(M[r0][cc]));
+    }
+    r0++;
+  }
+  for (let r = k; r < R; r++) if (!M[r][k].isZero()) return null;
+  return M.slice(0, k).map((r) => r[k]);
+}
+
+/* ---------------- Keluarga 1: polinom lewat selisih bertingkat ---------------- */
+function polyHyps(seq) {
+  const N = seq.length; if (N < 3) return [];
+  const levels = [seq]; let cur = seq;
+  for (let d = 0; d <= N - 2; d++) {
+    if (d > 0) { const nx = []; for (let i = 0; i < cur.length - 1; i++) nx.push(cur[i + 1].sub(cur[i])); cur = nx; levels.push(cur); }
+    STATS.tested++;
+    if (cur.length >= 2 && cur.every((x) => x.eq(cur[0]))) {
+      const surplus = cur.length - 1;
+      const c = cur[0];
+      const last = levels.map((l) => l[l.length - 1]);
+      const next = [];
+      try {
+        for (let s = 0; s < K; s++) {
+          let v = c; last[d] = v;
+          for (let lv = d - 1; lv >= 0; lv--) { v = chk(last[lv].add(v)); last[lv] = v; }
+          next.push(v);
+        }
+      } catch (e) { return []; }
+      // rumus tertutup via Newton
+      let res = [], basis = [ONE];
+      for (let j = 0; j <= d; j++) {
+        for (let k2 = 0; k2 < basis.length; k2++) res[k2] = (res[k2] || ZERO).add(levels[j][0].mul(basis[k2]));
+        const nb = new Array(basis.length + 1).fill(ZERO);
+        for (let k2 = 0; k2 < basis.length; k2++) { nb[k2 + 1] = nb[k2 + 1].add(basis[k2]); nb[k2] = nb[k2].sub(basis[k2].mul(FI(j + 1))); }
+        const dv = FI(j + 1);
+        basis = nb.map((x) => x.div(dv));
+      }
+      const terms = [];
+      for (let p = d; p >= 0; p--) if (res[p] && !res[p].isZero()) terms.push({ c: res[p], nm: p === 0 ? '1' : p === 1 ? 'n' : 'n' + sup(p) });
+      const closed = 'aₙ = ' + fmtLin(terms);
+      let why;
+      if (d === 0) why = 'Semua suku sama.';
+      else if (d === 1) why = 'Selisih antar suku selalu tetap (' + fmtVal(c) + ').';
+      else why = 'Selisih tingkat ke-' + d + ' selalu tetap (' + fmtVal(c) + ').';
+      return [{ tags: ['poly'], cost: 1.2 + 1.3 * d + coefCost(c) * 0.5 + pen(surplus), desc: why + ' ' + closed, next, kind: 'poly' }];
+    }
+    if (cur.length < 2) break;
+  }
+  return [];
+}
+
+/* ---------------- Keluarga 2: regresi jarang (rekurens, eksponen, suku ke-n) ---------------- */
+function regress(seq, ctx) {
+  const N = seq.length, out = [];
+  const hasNull = seq.some((x) => x === null);
+  const ecols = [], fcols = [];
+  for (let f = 0; f < NF; f++) {
+    const c = new Array(N), fl = new Float64Array(N);
+    for (let i = 0; i < N; i++) { let v = null; try { v = FEATS[f].f(seq, i); } catch (e) { v = null; } c[i] = v; fl[i] = v ? v.toNumber() : NaN; }
+    ecols.push(c); fcols.push(fl);
+  }
+  const y = seq.map((v) => v ? v.toNumber() : NaN);
+  const maxK = ctx.maxK;
+  const sub = [];
+  function tryFit() {
+    const k = sub.length;
+    const rows = [];
+    for (let i = 0; i < N; i++) { if (isNaN(y[i])) continue; let ok = true; for (let j = 0; j < k; j++) if (isNaN(fcols[sub[j]][i])) { ok = false; break; } if (ok) rows.push(i); }
+    if (rows.length < k + 1) return;
+    STATS.tested++;
+    if (!floatConsistent(rows, sub, fcols, y)) return;
+    const co = exactSolve(rows, sub, ecols, seq);
+    if (!co) return;
+    if (co.some((c) => c.isZero())) return;
+    // isi celah dan prediksi
+    const ext = seq.slice();
+    const calc = (i) => { let s = ZERO; for (let j = 0; j < k; j++) { const v = FEATS[sub[j]].f(ext, i); if (!v) return null; s = chk(s.add(co[j].mul(v))); } return s; };
+    try {
+      const fills = {};
+      if (hasNull) {
+        for (let g = 0; g < N; g++) if (ext[g] === null) { const v = calc(g); if (!v) return; ext[g] = v; fills[g] = v; }
+        for (let i = 0; i < N; i++) { const v = calc(i); if (v && !v.eq(ext[i])) return; }
+      }
+      const next = [];
+      for (let s = 0; s < K; s++) { const v = calc(N + s); if (!v) return; ext.push(v); next.push(v); }
+      const cost = 1.0 + sub.reduce((s, f) => s + FEATS[f].prior, 0) + co.reduce((s, c) => s + coefCost(c), 0) + pen(rows.length - k);
+      if (!isFinite(cost)) return;
+      const order = sub.map((f, j) => ({ f, c: co[j] })).sort((a, b) => FEATS[a.f].rank - FEATS[b.f].rank);
+      const desc = 'aₙ = ' + fmtLin(order.map((o) => ({ c: o.c, nm: FEATS[o.f].nm })));
+      out.push({ tags: ['reg'].concat(sub.map((f) => 'f:' + FEATS[f].k)), cost, desc, next, fills: hasNull ? fills : null, kind: 'reg' });
+    } catch (e) { /* abaikan */ }
+  }
+  (function rec(start) {
+    for (let f = start; f < NF; f++) {
+      sub.push(f); tryFit();
+      if (sub.length < maxK) rec(f + 1);
+      sub.pop();
+    }
+  })(0);
+  return out;
+}
+
+/* ---------------- Keluarga 3: pustaka barisan terkenal (+ transformasi afin) ---------------- */
+const _lib = {};
+function genPrimes(c) { const r = []; let x = 2; while (r.length < c) { let p = true; for (const q of r) { if (q * q > x) break; if (x % q === 0) { p = false; break; } } if (p) r.push(x); x++; } return r; }
+function divisorsInfo(n) { let tau = 0, sig = 0; for (let d = 1; d <= n; d++) if (n % d === 0) { tau++; sig += d; } return { tau, sig }; }
+function genSeqRec(init, f, c) { const r = init.slice(); while (r.length < c) r.push(f(r)); return r; }
+const LIBS = [
+  { k: 'prima', nm: 'bilangan prima', prior: 1.5, get: () => genPrimes(60).map(BigInt) },
+  { k: 'komposit', nm: 'bilangan komposit', prior: 2.4, get: () => { const r = []; const p = new Set(genPrimes(200)); for (let x = 4; r.length < 60; x++) if (!p.has(x)) r.push(BigInt(x)); return r; } },
+  { k: 'semiprima', nm: 'bilangan semiprima (hasil kali dua prima)', prior: 4.0, get: () => { const r = []; const P = genPrimes(60); const s = new Set(); for (const a of P) for (const b of P) if (a <= b && a * b < 600) s.add(a * b); return [...s].sort((x, y) => x - y).slice(0, 50).map(BigInt); } },
+  { k: 'fibonacci', nm: 'barisan Fibonacci', prior: 1.5, get: () => { const r = []; for (let i = 0; i < 60; i++) r.push(fib(i)); return r; } },
+  { k: 'lucas', nm: 'barisan Lucas', prior: 3.0, get: () => genSeqRec([2n, 1n], (r) => r[r.length - 1] + r[r.length - 2], 60) },
+  { k: 'pell', nm: 'bilangan Pell', prior: 3.6, get: () => genSeqRec([0n, 1n], (r) => 2n * r[r.length - 1] + r[r.length - 2], 40) },
+  { k: 'jacobsthal', nm: 'bilangan Jacobsthal', prior: 4.6, get: () => genSeqRec([0n, 1n], (r) => r[r.length - 1] + 2n * r[r.length - 2], 40) },
+  { k: 'padovan', nm: 'barisan Padovan', prior: 4.6, get: () => genSeqRec([1n, 1n, 1n], (r) => r[r.length - 2] + r[r.length - 3], 50) },
+  { k: 'perrin', nm: 'barisan Perrin', prior: 5.4, get: () => genSeqRec([3n, 0n, 2n], (r) => r[r.length - 2] + r[r.length - 3], 50) },
+  { k: 'tribonacci', nm: 'barisan Tribonacci', prior: 3.2, get: () => genSeqRec([0n, 0n, 1n], (r) => r[r.length - 1] + r[r.length - 2] + r[r.length - 3], 40) },
+  { k: 'catalan', nm: 'bilangan Catalan', prior: 3.0, get: () => { const r = [1n]; for (let n = 0; n < 30; n++) r.push(r[n] * BigInt(2 * (2 * n + 1)) / BigInt(n + 2)); return r; } },
+  { k: 'bell', nm: 'bilangan Bell', prior: 4.6, get: () => { const r = [1n]; let row = [1n]; for (let i = 0; i < 25; i++) { const nr = [row[row.length - 1]]; for (let j = 0; j < row.length; j++) nr.push(nr[j] + row[j]); row = nr; r.push(row[0]); } return r; } },
+  { k: 'motzkin', nm: 'bilangan Motzkin', prior: 5.4, get: () => { const r = [1n, 1n]; for (let n = 2; n < 30; n++) r.push((BigInt(2 * n + 1) * r[n - 1] + BigInt(3 * n - 3) * r[n - 2]) / BigInt(n + 2)); return r; } },
+  { k: 'partisi', nm: 'bilangan partisi p(n)', prior: 4.6, get: () => { const n = 40, p = new Array(n + 1).fill(0n); p[0] = 1n; for (let i = 1; i <= n; i++) for (let j = i; j <= n; j++) p[j] += p[j - i]; return p; } },
+  { k: 'faktorial', nm: 'faktorial', prior: 1.2, get: () => { const r = []; for (let i = 0; i < 30; i++) r.push(fact(i)); return r; } },
+  { k: 'dfaktorial', nm: 'faktorial ganda', prior: 3.4, get: () => { const r = [1n, 1n]; for (let n = 2; n < 30; n++) r.push(BigInt(n) * r[n - 2]); return r; } },
+  { k: 'nn', nm: 'nⁿ (1, 4, 27, 256, …)', prior: 2.0, get: () => { const r = []; for (let n = 1; n < 25; n++) r.push(BigInt(n) ** BigInt(n)); return r; } },
+  { k: 'sylvester', nm: 'barisan Sylvester', prior: 3.6, get: () => genSeqRec([2n], (r) => { let p = 1n; for (const x of r) p *= x; return p + 1n; }, 9) },
+  { k: 'primorial', nm: 'primorial (hasil kali prima berurutan)', prior: 3.4, get: () => { const P = genPrimes(20); const r = [1n]; for (const p of P) r.push(r[r.length - 1] * BigInt(p)); return r; } },
+  { k: 'totient', nm: 'fungsi φ Euler', prior: 4.6, get: () => { const r = []; for (let n = 1; n <= 50; n++) { let c = 0; for (let m = 1; m <= n; m++) if (bgcd(BigInt(n), BigInt(m)) === 1n) c++; r.push(BigInt(c)); } return r; } },
+  { k: 'sigma', nm: 'jumlah pembagi σ(n)', prior: 4.6, get: () => { const r = []; for (let n = 1; n <= 50; n++) r.push(BigInt(divisorsInfo(n).sig)); return r; } },
+  { k: 'tau', nm: 'banyak pembagi τ(n)', prior: 4.6, get: () => { const r = []; for (let n = 1; n <= 50; n++) r.push(BigInt(divisorsInfo(n).tau)); return r; } },
+  { k: 'palindrom', nm: 'bilangan palindrom', prior: 4.6, get: () => { const r = []; for (let n = 0; r.length < 60; n++) { const s = String(n); if (s === s.split('').reverse().join('')) r.push(BigInt(n)); } return r; } },
+  { k: 'pangkatsempurna', nm: 'pangkat sempurna', prior: 4.6, get: () => { const s = new Set([1]); for (let b = 2; b < 40; b++) for (let e = 2; Math.pow(b, e) < 2000; e++) s.add(Math.pow(b, e)); return [...s].sort((x, y) => x - y).slice(0, 50).map(BigInt); } },
+  { k: 'bebaskuadrat', nm: 'bilangan bebas kuadrat', prior: 4.6, get: () => { const r = []; for (let n = 1; r.length < 50; n++) { let ok = true; for (let d = 2; d * d <= n; d++) if (n % (d * d) === 0) { ok = false; break; } if (ok) r.push(BigInt(n)); } return r; } },
+  { k: 'mersenne', nm: 'prima Mersenne', prior: 4.2, get: () => [3n, 7n, 31n, 127n, 8191n, 131071n, 524287n] },
+  { k: 'fermat', nm: 'bilangan Fermat', prior: 4.2, get: () => [3n, 5n, 17n, 257n, 65537n] },
+  { k: 'sempurna', nm: 'bilangan sempurna', prior: 5.0, get: () => [6n, 28n, 496n, 8128n] },
+  { k: 'binomtengah', nm: 'koefisien binomial tengah C(2n,n)', prior: 3.8, get: () => { const r = [1n]; for (let n = 0; n < 25; n++) r.push(r[n] * BigInt(2 * (2 * n + 1)) / BigInt(n + 1)); return r; } },
+  { k: 'thue', nm: 'barisan Thue–Morse', prior: 5.4, get: () => { const r = []; for (let n = 0; n < 60; n++) { let c = 0, x = n; while (x) { c += x & 1; x >>= 1; } r.push(BigInt(c & 1)); } return r; } },
+  { k: 'lucky', nm: 'bilangan beruntung (lucky)', prior: 5.2, get: () => [1n, 3n, 7n, 9n, 13n, 15n, 21n, 25n, 31n, 33n, 37n, 43n, 49n, 51n, 63n, 67n, 69n, 73n, 75n, 79n] },
+  { k: 'lookandsay', nm: 'barisan look-and-say', prior: 4.6, get: () => { const r = ['1']; for (let i = 0; i < 10; i++) { const s = r[r.length - 1]; let o = '', j = 0; while (j < s.length) { let c = 1; while (j + c < s.length && s[j + c] === s[j]) c++; o += c + s[j]; j += c; } r.push(o); } return r.map(BigInt); } },
+  { k: 'ulang', nm: 'angka n diulang n kali (1, 2, 2, 3, 3, 3, …)', prior: 3.0, get: () => { const r = []; for (let n = 1; r.length < 60; n++) for (let j = 0; j < n && r.length < 60; j++) r.push(BigInt(n)); return r; } },
+  { k: 'pi', nm: 'digit-digit π', prior: 4.4, get: () => '31415926535897932384626433832795'.split('').map(BigInt) },
+  { k: 'e', nm: 'digit-digit e', prior: 4.6, get: () => '27182818284590452353602874713526'.split('').map(BigInt) },
+  { k: 'akar2', nm: 'digit-digit √2', prior: 4.6, get: () => '14142135623730950488016887242097'.split('').map(BigInt) },
+];
+function libArr(l) { return _lib[l.k] || (_lib[l.k] = l.get().map((b) => new Fr(b))); }
+
+function libHyps(seq) {
+  const N = seq.length, out = [];
+  const known = []; for (let i = 0; i < N; i++) if (seq[i]) known.push(i);
+  if (known.length < 4) return out;
+  for (const lib of LIBS) {
+    const L = libArr(lib);
+    for (let o = 0; o <= 8; o++) {
+      if (N + K + o > L.length) { if (N + o > L.length) break; }
+      // cari dua titik dengan nilai pustaka berbeda
+      let p = -1, q = -1;
+      for (let a = 0; a < known.length && q < 0; a++) { for (let b = a + 1; b < known.length; b++) { if (!L[known[a] + o] || !L[known[b] + o]) break; if (!L[known[a] + o].eq(L[known[b] + o])) { p = known[a]; q = known[b]; break; } } if (p >= 0) break; }
+      if (p < 0 || !L[p + o] || !L[q + o]) continue;
+      STATS.tested++;
+      const al = seq[q].sub(seq[p]).div(L[q + o].sub(L[p + o]));
+      if (al.isZero()) continue;
+      const be = seq[p].sub(al.mul(L[p + o]));
+      let ok = true;
+      for (const i of known) { if (i + o >= L.length) { ok = false; break; } if (!al.mul(L[i + o]).add(be).eq(seq[i])) { ok = false; break; } }
+      if (!ok) continue;
+      const npar = 1 + (al.eq(ONE) ? 0 : 1) + (be.isZero() ? 0 : 1);
+      const surplus = known.length - npar;
+      if (surplus < 3) continue;
+      const kk = Math.min(K, L.length - N - o); if (kk < 3) continue;
+      const next = []; const fills = {};
+      for (let i = 0; i < N; i++) if (seq[i] === null) fills[i] = al.mul(L[i + o]).add(be);
+      for (let s = 0; s < kk; s++) next.push(chk(al.mul(L[N + s + o]).add(be)));
+      const cost = lib.prior + 0.4 * o + (al.eq(ONE) ? 0 : coefCost(al)) + (be.isZero() ? 0 : coefCost(be)) + (surplus >= 5 ? 0 : surplus === 4 ? 1.5 : 3);
+      let d = 'Barisan ' + lib.nm;
+      if (o > 0) d += ' mulai dari suku ke-' + (o + 1);
+      if (!al.eq(ONE) || !be.isZero()) { d += ', dengan aₙ = '; const terms = [{ c: al, nm: 'L' }]; if (!be.isZero()) terms.push({ c: be, nm: '1' }); d += fmtLin(terms) + ' (L = suku pustaka)'; }
+      out.push({ tags: ['lib', 'lib:' + lib.k], cost, desc: d, next, fills: Object.keys(fills).length ? fills : null, kind: 'lib' });
+    }
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 4: operasi bergilir (siklus) ---------------- */
+function seriesFits(vals) {
+  const out = [];
+  const m = vals.length;
+  if (vals.every((v) => v.eq(vals[0]))) out.push({ type: 'const', a0: vals[0], np: 1, cost: coefCost(vals[0]), at: () => vals[0] });
+  if (m >= 3) {
+    const d = vals[1].sub(vals[0]);
+    if (!d.isZero() && vals.every((v, i) => i === 0 || v.sub(vals[i - 1]).eq(d))) out.push({ type: 'arith', a0: vals[0], d, np: 2, cost: 2.0 + coefCost(vals[0]) + coefCost(d), at: (q) => vals[0].add(d.mul(FI(q))) });
+    if (!vals[0].isZero() && !vals[1].isZero()) {
+      const r = vals[1].div(vals[0]);
+      if (!r.eq(ONE) && vals.every((v, i) => i === 0 || (!vals[i - 1].isZero() && v.div(vals[i - 1]).eq(r)))) out.push({ type: 'geom', a0: vals[0], r, np: 2, cost: 2.5 + coefCost(vals[0]) + coefCost(r), at: (q) => { let v = vals[0]; for (let i = 0; i < q; i++) v = chk(v.mul(r)); return v; } });
+    }
+  }
+  return out;
+}
+function opText(kind, s) {
+  const show = (v) => fmtAbs(v.abs());
+  const sg = (v) => v.sign() < 0 ? '−' : '+';
+  const f = (q) => s.at(q);
+  const seqTxt = (g) => [0, 1, 2].map((q) => g(f(q))).join(', ') + ', …';
+  if (kind === 'add') {
+    if (s.type === 'const') return sg(s.a0) + show(s.a0);
+    return seqTxt((v) => sg(v) + show(v));
+  }
+  if (kind === 'mul') {
+    if (s.type === 'const') return '×' + (s.a0.isInt() ? s.a0.toString() : '(' + s.a0.toString() + ')');
+    return seqTxt((v) => '×' + (v.isInt() ? v.toString() : '(' + v.toString() + ')'));
+  }
+  return '';
+}
+function phaseOps(pairs) {
+  const m = pairs.length, res = [];
+  const ds = pairs.map(([x, y]) => y.sub(x));
+  for (const s of seriesFits(ds)) { const surplus = m - s.np; if (surplus >= 1) res.push({ kind: 'add', s, cost: 0.8 + s.cost, surplus, apply: (x, q) => x.add(s.at(q)), text: opText('add', s) }); }
+  if (pairs.every(([x]) => !x.isZero())) {
+    const rs = pairs.map(([x, y]) => y.div(x));
+    for (const s of seriesFits(rs)) { const surplus = m - s.np; if (surplus >= 1 && !(s.type === 'const' && s.a0.eq(ONE))) res.push({ kind: 'mul', s, cost: 1.0 + s.cost, surplus, apply: (x, q) => x.mul(s.at(q)), text: opText('mul', s) }); }
+  }
+  if (m >= 3) { // y = a x + b
+    const [x0, y0] = pairs[0]; let found = null;
+    for (let j = 1; j < m; j++) { const [x1, y1] = pairs[j]; if (!x1.eq(x0)) { const a = y1.sub(y0).div(x1.sub(x0)); const b = y0.sub(a.mul(x0)); found = [a, b]; break; } }
+    if (found && !found[0].isZero() && !found[0].eq(ONE) && !found[1].isZero() && pairs.every(([x, y]) => found[0].mul(x).add(found[1]).eq(y))) {
+      const [a, b] = found; const surplus = m - 2;
+      if (surplus >= 1) res.push({ kind: 'aff', cost: 2.5 + coefCost(a) + coefCost(b), surplus, apply: (x) => x.mul(a).add(b), text: '×' + (a.isInt() ? a.toString() : '(' + a.toString() + ')') + ' lalu ' + (b.sign() < 0 ? '−' : '+') + fmtAbs(b.abs()) });
+    }
+  }
+  if (m >= 2 && pairs.every(([x, y]) => x.mul(x).eq(y)) && pairs.some(([x]) => !(x.eq(ONE) || x.isZero()))) res.push({ kind: 'sq', cost: 1.5, surplus: m, apply: (x) => x.mul(x), text: 'kuadratkan' });
+  res.sort((a, b) => a.cost - b.cost);
+  return res[0] || null;
+}
+function cycleHyps(seq) {
+  const N = seq.length, out = [];
+  for (const p of [2, 3, 4]) {
+    if (N < 2 * p + 1) continue;
+    STATS.tested++;
+    const ops = [];
+    let ok = true;
+    for (let j = 0; j < p && ok; j++) {
+      const pairs = [];
+      for (let i = j; i < N - 1; i += p) pairs.push([seq[i], seq[i + 1]]);
+      const op = phaseOps(pairs);
+      if (!op) ok = false; else ops.push(op);
+    }
+    if (!ok) continue;
+    // lewati bila seluruh fase identik (itu bukan siklus sungguhan)
+    if (ops.every((o) => o.text === ops[0].text && o.kind === ops[0].kind)) continue;
+    if (p === 4 && ops[0].text === ops[2].text && ops[1].text === ops[3].text) continue;
+    try {
+      const ext = seq.slice(); const next = [];
+      for (let s = 0; s < K; s++) { const i = N - 1 + s; const ph = i % p, q = Math.floor(i / p); const v = chk(ops[ph].apply(ext[i], q)); ext.push(v); next.push(v); }
+      const minS = Math.min(...ops.map((o) => o.surplus));
+      const cost = 1.5 + 0.6 * p + ops.reduce((s, o) => s + o.cost, 0) + pen(minS);
+      if (!isFinite(cost)) continue;
+      out.push({ tags: ['cycle'], cost, next, kind: 'cycle', desc: 'Operasi bergilir tiap ' + p + ' langkah: ' + ops.map((o) => o.text).join(', lalu ') });
+    } catch (e) { /* abaikan */ }
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 5: digit ---------------- */
+const dsum = (x) => String(x).split('').reduce((s, c) => s + Number(c), 0);
+const drev = (x) => BigInt(String(x).split('').reverse().join(''));
+const dprod = (x) => String(x).split('').reduce((s, c) => s * Number(c), 1);
+const DIGIT = [
+  { k: 'ds+', nm: 'tiap suku = suku sebelumnya + jumlah digitnya', g: (x) => x + BigInt(dsum(x)) },
+  { k: 'ds-', nm: 'tiap suku = suku sebelumnya − jumlah digitnya', g: (x) => x - BigInt(dsum(x)) },
+  { k: 'rev+', nm: 'tiap suku = suku sebelumnya + kebalikan digitnya', g: (x) => x + drev(x) },
+  { k: 'dp+', nm: 'tiap suku = suku sebelumnya + hasil kali digitnya', g: (x) => x + BigInt(dprod(x)) },
+  { k: 'ds2', nm: 'tiap suku = jumlah kuadrat digit suku sebelumnya', g: (x) => BigInt(String(x).split('').reduce((s, c) => s + Number(c) * Number(c), 0)) },
+];
+function digitHyps(seq) {
+  const N = seq.length, out = [];
+  if (N < 4) return out;
+  if (!seq.every((x) => x.isInt() && x.n >= 0n)) return out;
+  for (const d of DIGIT) {
+    STATS.tested++;
+    let ok = true;
+    for (let i = 0; i + 1 < N; i++) if (d.g(seq[i].n) !== seq[i + 1].n) { ok = false; break; }
+    if (!ok) continue;
+    const next = []; let x = seq[N - 1].n;
+    for (let s = 0; s < K; s++) { x = d.g(x); next.push(new Fr(x)); }
+    out.push({ tags: ['digit', 'digit:' + d.k], cost: 3.4 + pen(N - 1), next, kind: 'digit', desc: 'Pola digit: ' + d.nm + '.' });
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 6: transformasi (turunan) lalu analisis rekursif ---------------- */
+function perfectSqrt(v) { if (!v.isInt() || v.n < 0n) return null; const r = isqrt(v.n); return r * r === v.n ? new Fr(r) : null; }
+function perfectCbrt(v) { if (!v.isInt()) return null; const r = icbrt(v.n); return r === null ? null : new Fr(r); }
+function logBase(v, b) { if (!v.isInt() || v.n < 1n) return null; let x = v.n, e = 0; while (x % b === 0n) { x /= b; e++; } return x === 1n ? FI(e) : null; }
+const TRANS = [
+  { k: 'diff', nm: 'Selisih antar suku', cost: 1.8, skipPoly: true, apply: (s) => s.slice(1).map((v, i) => v.sub(s[i])), inv: (o, d) => o[o.length - 1].add(d) },
+  { k: 'lag2', nm: 'Selisih lompat 2 suku (aₙ − aₙ₋₂)', cost: 3.4, apply: (s) => s.length > 3 ? s.slice(2).map((v, i) => v.sub(s[i])) : null, inv: (o, d) => o[o.length - 2].add(d) },
+  { k: 'lag3', nm: 'Selisih lompat 3 suku (aₙ − aₙ₋₃)', cost: 4.2, apply: (s) => s.length > 4 ? s.slice(3).map((v, i) => v.sub(s[i])) : null, inv: (o, d) => o[o.length - 3].add(d) },
+  { k: 'ratio', nm: 'Rasio antar suku', cost: 2.6, apply: (s) => s.some((v) => v.isZero()) ? null : s.slice(1).map((v, i) => v.div(s[i])), inv: (o, d) => o[o.length - 1].mul(d) },
+  { k: 'psum', nm: 'Jumlah dua suku berurutan', cost: 3.8, apply: (s) => s.slice(1).map((v, i) => v.add(s[i])), inv: (o, d) => d.sub(o[o.length - 1]) },
+  { k: 'sqrt', nm: 'Akar kuadrat tiap suku', cost: 2.4, apply: (s) => { const r = s.map(perfectSqrt); return r.every((x) => x) ? r : null; }, inv: (o, d) => d.mul(d) },
+  { k: 'cbrt', nm: 'Akar pangkat tiga tiap suku', cost: 3.0, apply: (s) => { const r = s.map(perfectCbrt); return r.every((x) => x) ? r : null; }, inv: (o, d) => d.mul(d).mul(d) },
+  { k: 'log2', nm: 'Logaritma basis 2 tiap suku', cost: 2.6, apply: (s) => { const r = s.map((v) => logBase(v, 2n)); return r.every((x) => x) ? r : null; }, inv: (o, d) => { if (!d.isInt() || d.n < 0n || d.n > 300n) throw new Error('x'); return new Fr(2n ** d.n); } },
+  { k: 'log3', nm: 'Logaritma basis 3 tiap suku', cost: 3.0, apply: (s) => { const r = s.map((v) => logBase(v, 3n)); return r.every((x) => x) ? r : null; }, inv: (o, d) => { if (!d.isInt() || d.n < 0n || d.n > 200n) throw new Error('x'); return new Fr(3n ** d.n); } },
+  { k: 'divn', nm: 'Bagi tiap suku dengan nomor urutnya (aₙ ÷ n)', cost: 3.6, apply: (s) => { const r = s.map((v, i) => v.div(FI(i + 1))); return r.every((x) => x.isInt()) ? r : null; }, inv: (o, d) => d.mul(FI(o.length + 1)) },
+  { k: 'minn', nm: 'Kurangi tiap suku dengan nomor urutnya (aₙ − n)', cost: 3.2, apply: (s) => s.map((v, i) => v.sub(FI(i + 1))), inv: (o, d) => d.add(FI(o.length + 1)) },
+];
+function transformHyps(seq, ctx) {
+  const out = [];
+  if (ctx.depth >= ctx.maxDepth) return out;
+  for (const T of TRANS) {
+    if (ctx.depth >= 2 && T.k !== 'diff' && T.k !== 'ratio') continue;
+    if (Date.now() > ctx.deadline) break;
+    let d;
+    try { d = T.apply(seq); } catch (e) { d = null; }
+    if (!d || d.length < 3) continue;
+    const inner = analyze(d, { depth: ctx.depth + 1, maxK: 2, maxDepth: ctx.maxDepth, skipPoly: !!T.skipPoly, deadline: ctx.deadline });
+    for (const h of inner) {
+      try {
+        const ext = seq.slice(); const next = [];
+        const kk = Math.min(K, h.next.length); if (kk < 3) continue;
+        for (let s = 0; s < kk; s++) { const v = chk(T.inv(ext, h.next[s])); ext.push(v); next.push(v); }
+        out.push({ tags: ['tr:' + T.k].concat(h.tags), cost: h.cost + T.cost, next, kind: 'tr', desc: T.nm + ' → ' + h.desc });
+      } catch (e) { /* abaikan */ }
+    }
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 7: dua/tiga deret berselang-seling ---------------- */
+function interleaveHyps(seq, ctx) {
+  const N = seq.length, out = [];
+  for (const p of [2, 3]) {
+    if (N < 3 * p) continue;
+    const subs = []; for (let j = 0; j < p; j++) { const s = []; for (let i = j; i < N; i += p) s.push(seq[i]); subs.push(s); }
+    if (subs.some((s) => s.length < 3)) continue;
+    const hy = subs.map((s) => analyze(s, { depth: 1, maxK: 2, maxDepth: 2, skipPoly: false, noCycle: true, deadline: ctx.deadline }));
+    if (hy.some((h) => h.length === 0)) continue;
+    const best = hy.map((h) => h.reduce((a, b) => a.cost <= b.cost ? a : b));
+    const owner = N % p;
+    // satu hipotesis per jawaban berbeda pada deret pemilik
+    const seen = new Map();
+    for (const h of hy[owner]) { const key = h.next[0].toString(); if (!seen.has(key) || seen.get(key).cost > h.cost) seen.set(key, h); }
+    for (const ho of seen.values()) {
+      try {
+        const chosen = best.slice(); chosen[owner] = ho;
+        const next = [];
+        for (let t = 0; t < K; t++) { const pos = N + t, j = pos % p; const idx = Math.floor(pos / p) - subs[j].length; const v = chosen[j].next[idx]; if (!v) break; next.push(v); }
+        if (next.length < 3) continue;
+        const cost = chosen.reduce((s, h) => s + h.cost, 0) + 3.0 + 0.3 * p;
+        const txt = chosen.map((h, j) => 'deret ke-' + (j + 1) + ' (posisi ' + (j + 1) + ', ' + (j + 1 + p) + ', …): ' + h.desc).join('  |  ');
+        out.push({ tags: ['interleave'].concat(chosen.flatMap((h) => h.tags)), cost, next, kind: 'interleave', desc: p + ' deret berselang-seling → ' + txt });
+      } catch (e) { /* abaikan */ }
+    }
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 8: angka satuan / sisa bagi (mod) dari barisan dikenal ---------------- */
+let _modBases = null;
+function modBases() {
+  if (_modBases) return _modBases;
+  const mk = (k, nm, prior, f, len) => { const r = []; for (let i = 0; i < len; i++) r.push(f(BigInt(i))); return { k, nm, prior, arr: r }; };
+  _modBases = [
+    ...['fibonacci', 'lucas', 'prima', 'faktorial', 'tribonacci', 'catalan', 'pell'].map((k) => { const l = LIBS.find((x) => x.k === k); return { k, nm: l.nm, prior: l.prior, arr: libArr(l).map((x) => x.n) }; }),
+    mk('n2', 'kuadrat (n²)', 1.0, (n) => n * n, 60),
+    mk('n3', 'kubik (n³)', 1.4, (n) => n * n * n, 60),
+    mk('2^n', 'pangkat 2 (2ⁿ)', 1.0, (n) => 2n ** n, 60),
+    mk('3^n', 'pangkat 3 (3ⁿ)', 1.3, (n) => 3n ** n, 60),
+    mk('7^n', 'pangkat 7 (7ⁿ)', 2.2, (n) => 7n ** n, 60),
+    mk('tri', 'bilangan segitiga', 1.4, (n) => n * (n + 1n) / 2n, 60),
+    mk('n(n+1)', 'n(n+1)', 1.6, (n) => n * (n + 1n), 60),
+    mk('n^n', 'nⁿ', 2.2, (n) => n === 0n ? 1n : n ** n, 40),
+  ];
+  return _modBases;
+}
+function modHyps(seq) {
+  const N = seq.length, out = [];
+  if (N < 7) return out;
+  if (!seq.every((x) => x.isInt() && x.n >= 0n && x.n <= 11n)) return out;
+  const mx = Number(seq.reduce((a, b) => (b.n > a.n ? b : a)).n);
+  for (const m of (UNITS ? [10] : [10, 9, 8, 7, 6, 5, 4, 3])) {
+    if (mx >= m) continue;
+    if (m !== 10 && N < 8) continue;
+    const M = BigInt(m);
+    for (const b of modBases()) {
+      for (let o = 0; o <= 8; o++) {
+        if (N + K + o > b.arr.length) break;
+        const rs = []; for (let i = 0; i < N + K; i++) rs.push(Number(b.arr[i + o] % M));
+        for (let al = 1; al < m; al++) {   // aₙ = (al·basis + be) mod m ; be ditentukan dari suku pertama
+          const be = (((Number(seq[0].n) - al * rs[0]) % m) + m) % m;
+          STATS.tested++;
+          let ok = true;
+          for (let i = 1; i < N; i++) if ((al * rs[i] + be) % m !== Number(seq[i].n)) { ok = false; break; }
+          if (!ok) continue;
+          const surplus = N - 1 - (al === 1 ? 0 : 1) - (be === 0 ? 0 : 1);
+          if (surplus < 3) continue;
+          const next = []; for (let s = 0; s < K; s++) next.push(FI((al * rs[N + s] + be) % m));
+          const cost = 3.0 + b.prior + 0.4 * o + (m === 10 ? 0 : 1.0) + (al === 1 ? 0 : cfm(al, m)) + (be === 0 ? 0 : cfm(be, m)) + (surplus >= 5 ? 0 : surplus === 4 ? 1.5 : 3);
+          const ex = (al === 1 ? '' : al + '×') + b.nm + (be === 0 ? '' : ' + ' + be);
+          out.push({ tags: ['mod', 'mod:' + b.k], cost, next, kind: 'mod', desc: 'Angka ' + (m === 10 ? 'satuan (sisa bagi 10)' : 'sisa bagi ' + m) + ' dari ' + (al === 1 && be === 0 ? b.nm : ex) + (o > 0 ? ' mulai dari suku ke-' + (o + 1) : '') + '.' });
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 9: rekurens / rumus dengan sisa bagi (mod m) ---------------- */
+function modRecHyps(seq) {
+  const N = seq.length, out = [];
+  if (N < 7) return out;
+  if (!seq.every((x) => x.isInt() && x.n >= 0n && x.n <= 11n)) return out;
+  const a = seq.map((x) => Number(x.n));
+  const mx = Math.max(...a);
+  if (a.every((v) => v === a[0])) return out;
+  const cf = (c) => c === 0 ? 0 : c === 1 ? 0.3 : 0.8 + Math.log2(c + 1) * 0.9;
+  const pen2 = (s) => s >= 5 ? 0 : s === 4 ? 1.5 : 3;
+  const nm = (m) => m === 10 ? 'sisa bagi 10 (angka satuan)' : 'sisa bagi ' + m;
+  for (const m of (UNITS ? [10] : [10, 9, 8, 7, 6, 5, 4, 3, 11, 12])) {
+    if (mx >= m) continue;
+    if (m !== 10 && N < 8) continue;
+    const mc = m === 10 ? 0 : 1.0;
+    // orde 1: a(n) = (p·a(n−1) + q) mod m
+    for (let p = 1; p < m; p++) for (let q = 0; q < m; q++) {
+      if (p === 1 && q === 0) continue;
+      let ok = true;
+      for (let i = 0; i + 1 < N; i++) if ((p * a[i] + q) % m !== a[i + 1]) { ok = false; break; }
+      STATS.tested++;
+      if (!ok) continue;
+      const surplus = N - 3; if (surplus < 3) continue;
+      const next = []; let x = a[N - 1];
+      for (let t = 0; t < K; t++) { x = (p * x + q) % m; next.push(FI(x)); }
+      const cost = 3.2 + mc + cf(p) + cf(q) + pen2(surplus);
+      out.push({ tags: ['mod', 'mod:rek1'], cost, next, kind: 'mod', desc: 'Tiap suku = (' + (p === 1 ? '' : p + '×') + 'suku sebelumnya' + (q ? ' + ' + q : '') + '), diambil ' + nm(m) + '.' });
+    }
+    // orde 2: a(n) = (p·a(n−1) + q·a(n−2) + r) mod m
+    if (N >= 8) for (let p = 0; p < m; p++) for (let q = 1; q < m; q++) for (let r = 0; r < m; r++) {
+      let ok = true;
+      for (let i = 2; i < N; i++) if ((p * a[i - 1] + q * a[i - 2] + r) % m !== a[i]) { ok = false; break; }
+      STATS.tested++;
+      if (!ok) continue;
+      const surplus = N - 5; if (surplus < 3) continue;
+      const next = []; const e = a.slice();
+      for (let t = 0; t < K; t++) { const L = e.length; const v = (p * e[L - 1] + q * e[L - 2] + r) % m; e.push(v); next.push(FI(v)); }
+      const cost = 4.0 + mc + cf(p) + cf(q) + cf(r) + pen2(surplus);
+      const parts = []; if (p) parts.push((p === 1 ? '' : p + '×') + 'suku sebelumnya'); parts.push((q === 1 ? '' : q + '×') + 'dua suku sebelumnya'); if (r) parts.push(String(r));
+      out.push({ tags: ['mod', 'mod:rek2'], cost, next, kind: 'mod', desc: 'Tiap suku = (' + parts.join(' + ') + '), diambil ' + nm(m) + '.' });
+    }
+    // rumus suku ke-n: a(n) = (p·n² + q·n + r) mod m
+    for (let p = 0; p < m; p++) for (let q = 0; q < m; q++) for (let r = 0; r < m; r++) {
+      if (p === 0 && q === 0) continue;
+      let ok = true;
+      for (let i = 0; i < N; i++) { const n = i + 1; if ((p * n * n + q * n + r) % m !== a[i]) { ok = false; break; } }
+      STATS.tested++;
+      if (!ok) continue;
+      const surplus = N - 3; if (surplus < 3) continue;
+      const next = []; for (let t = 0; t < K; t++) { const n = N + t + 1; next.push(FI((p * n * n + q * n + r) % m)); }
+      const terms = []; if (p) terms.push({ c: FI(p), nm: 'n²' }); if (q) terms.push({ c: FI(q), nm: 'n' }); if (r) terms.push({ c: FI(r), nm: '1' });
+      const cost = 3.4 + mc + cf(p) + cf(q) + cf(r) + pen2(surplus);
+      out.push({ tags: ['mod', 'mod:rumus'], cost, next, kind: 'mod', desc: 'aₙ = (' + fmtLin(terms) + '), diambil ' + nm(m) + '.' });
+    }
+  }
+  return out;
+}
+
+/* ---------------- Keluarga 10: selisih bertingkat dengan sisa bagi (mod m) ----------------
+ * Sama seperti polinom, tetapi setiap selisih diambil sisa baginya. Contoh 2,3,5,8,2,7,3,0:
+ * selisih 1,2,3,4,5,6,7 (mod 10) lalu selisih tingkat ke-2 selalu 1. */
+const MODS = [10, 9, 8, 7, 6, 5, 4, 3, 11, 12];
+let UNITS = false;   // true bila soal dibaca sebagai angka satuan (mod 10)
+const cfm = (c, m) => { m = m || 10; c = c > m / 2 ? m - c : c; return c === 0 ? 0 : c === 1 ? 0.3 : 0.8 + Math.log2(c + 1) * 0.9; };
+const modList = () => UNITS ? [10] : MODS;
+const pen2m = (s) => s >= 5 ? 0 : s === 4 ? 1.5 : 3;
+function smallInts(seq) {
+  if (seq.length < 6 || !seq.every((x) => x.isInt() && x.n >= 0n && x.n <= 11n)) return null;
+  const a = seq.map((x) => Number(x.n));
+  return a.every((v) => v === a[0]) ? null : a;
+}
+function polyModHyps(seq) {
+  const N = seq.length, out = [], a = smallInts(seq);
+  if (!a) return out;
+  const mx = Math.max(...a);
+  let plainConst = Infinity;   // bila polinom biasa sudah cukup, keluarga ini tidak perlu
+  { let cur = a.slice(); for (let d = 0; cur.length >= 2; d++) { if (cur.every((v) => v === cur[0])) { plainConst = d; break; } const pv = cur; cur = pv.slice(1).map((v, i) => v - pv[i]); } }
+  for (const m of modList()) {
+    if (mx >= m || (m !== 10 && N < 8)) continue;
+    const levels = [a]; let cur = a;
+    for (let d = 1; d <= N - 4; d++) {
+      const pv = cur; cur = pv.slice(1).map((v, i) => (((v - pv[i]) % m) + m) % m); levels.push(cur);
+      STATS.tested++;
+      if (d < 2 || !cur.every((v) => v === cur[0]) || levels[d - 1].every((v) => v === levels[d - 1][0])) continue;   // tingkat 1 sudah ditangani rekurens orde 1
+      if (plainConst <= d) break;
+      const c = cur[0], surplus = N - (d + 1);
+      const last = levels.map((l) => l[l.length - 1]), next = [];
+      for (let t = 0; t < K; t++) { let v = c; last[d] = v; for (let lv = d - 1; lv >= 0; lv--) { v = (last[lv] + v) % m; last[lv] = v; } next.push(FI(v)); }
+      const terms = [];
+      for (let k = 0; k <= d; k++) { const f = levels[k][0]; if (f) terms.push({ c: FI(f > m / 2 ? f - m : f), nm: k === 0 ? '1' : k === 1 ? '(n−1)' : 'C(n−1,' + k + ')' }); }
+      const cost = 3.0 + 0.8 * d + (m === 10 ? 0 : 1.0) + cfm(c, m) + pen2m(surplus);
+      out.push({ tags: ['mod', 'mod:poly'], cost, next, kind: 'mod', modDiff: { m, rows: levels.slice(0, d + 1) },
+        desc: 'Selisih bertingkat, tiap selisih diambil ' + (m === 10 ? 'sisa bagi 10 (angka satuan)' : 'sisa bagi ' + m) + ': selisih tingkat ke-' + d + ' selalu ' + c + '. aₙ = ' + fmtLin(terms) + ', diambil sisa bagi ' + m + '.' });
+      break;
+    }
+  }
+  return out;
+}
+
+/* Keluarga 11: kombinasi linear fitur (n, n², suku sebelumnya, jumlah suku sebelumnya, ...) lalu sisa bagi m */
+const MFEATS = [
+  { k: '1', nm: '1', pr: 0.3, f: () => 1 },
+  { k: 'n', nm: 'n', pr: 0.7, B: 1, f: (a, i) => i + 1 },
+  { k: 'n2', nm: 'n²', pr: 1.0, B: 1, f: (a, i) => (i + 1) * (i + 1) },
+  { k: 'a1', nm: 'a(n−1)', pr: 0.6, A: 1, f: (a, i) => a[i - 1] },
+  { k: 'a2', nm: 'a(n−2)', pr: 1.0, A: 1, L: 2, f: (a, i) => a[i - 2] },
+  { k: 'a1sq', nm: 'a(n−1)²', pr: 2.0, A: 1, NL: 1, f: (a, i) => a[i - 1] * a[i - 1] },
+  { k: 'na1', nm: 'n·a(n−1)', pr: 1.8, A: 1, B: 1, f: (a, i) => (i + 1) * a[i - 1] },
+  { k: 'sum', nm: 'jumlah semua suku sebelumnya', pr: 2.4, A: 1, B: 1, f: (a, i) => { let t = 0; for (let j = 0; j < i; j++) t += a[j]; return t; } },
+  { k: 'n3', nm: 'n³', pr: 1.4, B: 1, f: (a, i) => (i + 1) ** 3 },
+  { k: '2n', nm: '2ⁿ', pr: 1.0, B: 1, f: (a, i) => 2 ** (i + 1) },
+  { k: 'tri', nm: '(n(n+1)/2)', pr: 1.4, B: 1, f: (a, i) => (i + 1) * (i + 2) / 2 },
+  { k: 'a3', nm: 'a(n−3)', pr: 1.6, A: 1, L: 3, f: (a, i) => a[i - 3] },
+  { k: 'a1a2', nm: 'a(n−1)·a(n−2)', pr: 2.0, A: 1, NL: 1, L: 2, f: (a, i) => a[i - 1] * a[i - 2] },
+];
+function modLinHyps(seq) {
+  const N = seq.length, out = [], a = smallInts(seq);
+  if (!a || N < 7) return out;
+  const mx = Math.max(...a), F = MFEATS.length;
+  const subs = [];
+  for (let i = 0; i < F; i++) for (let j = i + 1; j < F; j++) { subs.push([i, j]); for (let k = j + 1; k < F; k++) subs.push([i, j, k]); }
+  for (const sub of subs) {
+    const fs = sub.map((i) => MFEATS[i]);
+    if (!fs.some((f) => f.A) || !(fs.some((f) => f.B) || fs.some((f) => f.NL))) continue;   // yang lain sudah ditangani keluarga 9 / 10
+    const st = Math.max(1, ...fs.map((f) => f.L || 1)), k = sub.length, surplus = N - st - k;
+    if (surplus < 3) continue;
+    const cols = fs.map((f) => { const c = []; for (let i = st; i < N; i++) c.push(f.f(a, i)); return c; });
+    for (const m of modList()) {
+      if (mx >= m || (m !== 10 && N < 8)) continue;
+      const co = new Array(k).fill(1);
+      for (;;) {
+        STATS.tested++;
+        let ok = true;
+        for (let r = 0; r < N - st && ok; r++) { let v = 0; for (let j = 0; j < k; j++) v += co[j] * cols[j][r]; if (v % m !== a[st + r]) ok = false; }
+        const onlyA1 = fs.filter((f) => f.A).length === 1 && fs.find((f) => f.A).k === 'a1' && co[fs.findIndex((f) => f.A)] === 1;
+        if (ok && !onlyA1) {
+          const e = a.slice(), next = [];
+          for (let t = 0; t < K; t++) { const i = e.length; let v = 0; for (let j = 0; j < k; j++) v += co[j] * fs[j].f(e, i); v %= m; e.push(v); next.push(FI(v)); }
+          const cost = 3.6 + (m === 10 ? 0 : 1.0) + fs.reduce((s2, f, j) => s2 + f.pr + cfm(co[j], m), 0) + pen2m(surplus);
+          const terms = fs.map((f, j) => ({ c: FI(co[j] > m / 2 ? co[j] - m : co[j]), nm: f.nm }));
+          out.push({ tags: ['mod', 'mod:lin'], cost, next, kind: 'mod', desc: 'Tiap suku = (' + fmtLin(terms) + '), diambil ' + (m === 10 ? 'sisa bagi 10 (angka satuan)' : 'sisa bagi ' + m) + '.' });
+        }
+        let p = k - 1; while (p >= 0 && co[p] === m - 1) { co[p] = 1; p--; }
+        if (p < 0) break; co[p]++;
+      }
+    }
+  }
+  return out;
+}
+
+/* ---------------- Perakit analisis ---------------- */
+function analyze(seq, ctx) {
+  const out = [];
+  const hasNull = seq.some((x) => x === null);
+  const push = (arr) => { for (const h of arr) out.push(h); };
+  if (!hasNull && !ctx.skipPoly) push(polyHyps(seq));
+  push(regress(seq, ctx));
+  push(libHyps(seq));
+  if (!hasNull) {
+    if (ctx.depth <= 1 && !ctx.noCycle) push(cycleHyps(seq));
+    if (ctx.depth === 0) push(digitHyps(seq));
+    if (ctx.depth === 0) push(modHyps(seq));
+    if (ctx.depth === 0) push(modRecHyps(seq));
+    if (ctx.depth === 0) push(polyModHyps(seq));
+    if (ctx.depth === 0) push(modLinHyps(seq));
+    if (ctx.depth === 0 && Date.now() < ctx.deadline) push(interleaveHyps(seq, ctx));
+    push(transformHyps(seq, ctx));
+  }
+  if (UNITS && ctx.depth === 0) for (const h of out) if (h.kind === 'mod') h.cost -= 4;
+  return out;
+}
+
+/* ---------------- Otak: bobot belajar + memori ---------------- */
+function makeBrain() { return { w: {}, mem: {}, stats: { solved: 0, taught: 0, trained: 0 } }; }
+const WCLAMP = 2.5;
+function seqKey(seq) { return seq.map((x) => x === null ? '?' : x.toString()).join(','); }
+function adjust(h, brain) { let c = h.cost; const seen = new Set(); for (const t of h.tags) { if (seen.has(t)) continue; seen.add(t); c += (brain.w[t] || 0); } return c; }
+
+function solve(seq, brain, opts) {
+  brain = brain || makeBrain();
+  opts = opts || {};
+  UNITS = !!opts.units;
+  const t0 = Date.now();
+  STATS.tested = 0;
+  const ctx = { depth: 0, maxK: 3, maxDepth: 3, skipPoly: false, deadline: t0 + (opts.budgetMs || 6000) };
+  let hyps = [];
+  try { hyps = analyze(seq, ctx); } catch (e) { hyps = []; }
+  if (UNITS) {   // semua aturan dibaca lewat angka satuannya
+    const md = (x) => new Fr(((x.n % 10n) + 10n) % 10n);
+    hyps = hyps.map((h) => {
+      if (h.kind === 'mod') return h;
+      if (!h.next.every((x) => x && x.isInt())) return null;
+      h.next = h.next.map(md);
+      if (h.fills) { for (const k of Object.keys(h.fills)) { if (!h.fills[k].isInt()) return null; h.fills[k] = md(h.fills[k]); } }
+      return h;
+    }).filter(Boolean);
+  }
+  const key = seqKey(seq);
+  if (brain.mem[key] !== undefined) {
+    const v = parseToken(brain.mem[key]);
+    if (v) hyps.push({ tags: ['memory'], cost: 0.5, desc: 'Diingat dari koreksi Anda sebelumnya.', next: [v], kind: 'memory' });
+  }
+  for (const h of hyps) h.adj = adjust(h, brain);
+  hyps = hyps.filter((h) => isFinite(h.adj));
+  const groups = new Map();
+  for (const h of hyps) {
+    const fk = (h.fills ? Object.keys(h.fills).sort().map((i) => i + '=' + h.fills[i]).join(';') : '') + '#' + h.next[0].toString();
+    let g = groups.get(fk); if (!g) { g = { key: fk, members: [] }; groups.set(fk, g); }
+    g.members.push(h);
+  }
+  const answers = [];
+  for (const g of groups.values()) {
+    g.members.sort((a, b) => a.adj - b.adj);
+    const best = g.members[0];
+    let score = Math.pow(2, -best.adj);
+    for (let i = 1; i < g.members.length; i++) score += 0.3 * Math.pow(2, -g.members[i].adj);
+    answers.push({ value: best.next[0], next: best.next, fills: best.fills || null, cost: best.adj, score, hyp: best, support: g.members.length, others: g.members.slice(1, 4) });
+  }
+  answers.sort((a, b) => b.score - a.score);
+  const tot = answers.reduce((s, a) => s + a.score, 0);
+  for (const a of answers) a.conf = tot > 0 ? a.score / tot : 0;
+  const bestCost = answers.length ? answers[0].cost : Infinity;
+  const quality = !answers.length ? 'tidak ada' : bestCost <= 8.5 ? 'kuat' : bestCost <= 11.5 ? 'sedang' : 'lemah';
+  const wasUnits = UNITS; UNITS = false;
+  return { answers, hyps, tested: STATS.tested, ms: Date.now() - t0, seq, quality, units: wasUnits };
+}
+
+/* Belajar dari jawaban yang benar */
+function learn(seq, truth, brain, result) {
+  const tv = typeof truth === 'string' ? parseToken(truth.trim()) : truth;
+  if (!tv) return { ok: false, msg: 'Jawaban benar tidak terbaca sebagai angka.' };
+  result = result || solve(seq, brain);
+  const good = result.hyps.filter((h) => h.next[0].eq(tv) && h.kind !== 'memory').sort((a, b) => a.adj - b.adj).slice(0, 4);
+  const top = result.answers[0];
+  const wasRight = top && top.value.eq(tv);
+  const bad = wasRight ? [] : result.hyps.filter((h) => !h.next[0].eq(tv) && h.kind !== 'memory').sort((a, b) => a.adj - b.adj).slice(0, 3);
+  let found = good, viaExtended = false;
+  if (!good.length) {
+    // tidak ada hipotesis yang cocok: ulangi analisis dengan jawaban sebagai data tambahan
+    const ext = seq.concat([tv]);
+    const r2 = solve(ext, makeBrain());
+    found = r2.hyps.sort((a, b) => a.cost - b.cost).slice(0, 3);
+    viaExtended = found.length > 0;
+  }
+  const tg = new Set(), tb = new Set();
+  found.forEach((h) => h.tags.forEach((t) => tg.add(t)));
+  bad.forEach((h) => h.tags.forEach((t) => tb.add(t)));
+  const changed = [];
+  const lr = 0.6;
+  if (!wasRight) {
+    for (const t of tg) if (!tb.has(t) && t !== 'memory') { brain.w[t] = Math.max(-WCLAMP, (brain.w[t] || 0) - lr); changed.push([t, -lr]); }
+    for (const t of tb) if (!tg.has(t)) { brain.w[t] = Math.min(WCLAMP, (brain.w[t] || 0) + lr); changed.push([t, +lr]); }
+  }
+  brain.mem[seqKey(seq)] = tv.toString();
+  brain.stats.taught++;
+  return { ok: true, wasRight, foundRule: found[0] ? found[0].desc : null, viaExtended, changed };
+}
+
+/* Latihan mandiri dengan soal sintetis */
+function rng(seed) { let a = seed >>> 0; return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function genProblem(r) {
+  const ri = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const pick = (arr) => arr[Math.floor(r() * arr.length)];
+  const type = ri(0, 13);
+  let f;
+  const N = ri(5, 7);
+  const build = (fn, n) => { const s = []; for (let i = 0; i < n + 1; i++) s.push(fn(s, i)); return { seq: s.slice(0, n), answer: s[n] }; };
+  switch (type) {
+    case 0: { const a = ri(-5, 20), d = pick([-6, -4, -3, -2, 2, 3, 4, 5, 7, 9]); return build((s, i) => BigInt(a + d * i), N); }
+    case 1: { const a = ri(1, 5), q = pick([2, 3, 4, -2, 5]); return build((s, i) => BigInt(a) * BigInt(q) ** BigInt(i), N - 1); }
+    case 2: { const a = ri(1, 3), b = ri(-3, 5), c = ri(-4, 9); return build((s, i) => BigInt(a * (i + 1) * (i + 1) + b * (i + 1) + c), N); }
+    case 3: { const a = ri(1, 2), b = ri(-3, 4), c = ri(-3, 4), d = ri(0, 5); return build((s, i) => { const n = i + 1; return BigInt(a * n * n * n + b * n * n + c * n + d); }, N + 1); }
+    case 4: { const x = ri(1, 4), y = ri(1, 6), p = pick([1, 1, 2]), q = pick([1, 1, 2]); return build((s, i) => i === 0 ? BigInt(x) : i === 1 ? BigInt(y) : BigInt(p) * s[i - 1] + BigInt(q) * s[i - 2], N + 1); }
+    case 5: { const a = ri(1, 4), m = pick([2, 3, -2]), c = ri(-3, 5); return build((s, i) => i === 0 ? BigInt(a) : BigInt(m) * s[i - 1] + BigInt(c), N); }
+    case 6: { const a = ri(1, 9), c1 = ri(1, 5), m = pick([2, 3]); return build((s, i) => i === 0 ? BigInt(a) : (i % 2 === 1 ? s[i - 1] + BigInt(c1) : s[i - 1] * BigInt(m)), N + 1); }
+    case 7: { const a = ri(1, 9), c1 = ri(1, 4), c2 = ri(1, 4); return build((s, i) => i === 0 ? BigInt(a) : (i % 2 === 1 ? s[i - 1] + BigInt(c1) : s[i - 1] - BigInt(c2)), N + 1); }
+    case 8: { const a = ri(1, 5), d1 = ri(1, 4), b = ri(2, 9), m = pick([2, 3]); return build((s, i) => (i % 2 === 0 ? BigInt(a + d1 * (i / 2)) : BigInt(b) * BigInt(m) ** BigInt((i - 1) / 2)), 8); }
+    case 9: { const a = ri(1, 9), q = pick([2, 3]); return build((s, i) => i === 0 ? BigInt(a) : s[i - 1] + BigInt(q) ** BigInt(i - 1), N); }
+    case 10: { const P = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]; const o = ri(0, 3), c = pick([0, 0, 1, -1, 2]); const al = pick([1, 1, 2]); return build((s, i) => BigInt(al * P[i + o] + c), N); }
+    case 11: { const a = ri(1, 3); return build((s, i) => i === 0 ? BigInt(a) : s[i - 1] * BigInt(i + a), N); }
+    case 12: { const a = ri(1, 4), b = ri(1, 3), c = ri(1, 3); return build((s, i) => i === 0 ? BigInt(a) : s[i - 1] + BigInt(b + c * (i - 1)) , N); }
+    default: { const a = ri(2, 6); return build((s, i) => BigInt(a) ** BigInt(i + 1) + BigInt(i + 1), N); }
+  }
+}
+function train(brain, count, seed, onProgress) {
+  const r = rng(seed || 12345);
+  const log = [];
+  let hit = 0;
+  for (let i = 0; i < count; i++) {
+    const p = genProblem(r);
+    const seq = p.seq.map((b) => new Fr(b));
+    const res = solve(seq, brain, { budgetMs: 2500 });
+    const ok = res.answers[0] && res.answers[0].value.eq(new Fr(p.answer));
+    if (ok) hit++;
+    learn(seq, new Fr(p.answer), brain, res);
+    delete brain.mem[seqKey(seq)]; // jangan penuhi memori dengan soal sintetis
+    log.push(ok ? 1 : 0);
+    if (onProgress) onProgress(i + 1, count, hit);
+  }
+  brain.stats.trained += count;
+  return { hit, total: count, log };
+}
+
+/* Latih dari daftar soal milik pengguna: [{seq, answer}] */
+function trainOn(items, brain, epochs) {
+  const perEpoch = [];
+  for (let e = 0; e < (epochs || 2); e++) {
+    let hit = 0;
+    for (const it of items) {
+      const res = solve(it.seq, brain, { budgetMs: 3000 });
+      const ok = res.answers[0] && res.answers[0].value.eq(it.answer);
+      if (ok) hit++;
+      if (!ok) learn(it.seq, it.answer, brain, res);
+    }
+    perEpoch.push(hit);
+  }
+  brain.stats.trained += items.length;
+  return perEpoch;
+}
+function parseTrainingList(text) {
+  const items = [], errors = [];
+  String(text || '').split(/\n+/).map((l) => l.trim()).filter(Boolean).forEach((line, i) => {
+    const m = /^(.*?)(?:=>|⇒|\|\||#|\s=\s)\s*(-?[\d./]+)\s*$/.exec(line);
+    if (!m) { errors.push('Baris ' + (i + 1) + ': pakai format "2,4,8,16 => 32"'); return; }
+    const p = parseInput(m[1]); const a = parseToken(m[2]);
+    if (p.error || !a || p.seq.some((x) => x === null)) { errors.push('Baris ' + (i + 1) + ': ' + (p.error || 'jawaban tidak terbaca')); return; }
+    items.push({ seq: p.seq, answer: a });
+  });
+  return { items, errors };
+}
+
+/* Tabel selisih untuk tampilan */
+function diffTable(seq) {
+  if (seq.some((x) => x === null)) return [];
+  const rows = [seq]; let cur = seq;
+  while (cur.length > 1 && rows.length < 7) {
+    const nx = []; for (let i = 0; i < cur.length - 1; i++) nx.push(cur[i + 1].sub(cur[i]));
+    rows.push(nx); cur = nx;
+    if (nx.every((x) => x.eq(nx[0])) && nx.length >= 2) break;
+  }
+  return rows;
+}
+
+/* Mode baca: 'auto' | 'units' (angka satuan saja) | 'plain' (angka biasa) */
+function solveAuto(seq, brain, mode) {
+  const rank = (r) => ({ kuat: 3, sedang: 2, lemah: 1 }[r.quality] || 0);
+  const digits = seq.length >= 5 && seq.every((x) => x === null || (x.isInt() && x.n >= 0n && x.n <= 9n));
+  if (mode === 'plain' || !digits) { const r = solve(seq, brain); r.mode = 'plain'; return r; }
+  if (mode === 'units') { const r = solve(seq, brain, { units: true }); r.mode = 'units'; return r; }
+  const r1 = solve(seq, brain), t1 = r1.answers[0];
+  const notDigit = !t1 || !t1.value.isInt() || t1.value.n < 0n || t1.value.n > 9n;
+  if (!notDigit && r1.quality !== 'lemah') { r1.mode = 'plain'; return r1; }
+  const r2 = solve(seq, brain, { units: true });
+  if (r2.answers[0] && (rank(r2) > rank(r1) || (notDigit && rank(r2) >= rank(r1)))) { r2.mode = 'auto-units'; return r2; }
+  r1.mode = 'plain'; return r1;
+}
+
+const API = { Fr, parseInput, parseToken, solve, solveAuto, learn, train, trainOn, parseTrainingList, makeBrain, diffTable, seqKey, STATS, genProblem, rng };
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+root.SeqEngine = API;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var E = window.SeqEngine;
+  var $ = function (s) { return document.querySelector(s); };
+  var KEY = 'mesin-deret-otak-v1';
+  var EXAMPLES = [
+    '2, 3, 5, 8, 13, 21', '1, 1, 2, 4, 7, 11, 16', '5, 10, 8, 16, 14, 28', '1, 2, 2, 4, 3, 8, 4, 16',
+    '4, 9, 25, 49, 121', '2, 6, 7, 21, 22, 66', '1, 2, 6, 24, 120', '2, 4, ?, 16, 32',
+    '3, 1, 4, 1, 5, 9, 2, 6', '2, 3, 6, 8, 24, 27, 108', '1, 4, 10, 22, 46', '1/2, 2/3, 3/4, 4/5', '1, 2, 3, 5, 8, 3, 1, 4, 5', '2, 5, 1, 3, 7, 5, 1, 3', '1, 2, 5, 2, 7, 8, 1'
+  ];
+  var FAM = { poly: 'polinom (selisih bertingkat)', reg: 'rumus rekurens / suku ke-n', lib: 'pustaka barisan', cycle: 'operasi bergilir', interleave: 'deret berselang-seling', digit: 'pola digit', mod: 'angka satuan / sisa bagi', memory: 'ingatan' };
+  var TR = { diff: 'selisih', lag2: 'selisih lompat 2', lag3: 'selisih lompat 3', ratio: 'rasio', psum: 'jumlah dua suku', sqrt: 'akar kuadrat', cbrt: 'akar pangkat tiga', log2: 'logaritma basis 2', log3: 'logaritma basis 3', divn: 'bagi nomor urut', minn: 'kurangi nomor urut' };
+  var last = null;
+
+  function fmtNum(v) {   // angka sangat panjang ditulis ringkas (notasi ilmiah)
+    var t = v.toString();
+    if (t.indexOf('/') >= 0 || t.replace('-', '').length <= 24) return t;
+    var neg = t.charAt(0) === '-', d = neg ? t.slice(1) : t;
+    return (neg ? '−' : '') + d.charAt(0) + '.' + d.slice(1, 4) + '×10^' + (d.length - 1);
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
+
+  /* penyimpanan */
+  function validBrain(b) { return b && typeof b === 'object' && b.w && typeof b.w === 'object' && b.mem && typeof b.mem === 'object' && b.stats && typeof b.stats === 'object'; }
+  function sanitize(b) {
+    var o = E.makeBrain();
+    Object.keys(b.w).forEach(function (k) { var v = Number(b.w[k]); if (isFinite(v)) o.w[k] = Math.max(-2.5, Math.min(2.5, v)); });
+    Object.keys(b.mem).forEach(function (k) { if (typeof b.mem[k] === 'string' && E.parseToken(b.mem[k])) o.mem[k] = b.mem[k]; });
+    ['solved', 'taught', 'trained'].forEach(function (k) { var v = Number(b.stats[k]); o.stats[k] = isFinite(v) && v >= 0 ? v : 0; });
+    return o;
+  }
+  function load() { try { var t = localStorage.getItem(KEY); if (!t) return null; var b = JSON.parse(t); return validBrain(b) ? sanitize(b) : null; } catch (e) { return null; } }
+  var brain = load() || E.makeBrain();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(brain)); } catch (e) { /* penyimpanan tidak tersedia */ } }
+
+  /* tampilan hasil */
+  function chainHtml(h) {
+    var parts = h.desc.split(' → ');
+    var lines = [];
+    if (h.kind === 'interleave') {
+      var head = parts.shift();
+      lines.push('<li>' + esc(head) + '</li>');
+      parts.join(' → ').split('  |  ').forEach(function (p) { lines.push('<li class="final"><span class="m">' + esc(p) + '</span></li>'); });
+    } else {
+      parts.forEach(function (p, i) {
+        var fin = i === parts.length - 1;
+        lines.push(fin ? '<li class="final"><span class="m">' + esc(p) + '</span></li>' : '<li>' + esc(p) + '</li>');
+      });
+    }
+    return '<ol class="chain">' + lines.join('') + '</ol>';
+  }
+  function stripHtml(parsed, top) {
+    var seq = parsed.seq, tiles = [];
+    seq.forEach(function (v, i) {
+      if (v === null) {
+        var f = top && top.fills && top.fills[i];
+        tiles.push('<li class="tile fill"><span class="idx">' + (i + 1) + ' (dihitung)</span><span>' + (f ? esc(f.toString()) : '?') + '</span></li>');
+      } else tiles.push('<li class="tile"><span class="idx">' + (i + 1) + '</span><span>' + esc(v.toString()) + '</span></li>');
+    });
+    if (top) top.next.forEach(function (v, j) {
+      tiles.push('<li class="tile ' + (j === 0 ? 'ans' : 'ghost') + '"><span class="idx">' + (seq.length + j + 1) + '</span><span>' + esc(fmtNum(v)) + '</span></li>');
+    });
+    return '<ol class="strip">' + tiles.join('') + '</ol>';
+  }
+  function triHtml(seq) {
+    var rows = E.diffTable(seq);
+    if (rows.length < 2) return '';
+    var html = rows.map(function (r, i) {
+      var isConst = i > 0 && r.length >= 2 && r.every(function (x) { return x.eq(r[0]); });
+      return '<div class="drow' + (isConst ? ' const' : '') + '" style="--i:' + i + '"><span class="dl">' + (i === 0 ? 'Deret' : 'Selisih ' + i) + '</span><span class="cells">' +
+        r.map(function (x) { return '<span class="c">' + esc(x.toString()) + '</span>'; }).join('') + '</span></div>';
+    }).join('');
+    return '<div class="sub"><h2>Tabel selisih</h2><div class="tri">' + html + '</div></div>';
+  }
+  function triModHtml(md) {
+    var html = md.rows.map(function (r, i) {
+      var isConst = i === md.rows.length - 1;
+      return '<div class="drow' + (isConst ? ' const' : '') + '" style="--i:' + i + '"><span class="dl">' + (i === 0 ? 'Deret' : 'Selisih ' + i) + '</span><span class="cells">' +
+        r.map(function (x) { return '<span class="c">' + x + '</span>'; }).join('') + '</span></div>';
+    }).join('');
+    return '<div class="sub"><h2>Tabel selisih (sisa bagi ' + md.m + ')</h2><div class="tri">' + html + '</div></div>';
+  }
+  function render(parsed, res) {
+    var out = $('#out');
+    var a = res.answers[0];
+    if (!a) {
+      out.innerHTML = '<div class="card"><h2>Hasil</h2><p class="big" style="font-size:1.6rem">Belum ada aturan yang cocok</p><div class="note bad">Tidak ada aturan yang cocok dengan semua angka. Tambahkan beberapa angka lagi, periksa penulisan, atau ajari mesin lewat kotak di bawah.</div>' + stripHtml(parsed, null) + '</div>';
+      return;
+    }
+    var q = res.quality;
+    var qlabel = q === 'kuat' ? 'Pola kuat' : q === 'sedang' ? 'Pola cukup' : 'Pola lemah';
+    var more = a.next.slice(1).map(function (v) { return esc(fmtNum(v)); }).join(', ');
+    var gapTxt = '';
+    if (parsed.gaps.length && a.fills) {
+      gapTxt = '<p class="muted" style="margin-top:10px">Angka yang hilang: ' + parsed.gaps.map(function (g) { return 'posisi ' + (g + 1) + ' = <b class="hl" style="font-family:var(--font-num)">' + esc(a.fills[g] ? a.fills[g].toString() : '?') + '</b>'; }).join(', ') + '</p>';
+    }
+    var badges = '<span class="badge ' + q + '">' + qlabel + '</span>';
+    if (q !== 'lemah' && res.answers.length > 1) badges += '<span class="badge plain">Peluang relatif ' + Math.round(a.conf * 100) + '% dari ' + res.answers.length + ' jawaban mungkin</span>';
+    if (res.mode === 'units' || res.mode === 'auto-units') badges += '<span class="badge plain">Dibaca sebagai angka satuan (mod 10)</span>';
+    if (a.support > 1) badges += '<span class="badge plain">' + a.support + ' aturan setara mendukung</span>';
+    var note = '';
+    if (q === 'lemah') note = '<div class="note bad">Mesin tidak menemukan aturan yang meyakinkan. Anggap jawaban ini tebakan. Deret dengan sedikit angka sering punya beberapa penjelasan sama-sama masuk akal.</div>';
+    else if (q === 'sedang' && res.answers.length > 1) note = '<div class="note">Ada jawaban lain yang juga masuk akal. Lihat bagian alternatif di bawah.</div>';
+    if (res.mode === 'auto-units' && q !== 'lemah') note = '<div class="note">Semua angka 0–9 dan bacaan angka biasa tidak meyakinkan, jadi deret dibaca sebagai angka satuan. Bila bukan itu maksud soalnya, ubah pilihan ke “Angka biasa”.</div>';
+    var alts = res.answers.slice(1, 5).map(function (x) {
+      var d = x.hyp.desc.length > 170 ? x.hyp.desc.slice(0, 170) + '…' : x.hyp.desc;
+      return '<li><span class="v">' + esc(fmtNum(x.value)) + '<span class="p">' + Math.round(x.conf * 100) + '%</span></span><span class="r">' + esc(d) + '</span></li>';
+    }).join('');
+    out.innerHTML =
+      '<div class="card">' +
+        '<h2>Suku berikutnya</h2>' +
+        '<div class="answer"><span class="big"><span class="hl">' + esc(fmtNum(a.value)) + '</span></span>' + (more ? '<span class="more">lalu ' + more + '</span>' : '') + '</div>' +
+        gapTxt +
+        '<div class="badges">' + badges + '</div>' + note +
+        '<div class="sub"><h2>Aturan yang ditemukan</h2>' + chainHtml(a.hyp) + '</div>' +
+        '<div class="sub"><h2>Deret lengkap</h2>' + stripHtml(parsed, a) + '</div>' +
+        (a.hyp.modDiff ? triModHtml(a.hyp.modDiff) : triHtml(parsed.seq)) +
+        (alts ? '<div class="sub"><h2>Jawaban alternatif</h2><ul class="alts">' + alts + '</ul></div>' : '') +
+        '<p class="muted" style="margin-top:16px">' + res.tested.toLocaleString('id-ID') + ' model diuji dalam ' + res.ms + ' ms.</p>' +
+      '</div>';
+  }
+  function showError(msg) { $('#out').innerHTML = '<div class="card"><div class="note bad" role="alert">' + esc(msg) + '</div></div>'; last = null; }
+
+  async function run() {
+    var parsed = E.parseInput($('#q').value);
+    if (parsed.error) { showError(parsed.error); return; }
+    var btn = $('#go'); btn.disabled = true; btn.textContent = 'Menganalisis…';
+    await tick();
+    try {
+      var res = E.solveAuto(parsed.seq, brain, $('#mode').value);
+      brain.stats.solved++; save();
+      last = { parsed: parsed, res: res };
+      render(parsed, res); renderBrain();
+    } catch (e) { showError('Terjadi kesalahan saat menganalisis. Coba dengan angka yang lebih sedikit.'); }
+    btn.disabled = false; btn.textContent = 'Analisis';
+  }
+
+  /* panel otak */
+  function tagLabel(t) {
+    if (t.indexOf('lib:') === 0) return 'pustaka: ' + t.slice(4);
+    if (t.indexOf('f:') === 0) return 'fitur: ' + t.slice(2);
+    if (t.indexOf('tr:') === 0) return 'transformasi: ' + (TR[t.slice(3)] || t.slice(3));
+    if (t.indexOf('digit:') === 0) return 'digit: ' + t.slice(6);
+    if (t.indexOf('mod:') === 0) return 'sisa bagi: ' + ({ rek1: 'rekurens orde 1', rek2: 'rekurens orde 2', rumus: 'rumus suku ke-n', poly: 'selisih bertingkat', lin: 'kombinasi linear' }[t.slice(4)] || t.slice(4));
+    return FAM[t] || t;
+  }
+  function renderBrain() {
+    var nz = Object.keys(brain.w).filter(function (k) { return Math.abs(brain.w[k]) > 0.001; });
+    $('#stats').innerHTML =
+      '<div class="stat"><b>' + brain.stats.taught + '</b><span>soal yang Anda ajarkan</span></div>' +
+      '<div class="stat"><b>' + brain.stats.trained + '</b><span>soal latihan yang dikerjakan</span></div>' +
+      '<div class="stat"><b>' + Object.keys(brain.mem).length + '</b><span>soal diingat persis</span></div>' +
+      '<div class="stat"><b>' + nz.length + '</b><span>keluarga pola dengan bobot bergeser</span></div>';
+    var rows = nz.sort(function (a, b) { return Math.abs(brain.w[b]) - Math.abs(brain.w[a]); }).slice(0, 8).map(function (k) {
+      var v = brain.w[k];
+      return '<tr><td>' + esc(tagLabel(k)) + '</td><td class="' + (v > 0 ? 'pos' : 'neg') + '">' + (v > 0 ? '+' : '') + v.toFixed(2) + '</td></tr>';
+    }).join('');
+    $('#weights').innerHTML = rows ? '<table class="wt"><tbody>' + rows + '</tbody></table><p class="muted" style="margin-top:8px">Angka positif berarti keluarga pola itu kini lebih dihindari. Angka negatif berarti lebih disukai.</p>' : '<p class="muted">Belum ada. Bobot bergeser setelah Anda mengoreksi jawaban mesin atau menjalankan latihan.</p>';
+    $('#brainJson').value = JSON.stringify(brain);
+  }
+
+  /* belajar dari koreksi */
+  $('#teach').addEventListener('click', function () {
+    var m = $('#learnMsg');
+    if (!last) { m.textContent = 'Jalankan analisis dulu supaya ada soal yang bisa dikoreksi.'; return; }
+    var t = $('#truth').value.trim();
+    if (!t) { m.textContent = 'Isi jawaban yang benar lebih dulu.'; return; }
+    var r = E.learn(last.parsed.seq, t, brain, last.res);
+    if (!r.ok) { m.textContent = r.msg; return; }
+    save();
+    if (r.wasRight) m.textContent = 'Mesin sudah menjawab benar. Soal ini tetap disimpan di ingatan.';
+    else if (r.foundRule) m.textContent = 'Tersimpan. Aturan yang cocok dengan jawaban Anda: ' + r.foundRule + (r.viaExtended ? ' (ditemukan setelah jawaban Anda dipakai sebagai data tambahan).' : '.') + ' Bobot keluarga pola itu dinaikkan, dan yang keliru diturunkan.';
+    else m.textContent = 'Tersimpan di ingatan, tetapi belum ada aturan yang bisa menjelaskan jawaban itu. Mesin akan memakainya kalau soal yang sama muncul lagi.';
+    run();
+  });
+
+  /* latihan mandiri */
+  $('#selfTrain').addEventListener('click', async function () {
+    var btn = this, m = $('#trainMsg'), pr = $('#prog');
+    btn.disabled = true; pr.hidden = false; pr.value = 0;
+    var N = 120, r = E.rng((Date.now() & 0xffff) + 7), log = [];
+    for (var i = 0; i < N; i++) {
+      var p = E.genProblem(r);
+      var seq = p.seq.map(function (b) { return new E.Fr(b); });
+      var ans = new E.Fr(p.answer);
+      var res = E.solve(seq, brain, { budgetMs: 2500 });
+      var ok = !!(res.answers[0] && res.answers[0].value.eq(ans));
+      log.push(ok ? 1 : 0);
+      if (!ok) E.learn(seq, ans, brain, res);
+      delete brain.mem[E.seqKey(seq)];
+      brain.stats.taught = Math.max(0, brain.stats.taught - (ok ? 0 : 1));
+      pr.value = Math.round((i + 1) / N * 100);
+      m.textContent = 'Soal ' + (i + 1) + ' dari ' + N + '…';
+      if (i % 2 === 1) await tick();
+    }
+    brain.stats.trained += N; save(); renderBrain();
+    var sum = function (a) { return a.reduce(function (s, x) { return s + x; }, 0); };
+    var h1 = sum(log.slice(0, N / 2)), h2 = sum(log.slice(N / 2));
+    m.textContent = 'Selesai. Benar ' + sum(log) + ' dari ' + N + ' (paruh pertama ' + h1 + '/' + (N / 2) + ', paruh kedua ' + h2 + '/' + (N / 2) + '). Soal acak ini relatif mudah, jadi mesin biasanya sudah benar sejak awal.';
+    pr.hidden = true; btn.disabled = false;
+  });
+
+  /* latihan dari daftar */
+  $('#listTrain').addEventListener('click', async function () {
+    var btn = this, m = $('#listMsg'), pr = $('#prog2');
+    var pl = E.parseTrainingList($('#list').value);
+    if (!pl.items.length) { m.textContent = pl.errors.length ? pl.errors.slice(0, 3).join(' ') : 'Isi daftar soal dulu. Contoh: 2,4,8,16 => 32'; return; }
+    btn.disabled = true; pr.hidden = false;
+    var per = [], total = pl.items.length * 2, done = 0;
+    for (var e = 0; e < 2; e++) {
+      var hit = 0;
+      for (var i = 0; i < pl.items.length; i++) {
+        var it = pl.items[i];
+        var res = E.solve(it.seq, brain, { budgetMs: 3000 });
+        var ok = !!(res.answers[0] && res.answers[0].value.eq(it.answer));
+        if (ok) hit++; else E.learn(it.seq, it.answer, brain, res);
+        done++; pr.value = Math.round(done / total * 100);
+        m.textContent = 'Putaran ' + (e + 1) + ', soal ' + (i + 1) + ' dari ' + pl.items.length + '…';
+        await tick();
+      }
+      per.push(hit);
+    }
+    brain.stats.trained += pl.items.length; save(); renderBrain();
+    m.textContent = 'Putaran 1: ' + per[0] + ' dari ' + pl.items.length + ' benar. Putaran 2: ' + per[1] + ' dari ' + pl.items.length + ' benar.' + (pl.errors.length ? ' ' + pl.errors.length + ' baris dilewati: ' + pl.errors.slice(0, 2).join(' ') : '');
+    pr.hidden = true; btn.disabled = false;
+  });
+
+  /* ekspor, impor, reset */
+  $('#copyBrain').addEventListener('click', function () {
+    var ta = $('#brainJson'), m = $('#brainMsg');
+    function fallback() { ta.focus(); ta.select(); m.textContent = 'Teks sudah dipilih. Tekan Ctrl+C untuk menyalin.'; }
+    try { navigator.clipboard.writeText(ta.value).then(function () { m.textContent = 'Tersalin.'; }, fallback); } catch (e) { fallback(); }
+  });
+  $('#loadBrain').addEventListener('click', function () {
+    var m = $('#brainMsg');
+    try {
+      var b = JSON.parse($('#brainJson').value);
+      if (!validBrain(b)) throw new Error('format');
+      brain = sanitize(b); save(); renderBrain(); m.textContent = 'Otak dimuat.';
+    } catch (e) { m.textContent = 'Teks itu bukan data otak yang valid.'; }
+  });
+  var resetArmed = false, resetTimer = null;
+  $('#resetBrain').addEventListener('click', function () {
+    var b = this, m = $('#brainMsg');
+    if (!resetArmed) {
+      resetArmed = true; b.textContent = 'Yakin? Klik lagi untuk menghapus';
+      resetTimer = setTimeout(function () { resetArmed = false; b.textContent = 'Reset otak'; }, 4000);
+      return;
+    }
+    clearTimeout(resetTimer); resetArmed = false; b.textContent = 'Reset otak';
+    brain = E.makeBrain(); save(); renderBrain(); m.textContent = 'Otak dikembalikan ke awal.';
+  });
+
+  /* contoh dan pintasan */
+  $('#chips').innerHTML = EXAMPLES.map(function (s, i) { return '<button type="button" class="chip-btn" data-i="' + i + '">' + esc(s) + '</button>'; }).join('');
+  $('#chips').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-i]'); if (!b) return;
+    $('#q').value = EXAMPLES[+b.dataset.i]; $('#truth').value = ''; $('#learnMsg').textContent = ''; run();
+  });
+  $('#go').addEventListener('click', run);
+  $('#mode').addEventListener('change', run);
+  $('#q').addEventListener('keydown', function (ev) { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); run(); } });
+
+  renderBrain();
+  run();
+})();
+</script>
+
+</body></html>
