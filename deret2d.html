@@ -1187,6 +1187,20 @@ root.SeqEngine = API;
     var neg = t.charAt(0) === '-', d = neg ? t.slice(1) : t;
     return (neg ? '−' : '') + d.charAt(0) + '.' + d.slice(1, 4) + '×10^' + (d.length - 1);
   }
+  function fmtRounded(v) { // ringkasan: bulatkan pecahan ke bilangan bulat terdekat, setengah dibulatkan menjauh dari nol
+    var t = v.toString();
+    if (t.indexOf('/') >= 0) {
+      var parts = t.split('/');
+      var n = BigInt(parts[0]), d = BigInt(parts[1]);
+      var neg = (n < 0n) !== (d < 0n);
+      if (n < 0n) n = -n;
+      if (d < 0n) d = -d;
+      var q = n / d, rem = n % d;
+      if (rem * 2n >= d) q += 1n;
+      return (neg && q !== 0n ? '-' : '') + q.toString();
+    }
+    return t;
+  }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
 
@@ -1341,9 +1355,11 @@ root.SeqEngine = API;
       save(); renderBrain();
       $('#fourSummaryGrid').innerHTML = results.map(function (r, i) {
         var a = r.res.answers[0];
-        var answer = a ? esc(fmtNum(a.value)) : 'Tidak ditemukan';
+        var answer = a ? esc(fmtRounded(a.value)) : 'Tidak ditemukan';
+        var nextValues = a && a.next ? a.next.slice(1, 8).map(function (v) { return esc(fmtRounded(v)); }).join(', ') : '';
+        var nextLine = nextValues ? '<span class="muted">Lalu: ' + nextValues + '</span>' : '';
         var quality = a ? (r.res.quality === 'kuat' ? 'Pola kuat' : r.res.quality === 'sedang' ? 'Pola cukup' : 'Pola lemah') : 'Perlu data/cek ulang';
-        return '<div class="stat"><span>Jawaban deret ' + r.name.toLowerCase() + '</span><b>' + answer + '</b><span>' + quality + '</span><span class="muted">Data: ' + esc(r.seq) + '</span><button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
+        return '<div class="stat"><span>Jawaban deret ' + r.name.toLowerCase() + '</span><b>' + answer + '</b>' + nextLine + '<span>' + quality + '</span><span class="muted">Data: ' + esc(r.seq) + '</span><button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
       }).join('');
       $('#fourSummary').hidden = false;
       $('#fourSummaryGrid').querySelectorAll('[data-detail]').forEach(function (b) {
