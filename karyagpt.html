@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KaryaGPT — Laboratorium Logika</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#172033;--muted:#5d687b;--line:#dce2ec;--accent:#2457d6;--soft:#eaf0ff;--ok:#087443;--warn:#8b5b00;--bad:#a32929}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:#14264b;color:#fff;padding:22px max(16px,calc((100% - 1100px)/2))}header h1{margin:0 0 4px;font-size:1.5rem}header p{margin:0;color:#d9e4ff}
+main{max-width:1100px;margin:20px auto;padding:0 14px 40px;display:grid;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 2px 8px #1b2b4d0a}
+h2{font-size:1.12rem;margin:0 0 12px}h3{font-size:1rem;margin:0 0 8px}p{margin:6px 0 10px}.muted{color:var(--muted);font-size:.92rem}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+label{display:block;font-weight:650;margin:9px 0 4px}input,textarea,select,button{font:inherit}input,textarea,select{width:100%;padding:10px 11px;border:1px solid #cbd3e1;border-radius:9px;background:#fff;color:var(--ink)}textarea{min-height:78px;resize:vertical}
+button{border:0;border-radius:9px;padding:10px 14px;background:var(--accent);color:white;font-weight:650;cursor:pointer}button.secondary{background:#e9edf5;color:#202b40}button.danger{background:#a32929}button:disabled{opacity:.5;cursor:not-allowed}.status{padding:10px 12px;border-radius:9px;background:#eef2f8;margin-top:10px;white-space:pre-wrap}.status.ok{background:#e7f7ef;color:var(--ok)}.status.warn{background:#fff4dc;color:var(--warn)}.status.bad{background:#ffebeb;color:var(--bad)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.examples{display:grid;gap:8px}.example{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center}.example input{min-width:0}.candidate{border:1px solid var(--line);border-radius:11px;padding:13px;margin-top:10px}.candidate-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.rank{font-weight:800;color:var(--accent)}.pill{font-size:.8rem;border-radius:999px;padding:3px 8px;background:var(--soft);color:#2048a8}.bar{height:7px;background:#e8edf5;border-radius:99px;overflow:hidden;margin-top:7px}.bar span{display:block;height:100%;background:#3565d9}.preview{max-width:100%;max-height:220px;display:block;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}.example{grid-template-columns:1fr 1fr}.example button{grid-column:1/-1}.card{padding:14px}header{padding:18px 14px}}
+</style>
+</head>
+<body>
+<header><h1>KaryaGPT — Laboratorium Logika</h1><p>Belajar dari contoh, membandingkan kandidat, dan menguji hasil secara jujur.</p></header>
+<main>
+<section class="card">
+<h2>1. Penyimpanan dan proyek</h2>
+<p class="muted">Buat proyek terpisah. URL Google Apps Script menghubungkan halaman ini ke Google Sheets agar data dapat digunakan dari perangkat lain. Jangan masukkan data rahasia pada deployment publik.</p>
+<div class="row"><div><label for="projectSelect">Proyek aktif</label><select id="projectSelect"></select></div><div><label for="projectName">Nama proyek baru / nama pengganti</label><input id="projectName" placeholder="Contoh: Angka 4 Digit"></div></div>
+<div class="row" style="margin-top:10px"><button id="createProject">Buat proyek</button><button id="renameProject" class="secondary">Ganti nama</button><button id="deleteProject" class="danger">Hapus proyek</button></div>
+<label for="scriptUrl">URL Web App Google Apps Script</label><input id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+<div class="row" style="margin-top:10px"><button id="connect">Sambungkan / muat dari Sheets</button><button id="sync" class="secondary">Simpan / sinkronkan</button><button id="export" class="secondary">Ekspor cadangan JSON</button></div>
+<div id="syncStatus" class="status">Mode lokal aktif. Ekspor cadangan berkala jika belum menghubungkan Google Sheets.</div>
+</section>
+<section class="card">
+<h2>2. Data latihan (pertanyaan → jawaban benar)</h2>
+<p class="muted">Masukkan pasangan contoh yang sudah diketahui jawabannya. Mesin analisis awal ini khusus pola numerik; teks lain masih dapat disimpan sebagai catatan, tetapi belum diselesaikan otomatis.</p>
+<div class="row"><div><label for="trainQ">Pertanyaan / masukan</label><input id="trainQ" placeholder="2345"></div><div><label for="trainA">Jawaban benar</label><input id="trainA" placeholder="9"></div></div>
+<div class="row" style="margin-top:10px"><button id="addExample">Tambah contoh</button><button id="clearExamples" class="secondary">Kosongkan data latihan proyek ini</button></div>
+<div id="examples" class="examples" style="margin-top:12px"></div>
+</section>
+<section class="card">
+<h2>3. Uji pertanyaan baru</h2>
+<label for="testQ">Pertanyaan yang ingin diuji</label><textarea id="testQ" placeholder="Contoh: 5678"></textarea>
+<div class="row"><div><label for="testImage">Gambar soal (opsional)</label><input type="file" id="testImage" accept="image/*"></div><div><label for="answerImage">Gambar pilihan/jawaban (opsional)</label><input type="file" id="answerImage" accept="image/*"></div></div>
+<div class="grid2"><div><img id="testPreview" class="preview" alt="Pratinjau gambar soal" hidden></div><div><img id="answerPreview" class="preview" alt="Pratinjau gambar pilihan/jawaban" hidden></div></div>
+<p class="muted">Gambar di versi ini hanya ditampilkan sebagai pratinjau; belum dibaca dengan OCR atau dipahami otomatis. Ketik isi soal dan pilihan jawaban untuk analisis numerik yang tersedia.</p>
+<div class="row"><button id="analyze">Cari kandidat logika</button><button id="saveTest" class="secondary">Simpan hasil uji</button></div>
+<div id="results"></div>
+</section>
+<section class="card">
+<h2>4. Koreksi dan pembelajaran berkelanjutan</h2>
+<p class="muted">Jika Boss mengetahui jawaban sebenarnya, simpan koreksi agar menjadi contoh latihan baru pada proyek ini.</p>
+<div class="row"><div><label for="correctAnswer">Jawaban sebenarnya</label><input id="correctAnswer" placeholder="Masukkan jawaban benar"></div><div><label for="feedbackNote">Catatan (opsional)</label><input id="feedbackNote" placeholder="Misalnya: pola berdasarkan jumlah digit"></div></div>
+<div class="row" style="margin-top:10px"><button id="applyCorrection">Simpan koreksi ke data latihan</button></div>
+<div id="feedbackStatus" class="status">Belum ada koreksi baru.</div>
+</section>
+<section class="card">
+<h2>5. Memahami bobot kandidat</h2>
+<ul>
+<li><b>Kecocokan latihan</b>: jumlah contoh yang cocok dengan aturan.</li>
+<li><b>Validasi silang</b>: uji aturan dengan menyisihkan contoh, bila jumlah contoh cukup dan metode mendukungnya.</li>
+<li><b>Kesederhanaan</b>: aturan sederhana diberi preferensi daripada aturan rumit yang mudah menghafal data.</li>
+<li><b>Bobot relatif</b> adalah skor heuristik internal, bukan peluang pasti bahwa jawaban benar.</li>
+<li>Delapan hasil berbeda tidak selalu bisa diperoleh secara alami dari metode yang layak. Versi ini menampilkan hingga delapan prediksi unik yang ditemukan, dan tidak memalsukan kandidat bila jumlahnya kurang.</li>
+</ul>
+<div class="status warn">Batas kemampuan: ini prototipe awal metode numerik, bukan AI serbaguna yang sudah mampu menyelesaikan semua psikotes. Sedikit contoh dapat cocok dengan banyak aturan. Gambar membutuhkan OCR/vision AI terpisah jika ingin dianalisis otomatis.</div>
+</section>
+</main>
+<footer style="max-width:1100px;margin:0 auto;padding:0 14px 30px;color:#5d687b;font-size:.85rem">KaryaGPT — data lokal tersimpan di browser ini. Google Sheets baru dipakai setelah URL Web App disiapkan.</footer>
+<script>
+(()=> {
+const $=id=>document.getElementById(id), STORE='karyagpt_v1';
+const uid=()=> 'p_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);
+let state=load(), lastCandidates=[], lastQuestion='', lastTest=null;
+function load(){try{let s=JSON.parse(localStorage.getItem(STORE)||'null');if(s&&Array.isArray(s.projects)&&s.projects.length)return s}catch(e){}let p={id:uid(),name:'Angka 4 Digit',examples:[],history:[]};return {projects:[p],activeId:p.id}}
+function active(){return state.projects.find(p=>p.id===state.activeId)||state.projects[0]}
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){setStatus('Penyimpanan browser penuh. Ekspor cadangan dan kurangi riwayat.','bad')}}
+function setStatus(s,t=''){ $('syncStatus').className='status '+t;$('syncStatus').textContent=s}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderProjects(){let sel=$('projectSelect');sel.innerHTML='';state.projects.forEach(p=>{let o=document.createElement('option');o.value=p.id;o.textContent=p.name;sel.appendChild(o)});if(!state.projects.some(p=>p.id===state.activeId))state.activeId=state.projects[0].id;sel.value=state.activeId;$('projectName').value='';renderExamples();persist()}
+function renderExamples(){let p=active(),box=$('examples');box.innerHTML='';if(!p.examples.length){box.innerHTML='<p class="muted">Belum ada contoh latihan pada proyek ini.</p>';return}p.examples.forEach((ex,i)=>{let d=document.createElement('div');d.className='example';d.innerHTML=`<input aria-label="Pertanyaan" value="${esc(ex.q)}" data-q="${i}"><input aria-label="Jawaban" value="${esc(ex.a)}" data-a="${i}"><button class="danger" data-del="${i}">Hapus</button>`;box.appendChild(d)});box.querySelectorAll('[data-q]').forEach(el=>el.onchange=e=>{p.examples[+e.target.dataset.q].q=e.target.value;persist()});box.querySelectorAll('[data-a]').forEach(el=>el.onchange=e=>{p.examples[+e.target.dataset.a].a=e.target.value;persist()});box.querySelectorAll('[data-del]').forEach(el=>el.onclick=e=>{p.examples.splice(+e.target.dataset.del,1);persist();renderExamples()})}
+function num(s){if(!/^[+-]?\d+(?:\\.\d+)?$/.test(String(s).trim()))return null;let n=Number(s);return Number.isFinite(n)?n:null}
+function digs(n){return String(Math.abs(Math.trunc(n))).split('').map(Number)}
+function nice(n){return Number.isFinite(n)?Math.round(n*1e6)/1e6:null}
+function linear(ds,x){let n=ds.length,mx=ds.reduce((s,d)=>s+d.x,0)/n,my=ds.reduce((s,d)=>s+d.y,0)/n,den=ds.reduce((s,d)=>s+(d.x-mx)**2,0);if(!den)return my;let a=ds.reduce((s,d)=>s+(d.x-mx)*(d.y-my),0)/den;return a*x+my-a*mx}
+function origin(ds,x){let den=ds.reduce((s,d)=>s+d.x*d.x,0);return den?ds.reduce((s,d)=>s+d.x*d.y,0)/den*x:0}
+function poly(ds,x,degree){let n=degree+1;if(ds.length<n)return NaN;let rows=ds.slice(0,n),m=rows.map(r=>Array.from({length:n+1},(_,j)=>j===n?r.y:r.x**j));for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<n;k++)if(Math.abs(m[k][i])>Math.abs(m[p][i]))p=k;[m[i],m[p]]=[m[p],m[i]];if(Math.abs(m[i][i])<1e-12)return NaN;let z=m[i][i];for(let j=i;j<=n;j++)m[i][j]/=z;for(let k=0;k<n;k++)if(k!==i){z=m[k][i];for(let j=i;j<=n;j++)m[k][j]-=z*m[i][j]}}return m.reduce((s,r,i)=>s+r[n]*x**i,0)}
+function position(ds,x){let len=String(Math.abs(Math.trunc(x))).length,d=digs(x),rows=ds.filter(r=>String(Math.abs(Math.trunc(r.x))).length===len);if(rows.length<len)return NaN;let m=rows.map(r=>[...digs(r.x),r.y]),n=len;for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<m.length;k++)if(Math.abs(m[k][i])>Math.abs(m[p][i]))p=k;[m[i],m[p]]=[m[p],m[i]];if(Math.abs(m[i][i])<1e-9)return NaN;let z=m[i][i];for(let j=i;j<=n;j++)m[i][j]/=z;for(let k=0;k<m.length;k++)if(k!==i){z=m[k][i];for(let j=i;j<=n;j++)m[k][j]-=z*m[i][j]}}return d.reduce((s,v,i)=>s+v*m[i][n],0)}
+function analyze(q,examples){let x=num(q),ds=examples.map(e=>({x:num(e.q),y:num(e.a)})).filter(d=>d.x!==null&&d.y!==null);if(x===null)return {error:'Input uji harus berupa angka untuk solver versi awal ini.'};if(ds.length<2)return {error:'Tambahkan setidaknya dua contoh latihan numerik dengan jawaban yang diketahui.'};let out=[];
+function add(name,fn,why,complexity){let pred=fn(x);if(!Number.isFinite(pred)||Math.abs(pred)>1e12)return;let vals=ds.map(d=>fn(d.x));if(vals.some(v=>!Number.isFinite(v)))return;let exact=vals.filter((v,i)=>Math.abs(v-ds[i].y)<1e-7).length,mae=vals.reduce((s,v,i)=>s+Math.abs(v-ds[i].y),0)/ds.length;let cv=null;if(ds.length>=3){let errs=[];for(let i=0;i<ds.length;i++){let tr=ds.filter((_,j)=>j!==i),test=ds[i],v=null;if(name.startsWith('Linear'))v=linear(tr,test.x);else if(name.startsWith('Proporsional'))v=origin(tr,test.x);else if(name.startsWith('Kuadratik'))v=poly(tr,test.x,2);else if(name.startsWith('Kubik'))v=poly(tr,test.x,3);if(Number.isFinite(v))errs.push(Math.abs(v-test.y))}if(errs.length)cv=errs.reduce((a,b)=>a+b,0)/errs.length}let cvScore=cv===null?.5:1/(1+cv),score=Math.max(0,Math.min(100,100*(.68*exact/ds.length+.22*cvScore+.1/(1+complexity))));out.push({name,pred:nice(pred),why,exact,total:ds.length,mae:nice(mae),cv:nice(cv),score:nice(score)})}
+add('Konstanta / jawaban tetap',()=>ds[0].y,'Memeriksa apakah jawaban tidak bergantung pada masukan.',1);
+add('Linear: y = ax + b',v=>linear(ds,v),'Mencari hubungan garis lurus antara masukan dan jawaban.',2);
+add('Kuadratik: y = ax² + bx + c',v=>poly(ds,v,2),'Mencari pola polinomial derajat dua.',3);
+add('Kubik: y = ax³ + bx² + cx + d',v=>poly(ds,v,3),'Mencari pola polinomial derajat tiga; berisiko overfit.',4);
+add('Proporsional: y = ax',v=>origin(ds,v),'Memeriksa hubungan kelipatan langsung.',2);
+add('Digit satuan',v=>((Math.trunc(v)%10)+10)%10,'Mengambil digit satuan masukan.',1);
+add('Jumlah digit',v=>digs(v).reduce((a,b)=>a+b,0),'Menjumlahkan semua digit masukan.',1);
+add('Jumlah digit modulo 10',v=>digs(v).reduce((a,b)=>a+b,0)%10,'Menjumlahkan digit lalu mengambil sisa pembagian 10.',2);
+add('Perkalian digit modulo 10',v=>digs(v).reduce((a,b)=>a*b,1)%10,'Mengalikan digit lalu mengambil sisa pembagian 10.',2);
+add('Total selisih digit berurutan',v=>{let d=digs(v);return d.slice(1).reduce((a,b,i)=>a+Math.abs(b-d[i]),0)},'Menjumlahkan selisih mutlak digit yang bersebelahan.',2);
+add('Digit pertama + terakhir',v=>{let d=digs(v);return d[0]+d[d.length-1]},'Menjumlahkan digit paling kiri dan paling kanan.',1);
+add('Jumlah kuadrat digit modulo 10',v=>digs(v).reduce((a,b)=>a+b*b,0)%10,'Menjumlahkan kuadrat digit lalu mengambil sisa pembagian 10.',2);
+add('Digit bergantian (+ −)',v=>digs(v).reduce((a,b,i)=>a+(i%2===0?b:-b),0),'Menjumlahkan dan mengurangi digit bergantian menurut posisi.',2);
+add('Kombinasi linear bobot posisi digit',v=>position(ds,v),'Mencoba bobot linear untuk digit pada posisi masing-masing.',4);
+out.sort((a,b)=>b.score-a.score);let unique=[],seen=new Set();for(let c of out){let k=String(c.pred);if(!seen.has(k)){seen.add(k);unique.push(c)}}return {candidates:unique.slice(0,8),allCount:unique.length,dataCount:ds.length}}
+function show(res,q){let box=$('results');box.innerHTML='';if(res.error){box.innerHTML=`<div class="status warn">${esc(res.error)}</div>`;return}lastCandidates=res.candidates;lastQuestion=q;lastTest={question:q,candidates:res.candidates,createdAt:new Date().toISOString()};box.innerHTML=`<p class="muted">Menggunakan ${res.dataCount} contoh numerik. Ditemukan ${res.allCount} hasil prediksi unik dari metode yang tersedia; ditampilkan maksimal 8 kandidat.</p>`;res.candidates.forEach((c,i)=>{let d=document.createElement('div');d.className='candidate';let pct=Math.round(c.exact/c.total*100);d.innerHTML=`<div class="candidate-top"><h3><span class="rank">#${i+1}</span> ${esc(c.name)}</h3><span class="pill">Bobot relatif: ${c.score}/100</span></div><p style="font-size:1.25rem"><b>Prediksi: ${esc(c.pred)}</b></p><p>${esc(c.why)}</p><p class="muted">Cocok pada latihan: ${c.exact}/${c.total} (${pct}%) · MAE: ${c.mae} · Validasi silang MAE: ${c.cv===null?'belum cukup data':c.cv}</p><div class="bar"><span style="width:${Math.max(0,Math.min(100,c.score))}%"></span></div><p class="muted">Skor heuristik, bukan probabilitas benar. ${pct===100?'Cocok pada semua contoh tersedia.':'Belum cocok pada semua contoh.'}</p>`;box.appendChild(d)});if(!res.candidates.length)box.innerHTML+='<div class="status warn">Tidak ditemukan kandidat yang layak.</div>'}
+$('projectSelect').onchange=e=>{state.activeId=e.target.value;renderProjects()};
+$('createProject').onclick=()=>{let name=$('projectName').value.trim();if(!name)return alert('Isi nama proyek dahulu.');if(state.projects.some(p=>p.name.toLowerCase()===name.toLowerCase()))return alert('Nama proyek sudah ada.');let p={id:uid(),name,examples:[],history:[]};state.projects.push(p);state.activeId=p.id;renderProjects();setStatus('Proyek baru dibuat secara lokal. Sinkronkan untuk menyimpan ke Sheets.','ok')};
+$('renameProject').onclick=()=>{let name=$('projectName').value.trim();if(!name)return alert('Isi nama baru.');if(state.projects.some(p=>p.id!==active().id&&p.name.toLowerCase()===name.toLowerCase()))return alert('Nama sudah dipakai.');active().name=name;renderProjects();setStatus('Nama proyek diperbarui. Sinkronkan agar tersedia di perangkat lain.','ok')};
+$('deleteProject').onclick=()=>{if(state.projects.length<2)return alert('Proyek terakhir tidak bisa dihapus.');if(!confirm('Hapus proyek '+active().name+' beserta latihan dan riwayatnya?'))return;state.projects=state.projects.filter(p=>p.id!==state.activeId);state.activeId=state.projects[0].id;renderProjects();setStatus('Proyek dihapus lokal. Sinkronkan untuk memperbarui Sheets.','warn')};
+$('addExample').onclick=()=>{let q=$('trainQ').value.trim(),a=$('trainA').value.trim();if(!q||!a)return alert('Isi pertanyaan dan jawaban.');active().examples.push({q,a,addedAt:new Date().toISOString()});$('trainQ').value='';$('trainA').value='';persist();renderExamples();setStatus('Contoh ditambahkan. Sinkronkan untuk menyimpan ke Sheets.','ok')};
+$('clearExamples').onclick=()=>{if(!confirm('Kosongkan data latihan proyek aktif?'))return;active().examples=[];persist();renderExamples();setStatus('Data latihan proyek ini dikosongkan.','warn')};
+$('analyze').onclick=()=>{let q=$('testQ').value.trim();if(!q)return alert('Masukkan soal dahulu.');let r=analyze(q,active().examples);show(r,q);if(lastTest){active().history.push(lastTest);persist()}};
+$('saveTest').onclick=()=>{if(!lastTest)return alert('Jalankan analisis dahulu.');active().history.push({...lastTest,correctAnswer:$('correctAnswer').value.trim(),note:$('feedbackNote').value.trim(),savedAt:new Date().toISOString()});persist();setStatus('Hasil uji disimpan lokal. Klik sinkronkan untuk mengirim ke Sheets.','ok')};
+$('applyCorrection').onclick=()=>{let q=lastQuestion||$('testQ').value.trim(),a=$('correctAnswer').value.trim();if(!q||!a)return alert('Jalankan analisis dan isi jawaban sebenarnya dahulu.');active().examples.push({q,a,source:'correction',note:$('feedbackNote').value.trim(),addedAt:new Date().toISOString()});if(lastTest)active().history.push({...lastTest,correctAnswer:a,note:$('feedbackNote').value.trim()});persist();renderExamples();$('feedbackStatus').className='status ok';$('feedbackStatus').textContent='Koreksi menjadi contoh latihan baru. Jalankan analisis lagi untuk mengevaluasi data yang diperbarui.'};
+function preview(inp,img){inp.onchange=()=>{let f=inp.files&&inp.files[0];if(!f){img.hidden=true;return}if(!f.type.startsWith('image/'))return alert('Pilih file gambar.');img.src=URL.createObjectURL(f);img.hidden=false}}
+preview($('testImage'),$('testPreview'));preview($('answerImage'),$('answerPreview'));
+$('export').onclick=()=>{let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='karyagpt-cadangan.json';a.click();URL.revokeObjectURL(a.href);setStatus('Cadangan JSON diunduh. Simpan di tempat aman.','ok')};
+function jsonp(url,timeout=15000){return new Promise((resolve,reject)=>{let cb='kgcb_'+Math.random().toString(36).slice(2),s=document.createElement('script'),done=false,t=setTimeout(()=>finish(new Error('Waktu habis membaca Sheets.')),timeout);function finish(err,data){if(done)return;done=true;clearTimeout(t);delete window[cb];s.remove();err?reject(err):resolve(data)}window[cb]=d=>finish(null,d);s.onerror=()=>finish(new Error('Gagal menghubungi Web App.'));s.src=url+(url.includes('?')?'&':'?')+'action=load&callback='+cb+'&_='+Date.now();document.body.appendChild(s)})}
+$('connect').onclick=async()=>{let url=$('scriptUrl').value.trim();if(!url)return alert('Masukkan URL Web App.');localStorage.setItem('karyagpt_script_url',url);setStatus('Memuat data dari Sheets…');try{let d=await jsonp(url);if(!d||!d.ok)throw Error(d?.error||'Respons tidak valid.');if(d.state&&Array.isArray(d.state.projects)&&d.state.projects.length){state=d.state;persist();renderProjects();setStatus('Berhasil memuat data dari Google Sheets.','ok')}else setStatus('Sheet masih kosong. Klik Simpan/sinkronkan untuk mengirim data lokal pertama.','warn')}catch(e){setStatus('Gagal memuat Sheets: '+e.message+'\nPeriksa URL /exec, deployment, dan akses.','bad')}};
+$('sync').onclick=async()=>{let url=$('scriptUrl').value.trim()||localStorage.getItem('karyagpt_script_url')||'';if(!url)return alert('Masukkan URL Web App dahulu.');$('scriptUrl').value=url;localStorage.setItem('karyagpt_script_url',url);persist();setStatus('Mengirim data ke Sheets…');try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',state})});await new Promise(r=>setTimeout(r,1200));let d=await jsonp(url);if(!d||!d.ok||!d.state||!d.state.projects.some(p=>p.id===state.activeId))throw Error(d?.error||'Belum dapat memverifikasi proyek pada Sheets.');state=d.state;persist();renderProjects();setStatus('Sinkronisasi terverifikasi: proyek aktif ditemukan di Google Sheets.','ok')}catch(e){setStatus('Sinkronisasi belum dapat diverifikasi: '+e.message+'\nData lokal masih tersedia. Coba lagi atau ekspor cadangan JSON.','bad')}};
+let old=localStorage.getItem('karyagpt_script_url');if(old)$('scriptUrl').value=old;renderProjects();
+})();
+</script>
+</body></html>
