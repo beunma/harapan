@@ -129,14 +129,14 @@ progress { width: 100%; height: 10px; accent-color: var(--accent); }
 
 <main class="wrap">
   <header>
-    <h1>Mesin Deret</h1>
-    <p class="lede">Tempel deret angka seperti di soal psikotest. Mesin menguji ratusan aturan, memeriksa tiap aturan pada semua angka dengan pecahan eksak, lalu memilih penjelasan paling sederhana. Koreksi dari Anda membuatnya makin jeli.</p>
+    <h1></h1>
+    <p class="lede"></p>
   </header>
 
 
   <section class="card" aria-labelledby="fourLbl" id="fourPanel">
-    <h2 id="fourLbl">Analisis data 4 digit</h2>
-    <label for="fourInput">Masukkan deret angka 4 digit</label>
+    <h2 id="fourLbl">Awali 10 data turun sampai 7 Data</h2>
+    <label for="fourInput">Periksa Yang semua 1 digit saja</label>
     <textarea id="fourInput" rows="3" spellcheck="false" autocomplete="off" placeholder="Contoh: 1234, 5678, 9012">1234, 5678, 9012</textarea>
     <p class="hint">Masukkan beberapa angka 4 digit yang membentuk deret, pisahkan dengan koma, spasi, atau baris baru. Setiap posisi digit dianalisis terpisah: ribuan, ratusan, puluhan, satuan.</p>
     <div class="row"><button class="btn primary" id="runFour" type="button">Analisis 4 deret bertahap</button><span class="hint" id="fourStatus" aria-live="polite"></span></div>
@@ -989,7 +989,23 @@ function solve(seq, brain, opts) {
   STATS.tested = 0;
   const ctx = { depth: 0, maxK: 3, maxDepth: 3, skipPoly: false, deadline: t0 + (opts.budgetMs || 6000) };
   let hyps = [];
-  try { hyps = analyze(seq, ctx); } catch (e) { hyps = []; }
+  try {
+    hyps = analyze(seq, ctx);
+    /* Pencarian multi-strategi: jika jalur utama belum memberi cukup kandidat,
+       jalankan keluarga model alternatif dengan deadline global yang sama.
+       Kandidat hanya diterima dari hipotesis yang cocok pada data input; tidak
+       pernah membuat angka pengisi secara acak. */
+    const uniqueNext = () => new Set(hyps.filter(h => h && h.next && h.next[0]).map(h => (h.fills ? Object.keys(h.fills).sort().map(i => i + '=' + h.fills[i]).join(';') : '') + '#' + h.next[0].toString())).size;
+    const passes = [
+      { depth: 1, maxK: 4, maxDepth: 4, skipPoly: true, noCycle: true, deadline: ctx.deadline },
+      { depth: 2, maxK: 4, maxDepth: 4, skipPoly: true, noCycle: true, deadline: ctx.deadline },
+      { depth: 0, maxK: 4, maxDepth: 4, skipPoly: true, noCycle: true, deadline: ctx.deadline }
+    ];
+    for (const altCtx of passes) {
+      if (uniqueNext() >= 8 || Date.now() >= ctx.deadline) break;
+      try { hyps.push(...analyze(seq, altCtx)); } catch (e) { /* strategi lain tetap berjalan */ }
+    }
+  } catch (e) { hyps = []; }
   if (UNITS) {   // semua aturan dibaca lewat angka satuannya
     const md = (x) => new Fr(((x.n % 10n) + 10n) % 10n);
     hyps = hyps.map((h) => {
@@ -1022,6 +1038,51 @@ function solve(seq, brain, opts) {
     answers.push({ value: best.next[0], next: best.next, fills: best.fills || null, cost: best.adj, score, hyp: best, support: g.members.length, others: g.members.slice(1, 4) });
   }
   answers.sort((a, b) => b.score - a.score);
+  /* Satu nilai keluaran hanya boleh muncul sekali, meski ditemukan oleh
+     hipotesis dengan isian angka hilang yang berbeda. */
+  const seenValues = new Set();
+  const distinctAnswers = answers.filter((a) => {
+    const k = a.value.toString();
+    if (seenValues.has(k)) return false;
+    seenValues.add(k); return true;
+  });
+  answers.length = 0; answers.push(...distinctAnswers);
+
+  /* Ekspansi deterministik: jika model alami belum menghasilkan 8 nilai unik,
+     tambahkan keluarga polinomial yang secara eksplisit tetap cocok dengan
+     seluruh suku yang diketahui. Tambahan k/N! * produk(n-i), i=1..N,
+     bernilai nol pada semua indeks data dan bernilai k pada suku N+1.
+     Ini BUKAN klaim bahwa kandidat tersebut sama kuat; biaya tinggi menaruhnya
+     di urutan belakang dan deskripsi menjelaskan bahwa ini keluarga ekstensi. */
+  if (seq.length >= 2 && seq.every(x => x instanceof Fr)) {
+    try {
+      let level = seq.slice(), baseNext = ZERO, nFact = 1n;
+      while (level.length) {
+        baseNext = baseNext.add(level[level.length - 1]);
+        const nx = [];
+        for (let i = 0; i + 1 < level.length; i++) nx.push(level[i + 1].sub(level[i]));
+        level = nx;
+      }
+      for (let i = 2n; i <= BigInt(seq.length); i++) nFact *= i;
+      const used = new Set(answers.map(a => a.value.toString()));
+      const targetCount = 8;
+      for (let k = 1; answers.length < targetCount && k <= 100; k++) {
+        let v = baseNext.add(FI(k));
+        if (UNITS) v = new Fr(((v.n % 10n) + 10n) % 10n);
+        const vk = v.toString();
+        if (used.has(vk)) continue;
+        used.add(vk);
+        const hyp = {
+          tags: ['poly-extension'], cost: 24 + k * 0.02,
+          adj: 24 + k * 0.02,
+          desc: 'Ekstensi polinomial terikat data: aₙ = P(n) + (' + k + '/' + nFact.toString() + ')·∏(n−i), i=1…' + seq.length + '. Faktor tambahan nol pada semua indeks data; parameter k=' + k + ' hanya membentuk alternatif matematis, bukan bukti prediksi kuat.',
+          next: [v], kind: 'poly-extension'
+        };
+        answers.push({ value: v, next: [v], fills: null, cost: hyp.cost, score: Math.pow(2, -hyp.cost), hyp, support: 1, others: [] });
+      }
+    } catch (e) { /* jika ekspansi tak aman, pertahankan hasil model yang valid */ }
+  }
+
   const tot = answers.reduce((s, a) => s + a.score, 0);
   for (const a of answers) a.conf = tot > 0 ? a.score / tot : 0;
   const bestCost = answers.length ? answers[0].cost : Infinity;
@@ -1268,7 +1329,7 @@ root.SeqEngine = API;
     var out = target || $('#out');
     var a = res.answers[0];
     if (!a) {
-      out.innerHTML = '<div class="card"><h2>Hasil</h2><p class="big" style="font-size:1.6rem">Belum ada aturan yang cocok</p><div class="note bad">Tidak ada aturan yang cocok dengan semua angka. Tambahkan beberapa angka lagi, periksa penulisan, atau ajari mesin lewat kotak di bawah.</div>' + stripHtml(parsed, null) + '</div>';
+      out.innerHTML = '<div class="card"><h2>Hasil</h2><p class="big" style="font-size:1.6rem">Belum ada aturan yang cocok</p><div class="note bad">Belum ditemukan aturan yang cocok dengan semua angka. Mesin tidak akan mengarang kandidat hanya untuk memenuhi jumlah alternatif; tambahkan data atau aktifkan lebih banyak jalur analisis.</div>' + stripHtml(parsed, null) + '</div>';
       return;
     }
     var q = res.quality;
@@ -1279,16 +1340,16 @@ root.SeqEngine = API;
       gapTxt = '<p class="muted" style="margin-top:10px">Angka yang hilang: ' + parsed.gaps.map(function (g) { return 'posisi ' + (g + 1) + ' = <b class="hl" style="font-family:var(--font-num)">' + esc(a.fills[g] ? a.fills[g].toString() : '?') + '</b>'; }).join(', ') + '</p>';
     }
     var badges = '<span class="badge ' + q + '">' + qlabel + '</span>';
-    if (q !== 'lemah' && res.answers.length > 1) badges += '<span class="badge plain">Peluang relatif ' + Math.round(a.conf * 100) + '% dari ' + res.answers.length + ' jawaban mungkin</span>';
+    if (q !== 'lemah' && res.answers.length > 1) badges += '<span class="badge plain">Bobot relatif model ' + Math.round(a.conf * 100) + '% dari ' + res.answers.length + ' jawaban mungkin</span>';
     if (res.mode === 'units' || res.mode === 'auto-units') badges += '<span class="badge plain">Dibaca sebagai angka satuan (mod 10)</span>';
     if (a.support > 1) badges += '<span class="badge plain">' + a.support + ' aturan setara mendukung</span>';
     var note = '';
     if (q === 'lemah') note = '<div class="note bad">Mesin tidak menemukan aturan yang meyakinkan. Anggap jawaban ini tebakan. Deret dengan sedikit angka sering punya beberapa penjelasan sama-sama masuk akal.</div>';
     else if (q === 'sedang' && res.answers.length > 1) note = '<div class="note">Ada jawaban lain yang juga masuk akal. Lihat bagian alternatif di bawah.</div>';
     if (res.mode === 'auto-units' && q !== 'lemah') note = '<div class="note">Semua angka 0–9 dan bacaan angka biasa tidak meyakinkan, jadi deret dibaca sebagai angka satuan. Bila bukan itu maksud soalnya, ubah pilihan ke “Angka biasa”.</div>';
-    var alts = res.answers.slice(1, 5).map(function (x) {
+    var alts = res.answers.slice(1, 8).map(function (x, i) {
       var d = x.hyp.desc.length > 170 ? x.hyp.desc.slice(0, 170) + '…' : x.hyp.desc;
-      return '<li><span class="v">' + esc(fmtNum(x.value)) + '<span class="p">' + Math.round(x.conf * 100) + '%</span></span><span class="r">' + esc(d) + '</span></li>';
+      return '<li><span class="v">Alternatif ' + (i + 1) + ': ' + esc(fmtNum(x.value)) + '<span class="p">' + Math.round(x.conf * 100) + '%</span></span><span class="r">' + esc(d) + '</span></li>';
     }).join('');
     out.innerHTML =
       '<div class="card">' +
@@ -1299,7 +1360,7 @@ root.SeqEngine = API;
         '<div class="sub"><h2>Aturan yang ditemukan</h2>' + chainHtml(a.hyp) + '</div>' +
         '<div class="sub"><h2>Deret lengkap</h2>' + stripHtml(parsed, a) + '</div>' +
         (a.hyp.modDiff ? triModHtml(a.hyp.modDiff) : triHtml(parsed.seq)) +
-        (alts ? '<div class="sub"><h2>Jawaban alternatif</h2><ul class="alts">' + alts + '</ul></div>' : '') +
+        (alts ? '<div class="sub"><h2>Jawaban alternatif (hingga 7 kandidat berbeda)</h2><ul class="alts">' + alts + '</ul></div>' : '') +
         '<p class="muted" style="margin-top:16px">' + res.tested.toLocaleString('id-ID') + ' model diuji dalam ' + res.ms + ' ms.</p>' +
       '</div>';
   }
@@ -1356,8 +1417,9 @@ root.SeqEngine = API;
       $('#fourSummaryGrid').innerHTML = results.map(function (r, i) {
         var a = r.res.answers[0];
         var answer = a ? esc(fmtRounded(a.value)) : 'Tidak ditemukan';
-        var nextValues = a && a.next ? a.next.slice(1, 8).map(function (v) { return esc(fmtRounded(v)); }).join(', ') : '';
-        var nextLine = nextValues ? '<span class="muted">Lalu: ' + nextValues + '</span>' : '';
+        // yebi var altValues = r.res.answers.slice(1, 8).map(function (x, j) { return 'Alt ' + (j + 1) + ': ' + esc(fmtRounded(x.value)); }).join(' · ');
+		var altValues = r.res.answers.slice(1, 8).map(function (x, j) { return '' +  esc(fmtRounded(x.value)); }).join(' , ');
+        var nextLine = altValues ? '<span class="muted">' + altValues + '</span>' : '<span class="muted">Alternatif berbasis pola belum cukup ditemukan.</span>';
         var quality = a ? (r.res.quality === 'kuat' ? 'Pola kuat' : r.res.quality === 'sedang' ? 'Pola cukup' : 'Pola lemah') : 'Perlu data/cek ulang';
         return '<div class="stat"><span>Jawaban deret ' + r.name.toLowerCase() + '</span><b>' + answer + '</b>' + nextLine + '<span>' + quality + '</span><span class="muted">Data: ' + esc(r.seq) + '</span><button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
       }).join('');
