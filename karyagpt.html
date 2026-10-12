@@ -24,7 +24,8 @@ button{border:0;border-radius:9px;padding:10px 14px;background:var(--accent);col
 <p class="muted">Buat proyek terpisah. URL Google Apps Script menghubungkan halaman ini ke Google Sheets agar data dapat digunakan dari perangkat lain. Jangan masukkan data rahasia pada deployment publik.</p>
 <div class="row"><div><label for="projectSelect">Proyek aktif</label><select id="projectSelect"></select></div><div><label for="projectName">Nama proyek baru / nama pengganti</label><input id="projectName" placeholder="Contoh: Angka 4 Digit"></div></div>
 <div class="row" style="margin-top:10px"><button id="createProject">Buat proyek</button><button id="renameProject" class="secondary">Ganti nama</button><button id="deleteProject" class="danger">Hapus proyek</button></div>
-<label for="scriptUrl">URL Web App Google Apps Script</label><input id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+<label for="scriptUrl">URL Web App Google Apps Script</label><input id="scriptUrl" value="https://script.google.com/macros/s/AKfycbzqbSHwbkmunNL_XZ4VYC8gzc3Szsv9MHQdD5WCpAfw7lkvBJHTKjwtGayNw4LDbodhHg/exec"
+  placeholder="https://script.google.com/macros/s/.../exec">
 <div class="row" style="margin-top:10px"><button id="connect">Sambungkan / muat dari Sheets</button><button id="sync" class="secondary">Simpan / sinkronkan</button><button id="export" class="secondary">Ekspor cadangan JSON</button></div>
 <div id="syncStatus" class="status">Mode lokal aktif. Ekspor cadangan berkala jika belum menghubungkan Google Sheets.</div>
 </section>
