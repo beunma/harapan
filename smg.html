@@ -1,364 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wadah Pemisahan</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorium Pembelajaran 4 Posisi (Fixed)</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    padding: 24px;
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    color: #222;
-  }
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  h1 {
-    margin: 0 0 18px;
-    font-size: 24px;
-  }
-  .input-card, .section-card {
-    background: #fff;
-    border: 1px solid #d8dde3;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
-  }
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    font-weight: 700;
-  }
-  .topbar .actual {
-    font-weight: 700;
-  }
-  textarea {
-    width: 100%;
-    resize: vertical;
-    min-height: 130px;
-    border: 1px solid #aeb7c2;
-    border-radius: 7px;
-    padding: 12px;
-    font-family: Consolas, monospace;
-    font-size: 16px;
-    line-height: 1.5;
-    outline: none;
-  }
-  textarea:focus {
-    border-color: #6b7cff;
-  }
-  .input-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  button {
-    border: 0;
-    border-radius: 6px;
-    padding: 9px 16px;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  .paste { background: #2563eb; color: #fff; }
-  .reset { background: #6b7280; color: #fff; }
-  .copy { background: #16a34a; color: #fff; }
-  .copy:active, .paste:active, .reset:active { transform: translateY(1px); }
-
-  .error {
-    color: #dc2626;
-  }
-
-  .separator-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 14px;
-  }
-
-  .group {
-    margin-bottom: 14px;
-  }
-  .group:last-child { margin-bottom: 0; }
-
-  .group-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    font-weight: 700;
-  }
-  .group-header .ln {
-    font-weight: 700;
-  }
-  .group textarea {
-    min-height: 75px;
-    height: 75px;
-  }
-  .group-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 7px;
-  }
-  .copy-small {
-    background: #16a34a;
-    color: #fff;
-  }
-
-  .status {
-    margin-top: 7px;
-    font-size: 13px;
-    min-height: 16px;
-  }
-
-  @media (max-width: 650px) {
-    body { padding: 12px; }
-    .topbar, .group-header { font-size: 14px; }
-  }
-</style>
-</head>
-<body>
-<div class="container">
-  <h1>Data Input SMG</h1>
-
-  <div class="input-card">
-    <div class="topbar">
-      <div>Jumlah LN: <span id="jumlahLN">0</span></div>
-      <div class="actual">Actual LN: <span id="actualLN">0</span></div>
-    </div>
-
-    <textarea id="inputData" placeholder="Masukkan data, contoh: 23*45*56"></textarea>
-
-    <div class="input-actions">
-      <button class="paste" id="pasteBtn">Paste from Clipboard</button>
-      <button class="reset" id="resetBtn">Reset</button>
-    </div>
-    <div class="status" id="inputStatus"></div>
-  </div>
-
-  <div class="section-card">
-    <div class="separator-title">Wadah Pemisahan</div>
-  </div>
-
+:root{--bg:#f4f6fb;--card:#fff;--ink:#172033;--muted:#5d687b;--line:#dce2ec;--accent:#2457d6;--soft:#eaf0ff;--ok:#087443;--bad:#a32929}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}header{background:#14264b;color:#fff;padding:20px max(16px,calc((100% - 1100px)/2))}header h1{margin:0 0 4px;font-size:1.45rem}header p{margin:0;color:#d9e4ff}main{max-width:1100px;margin:20px auto;padding:0 14px 40px;display:grid;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 2px 8px #1b2b4d0a}h2{font-size:1.12rem;margin:0 0 12px}h3{font-size:1rem;margin:0 0 8px}.muted{color:var(--muted);font-size:.92rem}label{display:block;font-weight:650;margin:9px 0 4px}textarea,input,button{font:inherit}textarea,input{width:100%;padding:10px 11px;border:1px solid #cbd3e1;border-radius:9px;background:#fff;color:var(--ink)}textarea{min-height:100px;resize:vertical}button{border:0;border-radius:9px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer}button:disabled{background:#bcc4d1;cursor:not-allowed}button.secondary{background:#e9edf5;color:#202b40}.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.row button{flex:1;min-width:140px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px}.status{padding:10px 12px;border-radius:9px;background:#eef2f8;margin-top:10px;white-space:pre-wrap}.status.ok{background:#e7f7ef;color:var(--ok)}.status.bad{background:#ffebeb;color:var(--bad)}.candidate{border:1px solid var(--line);border-radius:11px;padding:13px;margin-top:10px}.candidate-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.rank{font-weight:800;color:var(--accent)}.pill{font-size:.8rem;border-radius:999px;padding:3px 8px;background:var(--soft);color:#2048a8}.bar{height:7px;background:#e8edf5;border-radius:99px;overflow:hidden;margin-top:7px}.bar span{display:block;height:100%;background:#3565d9}.resultbox{margin-top:10px}.resulthead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.resulthead h3{margin:0}.resulthead button{padding:7px 11px}.small{font-size:.85rem}@media(max-width:720px){.grid2,.grid4{grid-template-columns:1fr}.card{padding:14px}header{padding:18px 14px}}
+</style></head>
+<body><header><h1>Laboratorium Pembelajaran 4 Posisi</h1><p>Analisis mempertahankan metode numerik dari kode KaryaGPT yang diberikan.</p></header>
+<main>
+<section class="card"><h2>1. Data pertanyaan 4D</h2><label for="seriesInput">Deret pertanyaan, urut dari paling lama sampai terbaru</label><textarea id="seriesInput" spellcheck="false" placeholder="5786,3857,6253,3101,...,1746"></textarea><div class="row"><button id="pasteBtn" class="secondary">Tempel dari clipboard</button><button id="resetBtn" class="secondary">Reset</button><button id="findBtn">Cari kandidat logika</button></div><div id="mainStatus" class="status">Masukkan minimal 3 angka 4 digit. Angka terbaru menjadi pertanyaan yang dianalisis; setiap data sebelumnya dilatih dengan digit dari hasil sesudahnya.</div></section>
+<section class="card"><h2>2. Kandidat setiap posisi</h2><p class="muted">Keempat kotak dapat diedit. Harus berisi **hanya digit (0-9) tanpa tanda pemisah apapun**. Tombol perkawinan hanya aktif saat format benar.</p><div class="grid4">
+<div><label for="candThousands">Ribuan</label><textarea id="candThousands" spellcheck="false" placeholder="Contoh: 12"></textarea></div>
+<div><label for="candHundreds">Ratusan</label><textarea id="candHundreds" spellcheck="false" placeholder="Contoh: 34"></textarea></div>
+<div><label for="candTens">Puluhan</label><textarea id="candTens" spellcheck="false" placeholder="Contoh: 56"></textarea></div>
+<div><label for="candUnits">Satuan</label><textarea id="candUnits" spellcheck="false" placeholder="Contoh: 78"></textarea></div>
+</div><div class="row"><button id="marryBtn" disabled>Proses Perkawinan</button></div><div id="candidateStatus" class="status">Masukkan digit ke semua kotak kandidat.</div></section>
+<section class="card"><h2>3. Hasil kombinasi</h2><div id="comboResults"></div></section>
+<section class="card"><h2>4. Rincian metode analisis</h2><div id="analysisDetails" class="muted">Rincian metode akan muncul setelah analisis dijalankan.</div></section>
+</main>
 <script>
-(() => {
-  const input = document.getElementById('inputData');
-  const jumlahLN = document.getElementById('jumlahLN');
-  const actualLN = document.getElementById('actualLN');
-  const status = document.getElementById('inputStatus');
-  const wadah = document.querySelector('.section-card');
+(()=>{
+const $=id=>document.getElementById(id);
+function num(s){if(!/^[+-]?\d+(?:\.\d+)?$/.test(String(s).trim()))return null;let n=Number(s);return Number.isFinite(n)?n:null}
+function digs(n){return String(Math.abs(Math.trunc(n))).split('').map(Number)}
+function nice(n){return Number.isFinite(n)?Math.round(n*1e6)/1e6:null}
+function linear(ds,x){let n=ds.length,mx=ds.reduce((s,d)=>s+d.x,0)/n,my=ds.reduce((s,d)=>s+d.y,0)/n,den=ds.reduce((s,d)=>s+(d.x-mx)**2,0);if(!den)return my;let a=ds.reduce((s,d)=>s+(d.x-mx)*(d.y-my),0)/den;return a*x+my-a*mx}
+function origin(ds,x){let den=ds.reduce((s,d)=>s+d.x*d.x,0);return den?ds.reduce((s,d)=>s+d.x*d.y,0)/den*x:0}
+function poly(ds,x,degree){let n=degree+1;if(ds.length<n)return NaN;let rows=ds.slice(0,n),m=rows.map(r=>Array.from({length:n+1},(_,j)=>j===n?r.y:r.x**j));for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<n;k++)if(Math.abs(m[k][i])>Math.abs(m[p][i]))p=k;[m[i],m[p]]=[m[p],m[i]];if(Math.abs(m[i][i])<1e-12)return NaN;let z=m[i][i];for(let j=i;j<=n;j++)m[i][j]/=z;for(let k=0;k<n;k++)if(k!==i){z=m[k][i];for(let j=i;j<=n;j++)m[k][j]-=z*m[i][j]}}return m.reduce((s,r,i)=>s+r[n]*x**i,0)}
+function position(ds,x){let len=String(Math.abs(Math.trunc(x))).length,d=digs(x),rows=ds.filter(r=>String(Math.abs(Math.trunc(r.x))).length===len);if(rows.length<len)return NaN;let m=rows.map(r=>[...digs(r.x),r.y]),n=len;for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<m.length;k++)if(Math.abs(m[k][i])>Math.abs(m[p][i]))p=k;[m[i],m[p]]=[m[p],m[i]];if(Math.abs(m[i][i])<1e-9)return NaN;let z=m[i][i];for(let j=i;j<=n;j++)m[i][j]/=z;for(let k=0;k<m.length;k++)if(k!==i){z=m[k][i];for(let j=i;j<=n;j++)m[k][j]-=z*m[i][j]}}return d.reduce((s,v,i)=>s+v*m[i][n],0)}
+function analyze(q,examples){let x=num(q),ds=examples.map(e=>({x:num(e.q),y:num(e.a)})).filter(d=>d.x!==null&&d.y!==null);if(x===null)return {error:'Input uji harus berupa angka.'};if(ds.length<2)return {error:'Diperlukan setidaknya dua contoh latihan numerik dengan jawaban.'};let out=[];
+function add(name,fn,why,complexity){let pred=fn(x);if(!Number.isFinite(pred)||Math.abs(pred)>1e12)return;let vals=ds.map(d=>fn(d.x));if(vals.some(v=>!Number.isFinite(v)))return;let exact=vals.filter((v,i)=>Math.abs(v-ds[i].y)<1e-7).length,mae=vals.reduce((s,v,i)=>s+Math.abs(v-ds[i].y),0)/ds.length;let cv=null;if(ds.length>=3){let errs=[];for(let i=0;i<ds.length;i++){let tr=ds.filter((_,j)=>j!==i),test=ds[i],v=null;if(name.startsWith('Linear'))v=linear(tr,test.x);else if(name.startsWith('Proporsional'))v=origin(tr,test.x);else if(name.startsWith('Kuadratik'))v=poly(tr,test.x,2);else if(name.startsWith('Kubik'))v=poly(tr,test.x,3);if(Number.isFinite(v))errs.push(Math.abs(v-test.y))}if(errs.length)cv=errs.reduce((a,b)=>a+b,0)/errs.length}let cvScore=cv===null?.5:1/(1+cv),score=Math.max(0,Math.min(100,100*(.68*exact/ds.length+.22*cvScore+.1/(1+complexity))));out.push({name,pred:nice(pred),why,exact,total:ds.length,mae:nice(mae),cv:nice(cv),score:nice(score)})}
+add('Konstanta / jawaban tetap',()=>ds[0].y,'Memeriksa apakah jawaban tidak bergantung pada masukan.',1);
+add('Linear: y = ax + b',v=>linear(ds,v),'Mencari hubungan garis lurus antara masukan dan jawaban.',2);
+add('Kuadratik: y = ax² + bx + c',v=>poly(ds,v,2),'Mencari pola polinomial derajat dua.',3);
+add('Kubik: y = ax³ + bx² + cx + d',v=>poly(ds,v,3),'Mencari pola polinomial derajat tiga; berisiko overfit.',4);
+add('Proporsional: y = ax',v=>origin(ds,v),'Memeriksa hubungan kelipatan langsung.',2);
+add('Digit satuan',v=>((Math.trunc(v)%10)+10)%10,'Mengambil digit satuan masukan.',1);
+add('Jumlah digit',v=>digs(v).reduce((a,b)=>a+b,0),'Menjumlahkan semua digit masukan.',1);
+add('Jumlah digit modulo 10',v=>digs(v).reduce((a,b)=>a+b,0)%10,'Menjumlahkan digit lalu mengambil sisa pembagian 10.',2);
+add('Perkalian digit modulo 10',v=>digs(v).reduce((a,b)=>a*b,1)%10,'Mengalikan digit lalu mengambil sisa pembagian 10.',2);
+add('Total selisih digit berurutan',v=>{let d=digs(v);return d.slice(1).reduce((a,b,i)=>a+Math.abs(b-d[i]),0)},'Menjumlahkan selisih mutlak digit yang bersebelahan.',2);
+add('Digit pertama + terakhir',v=>{let d=digs(v);return d[0]+d[d.length-1]},'Menjumlahkan digit paling kiri dan paling kanan.',1);
+add('Jumlah kuadrat digit modulo 10',v=>digs(v).reduce((a,b)=>a+b*b,0)%10,'Menjumlahkan kuadrat digit lalu mengambil sisa pembagian 10.',2);
+add('Digit bergantian (+ −)',v=>digs(v).reduce((a,b,i)=>a+(i%2===0?b:-b),0),'Menjumlahkan dan mengurangi digit bergantian menurut posisi.',2);
+add('Kombinasi linear bobot posisi digit',v=>position(ds,v),'Mencoba bobot linear untuk digit pada posisi masing-masing.',4);
+out.sort((a,b)=>b.score-a.score);let unique=[],seen=new Set();for(let c of out){let k=String(c.pred);if(!seen.has(k)){seen.add(k);unique.push(c)}}return {candidates:unique.slice(0,8),allCount:unique.length,dataCount:ds.length}}
+function parseSeries(){let raw=$('seriesInput').value.trim();let parts=raw.split(/[\s,*;]+/).filter(Boolean);if(parts.some(v=>!/^\d{1,4}$/.test(v)))throw Error('Gunakan angka 4 digit dipisahkan koma atau tanda *.');let vals=parts.map(v=>v.padStart(4,'0'));if(vals.length<3)throw Error('Masukkan minimal 3 data 4 digit.');return vals}
+function positionExamples(vals,pos){let ex=[];for(let i=0;i<vals.length-1;i++)ex.push({q:String(Number(vals[i])),a:String(Number(vals[i+1][pos]))});return ex}
+function fmt(n){if(!Number.isFinite(Number(n)))return String(n??'');let v=Number(n);return Number.isInteger(v)?String(v):String(Number(v.toFixed(1)))}
 
-  function getItems(text) {
-    return text.split('*').map(x => x.trim()).filter(x => x !== '');
-  }
-
-  function getType(items) {
-    if (!items.length) return null;
-    const lengths = new Set(items.map(x => x.length));
-    if (lengths.size !== 1) return 'ERROR';
-
-    const len = items[0].length;
-    if (![2, 3, 4].includes(len)) return 'ERROR';
-    if (!items.every(x => /^\d+$/.test(x))) return 'ERROR';
-    return len;
-  }
-
-  // Hanya merapikan spasi di sekitar *, tanpa menghapus "*" terakhir
-  // yang sedang diketik secara manual.
-  function cleanInput(text) {
-    return text.replace(/\s*\*\s*/g, '*');
-  }
-
-  function copyText(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-      return navigator.clipboard.writeText(text);
+// --- FUNGSI VALIDASI DAN PENGURAIAN KANDIDAT ---
+// Memeriksa bahwa input hanya berisi digit tanpa tanda pemisah, dan mengembalikannya sebagai array digit tunggal.
+function getValidDigits(id){
+    const raw=$(id).value.replace(/\s+/g,''); // Hapus semua spasi
+    if(!raw) return null;
+    if(!/^\d+$/.test(raw)) {
+        throw Error('Kotak '+({candThousands:'Ribuan',candHundreds:'Ratusan',candTens:'Puluhan',candUnits:'Satuan'}[id]||id)+' harus berisi **hanya digit (0-9)** tanpa tanda pemisah.');
     }
-    const temp = document.createElement('textarea');
-    temp.value = text;
-    temp.style.position = 'fixed';
-    temp.style.opacity = '0';
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand('copy');
-    temp.remove();
-    return Promise.resolve();
-  }
+    // Mengembalikan input sebagai array karakter digit tunggal
+    return Array.from(raw); 
+}
 
-  function renderGroup(freq, values) {
-    const group = document.createElement('div');
-    group.className = 'group dynamic-group';
-
-    const header = document.createElement('div');
-    header.className = 'group-header';
-
-    const title = document.createElement('span');
-    title.textContent = freq === 0 ? 'Kesamaan 0' : `Kesamaan ${freq}`;
-
-    const ln = document.createElement('span');
-    ln.className = 'ln';
-    ln.innerHTML = `Jumlah LN: <span>${values.length}</span>`;
-
-    header.appendChild(title);
-    header.appendChild(ln);
-
-    const textarea = document.createElement('textarea');
-    textarea.readOnly = true;
-    textarea.value = values.join('*');
-
-    const footer = document.createElement('div');
-    footer.className = 'group-footer';
-
-    const btn = document.createElement('button');
-    btn.className = 'copy-small';
-    btn.textContent = 'Copy';
-    btn.addEventListener('click', async () => {
-      try {
-        await copyText(textarea.value);
-        btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy', 900);
-      } catch (_) {
-        btn.textContent = 'Gagal';
-        setTimeout(() => btn.textContent = 'Copy', 900);
-      }
-    });
-
-    footer.appendChild(btn);
-    group.appendChild(header);
-    group.appendChild(textarea);
-    group.appendChild(footer);
-    return group;
-  }
-
-  function clearGroups() {
-    wadah.querySelectorAll('.dynamic-group').forEach(el => el.remove());
-  }
-
-  function update() {
-    const before = input.value;
-    const after = cleanInput(before);
-
-    if (after !== before) {
-      const pos = input.selectionStart;
-      input.value = after;
-      try {
-        input.selectionStart = input.selectionEnd =
-          Math.min(pos, input.value.length);
-      } catch (_) {}
-    }
-
-    const items = getItems(input.value);
-    jumlahLN.textContent = items.length;
-
-    clearGroups();
-
-    if (!items.length) {
-      actualLN.textContent = '0';
-      actualLN.classList.remove('error');
-      status.textContent = '';
-      return;
-    }
-
-    const type = getType(items);
-
-    if (type === 'ERROR') {
-      actualLN.textContent = 'ERROR';
-      actualLN.classList.add('error');
-      status.textContent =
-        'ERROR: semua data harus berupa kelompok 2 digit, 3 digit, atau 4 digit yang sama.';
-      return;
-    }
-
-    actualLN.classList.remove('error');
-    status.textContent = '';
-
-    const counts = new Map();
-    items.forEach(item => {
-      counts.set(item, (counts.get(item) || 0) + 1);
-    });
-
-    actualLN.textContent = counts.size;
-
-    // Dinamis: Kesamaan 4, 5, 6, dst otomatis dibuat bila memang ada.
-    const groups = new Map();
-
-    counts.forEach((count, value) => {
-      if (!groups.has(count)) groups.set(count, []);
-      groups.get(count).push(value);
-    });
-
-    // Kesamaan 0 = semua kemungkinan yang tidak muncul.
-    const missing = [];
-    const max = Math.pow(10, type);
-
-    for (let n = 0; n < max; n++) {
-      const value = String(n).padStart(type, '0');
-      if (!counts.has(value)) missing.push(value);
-    }
-
-    // Hanya tampilkan wadah yang memiliki isi.
-    [...groups.keys()].sort((a, b) => b - a).forEach(freq => {
-      const values = groups.get(freq).sort((a, b) => Number(a) - Number(b));
-      wadah.appendChild(renderGroup(freq, values));
-    });
-
-    if (missing.length > 0) {
-      wadah.appendChild(renderGroup(0, missing));
-    }
-  }
-
-  document.getElementById('pasteBtn').addEventListener('click', async () => {
-    try {
-      const clip = await navigator.clipboard.readText();
-      if (!clip) return;
-
-      const oldText = input.value;
-      const oldItems = getItems(oldText);
-      const newItems = getItems(clip);
-
-      if (!oldText.trim()) {
-        input.value = clip.trim();
-      } else if (newItems.length) {
-        const oldType = getType(oldItems);
-        const newType = getType(newItems);
-
-        if (
-          oldType !== 'ERROR' &&
-          newType !== 'ERROR' &&
-          oldType === newType
-        ) {
-          input.value = oldItems.join('*') + '*' + newItems.join('*');
-        } else {
-          // Tetap masukkan data. Jika akhirnya campur digit, tampil ERROR.
-          input.value =
-            oldText.replace(/\*+$/, '') +
-            '*' +
-            clip.trim().replace(/^\*+/, '');
+// Memeriksa keempat input dan mengatur status tombol 'Proses Perkawinan'
+function validateInputs() {
+    let inputs = ['candThousands', 'candHundreds', 'candTens', 'candUnits'];
+    let allValid = true;
+    let message = '';
+    inputs.forEach(id => {
+        try {
+            getValidDigits(id);
+        } catch (e) {
+            allValid = false;
+            message = e.message;
         }
-      }
+    });
 
-      update();
-      input.focus();
-      input.selectionStart = input.selectionEnd = input.value.length;
-    } catch (_) {
-      status.textContent =
-        'Clipboard tidak dapat dibaca. Izinkan akses clipboard pada browser.';
+    if (!allValid) {
+        $('marryBtn').disabled = true;
+        $('candidateStatus').className = 'status bad';
+        $('candidateStatus').textContent = message;
+    } else {
+        $('marryBtn').disabled = false;
+        $('candidateStatus').className = 'status ok';
+        $('candidateStatus').textContent = 'Kandidat valid. Siap diproses.';
     }
-  });
+}
 
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    input.value = '';
-    update();
-    input.focus();
-  });
+// Tambahkan event listener input ke keempat kotak kandidat
+['candThousands', 'candHundreds', 'candTens', 'candUnits'].forEach(id => {
+    $(id).addEventListener('input', validateInputs);
+});
 
-  input.addEventListener('input', update);
-  update();
+// --- LOGIKA PERKAWINAN DAN HASIL ---
+// Sesuai Image 0: Output harus dipisahkan tanda bintang (*).
+function combos(sets){
+    // combos takes an array of arrays of strings. E.g., [['1', '2'], ['3', '4']]
+    let out=[''];
+    for(const arr of sets){
+        let next=[];
+        for(const prefix of out){
+            for(const item of arr){
+                // Menggabungkan string secara langsung (tanpa bintang di antara elemen individu)
+                next.push(prefix + item); 
+            }
+        }
+        out=next;
+    }
+    return out.filter(s => s !== ''); // Menghapus elemen string kosong awal
+}
+
+function renderCombo(name,arr){let wrap=document.createElement('div');wrap.className='resultbox';let head=document.createElement('div');head.className='resulthead';let h=document.createElement('h3');h.textContent=name+' — '+arr.length+' LN';let b=document.createElement('button');b.className='secondary';b.textContent='Copy';b.onclick=()=>navigator.clipboard.writeText(arr.join('*')).then(()=>setMain('Hasil '+name+' disalin.','ok')).catch(()=>{let t=document.createElement('textarea');t.value=arr.join('*');document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();setMain('Hasil '+name+' disalin.','ok')});head.append(h,b);let ta=document.createElement('textarea');ta.readOnly=true;ta.value=arr.join('*');ta.style.minHeight='90px';wrap.append(head,ta);return wrap}
+function setMain(msg,kind=''){ $('mainStatus').className='status '+kind;$('mainStatus').textContent=msg }
+
+$('findBtn').onclick=()=>{try{let vals=parseSeries(),latest=String(Number(vals[vals.length-1]));let posInfo=[['Ribuan',0,'candThousands'],['Ratusan',1,'candHundreds'],['Puluhan',2,'candTens'],['Satuan',3,'candUnits']];let detail=[];for(const [label,pos,id] of posInfo){let res=analyze(latest,positionExamples(vals,pos));if(res.error)throw Error(label+': '+res.error);$(id).value=res.candidates.map(c=>fmt(c.pred)).join('*');detail.push('<div class="candidate"><div class="candidate-top"><h3>'+label+'</h3><span class="pill">'+res.dataCount+' contoh · '+res.allCount+' hasil unik</span></div>'+res.candidates.map((c,i)=>'<p><b class="rank">#'+(i+1)+' '+fmt(c.pred)+'</b> — '+c.name+' · bobot '+c.score+'/100 · cocok '+c.exact+'/'+c.total+'</p>').join('')+'</div>')} $('analysisDetails').innerHTML=detail.join('');
+// Setelah pencarian kandidat, paksa validasi untuk menonaktifkan tombol perkawinan karena format input akan memiliki tanda bintang.
+validateInputs(); 
+setMain('Analisis selesai. Pertanyaan terbaru: '+latest+'. Contoh latihan diambil dari pasangan setiap data dengan data sesudahnya. **Hapus tanda pemisah** di kotak kandidat untuk perkawinan.','ok')}catch(e){setMain(e.message,'bad')}};
+
+$('marryBtn').onclick=()=>{try{
+    let rib=getValidDigits('candThousands'),
+        rat=getValidDigits('candHundreds'),
+        pul=getValidDigits('candTens'),
+        sat=getValidDigits('candUnits');
+        
+    // combos function expects an array of arrays of strings.
+    // 2DD: Ribuan & Ratusan
+    // 2DT: Ratusan & Puluhan
+    // 2DB: Puluhan & Satuan
+    // 3DD: Ribuan, Ratusan, & Puluhan
+    // 3DB: Ratusan, Puluhan, & Satuan
+    let sets=[
+        ['2DD',[rib,rat]],
+        ['2DT',[rat,pul]],
+        ['2DB',[pul,sat]],
+        ['3DD',[rib,rat,pul]],
+        ['3DB',[rat,pul,sat]]
+    ];
+    
+    let box=$('comboResults');box.innerHTML='';
+    for(const [name,arrays] of sets)box.appendChild(renderCombo(name,combos(arrays)));
+    
+    $('candidateStatus').className='status ok';
+    $('candidateStatus').textContent='Perkawinan selesai. Kandidat diproses apa adanya.'
+}catch(e){$('candidateStatus').className='status bad';$('candidateStatus').textContent=e.message}};
+
+$('resetBtn').onclick=()=>{ $('seriesInput').value='';['candThousands','candHundreds','candTens','candUnits'].forEach(id=>$(id).value='');$('analysisDetails').textContent='Rincian metode akan muncul setelah analisis dijalankan.';$('comboResults').innerHTML='';$('candidateStatus').className='status';$('candidateStatus').textContent='Belum ada kandidat.';setMain('Formulir direset.')};
+$('pasteBtn').onclick=async()=>{try{$('seriesInput').value=await navigator.clipboard.readText();setMain('Teks clipboard ditempel.','ok')}catch(e){setMain('Clipboard tidak dapat dibaca otomatis. Tempel langsung ke kotak data.','bad')}};
 })();
-</script>
-</body>
-</html>
+</script></body></html>
