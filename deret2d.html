@@ -144,6 +144,8 @@ progress { width: 100%; height: 10px; accent-color: var(--accent); }
   <section class="card" id="fourSummary" aria-live="polite" hidden>
     <h2>Kesimpulan cepat — 4 deret</h2>
     <div class="grid2" id="fourSummaryGrid"></div>
+    <div class="row" style="margin-top:14px"><button class="btn primary" id="marryFourBtn" type="button" disabled>Proses Perkawinan</button><span class="hint" id="marryFourStatus" aria-live="polite">Hapus semua koma/pemisah di keempat kotak. Tombol aktif jika semuanya hanya berisi digit 0–9.</span></div>
+    <div id="fourComboResults" style="margin-top:12px"></div>
     <p class="muted" style="margin-top:12px">Untuk mempelajari alasan dan rincian tiap jawaban, buka bagian deret yang diinginkan di bawah.</p>
   </section>
   <section id="fourDetails" class="grid2"></section>
@@ -1416,14 +1418,12 @@ root.SeqEngine = API;
       save(); renderBrain();
       $('#fourSummaryGrid').innerHTML = results.map(function (r, i) {
         var a = r.res.answers[0];
-        var answer = a ? esc(fmtRounded(a.value)) : 'Tidak ditemukan';
-        // yebi var altValues = r.res.answers.slice(1, 8).map(function (x, j) { return 'Alt ' + (j + 1) + ': ' + esc(fmtRounded(x.value)); }).join(' · ');
-		var altValues = r.res.answers.slice(1, 8).map(function (x, j) { return '' +  esc(fmtRounded(x.value)); }).join(' , ');
-        var nextLine = altValues ? '<span class="muted">' + altValues + '</span>' : '<span class="muted">Alternatif berbasis pola belum cukup ditemukan.</span>';
+        var answerDigits = r.res.answers.slice(0, 8).map(function (x) { return fmtRounded(x.value); }).join(', ');
         var quality = a ? (r.res.quality === 'kuat' ? 'Pola kuat' : r.res.quality === 'sedang' ? 'Pola cukup' : 'Pola lemah') : 'Perlu data/cek ulang';
-        return '<div class="stat"><span>Jawaban deret ' + r.name.toLowerCase() + '</span><b>' + answer + '</b>' + nextLine + '<span>' + quality + '</span><span class="muted">Data: ' + esc(r.seq) + '</span><button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
+        return '<div class="stat"><label for="fourAnswer' + i + '">Jawaban deret ' + r.name.toLowerCase() + ' (jawaban utama + maksimal 7 alternatif; hapus koma untuk perkawinan)</label><textarea id="fourAnswer' + i + '" rows="2" spellcheck="false" autocomplete="off" data-four-answer="' + i + '">' + esc(answerDigits) + '</textarea><span>' + quality + '</span><span class="muted">Data: ' + esc(r.seq) + '</span><button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
       }).join('');
       $('#fourSummary').hidden = false;
+      validateFourMarriage();
       $('#fourSummaryGrid').querySelectorAll('[data-detail]').forEach(function (b) {
         b.addEventListener('click', function () {
           var target = $('#detailDigit' + b.dataset.detail);
@@ -1437,6 +1437,76 @@ root.SeqEngine = API;
       btn.disabled = false;
     }
   }
+
+  function getFourDigits(id) {
+    var el = document.getElementById(id);
+    var raw = el ? el.value : '';
+    if (!raw || !/^\d+$/.test(raw)) return null;
+    return Array.from(raw);
+  }
+  function validateFourMarriage() {
+    var ids = ['fourAnswer0','fourAnswer1','fourAnswer2','fourAnswer3'];
+    var ok = ids.every(function(id) { return !!getFourDigits(id); });
+    var btn = $('#marryFourBtn');
+    if (btn) btn.disabled = !ok;
+    var status = $('#marryFourStatus');
+    if (status) {
+      status.textContent = ok ? 'Keempat jawaban sudah tanpa pemisah. Siap diproses.' : 'Hapus semua koma/pemisah di keempat kotak. Tombol aktif jika semuanya hanya berisi digit 0–9.';
+      status.className = 'hint' + (ok ? ' good' : '');
+    }
+  }
+  function fourCombos(sets) {
+    var out = [''];
+    sets.forEach(function(arr) {
+      var next = [];
+      out.forEach(function(prefix) { arr.forEach(function(item) { next.push(prefix + item); }); });
+      out = next;
+    });
+    return out;
+  }
+  function renderFourCombo(name, arr) {
+    var wrap = document.createElement('div');
+    wrap.className = 'resultbox';
+    wrap.style.marginTop = '12px';
+    var head = document.createElement('div');
+    head.className = 'resulthead';
+    head.style.display = 'flex';
+    head.style.alignItems = 'center';
+    head.style.justifyContent = 'space-between';
+    var title = document.createElement('h3');
+    title.textContent = name + ' — ' + arr.length + ' LN';
+    var copy = document.createElement('button');
+    copy.type = 'button'; copy.className = 'btn'; copy.textContent = 'Copy';
+    copy.addEventListener('click', function() {
+      var value = arr.join('*');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(value).catch(function(){});
+      var ta = wrap.querySelector('textarea'); ta.focus(); ta.select();
+    });
+    head.append(title, copy);
+    var ta = document.createElement('textarea');
+    ta.rows = 3; ta.readOnly = true; ta.value = arr.join('*');
+    wrap.append(head, ta);
+    return wrap;
+  }
+  document.addEventListener('input', function(ev) {
+    if (ev.target && ev.target.matches('[data-four-answer]')) validateFourMarriage();
+  });
+  $('#marryFourBtn').addEventListener('click', function() {
+    var ids = ['fourAnswer0','fourAnswer1','fourAnswer2','fourAnswer3'];
+    var digits = ids.map(getFourDigits);
+    if (digits.some(function(x){ return !x; })) { validateFourMarriage(); return; }
+    var sets = [
+      ['2DD',[digits[0],digits[1]]],
+      ['2DT',[digits[1],digits[2]]],
+      ['2DB',[digits[2],digits[3]]],
+      ['3DD',[digits[0],digits[1],digits[2]]],
+      ['3DB',[digits[1],digits[2],digits[3]]]
+    ];
+    var box = $('#fourComboResults');
+    box.innerHTML = '';
+    sets.forEach(function(item) { box.appendChild(renderFourCombo(item[0], fourCombos(item[1]))); });
+    $('#marryFourStatus').textContent = 'Perkawinan selesai. Hasil kombinasi tersedia di bawah tombol.';
+  });
 
   /* panel otak */
   function tagLabel(t) {
