@@ -124,6 +124,11 @@ progress { width: 100%; height: 10px; accent-color: var(--accent); }
 #fourDetails .big { font-size: clamp(1.8rem, 5vw, 2.8rem); }
 #fourSummaryGrid .stat { border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
 #fourSummaryGrid .stat b { overflow-wrap: anywhere; }
+.quick-digit-summary { display:grid; grid-template-columns:1fr; gap:8px; margin-top:10px; padding:10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); font-size:.88rem; overflow-wrap:anywhere; }
+.quick-digit-summary > div { min-width:0; }
+.quick-digit-summary strong { color:var(--ink); }
+.quick-digit-summary .quick-seq { font-family:var(--font-num); }
+.quick-digit-summary .quick-next { color:var(--accent); font-family:var(--font-num); font-weight:700; overflow-wrap:anywhere; }
 @media (max-width: 560px) { #fourDetails { grid-template-columns: 1fr; } }
 </style>
 
@@ -1478,7 +1483,20 @@ root.SeqEngine = API;
         var answerPairsText = r.candidates.join('*');
         var quality = (r.leftRes.answers.length && r.rightRes.answers.length) ?
           ((r.leftRes.quality === 'kuat' && r.rightRes.quality === 'kuat') ? 'Pola digit kuat' : (r.leftRes.quality === 'tidak ada' || r.rightRes.quality === 'tidak ada') ? 'Perlu data/cek ulang' : 'Pola digit gabungan') : 'Perlu data/cek ulang';
-        return '<div class="stat"><label for="fourAnswer' + i + '">Kesimpulan 2D ' + r.name.toLowerCase() + ' (hingga 50 kandidat; pasangan dua digit dipisahkan dengan *)</label><textarea id="fourAnswer' + i + '" rows="2" spellcheck="false" autocomplete="off" data-four-answer="' + i + '" placeholder="Contoh: 01*02*03">' + esc(answerPairsText) + '</textarea><span>' + quality + '</span><span class="muted">Data pasangan: ' + esc(r.seq) + '</span><button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
+        function nextDigitText(res) {
+          // Samakan dengan tampilan render() pada bagian Rincian:
+          // jawaban utama (a.value), lalu kelanjutan aturan yang sama (a.next.slice(1)).
+          // Jangan gunakan res.answers sebagai alternatif karena itu kandidat hipotesis lain.
+          var a = res && res.answers && res.answers[0];
+          if (!a) return 'Belum ditemukan';
+          var vals = [fmtNum(a.value)].concat((a.next || []).slice(1).map(function (v) { return fmtNum(v); }));
+          return vals.join(', ');
+        }
+        var quickDigits = '<div class="quick-digit-summary" aria-label="Ringkasan prediksi digit">' +
+          '<div><strong>Digit Pertama:</strong> <span class="quick-seq">' + esc(r.leftText) + '</span><br><strong>Suku berikutnya:</strong> <span class="quick-next">' + esc(nextDigitText(r.leftRes)) + '</span></div>' +
+          '<div><strong>Digit Kedua:</strong> <span class="quick-seq">' + esc(r.rightText) + '</span><br><strong>Suku berikutnya:</strong> <span class="quick-next">' + esc(nextDigitText(r.rightRes)) + '</span></div>' +
+          '</div>';
+        return '<div class="stat"><label for="fourAnswer' + i + '">Kesimpulan 2D ' + r.name.toLowerCase() + ' (hingga 50 kandidat; pasangan dua digit dipisahkan dengan *)</label><textarea id="fourAnswer' + i + '" rows="2" spellcheck="false" autocomplete="off" data-four-answer="' + i + '" placeholder="Contoh: 01*02*03">' + esc(answerPairsText) + '</textarea><span>' + quality + '</span><span class="muted">Data pasangan: ' + esc(r.seq) + '</span>' + quickDigits + '<button type="button" class="btn" style="margin-top:10px" data-detail="' + i + '">Lihat rincian</button></div>';
       }).join('');
       $('#fourSummary').hidden = false;
       validateFourMarriage();
