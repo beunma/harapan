@@ -1342,7 +1342,75 @@ root.SeqEngine = API;
   }
   function showError(msg) { $('#out').innerHTML = '<div class="card"><div class="note bad" role="alert">' + esc(msg) + '</div></div>'; last = null; }
 
+  /* ===== Mode deret biasa: input 4 digit -> analisis per kolom digit -> gabung jadi 4 digit ===== */
+  function digOf(v) {
+    var r = fmtRounded(v);
+    if (!/^-?\d+$/.test(r)) return null;
+    return Number(((BigInt(r) % 10n) + 10n) % 10n);
+  }
+  function colCands(seq) {
+    var map = {};
+    function take(res, w) {
+      (res.answers || []).forEach(function (a) {
+        var d = digOf(a.value); if (d === null) return;
+        var s = (a.conf || 0) * w;
+        if (!map[d] || s > map[d].s) map[d] = { v: d, s: s, why: a.hyp.desc };
+      });
+    }
+    var p = E.parseInput(seq.join(','));
+    if (p.error) return [];
+    take(E.solveAuto(p.seq, brain, $('#mode').value), 1);
+    for (var cut = 1; cut <= 2; cut++) {   // jendela akhiran lebih pendek = hipotesis tambahan berbobot lebih rendah
+      if (seq.length - cut < 5) break;
+      var p2 = E.parseInput(seq.slice(cut).join(','));
+      if (!p2.error) take(E.solveAuto(p2.seq, brain, $('#mode').value), 0.4 / cut);
+    }
+    return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return b.s - a.s; });
+  }
+  async function runDigits4(tk) {
+    var out = $('#out'), btn = $('#go');
+    btn.disabled = true; btn.textContent = 'Menganalisis…'; await tick();
+    try {
+      var names = ['Ribuan', 'Ratusan', 'Puluhan', 'Satuan'];
+      var cols = [0, 1, 2, 3].map(function (j) { return colCands(tk.map(function (x) { return x.charAt(j); })); });
+      if (cols.some(function (c) { return !c.length; })) {
+        out.innerHTML = '<div class="card"><div class="note bad">Ada kolom digit yang belum menemukan aturan cocok.</div></div>';
+        last = null; btn.disabled = false; btn.textContent = 'Analisis'; return;
+      }
+      var tot = cols.map(function (c) { return c.reduce(function (t, e) { return t + e.s; }, 0) || 1; });
+      var beam = [{ s: '', w: 1, why: [] }];
+      cols.forEach(function (c, j) {
+        var nb = [];
+        beam.forEach(function (b) { c.slice(0, 8).forEach(function (e) { nb.push({ s: b.s + e.v, w: b.w * e.s / tot[j], why: b.why.concat([names[j] + ': ' + e.why]) }); }); });
+        nb.sort(function (a, b) { return b.w - a.w; });
+        beam = nb.slice(0, 60);
+      });
+      var seen = {}, res = [];
+      beam.forEach(function (b) { if (!seen[b.s]) { seen[b.s] = 1; res.push(b); } });
+      res = res.slice(0, 8);
+      var sum = res.reduce(function (t, b) { return t + b.w; }, 0) || 1;
+      var alts = res.slice(1).map(function (b, i) {
+        return '<li><span class="v">Alternatif ' + (i + 1) + ': ' + esc(b.s) + '<span class="p">' + Math.round(b.w / sum * 100) + '%</span></span><span class="r">' + esc(b.why.join(' | ')) + '</span></li>';
+      }).join('');
+      out.innerHTML = '<div class="card"><h2>Suku berikutnya (4 digit)</h2>' +
+        '<div class="answer"><span class="big"><span class="hl">' + esc(res[0].s) + '</span></span></div>' +
+        '<div class="badges"><span class="badge plain">Tiap kolom digit dianalisis lewat mesin asli</span>' +
+        (res.length < 8 ? '<span class="badge plain">Hanya ' + res.length + ' kandidat cocok ditemukan</span>' : '') + '</div>' +
+        '<div class="sub"><h2>Aturan utama per kolom</h2><ol class="chain">' +
+        res[0].why.map(function (w) { return '<li class="final"><span class="m">' + esc(w) + '</span></li>'; }).join('') + '</ol></div>' +
+        (alts ? '<div class="sub"><h2>Alternatif (urut bobot terkuat)</h2><ul class="alts">' + alts + '</ul></div>' : '') + '</div>';
+      brain.stats.solved++; save(); renderBrain();
+      last = null;
+    } catch (e) { showError('Terjadi kesalahan saat menganalisis input 4 digit.'); }
+    btn.disabled = false; btn.textContent = 'Analisis';
+  }
   async function run() {
+    var tk = $('#q').value.trim().split(/[\s,;|]+/).filter(Boolean);
+    if (tk.length >= 5 && tk.every(function (x) { return /^\d{4}$/.test(x); })) return runDigits4(tk);
+    return runPlain();
+  }
+
+  async function runPlain() {
     var parsed = E.parseInput($('#q').value);
     if (parsed.error) { showError(parsed.error); return; }
     var btn = $('#go'); btn.disabled = true; btn.textContent = 'Menganalisis…';
