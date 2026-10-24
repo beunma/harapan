@@ -69,6 +69,13 @@ button:disabled{cursor:not-allowed}
 .summarySelectorWrap .slider{width:42px;height:22px}
 .summarySelectorWrap .slider:before{width:16px;height:16px;left:3px;top:3px}
 .summarySelectorWrap .switch input:checked + .slider:before{transform:translateX(20px)}
+.summarySelectorWrap{gap:5px}
+.summarySelectorWrap .selectorLabel{display:none}
+.summarySelectorWrap .switch input.reduction:checked + .slider{background:#dc2626}
+.summarySelectorWrap .switch input.reduction:checked + .slider:before{transform:translateX(20px)}
+.summarySelectorWrap .switch input.reduction:disabled + .slider{opacity:.45}
+.summaryGroupHead{flex-wrap:wrap}
+@media(max-width:820px){.summaryGroup{padding:10px}.summaryGroupHead{flex-direction:row;align-items:center}.summarySelectorWrap{align-self:auto}}
 .processing2D{margin-top:8px}
 .processing2D .resultCard{background:#fff}
 .processing2D .resultCard textarea{min-height:105px}
@@ -527,6 +534,9 @@ function renderMemory(){
   panel.innerHTML=h+'</table>';
 }
 
+/* ===== Selector kesimpulan: gabung/pilih (biru) dan pengurangan (merah) ===== */
+const selectorState = {};
+function selectorId(key,n,mode){return "sel_"+key+"_"+n+"_"+mode}
 function renderConclusionBlock(cid,key){
   const c=$(cid);c.innerHTML="";
   const groups=buildAgreementGroups(key),mg=tempMemory&&tempMemory[key]?tempMemory[key].group:0;
@@ -537,45 +547,86 @@ function renderConclusionBlock(cid,key){
     const head=document.createElement("div");head.className="summaryGroupHead";
     const h=document.createElement("h3");h.textContent="ADA "+n+" DATA";head.appendChild(h);
     if(isMem){const tg=document.createElement("span");tg.className="tagY";tg.textContent="POSISI TEMUAN BACKTEST";head.appendChild(tg)}
-    if(vals.length&&(key==="AB"||key==="BC"||key==="CD")){
-      const sw=document.createElement("label");sw.className="summarySelectorWrap";
-      sw.innerHTML='<span>SELECTOR ON/OFF</span><span class="switch"><input type="checkbox" class="summarySelector" id="sel_'+key+'_'+n+'" data-key="'+key+'" data-group="'+n+'"><span class="slider"></span></span>';
-      head.appendChild(sw);
-    }
-    b.appendChild(head);
+    const selectors=document.createElement("div");selectors.className="summarySelectorWrap";
+    ["merge","reduce"].forEach(mode=>{
+      const lab=document.createElement("label");lab.className="switch";lab.title=mode==="merge"?"Pilih/gabungkan kelompok":"Kurangi nilai kelompok ini dari hasil terkait";
+      const id=selectorId(key,n,mode);
+      lab.innerHTML='<input type="checkbox" class="summarySelector '+(mode==="reduce"?"reduction":"merge")+'" id="'+id+'" data-key="'+key+'" data-group="'+n+'" data-mode="'+mode+'"><span class="slider"></span>';
+      selectors.appendChild(lab);
+    });
+    head.appendChild(selectors);b.appendChild(head);
     const area=document.createElement("div");area.className="summaryArea";
     const taId="sum_"+key+"_"+n;
-    area.innerHTML='<textarea id="'+taId+'" spellcheck="false"></textarea><button class="copy" data-target="'+taId+'">COPY</button>';
+    area.innerHTML='<textarea id="'+taId+'" spellcheck="false" readonly></textarea><button class="copy" data-target="'+taId+'">COPY</button>';
     const ta=area.querySelector("textarea");ta.value=vals.join("*");
     if(isMem)ta.classList.add("memHit");
     b.appendChild(area);
     const sm=document.createElement("div");sm.className="small";sm.style.marginTop="5px";
     sm.textContent="Jumlah = "+vals.length+" LN"+(vals.length?"":" (kelompok ini kosong pada analisa saat ini)");
-    b.appendChild(sm);c.appendChild(b);
+    sm.id="sumCount_"+key+"_"+n;b.appendChild(sm);c.appendChild(b);
   });
   if(!c.children.length)c.innerHTML='<div class="summaryGroup empty"><div class="small">Tidak ada kandidat hasil yang tersedia.</div></div>';
 }
+function renderAllConclusions(){
+  renderMemory();
+  renderConclusionBlock("sumAB","AB");
+  renderConclusionBlock("sumBC","BC");
+  renderConclusionBlock("sumCD","CD");
+  renderConclusionBlock("sumABC","ABC");
+  renderConclusionBlock("sumBCD","BCD");
+  renderProcessor2D();
+}
+
+function getGroupValues(key,n){
+  const groups=buildAgreementGroups(key);
+  return (groups[Number(n)]||[]).map(v=>String(v).padStart(key.length,"0"));
+}
 function selectedConclusionValues(key){
   const out=[];
-  document.querySelectorAll('.summarySelector[data-key="'+key+'"]:checked').forEach(cb=>{
-    const vals=buildAgreementGroups(key)[Number(cb.dataset.group)]||[];
-    for(const v of vals)out.push(String(v).padStart(2,"0"));
+  document.querySelectorAll('.summarySelector[data-key="'+key+'"][data-mode="merge"]:checked').forEach(cb=>{
+    out.push(...getGroupValues(key,cb.dataset.group));
   });
   return [...new Set(out)];
 }
-function renderProcessor2D(){
-  const ab=selectedConclusionValues("AB"),bc=selectedConclusionValues("BC"),cd=selectedConclusionValues("CD");
-  const sets={AB:ab,BC:bc,CD:cd,ABC:overlap2(ab,bc),BCD:overlap2(bc,cd)};
-  for(const key of ["AB","BC","CD","ABC","BCD"]){
-    const ta=$("proc"+key);if(ta)ta.value=sets[key].join("*");
-    const count=$("proc"+key+"Count");if(count)count.textContent="Jumlah = "+sets[key].length+" LN";
-  }
-  $("processor2DCard").classList.remove("hidden");
+function reductionValues(key){
+  const out=[];
+  document.querySelectorAll('.summarySelector[data-key="'+key+'"][data-mode="reduce"]:checked').forEach(cb=>{
+    out.push(...getGroupValues(key,cb.dataset.group));
+  });
+  return new Set(out);
 }
-function renderAllConclusions(){
-  renderMemory();
-  renderConclusionBlock("sumAB","AB");renderConclusionBlock("sumBC","BC");renderConclusionBlock("sumCD","CD");renderConclusionBlock("sumABC","ABC");renderConclusionBlock("sumBCD","BCD");
-  renderProcessor2D();
+function renderProcessor2D(){
+  const raw={AB:selectedConclusionValues("AB"),BC:selectedConclusionValues("BC"),CD:selectedConclusionValues("CD")};
+  const removed={AB:reductionValues("AB"),BC:reductionValues("BC"),CD:reductionValues("CD")};
+  const sets={
+    AB:raw.AB.filter(v=>!removed.AB.has(v)),
+    BC:raw.BC.filter(v=>!removed.BC.has(v)),
+    CD:raw.CD.filter(v=>!removed.CD.has(v))
+  };
+  // Cross-products use only the effective 2D values after reduction.
+  sets.ABC=overlap2(sets.AB,sets.BC);
+  sets.BCD=overlap2(sets.BC,sets.CD);
+  // Selected direct 3D groups are merged with generated triples; then deduplicated.
+  ["ABC","BCD"].forEach(key=>{
+    const direct=selectedConclusionValues(key);
+    const remove=reductionValues(key);
+    sets[key]=[...new Set([...sets[key],...direct])].filter(v=>{
+      v=String(v).padStart(3,"0");
+      if(remove.has(v))return false;
+      if(key==="ABC")return !removed.AB.has(v.slice(0,2))&&!removed.BC.has(v.slice(1,3));
+      return !removed.BC.has(v.slice(0,2))&&!removed.CD.has(v.slice(1,3));
+    });
+  });
+  for(const key of ["AB","BC","CD","ABC","BCD"]){
+    const ta=$("proc"+key);if(ta)ta.value=[...new Set(sets[key].map(v=>String(v).padStart(key.length,"0")))].join("*");
+    const count=$("proc"+key+"Count");if(count)count.textContent="Jumlah = "+(ta&&ta.value?ta.value.split("*").filter(Boolean).length:0)+" LN";
+  }
+  // Selector pair exclusivity: only the opposite control for the same group is disabled.
+  document.querySelectorAll(".summarySelector").forEach(cb=>{
+    const peer=document.getElementById(selectorId(cb.dataset.key,cb.dataset.group,cb.dataset.mode==="merge"?"reduce":"merge"));
+    if(peer)peer.disabled=cb.checked;
+  });
+  $("processor2DCard").classList.remove("hidden");
 }
 document.addEventListener("change",e=>{if(e.target.matches(".summarySelector"))renderProcessor2D()});
 document.addEventListener("click",async e=>{
