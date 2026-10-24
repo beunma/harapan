@@ -709,7 +709,7 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
  <!--       <div class="spinner-box" id="box-iframe" style="display: none;"> -->
 		
 		
-		<div class="spinner-box" id="box-iframe">
+		<div class="spinner-box" id="box-iframe" style="display: none;">
 
             <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
                 Peralatan dan Frame
@@ -717,21 +717,21 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
 
             <div class="row-buttons">
 
-                <button class="btn-frame" onclick="loadIframe('gpt001.html')">GPT</button>
-				<button class="btn-frame" onclick="loadIframe('claude001.html')">CLD</button>
-				<button class="btn-frame" onclick="loadIframe('deret2d.html')">D2D</button>
-                <button class="btn-frame" onclick="loadIframe('rk2.html')">RK2</button>
-                <button class="btn-frame" onclick="loadIframe('rk3.html')">RK3</button>				
+                <button class="btn-frame" onclick="loadIframe('gpt001.html', 'content-iframe')">GPT</button>
+				<button class="btn-frame" onclick="loadIframe('claude001.html', 'content-iframe')">CLD</button>
+				<button class="btn-frame" onclick="loadIframe('deret2d.html', 'content-iframe')">D2D</button>
+                <button class="btn-frame" onclick="loadIframe('rk2.html', 'content-iframe')">RK2</button>
+                <button class="btn-frame" onclick="loadIframe('rk3.html', 'content-iframe')">RK3</button>				
 
             </div>
 
             <div class="row-buttons">
 
-                <button class="btn-frame" onclick="loadIframe('gpt002.html')">GP2</button>
-				<button class="btn-frame" onclick="loadIframe('claude002.html')">CL2</button>
-				<button class="btn-frame" onclick="loadIframe('deret3d.html')">D3D</button>
-                <button class="btn-frame" onclick="loadIframe('smgASLI.html')">SMG</button>
-				<button class="btn-frame" onclick="loadIframe('supabase.html')">SUP</button>
+                <button class="btn-frame" onclick="loadIframe('gpt002.html', 'content-iframe')">GP2</button>
+				<button class="btn-frame" onclick="loadIframe('claude002.html', 'content-iframe')">CL2</button>
+				<button class="btn-frame" onclick="loadIframe('deret3d.html', 'content-iframe')">D3D</button>
+                <button class="btn-frame" onclick="loadIframe('smgASLI.html', 'content-iframe')">SMG</button>
+				<button class="btn-frame" onclick="loadIframe('supabase.html', 'content-iframe')">SUP</button>
 
 
 
@@ -743,6 +743,40 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
                 style="width: 100%; height: 350px; border: none; border-radius: 6px; margin-top: 10px; background: #ffffff;">
             </iframe>
 
+        </div>
+
+        <!-- Peralatan dan Frame 2: iframe independen untuk perbandingan -->
+        <div class="spinner-box" id="box-iframe-2" style="display: none;">
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
+                Peralatan dan Frame 2
+            </div>
+
+            <div class="row-buttons">
+                <button class="btn-frame" onclick="loadIframe('gpt001.html', 'content-iframe-2')">GPT</button>
+                <button class="btn-frame" onclick="loadIframe('claude001.html', 'content-iframe-2')">CLD</button>
+                <button class="btn-frame" onclick="loadIframe('deret2d.html', 'content-iframe-2')">D2D</button>
+                <button class="btn-frame" onclick="loadIframe('rk2.html', 'content-iframe-2')">RK2</button>
+                <button class="btn-frame" onclick="loadIframe('rk3.html', 'content-iframe-2')">RK3</button>
+            </div>
+
+            <div class="row-buttons">
+                <button class="btn-frame" onclick="loadIframe('gpt002.html', 'content-iframe-2')">GP2</button>
+                <button class="btn-frame" onclick="loadIframe('claude002.html', 'content-iframe-2')">CL2</button>
+                <button class="btn-frame" onclick="loadIframe('deret3d.html', 'content-iframe-2')">D3D</button>
+                <button class="btn-frame" onclick="loadIframe('smgASLI.html', 'content-iframe-2')">SMG</button>
+                <button class="btn-frame" onclick="loadIframe('supabase.html', 'content-iframe-2')">SUP</button>
+            </div>
+
+            <div id="frame2-copy-status" style="font-size:12px; color:#4cd137; min-height:16px; margin-top:6px;">
+                Pilih halaman pada salah satu frame; URL akan disalin saat tombol diklik.
+            </div>
+
+            <iframe
+                id="content-iframe-2"
+                src="about:blank"
+                title="Peralatan dan Frame 2"
+                style="width: 100%; height: 350px; border: none; border-radius: 6px; margin-top: 10px; background: #ffffff;">
+            </iframe>
         </div>
 
         <div class="bidik-box" id="box-bidik-web1">
@@ -1517,6 +1551,9 @@ async function tampilkanDashboard() {
 
     const boxIframe =
         document.getElementById('box-iframe');
+
+    const boxIframe2 =
+        document.getElementById('box-iframe-2');
 		
 		// yebi tambahin
         const web1yebi =
@@ -1553,11 +1590,13 @@ async function tampilkanDashboard() {
 
         boxSpinner.style.display = 'none';
         boxIframe.style.display = 'none';
+        boxIframe2.style.display = 'none';
 
     } else {
 // yebi perbaiki ini dari block dan block jadi block dan none
         boxSpinner.style.display = 'block';
         boxIframe.style.display = 'none';
+        boxIframe2.style.display = 'none';
 
         if (userRole === 'admin') {
 
@@ -2613,9 +2652,16 @@ async function eksekusiGantiSpinner() {
 
         await loadResultPasaran(true);
 
-        loadIframe(
-            'about:blank'
-        );
+        // Saat spinner berubah, kosongkan kedua frame agar tidak menampilkan
+        // halaman lama dari pilihan spinner sebelumnya.
+        loadIframe('about:blank', 'content-iframe');
+        loadIframe('about:blank', 'content-iframe-2');
+
+        const copyStatus = document.getElementById('frame2-copy-status');
+        if (copyStatus) {
+            copyStatus.textContent = 'Pilih halaman pada salah satu frame; URL akan disalin saat tombol diklik.';
+            copyStatus.style.color = '#4cd137';
+        }
 
         resetBidik('web1');
         resetBidik('web2');
@@ -2820,11 +2866,49 @@ function copyResultText() {
    LOAD IFRAME
    ========================================================= */
 
-function loadIframe(fileHtml) {
+async function loadIframe(fileHtml, targetIframeId) {
+    // Tanpa targetIframeId berarti pemanggilan internal lama, misalnya reset ke about:blank.
+    const iframeId = targetIframeId || 'content-iframe';
+    const iframe = document.getElementById(iframeId);
+    if (!iframe) return;
 
-    document.getElementById(
-        'content-iframe'
-    ).src = fileHtml;
+    iframe.src = fileHtml;
+
+    // Salin URL hanya saat tombol Peralatan dan Frame diklik.
+    if (targetIframeId && fileHtml !== 'about:blank') {
+        const cleanPath = String(fileHtml).replace(/^\/+/, '');
+        const fullUrl = 'https://beunma.github.io/harapan/' + cleanPath;
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(fullUrl);
+            } else {
+                const temp = document.createElement('textarea');
+                temp.value = fullUrl;
+                temp.setAttribute('readonly', '');
+                temp.style.position = 'fixed';
+                temp.style.opacity = '0';
+                document.body.appendChild(temp);
+                temp.select();
+                const copied = document.execCommand('copy');
+                temp.remove();
+                if (!copied) throw new Error('Clipboard tidak diizinkan browser');
+            }
+
+            const status = document.getElementById('frame2-copy-status');
+            if (status) {
+                status.textContent = 'URL disalin: ' + fullUrl;
+                status.style.color = '#4cd137';
+            }
+        } catch (err) {
+            const status = document.getElementById('frame2-copy-status');
+            if (status) {
+                status.textContent = 'Halaman dibuka, tetapi clipboard gagal. URL: ' + fullUrl;
+                status.style.color = '#ffc107';
+            }
+            console.warn('Gagal menyalin URL ke clipboard:', err);
+        }
+    }
 }
 
 
@@ -3486,6 +3570,9 @@ function mulaiLongClick(event) {
 
         const boxIframe =
             document.getElementById('box-iframe');
+
+        const boxIframe2 =
+            document.getElementById('box-iframe-2');
 			
 		// yebi tambahin
         const web1yebi =
@@ -3502,10 +3589,12 @@ function mulaiLongClick(event) {
 
             if (getComputedStyle(boxIframe).display === 'none') {
                 boxIframe.style.display = 'block';
+        boxIframe2.style.display = 'block';
 				web1yebi.style.display = 'block';
 				web2yebi.style.display = 'block';
             } else {
                 boxIframe.style.display = 'none';
+        boxIframe2.style.display = 'none';
 				web1yebi.style.display = 'none';
 				web2yebi.style.display = 'none';		
 				
@@ -3521,6 +3610,7 @@ if (getComputedStyle(boxSpinner).display !== 'none') {
 
     if (getComputedStyle(boxIframe).display === 'none') {
         boxIframe.style.display = 'block';
+        boxIframe2.style.display = 'block';
        // web1yebi.style.display = 'block';
 
         if (getComputedStyle(document.getElementById("box-web1")).display !== 'none') {
@@ -3534,6 +3624,7 @@ if (getComputedStyle(boxSpinner).display !== 'none') {
 
     } else {
         boxIframe.style.display = 'none';
+        boxIframe2.style.display = 'none';
         web1yebi.style.display = 'none';
         web2yebi.style.display = 'none';
     }

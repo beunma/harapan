@@ -1,0 +1,4748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harapan adalah Kehidupan</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            text-align: center;
+            color: #ffffff;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+/* YEBI SET SPINNER */
+/*        input,*/
+/*        select,*/
+input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: #2d2d2d;
+            border: 1px solid #444;
+			color: #2d2d2d;
+            border-radius: 6px;
+            font-size: 14px;
+}
+
+select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: #2d2d2d;
+            border: 1px solid #444;
+			color: #2d2d2d;
+            border-radius: 6px;
+            font-size: 14px;
+}
+
+
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: #2d2d2d;
+            border: 1px solid #444;
+			color: #2d2d2d;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+		
+		
+		
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        .btn:disabled {
+            background: #555555;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .card-target {
+            background: #252525;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .saldo-text {
+            color: #4cd137;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .saldo-error {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loader {
+            text-align: center;
+            color: #ffc107;
+            font-style: italic;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .spinner-box {
+            background: #2a2a2a;
+            border: 1px solid #ff9f1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .url-label {
+            background: #111;
+            padding: 10px;
+            border: 1px dashed #666;
+            border-radius: 4px;
+            color: #ffdd59;
+            font-size: 12px;
+            word-break: break-all;
+            margin-top: 8px;
+            min-height: 20px;
+        }
+
+        #dashboard-area {
+            display: none;
+        }
+
+        .row-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .btn-frame {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 12px;
+            font-weight: bold;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-frame:hover {
+            background: #5b4bc4;
+        }
+
+        .bidik-box {
+            background: #2a2a2a;
+            border: 1px solid #ff9f1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .bidik-title {
+            font-weight: bold;
+            color: #ff9f1a;
+            margin-bottom: 10px;
+        }
+
+        .jumlah-line {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #e0e0e0;
+        }
+
+        .jumlah-line.error {
+            color: #ff6b6b;
+        }
+
+        .bidik-textarea {
+            width: 100%;
+            height: 180px;
+            min-height: 180px;
+            resize: vertical;
+            overflow-y: auto;
+            font-family: monospace;
+            line-height: 1.5;
+            box-sizing: border-box;
+        }
+
+        .bidik-action-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+
+        .btn-reset-bidik {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-reset-bidik:hover {
+            background: #bd2130;
+        }
+
+        .bidik-calc-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+            margin-top: 10px;
+        }
+
+        .bidik-hasil {
+            flex: 1;
+            background: #222;
+            border: 1px solid #555;
+            border-radius: 6px;
+            min-height: 40px;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: #4cd137;
+        }
+
+        .bidik-hasil.error {
+            color: #ff6b6b;
+        }
+
+        .bidik-number {
+            width: 110px;
+            flex: 0 0 110px;
+        }
+
+        .bidik-number input {
+            width: 100%;
+            height: 100%;
+            min-height: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .bidik-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .btn-bidik {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 12px;
+            font-weight: bold;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-bidik:hover:not(:disabled) {
+            background: #5b4bc4;
+        }
+
+        .btn-bidik:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .bidik-status {
+            font-size: 12px;
+            margin-top: 5px;
+            min-height: 16px;
+        }
+
+        #global-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 99999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffc107;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .spinner-ring {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #333;
+            border-top: 5px solid #ff9f1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+		
+		
+		
+.judul-ai {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 32px;
+}
+
+.judul-ai .pink {
+  color: #ff69b4;
+}
+
+.judul-ai .ungu {
+  color: #c8a2ff;
+}
+
+.judul-ai .cyan {
+  color: #00ffff;
+}		
+		
+		
+	
+
+
+/* ================================
+   LOOPING CHECK CONTROL
+   ================================ */
+
+#loopControlBox {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 15px 0;
+    padding: 8px;
+}
+
+#loopControlBox input {
+    box-sizing: border-box;
+    height: 42px;
+    padding: 0 10px;
+    font-size: 16px;
+    text-align: center;
+    border: 2px solid #333;
+    border-radius: 6px;
+    outline: none;
+}
+
+#loopValue {
+    width: 120px;
+}
+
+#loopTimer {
+    width: 120px;
+}
+
+#loopGoBtn {
+    height: 42px;
+    min-width: 80px;
+    padding: 0 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#loopGoBtn:active {
+    transform: scale(0.97);
+}
+
+/* Mode looping: hanya STOP yang terlihat */
+#loopControlBox.looping {
+    width: auto;
+}
+
+#loopControlBox.looping #loopValue,
+#loopControlBox.looping #loopTimer {
+    display: none;
+}
+
+#loopControlBox.looping #loopGoBtn {
+    min-width: 90px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+	
+		
+		
+		
+		
+		
+    </style>
+</head>
+
+<body>
+
+<div id="global-overlay">
+    <div class="spinner-ring"></div>
+    <div id="overlay-text">Memproses Data...</div>
+</div>
+
+<h2 class="judul-ai">
+  <span class="pink">Uji</span>
+  <span class="ungu">Kecerdasan</span>
+  <span class="cyan">AI</span>
+</h2>
+
+
+
+
+
+
+
+
+<div class="container">
+
+    <div id="login-area">
+
+        <h2>Halaman Login</h2>
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="input-user" placeholder="Masukkan username">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="input-pass" placeholder="Masukkan password">
+        </div>
+
+        <button class="btn" onclick="prosesLoginHtml()">
+            Masuk
+        </button>
+
+        <div id="login-error" class="error-msg"></div>
+
+    </div>
+
+    <div id="dashboard-area">
+
+        <div class="card-target" id="box-web1">
+
+            <div style="font-weight: bold; margin-bottom: 8px; color: #fff;">
+                Web Target 1
+            </div>
+
+            <div>
+                Score:
+                <span id="saldo-web1" class="saldo-text">
+                    Belum dicek
+                </span>
+            </div>
+
+            <button
+                id="btn-cek-web1"
+                class="btn btn-success"
+                style="padding: 8px; font-size: 13px; margin-top: 12px;"
+                onclick="cekSaldoTarget('web1')">
+                Cek Web 1
+            </button>
+
+        </div>
+
+        <div class="card-target" id="box-web2">
+
+            <div style="font-weight: bold; margin-bottom: 8px; color: #fff;">
+                Web Target 2
+            </div>
+
+            <div>
+                Score:
+                <span id="saldo-web2" class="saldo-text">
+                    Belum dicek
+                </span>
+            </div>
+
+            <button
+                id="btn-cek-web2"
+                class="btn btn-success"
+                style="padding: 8px; font-size: 13px; margin-top: 12px;"
+                onclick="cekSaldoTarget('web2')">
+                Cek Web 2
+            </button>
+
+        </div>
+
+        <div class="spinner-box" id="box-spinner">
+
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
+                Pengujian Spinner
+            </div>
+
+
+<!-- yebi button long klik
+            <button
+                class="btn"
+                style="background: #17a2b8; font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 12px;"
+                onclick="loadPasaranEngine()">
+                Ambil Data
+            </button>
+			
+lalu di bawahnya 
+onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"			
+			
+-->
+<button
+    class="btn"
+    style="background: #17a2b8; font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 12px;"
+    onclick="jalankanKlik()"
+	
+    onmousedown="mulaiLongClick(this)"
+    onmouseup="batalLongClick()"
+    onmouseleave="batalLongClick()"
+    ontouchstart="mulaiLongClick(this)"
+    ontouchend="batalLongClick()"
+    ontouchcancel="batalLongClick()">
+    Ambil Data
+</button>
+
+
+
+			
+
+            <div id="spinner-pasaran-container" style="margin-bottom: 10px;">
+
+                <label for="spinner-pasaran">
+                    Spinner Utama:
+                </label>
+
+                <select id="spinner-pasaran" onchange="onSpinnerUtamaChange()">
+
+                    <option value="">
+                        -- Klik 'Ambil Data' dulu --
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div id="spinner-user-container">
+
+                <label for="spinner-user">
+                    Spinner User:
+                </label>
+
+                <select id="spinner-user" onchange="onSpinnerUserChange()">
+
+                    <option value="">
+                        -- Klik 'Ambil Data' dulu --
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div style="margin-top: 12px; display: none;">
+
+                <label>
+                    Alamat URL Terpilih (List Picker Selection):
+                </label>
+
+                <div id="label-url" class="url-label">
+                    Alamat URL akan muncul di sini...
+                </div>
+
+            </div>
+
+            <div style="margin-top: 15px; background: #222; padding: 10px; border-radius: 6px; border: 1px solid #444;">
+
+                <button
+                    class="btn btn-success"
+                    style="font-size: 13px; padding: 8px; margin-top: 0; margin-bottom: 10px;"
+                    onclick="loadResultPasaran()">
+                    Tarik Urutan
+                </button>
+
+                <label style="color: #4cd137;">
+                    Urutan Terlama ke Terbaru:
+                </label>
+
+                <div style="display: flex; gap: 8px; align-items: stretch; margin-top: 5px;">
+
+                    <textarea
+                        id="input-hasil-result"
+                        rows="2"
+                        style="flex: 1; resize: vertical; font-family: monospace;"
+                        placeholder="Hasil akan muncul di sini..."readonly></textarea>
+
+                    <button
+                        class="btn"
+                        style="width: auto; background: #6c5ce7; margin-top: 0; padding: 0 15px;"
+                        onclick="copyResultText()">
+                        Copy
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+ <!--       <div class="spinner-box" id="box-iframe" style="display: none;"> -->
+		
+		
+		<div class="spinner-box" id="box-iframe">
+
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
+                Peralatan dan Frame
+            </div>
+
+            <div class="row-buttons">
+
+                <button class="btn-frame" onclick="loadIframe('gpt001.html')">GPT</button>
+				<button class="btn-frame" onclick="loadIframe('claude001.html')">CLD</button>
+				<button class="btn-frame" onclick="loadIframe('deret2d.html')">D2D</button>
+                <button class="btn-frame" onclick="loadIframe('rk2.html')">RK2</button>
+                <button class="btn-frame" onclick="loadIframe('rk3.html')">RK3</button>				
+
+            </div>
+
+            <div class="row-buttons">
+
+                <button class="btn-frame" onclick="loadIframe('gpt002.html')">GP2</button>
+				<button class="btn-frame" onclick="loadIframe('claude002.html')">CL2</button>
+				<button class="btn-frame" onclick="loadIframe('deret3d.html')">D3D</button>
+                <button class="btn-frame" onclick="loadIframe('smgASLI.html')">SMG</button>
+				<button class="btn-frame" onclick="loadIframe('supabase.html')">SUP</button>
+
+
+
+            </div>
+
+            <iframe
+                id="content-iframe"
+                src="about:blank"
+                style="width: 100%; height: 350px; border: none; border-radius: 6px; margin-top: 10px; background: #ffffff;">
+            </iframe>
+
+        </div>
+
+        <div class="bidik-box" id="box-bidik-web1">
+
+            <div class="bidik-title">
+                Mem-bidik Web Target 1
+            </div>
+
+            <div id="jumlah-line-web1" class="jumlah-line">
+                Jumlah Line : 0
+            </div>
+
+            <textarea
+                id="input-bidik-web1"
+                class="bidik-textarea"
+                placeholder=""
+                spellcheck="false"
+                oninput="validasiBidik('web1')"readonly></textarea>
+
+            <div class="bidik-action-row">
+                <button
+                    type="button"
+                    class="btn-reset-bidik"
+                    onclick="resetBidik('web1')">
+                    Reset
+                </button>
+            </div>
+
+            <div id="status-bidik-web1" class="bidik-status"></div>
+
+            <div class="bidik-calc-row">
+
+                <div id="hasil-kalkulasi-web1" class="bidik-hasil">
+                    0
+                </div>
+
+                <div class="bidik-number">
+
+                    <input
+                        type="number"
+                        id="nilai-input-web1"
+                        value="100"
+                        min="100"
+                        step="1"
+                        inputmode="numeric"
+                        oninput="hitungBidik('web1')">
+
+                </div>
+
+            </div>
+
+            <div class="bidik-buttons">
+
+                <button
+                    id="btn-2d-web1"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiBidik('2D','web1')">
+                    2D
+                </button>
+
+                <button
+                    id="btn-2t-web1"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiBidik('2T','web1')">
+                    2T
+                </button>
+
+                <button
+                    id="btn-2b-web1"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiBidik('2B','web1')">
+                    2B
+                </button>
+
+                <button
+                    id="btn-3d-web1"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiBidik('3D','web1')">
+                    3D
+                </button>
+
+                <button
+                    id="btn-3b-web1"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiBidik('3B','web1')">
+                    3B
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="bidik-box" id="box-bidik-web2">
+
+            <div class="bidik-title">
+                Mem-bidik Web Target 2
+            </div>
+
+            <select
+                id="spinnerBos"
+                onchange="sinkronkanData()"
+                style="padding: 5px; font-size: 16px;">
+                <option value="">Memuat data...</option>
+            </select>
+
+            <div id="jumlah-line-web2" class="jumlah-line">
+                Jumlah Line : 0
+            </div>
+
+            <textarea
+                id="input-bidik-web2"
+                class="bidik-textarea"
+                placeholder=""
+                spellcheck="false"
+                oninput="validasiBidik('web2')"readonly></textarea>
+
+            <div class="bidik-action-row">
+                <button
+                    type="button"
+                    class="btn-reset-bidik"
+                    onclick="resetBidik('web2')">
+                    Reset
+                </button>
+            </div>
+
+            <div id="status-bidik-web2" class="bidik-status"></div>
+
+            <div class="bidik-calc-row">
+
+                <div id="hasil-kalkulasi-web2" class="bidik-hasil">
+                    0
+                </div>
+
+                <div class="bidik-number">
+
+                    <input
+                        type="number"
+                        id="nilai-input-web2"
+                        value="100"
+                        min="100"
+                        step="1"
+                        inputmode="numeric"
+                        oninput="hitungBidik('web2')">
+
+                </div>
+
+            </div>
+
+            <div class="bidik-buttons">
+
+                <button
+                    id="btn-2d-web2"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiTombolBaru2D()">
+                    2D
+                </button>
+
+                <button
+                    id="btn-2t-web2"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiTombolBaru2T()">
+                    2T
+                </button>
+
+                <button
+                    id="btn-2b-web2"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiTombolBaru2B()">
+                    2B
+                </button>
+
+                <button
+                    id="btn-3d-web2"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiTombolBaru3D()">
+                    3D
+                </button>
+
+                <button
+                    id="btn-3b-web2"
+                    class="btn-bidik"
+                    disabled
+                    onclick="aksiTombolBaru3B()">
+                    3B
+                </button>
+
+            </div>
+
+        </div>
+
+        <br><br>
+
+        <div
+            id="containerLabelUrl"
+            style="display: none; margin: 10px 0; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; font-family: sans-serif;">
+
+            <div style="margin-bottom: 4px;">
+                <strong>URL 1:</strong>
+                <span id="labelurl1">Loading...</span>
+            </div>
+
+            <div style="margin-bottom: 4px;">
+                <strong>URL 2:</strong>
+                <span id="labelurl2">Loading...</span>
+            </div>
+
+            <div>
+                <strong>URL 3:</strong>
+                <span id="labelurl3">Loading...</span>
+            </div>
+
+        </div>
+		
+		
+<!--
+        <div
+            id="labelHasil"
+            style="font-size: 18px; font-weight: bold; color: blue;">
+        </div>
+
+        <div
+            id="cekiddarisheet"
+            style="font-size: 18px; font-weight: bold; color: blue;">
+        </div>
+-->		
+		
+<!-- Style lama untuk debugging:
+style="font-size: 18px; font-weight: bold; color: blue;"
+-->
+
+<div
+    id="labelHasil"
+    style="display: none;">
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Style lama untuk debugging:
+style="font-size: 18px; font-weight: bold; color: blue;"
+-->
+
+<div
+    id="cekiddarisheet"
+    style="display: none;">
+</div>		
+		
+		
+		
+		
+		
+		
+		
+
+        <div id="loader" class="loader">
+            Sedang memproses request...
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<!-- LOOPING CHECK CONTROL -->
+<div id="loopControlBox"style="display: none;">
+
+    <input
+        type="text"
+        id="loopValue"
+        placeholder="Value"
+        value="100000"
+        inputmode="numeric"
+        maxlength="7"
+        autocomplete="off"
+    >
+
+    <input
+        type="text"
+        id="loopTimer"
+        placeholder="Timer"
+        value="90000"
+        inputmode="numeric"
+        maxlength="6"
+        autocomplete="off"
+    >
+
+    <button
+        type="button"
+        id="loopGoBtn">
+        GO
+    </button>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+let kodebaruListPicker1 = [];
+let listPicker1baru = [];
+
+/*
+ * =========================================================
+ * PERUBAHAN UTAMA
+ * =========================================================
+ *
+ * Jangan lagi hardcode:
+ *
+ * var pokokyebi3 = "https://suntotopunya.com";
+ *
+ * Nilai akan diisi otomatis dari urlweb3 Supabase.
+ */
+var pokokyebi3 = "";
+
+
+(async function kodebaruAmbilDataOtomatis() {
+
+    const kodebaruWebAppUrl =
+        "https://script.google.com/macros/s/AKfycbxk63U-hKpBppFotnnzmnjvwXp5C803DKhZaqiXw9_PoL9Yu205ZIDcH18B5ayHqZi7hA/exec";
+
+    let kodebaruSelectTag =
+        document.getElementById("spinnerBos");
+
+    try {
+
+        if (kodebaruWebAppUrl.includes("URL_WEB_APP_ANDA_DISINI")) {
+
+            console.warn("URL Web App belum diganti!");
+
+            if (kodebaruSelectTag) {
+                kodebaruSelectTag.innerHTML =
+                    '<option value="">URL Belum Dipasang!</option>';
+            }
+
+            return;
+        }
+
+        let response =
+            await fetch(kodebaruWebAppUrl);
+
+        let kodebaruDataIkan =
+            await response.json();
+
+        if (kodebaruSelectTag) {
+
+            kodebaruSelectTag.innerHTML =
+                '<option value="">PILIH PASARIKAN</option>';
+
+            kodebaruListPicker1 = [];
+            listPicker1baru = [];
+
+            kodebaruDataIkan.forEach((item, index) => {
+
+                let option =
+                    document.createElement("option");
+
+                option.value = index;
+                option.textContent = item.nama;
+
+                kodebaruSelectTag.appendChild(option);
+
+                kodebaruListPicker1.push(item.id);
+                listPicker1baru.push(item.id);
+            });
+
+            console.log(
+                "Data sukses dimuat:",
+                kodebaruListPicker1
+            );
+
+            document.getElementById(
+                "cekiddarisheet"
+            ).textContent =
+                "ID dari Sheet: " +
+                listPicker1baru.join(", ");
+
+            console.log(
+                "listPicker1baru =",
+                listPicker1baru
+            );
+
+            listPicker1 = listPicker1baru;
+
+            console.log(
+                "listPicker1 =",
+                listPicker1
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Gagal memuat data:",
+            error
+        );
+
+        if (kodebaruSelectTag) {
+
+            kodebaruSelectTag.innerHTML =
+                '<option value="">Gagal Memuat Data</option>';
+        }
+    }
+
+})();
+
+
+/* =========================================================
+   DATA KONFIGURASI DISKON
+   ========================================================= */
+
+const DATADISKONWEB1 = "29.59";
+const DATADISKONWEB2 = "29.59";
+
+
+/* =========================================================
+   KONFIGURASI SUPABASE
+   ========================================================= */
+
+const SUPABASE_URL =
+    'https://qhlutwgdpspukgjelzjw.supabase.co';
+
+const SUPABASE_ANON_KEY =
+    'sb_publishable_3GNWRYLQQ3b_OcNGGNd3Yw_T8LzbuLG';
+
+const GAS_PROXY_URL =
+    'https://script.google.com/macros/s/AKfycbwtZ8k3nfRitPOoJD_0UoEvtg6ScD0dfn51XGkE0UusrKVW_oDrp0A7FitoD_3ZuPcszQ/exec';
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+let sesiAktif = null;
+let listPickerData = [];
+
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+function showProgress(pesanText) {
+
+    const overlay =
+        document.getElementById('global-overlay');
+
+    const txt =
+        document.getElementById('overlay-text');
+
+    txt.innerText =
+        pesanText || "Sedang Memproses...";
+
+    overlay.style.display = 'flex';
+}
+
+
+function hideProgress() {
+
+    document.getElementById(
+        'global-overlay'
+    ).style.display = 'none';
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+async function prosesLoginHtml() {
+
+    const uInput =
+        document.getElementById('input-user').value.trim();
+
+    const pInput =
+        document.getElementById('input-pass').value.trim();
+
+    const errBox =
+        document.getElementById('login-error');
+
+    if (!uInput || !pInput) {
+
+        errBox.innerText =
+            "Username dan Password tidak boleh kosong!";
+
+        return;
+    }
+
+    errBox.innerText =
+        "Memeriksa kredensial...";
+
+    try {
+
+        let { data, error } =
+            await supabaseClient
+                .from('users_config')
+                .select('*')
+                .eq('user_html', uInput)
+                .eq('pass_html', pInput)
+                .limit(1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+
+            sesiAktif = data[0];
+			
+			
+			document.getElementById('loopControlBox').style.display = 'flex';
+			
+			
+
+            if (
+                !sesiAktif.urlweb1 ||
+                !sesiAktif.urlweb2 ||
+                !sesiAktif.urlweb3
+            ) {
+
+                let { data: masterData } =
+                    await supabaseClient
+                        .from('users_config')
+                        .select('*')
+                        .limit(1);
+
+                if (
+                    masterData &&
+                    masterData.length > 0
+                ) {
+
+                    if (!sesiAktif.urlweb1)
+                        sesiAktif.urlweb1 =
+                            masterData[0].urlweb1;
+
+                    if (!sesiAktif.urlweb2)
+                        sesiAktif.urlweb2 =
+                            masterData[0].urlweb2;
+
+                    if (!sesiAktif.urlweb3)
+                        sesiAktif.urlweb3 =
+                            masterData[0].urlweb3;
+                }
+            }
+
+            /*
+             * =================================================
+             * SET pokokyebi3 DARI urlweb3 SUPABASE
+             * =================================================
+             */
+            setPokokYebi3();
+
+            await tampilkanDashboard();
+
+        } else {
+
+            errBox.innerText =
+                "Username atau Password salah!";
+        }
+
+    } catch (err) {
+
+        errBox.innerText =
+            "Error koneksi: " + err.message;
+    }
+}
+
+
+/* =========================================================
+   SET pokokyebi3
+   ========================================================= */
+
+function setPokokYebi3() {
+
+    if (
+        !sesiAktif ||
+        !sesiAktif.urlweb3
+    ) {
+
+        pokokyebi3 = "";
+
+        console.log(
+            "urlweb3 tidak tersedia."
+        );
+
+        return;
+    }
+
+    let url = String(
+        sesiAktif.urlweb3
+    ).trim();
+
+    /*
+     * Hapus protocol
+     */
+    url = url.replace(
+        /^https?:\/\//i,
+        ''
+    );
+
+    /*
+     * Hapus www.
+     */
+    url = url.replace(
+        /^www\./i,
+        ''
+    );
+
+    /*
+     * Hapus /wap, /wap/, /wap.html
+     * dan seluruh path setelah domain.
+     */
+    url = url.split('/')[0];
+
+    /*
+     * Hasil akhir selalu https://domain
+     */
+    pokokyebi3 =
+        "https://" + url;
+
+    console.log(
+        "urlweb3 Supabase =",
+        sesiAktif.urlweb3
+    );
+
+    console.log(
+        "pokokyebi3 =",
+        pokokyebi3
+    );
+
+}
+
+
+/* =========================================================
+   TAMPILKAN DASHBOARD
+   ========================================================= */
+
+async function tampilkanDashboard() {
+
+    document.getElementById('login-area')
+        .style.display = 'none';
+
+    document.getElementById('dashboard-area')
+        .style.display = 'block';
+
+    document.getElementById('box-web1')
+        .style.display = 'block';
+
+    document.getElementById('box-web2')
+        .style.display = 'block';
+
+    const spanSaldo1 =
+        document.getElementById('saldo-web1');
+
+    const spanSaldo2 =
+        document.getElementById('saldo-web2');
+
+    const btnCek1 =
+        document.getElementById('btn-cek-web1');
+
+    const btnCek2 =
+        document.getElementById('btn-cek-web2');
+
+    spanSaldo1.innerText =
+        "Belum dicek";
+
+    spanSaldo1.className =
+        "saldo-text";
+
+    spanSaldo2.innerText =
+        "Belum dicek";
+
+    spanSaldo2.className =
+        "saldo-text";
+
+    btnCek1.disabled = false;
+    btnCek2.disabled = false;
+
+    const web1Ada =
+        !!(
+            sesiAktif.userweb1 &&
+            sesiAktif.userweb1.trim() !== "" &&
+            sesiAktif.passweb1 &&
+            sesiAktif.passweb1.trim() !== ""
+        );
+
+    const web2Ada =
+        !!(
+            sesiAktif.userweb2 &&
+            sesiAktif.userweb2.trim() !== "" &&
+            sesiAktif.passweb2 &&
+            sesiAktif.passweb2.trim() !== ""
+        );
+
+//yebi hide pada kasus tidak terdata
+    if (!web1Ada) {
+
+        spanSaldo1.innerText =
+            "Tidak Terdata";
+
+        spanSaldo1.className =
+            "saldo-error";
+
+        btnCek1.disabled = true;
+		
+		document.getElementById("box-web1").style.display = "none";
+    }
+
+    if (!web2Ada) {
+
+        spanSaldo2.innerText =
+            "Tidak Terdata";
+
+        spanSaldo2.className =
+            "saldo-error";
+
+        btnCek2.disabled = true;
+		
+		document.getElementById("box-web2").style.display = "none";
+    }
+
+    const userRole =
+        (sesiAktif.role || "").toLowerCase();
+
+    const boxSpinner =
+        document.getElementById('box-spinner');
+
+    const boxIframe =
+        document.getElementById('box-iframe');
+		
+		// yebi tambahin
+        const web1yebi =
+            document.getElementById('box-bidik-web1');		
+			
+        const web2yebi =
+            document.getElementById('box-bidik-web2');		
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+    const spinnerUtama =
+        document.getElementById(
+            'spinner-pasaran-container'
+        );
+
+    const spinnerUser =
+        document.getElementById(
+            'spinner-user-container'
+        );
+
+    if (userRole === 'viewer') {
+
+        boxSpinner.style.display = 'none';
+        boxIframe.style.display = 'none';
+
+    } else {
+// yebi perbaiki ini dari block dan block jadi block dan none
+        boxSpinner.style.display = 'block';
+        boxIframe.style.display = 'none';
+
+        if (userRole === 'admin') {
+
+            spinnerUtama.style.display = 'block';
+            spinnerUser.style.display = 'none';
+
+        } else {
+
+            spinnerUtama.style.display = 'none';
+            spinnerUser.style.display = 'block';
+        }
+    }
+
+    const boxBidikWeb1 =
+        document.getElementById(
+            'box-bidik-web1'
+        );
+
+    const boxBidikWeb2 =
+        document.getElementById(
+            'box-bidik-web2'
+        );
+// YEBI GANTI KEDUA BAGIAN DI BAWAH AWALNYA 'block' : 'none'; JADI 'none' : 'none';
+    boxBidikWeb1.style.display =
+        web1Ada ? 'none' : 'none';
+
+    boxBidikWeb2.style.display =
+        web2Ada ? 'none' : 'none';
+
+    resetBidik('web1');
+    resetBidik('web2');
+
+    loadIframe('about:blank');
+
+    document.getElementById(
+        'input-hasil-result'
+    ).value = "";
+
+    if (userRole !== 'viewer') {
+
+        showProgress("Memuat Data...");
+
+        let suksesAmbil =
+            await loadPasaranEngine(true);
+
+        if (
+            suksesAmbil &&
+            listPickerData.length > 0
+        ) {
+
+            await loadResultPasaran(true);
+        }
+
+        hideProgress();
+    }
+}
+
+
+/* =========================================================
+   VALIDASI BIDIK
+   ========================================================= */
+
+function validasiBidik(web) {
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const jumlahLine =
+        document.getElementById(
+            'jumlah-line-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    const text =
+        textarea.value;
+
+    if (text === "") {
+
+        jumlahLine.innerText =
+            "Jumlah Line : 0";
+
+        jumlahLine.classList.remove('error');
+
+        hasil.innerText = "0";
+        hasil.classList.remove('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    if (
+        text.indexOf(" ") !== -1 ||
+        text.indexOf("\n") !== -1 ||
+        text.indexOf("\r") !== -1 ||
+        text.indexOf("\t") !== -1
+    ) {
+
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
+
+        return;
+    }
+
+    if (
+        text.startsWith("*") ||
+        text.endsWith("*")
+    ) {
+
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
+
+        return;
+    }
+
+    if (!/^[0-9*]+$/.test(text)) {
+
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
+
+        return;
+    }
+
+    const groups =
+        text.split("*");
+
+    if (
+        groups.some(
+            function(group) {
+                return group === "";
+            }
+        )
+    ) {
+
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
+
+        return;
+    }
+
+    const semua2Digit =
+        groups.every(
+            function(group) {
+                return /^\d{2}$/.test(group);
+            }
+        );
+
+    const semua3Digit =
+        groups.every(
+            function(group) {
+                return /^\d{3}$/.test(group);
+            }
+        );
+
+    if (!semua2Digit && !semua3Digit) {
+
+        tampilkanErrorBidik(
+            web,
+            "Format Error"
+        );
+
+        return;
+    }
+
+    const jumlah =
+        groups.length;
+
+    jumlahLine.innerText =
+        "Jumlah Line : " + jumlah;
+
+    jumlahLine.classList.remove('error');
+
+    hitungBidik(web);
+}
+
+
+/* =========================================================
+   ERROR BIDIK
+   ========================================================= */
+
+function tampilkanErrorBidik(web, pesan) {
+
+    const jumlahLine =
+        document.getElementById(
+            'jumlah-line-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    jumlahLine.innerText =
+        "Jumlah Line : Error";
+
+    jumlahLine.classList.add('error');
+
+    hasil.innerText =
+        "Error";
+
+    hasil.classList.add('error');
+
+    setTombolBidik(
+        web,
+        null
+    );
+}
+
+
+/* =========================================================
+   HITUNG BIDIK
+   ========================================================= */
+
+function hitungBidik(web) {
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    const text =
+        textarea.value;
+
+    if (text === "") {
+
+        hasil.innerText = "0";
+        hasil.classList.remove('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    const groups =
+        text.split("*");
+
+    const semua2Digit =
+        groups.length > 0 &&
+        groups.every(
+            function(group) {
+                return /^\d{2}$/.test(group);
+            }
+        );
+
+    const semua3Digit =
+        groups.length > 0 &&
+        groups.every(
+            function(group) {
+                return /^\d{3}$/.test(group);
+            }
+        );
+
+    if (!semua2Digit && !semua3Digit) {
+
+        hasil.innerText = "Error";
+        hasil.classList.add('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    const jumlah =
+        groups.length;
+
+    const inputBox =
+        document.getElementById(
+            'nilai-input-' + web
+        );
+
+    let nilaiInput =
+        Number(inputBox.value);
+
+    if (
+        !Number.isFinite(nilaiInput) ||
+        nilaiInput < 100
+    ) {
+
+        hasil.innerText = "Error";
+        hasil.classList.add('error');
+
+        setTombolBidik(web, null);
+
+        return;
+    }
+
+    const dataDiskon =
+        web === 'web1'
+            ? DATADISKONWEB1
+            : DATADISKONWEB2;
+
+    const bagianDiskon =
+        dataDiskon.split(".");
+
+    let nilaiDiskon;
+
+    if (semua2Digit) {
+
+        nilaiDiskon =
+            Number(bagianDiskon[0]);
+
+    } else {
+
+        nilaiDiskon =
+            Number(bagianDiskon[1]);
+    }
+
+    const nilaiMentah =
+        jumlah *
+        (100 - nilaiDiskon) / 100 *
+        nilaiInput;
+
+    const nilaiAkhir =
+        Math.ceil(nilaiMentah);
+
+    hasil.innerText =
+        nilaiAkhir.toLocaleString('id-ID');
+
+    hasil.classList.remove('error');
+
+    const digitType =
+        semua2Digit ? 2 : 3;
+
+    setTombolBidik(
+        web,
+        digitType
+    );
+}
+
+
+/* =========================================================
+   SET TOMBOL BIDIK
+   ========================================================= */
+
+function setTombolBidik(web, digitType) {
+
+    const btn2D =
+        document.getElementById(
+            'btn-2d-' + web
+        );
+
+    const btn2T =
+        document.getElementById(
+            'btn-2t-' + web
+        );
+
+    const btn2B =
+        document.getElementById(
+            'btn-2b-' + web
+        );
+
+    const btn3D =
+        document.getElementById(
+            'btn-3d-' + web
+        );
+
+    const btn3B =
+        document.getElementById(
+            'btn-3b-' + web
+        );
+
+    btn2D.disabled = true;
+    btn2T.disabled = true;
+    btn2B.disabled = true;
+
+    btn3D.disabled = true;
+    btn3B.disabled = true;
+
+    if (digitType === 2) {
+
+        btn2D.disabled = false;
+        btn2T.disabled = false;
+        btn2B.disabled = false;
+    }
+
+    if (digitType === 3) {
+
+        btn3D.disabled = false;
+        btn3B.disabled = false;
+    }
+}
+
+
+/* =========================================================
+   RESET BIDIK
+   ========================================================= */
+
+function resetBidik(web) {
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const jumlahLine =
+        document.getElementById(
+            'jumlah-line-' + web
+        );
+
+    const hasil =
+        document.getElementById(
+            'hasil-kalkulasi-' + web
+        );
+
+    const inputBox =
+        document.getElementById(
+            'nilai-input-' + web
+        );
+
+    if (!textarea || !jumlahLine || !hasil)
+        return;
+
+    textarea.value = "";
+
+    if (inputBox) {
+        inputBox.value = "100";
+    }
+
+    jumlahLine.innerText =
+        "Jumlah Line : 0";
+
+    jumlahLine.classList.remove('error');
+
+    hasil.innerText =
+        "0";
+
+    hasil.classList.remove('error');
+
+    setTombolBidik(
+        web,
+        null
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL BIDIK
+   ========================================================= */
+
+function aksiBidik(jenis, web) {
+
+    if (web !== 'web1') return;
+
+    const textarea =
+        document.getElementById(
+            'input-bidik-' + web
+        );
+
+    const inputBox =
+        document.getElementById(
+            'nilai-input-' + web
+        );
+
+    const areaText =
+        textarea.value.trim();
+
+    const nilaiInput =
+        inputBox.value;
+
+    if (!areaText || !nilaiInput) {
+
+        console.log(
+            "Harap isi teks bidik dan nilainya!"
+        );
+
+        return;
+    }
+
+    let finalData =
+        areaText + "#" + nilaiInput;
+
+    let sekolah = "";
+
+    const labelUrl =
+        document.getElementById(
+            'label-url'
+        ).innerText;
+
+    if (
+        !labelUrl ||
+        labelUrl.includes("muncul di sini")
+    ) {
+
+        console.log(
+            "Silakan pilih Data di bagian Pengujian Spinner terlebih dahulu!"
+        );
+
+        return;
+    }
+
+    const baseUrl =
+        "https://engine2s2.engine4d.com/wapsecure/";
+
+    let targetUrl = "";
+
+    if (jenis === '2D')
+        targetUrl =
+            baseUrl + "depan2d.html";
+
+    else if (jenis === '2T')
+        targetUrl =
+            baseUrl + "tengah2d.html";
+
+    else if (jenis === '2B')
+        targetUrl =
+            baseUrl + "purchase/1.html";
+
+    else if (jenis === '3D')
+        targetUrl =
+            baseUrl + "depan3d.html";
+
+    else if (jenis === '3B')
+        targetUrl =
+            baseUrl + "purchase/1.html";
+
+    if (jenis === '2D')
+        sekolah = "2ZD";
+
+    else if (jenis === '2T')
+        sekolah = "2ZT";
+
+    else if (jenis === '2B')
+        sekolah = "2ZB";
+
+    else if (jenis === '3D')
+        sekolah = "2ZX";
+
+    else if (jenis === '3B')
+        sekolah = "2ZY";
+
+    finalData =
+        sekolah + finalData;
+
+    navigator.clipboard
+        .writeText(finalData)
+        .catch(() => {});
+
+    const windowName =
+        "TargetBidikPopup";
+
+    let popupWin =
+        window.open(
+            labelUrl,
+            windowName,
+            "width=600,height=750,scrollbars=yes,resizable=yes"
+        );
+
+    if (!popupWin) {
+
+        console.log(
+            "Pop-up diblokir browser! Harap izinkan pop-up."
+        );
+
+        return;
+    }
+
+    setTimeout(() => {
+
+        popupWin.location.href =
+            targetUrl;
+
+        let isiOtomatis =
+            setInterval(() => {
+
+                try {
+
+                    if (popupWin.document) {
+
+                        let targetArea =
+                            popupWin.document.querySelector(
+                                'textarea.purchaser'
+                            );
+
+                        if (targetArea) {
+
+                            targetArea.value =
+                                finalData;
+
+                            clearInterval(
+                                isiOtomatis
+                            );
+
+                            console.log(
+                                "Berhasil mengisi form sebelum digunakan!"
+                            );
+                        }
+                    }
+
+                } catch (err) {
+
+                    clearInterval(
+                        isiOtomatis
+                    );
+                }
+
+            }, 200);
+
+        setTimeout(
+            () => clearInterval(isiOtomatis),
+            400
+        );
+
+    }, 1000);
+}
+
+
+/* =========================================================
+   CEK SALDO
+   ========================================================= */
+
+async function cekSaldoTarget(tipe) {
+
+    let targetUrl =
+        (tipe === 'web1')
+            ? sesiAktif.urlweb1
+            : sesiAktif.urlweb3;
+
+    let targetUser =
+        (tipe === 'web1')
+            ? sesiAktif.userweb1
+            : sesiAktif.userweb2;
+
+    let targetPass =
+        (tipe === 'web1')
+            ? sesiAktif.passweb1
+            : sesiAktif.passweb2;
+
+    let spanId =
+        (tipe === 'web1')
+            ? 'saldo-web1'
+            : 'saldo-web2';
+
+    const spanSaldo =
+        document.getElementById(spanId);
+
+    const loader =
+        document.getElementById('loader');
+
+    spanSaldo.innerText =
+        "Memproses...";
+
+    spanSaldo.className =
+        "saldo-text";
+
+    loader.style.display =
+        'block';
+
+    const urlRequest =
+        `${GAS_PROXY_URL}?action=cekSaldo&url=${encodeURIComponent(targetUrl)}&user=${encodeURIComponent(targetUser)}&pass=${encodeURIComponent(targetPass)}`;
+
+    try {
+
+        let response =
+            await fetch(urlRequest);
+
+        let result =
+            await response.json();
+
+        loader.style.display =
+            'none';
+
+        if (result.status === 'success') {
+
+            spanSaldo.innerText =
+                result.saldo;
+
+        } else {
+
+            spanSaldo.innerText =
+                "Gagal: " +
+                (
+                    result.message ||
+                    "Kesalahan sistem"
+                );
+
+            spanSaldo.className =
+                "saldo-error";
+        }
+
+    } catch (err) {
+
+        loader.style.display =
+            'none';
+
+        spanSaldo.innerText =
+            "Error Jaringan";
+
+        spanSaldo.className =
+            "saldo-error";
+    }
+}
+
+
+/* =========================================================
+   EXTRACT TIME
+   ========================================================= */
+
+function extractTime(label) {
+
+    let match =
+        label.match(
+            /(\d{2}:\d{2})\s*WIB/i
+        );
+
+    if (match)
+        return match[1];
+
+    let allTimes =
+        label.match(
+            /\d{2}:\d{2}/g
+        );
+
+    if (
+        allTimes &&
+        allTimes.length > 0
+    )
+        return allTimes[allTimes.length - 1];
+
+    return "Jam Tidak Diketahui";
+}
+
+
+/* =========================================================
+   LOAD PASARAN ENGINE
+   ========================================================= */
+
+async function loadPasaranEngine(isAuto = false) {
+
+    if (!isAuto)
+        showProgress("Membaca Data...");
+
+    const loader =
+        document.getElementById('loader');
+
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const selUser =
+        document.getElementById(
+            'spinner-user'
+        );
+
+    const labelUrl =
+        document.getElementById(
+            'label-url'
+        );
+
+    loader.innerText =
+        "Melakukan SSO Auto-login & membaca Data...";
+
+    loader.style.display =
+        'block';
+
+    selUtama.innerHTML =
+        '<option value="">Sedang memuat data...</option>';
+
+    selUser.innerHTML =
+        '<option value="">Sedang memuat data...</option>';
+
+    labelUrl.innerText =
+        "Memuat...";
+
+    const urlReq =
+        `${GAS_PROXY_URL}?action=getPasaran&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+
+    try {
+
+        let response =
+            await fetch(urlReq);
+
+        let result =
+            await response.json();
+
+        loader.style.display =
+            'none';
+
+        if (
+            result.status === 'success' &&
+            result.data &&
+            result.data.length > 0
+        ) {
+
+            const rawKeywords =
+                "HONGKONG,SYDNEY,SINGAPORE,CALIFORNIA,GERMANY,INDIANA,TENNESSE,TEXAS,KENTUCKY,FLORIDA,ILLINOIS,MICHIGAN,MISSOURI,WASHINGTON,CONNECTICUT,VIRGINIA,NRE YORK,NEW YORK,NORTH CAROLINA,OREGON,GEORGIA,MARYLAND,NEW JERSEY,BULLSEYE,PCSO";
+
+            const allowedKeywords =
+                rawKeywords
+                    .split(',')
+                    .map(
+                        k =>
+                            k.trim().toUpperCase()
+                    );
+
+            listPickerData =
+                result.data.filter(
+                    item => {
+
+                        let labelUpper =
+                            item.label.toUpperCase();
+
+                        return allowedKeywords.some(
+                            keyword =>
+                                labelUpper.includes(keyword)
+                        );
+                    }
+                );
+
+            selUtama.innerHTML = '';
+            selUser.innerHTML = '';
+
+            if (
+                listPickerData.length === 0
+            ) {
+
+                selUtama.innerHTML =
+                    '<option value="">Tidak ada data yang cocok</option>';
+
+                selUser.innerHTML =
+                    '<option value="">Tidak ada data</option>';
+
+                labelUrl.innerText =
+                    "Data kosong.";
+
+                if (!isAuto)
+                    hideProgress();
+
+                return false;
+            }
+
+            listPickerData.forEach(
+                (item, index) => {
+
+                    let optUtama =
+                        document.createElement(
+                            'option'
+                        );
+
+                    optUtama.value =
+                        index;
+
+                    optUtama.innerText =
+                        `[${index + 1}] ${item.label}`;
+
+                    selUtama.appendChild(
+                        optUtama
+                    );
+
+                    let optUser =
+                        document.createElement(
+                            'option'
+                        );
+
+                    optUser.value =
+                        index;
+
+                    optUser.innerText =
+                        extractTime(item.label);
+
+                    selUser.appendChild(
+                        optUser
+                    );
+                }
+            );
+
+            selUtama.selectedIndex = 0;
+            selUser.selectedIndex = 0;
+
+            updateLabelUrlDariUtama();
+
+            if (!isAuto)
+                hideProgress();
+
+            return true;
+
+        } else {
+
+            selUtama.innerHTML =
+                '<option value="">Gagal memuat data</option>';
+
+            selUser.innerHTML =
+                '<option value="">Gagal memuat data</option>';
+
+            labelUrl.innerText =
+                "Error: " +
+                (
+                    result.message ||
+                    "Tidak ada data."
+                );
+
+            if (!isAuto)
+                hideProgress();
+
+            return false;
+        }
+
+    } catch (err) {
+
+        loader.style.display =
+            'none';
+
+        selUtama.innerHTML =
+            '<option value="">Error Jaringan</option>';
+
+        selUser.innerHTML =
+            '<option value="">Error Jaringan</option>';
+
+        labelUrl.innerText =
+            "Gagal terhubung ke GAS Proxy.";
+
+        if (!isAuto)
+            hideProgress();
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   SPINNER UTAMA
+   ========================================================= */
+
+async function onSpinnerUtamaChange() {
+
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const selUser =
+        document.getElementById(
+            'spinner-user'
+        );
+
+    selUser.value =
+        selUtama.value;
+
+    updateLabelUrlDariUtama();
+
+    await eksekusiGantiSpinner();
+
+    let spinnerUtama =
+        document.getElementById(
+            "spinner-pasaran"
+        );
+
+    if (
+        spinnerUtama &&
+        spinnerUtama.selectedIndex !== -1
+    ) {
+
+        let teksPilihanUtama =
+            spinnerUtama.options[
+                spinnerUtama.selectedIndex
+            ].text.toLowerCase();
+
+        let spinnerKita =
+            document.getElementById(
+                "spinnerBos"
+            );
+
+        let pilihanKita =
+            spinnerKita.options;
+
+        for (
+            let i = 0;
+            i < pilihanKita.length;
+            i++
+        ) {
+
+            let teksElemenKita =
+                pilihanKita[i].text.toLowerCase();
+
+            if (
+                teksElemenKita.trim() === ""
+            )
+                continue;
+
+            if (
+                teksPilihanUtama.includes(
+                    teksElemenKita
+                )
+            ) {
+
+                spinnerKita.selectedIndex =
+                    i;
+
+                sinkronkanData();
+
+                break;
+            }
+        }
+    }
+}
+
+
+/* =========================================================
+   SPINNER USER
+   ========================================================= */
+
+async function onSpinnerUserChange() {
+
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const selUser =
+        document.getElementById(
+            'spinner-user'
+        );
+
+    selUtama.value =
+        selUser.value;
+
+    updateLabelUrlDariUtama();
+
+    await eksekusiGantiSpinner();
+}
+
+
+/* =========================================================
+   EKSEKUSI GANTI SPINNER
+   ========================================================= */
+
+async function eksekusiGantiSpinner() {
+
+    showProgress(
+        "Memproses Data Baru..."
+    );
+
+    try {
+
+        await loadResultPasaran(true);
+
+        loadIframe(
+            'about:blank'
+        );
+
+        resetBidik('web1');
+        resetBidik('web2');
+
+    } catch (err) {
+
+        console.error(
+            "Gagal pemrosesan data:",
+            err
+        );
+
+    } finally {
+
+        hideProgress();
+    }
+}
+
+
+/* =========================================================
+   UPDATE URL
+   ========================================================= */
+
+function updateLabelUrlDariUtama() {
+
+    const selUtama =
+        document.getElementById(
+            'spinner-pasaran'
+        );
+
+    const labelUrl =
+        document.getElementById(
+            'label-url'
+        );
+
+    const selectedIndex =
+        selUtama.value;
+
+    if (
+        selectedIndex !== "" &&
+        listPickerData[selectedIndex]
+    ) {
+
+        labelUrl.innerText =
+            listPickerData[
+                selectedIndex
+            ].url;
+
+    } else {
+
+        labelUrl.innerText =
+            "Tidak ada URL terpilih";
+    }
+}
+
+
+/* =========================================================
+   LOAD RESULT
+   ========================================================= */
+
+async function loadResultPasaran(isAuto = false) {
+
+    if (!isAuto)
+        showProgress(
+            "Menarik Data..."
+        );
+
+    const urlText =
+        document.getElementById(
+            'label-url'
+        ).innerText;
+
+    const loader =
+        document.getElementById(
+            'loader'
+        );
+
+    const inputHasil =
+        document.getElementById(
+            'input-hasil-result'
+        );
+
+    const locMatch =
+        urlText.match(
+            /loc=(\d+)/
+        );
+
+    if (
+        !locMatch ||
+        !locMatch[1]
+    ) {
+
+        inputHasil.value =
+            "Error: Harap ambil data dan pilih yang valid.";
+
+        if (!isAuto)
+            hideProgress();
+
+        return;
+    }
+
+    const locID =
+        locMatch[1];
+
+    loader.innerText =
+        "Menarik data...";
+
+    loader.style.display =
+        'block';
+
+    inputHasil.value =
+        "Memuat...";
+
+    const urlReq =
+        `${GAS_PROXY_URL}?action=getResult&loc=${locID}&user=${encodeURIComponent(sesiAktif.userweb1)}&pass=${encodeURIComponent(sesiAktif.passweb1)}`;
+
+    try {
+
+        let response =
+            await fetch(urlReq);
+
+        let result =
+            await response.json();
+
+        loader.style.display =
+            'none';
+
+        if (
+            result.status === 'success'
+        ) {
+
+            inputHasil.value =
+                result.data;
+
+        } else {
+
+            inputHasil.value =
+                "Error: " +
+                result.message;
+        }
+
+    } catch (err) {
+
+        loader.style.display =
+            'none';
+
+        inputHasil.value =
+            "Gagal terhubung ke server.";
+
+    } finally {
+
+        if (!isAuto)
+            hideProgress();
+    }
+}
+
+
+/* =========================================================
+   COPY RESULT
+   ========================================================= */
+
+function copyResultText() {
+
+    const copyText =
+        document.getElementById(
+            "input-hasil-result"
+        );
+
+    if (
+        !copyText ||
+        !copyText.value ||
+        copyText.value.includes("Memuat...") ||
+        copyText.value.includes("Error")
+    ) {
+
+        console.log(
+            "Tidak ada hasil valid untuk di-copy."
+        );
+
+        return;
+    }
+
+    navigator.clipboard
+        .writeText(copyText.value)
+        .then(function() {
+
+            console.log(
+                "Hasil berhasil dicopy!"
+            );
+
+        })
+        .catch(function(err) {
+
+            console.log(
+                "Gagal mengcopy teks: ",
+                err
+            );
+        });
+}
+
+
+/* =========================================================
+   LOAD IFRAME
+   ========================================================= */
+
+function loadIframe(fileHtml) {
+
+    document.getElementById(
+        'content-iframe'
+    ).src = fileHtml;
+}
+
+
+/* =========================================================
+   DATA POKOK
+   ========================================================= */
+
+let pokok1 = "";
+let listPicker1 = [];
+
+const pokok2 =
+    "/wap/user/togel/main/";
+
+const pokok3 =
+    "?type=1&sub_type=";
+
+const pokok4 =
+    "&category=2";
+
+
+/* =========================================================
+   AMBIL DATA URL DARI SUPABASE
+   ========================================================= */
+
+async function ambilDataUrl() {
+
+    try {
+
+        /*
+         * Ambil semua baris, bukan limit(1),
+         * supaya tidak salah mengambil baris kosong.
+         */
+        const { data, error } =
+            await supabaseClient
+                .from('users_config')
+                .select(
+                    'urlweb1, urlweb2, urlweb3'
+                );
+
+        if (error) {
+
+            console.error(
+                'Detail Error Supabase:',
+                error
+            );
+
+            document.getElementById(
+                'labelurl1'
+            ).innerText =
+                'Error: ' + error.message;
+
+            return;
+        }
+
+        /*
+         * Cari baris yang mempunyai urlweb3.
+         */
+        let row = null;
+
+        if (
+            data &&
+            data.length > 0
+        ) {
+
+            row =
+                data.find(
+                    function(item) {
+
+                        return (
+                            item &&
+                            item.urlweb3
+                        );
+                    }
+                );
+        }
+
+        if (!row) {
+
+            document.getElementById(
+                'labelurl1'
+            ).innerText =
+                'URL tidak ditemukan';
+
+            document.getElementById(
+                'labelurl2'
+            ).innerText =
+                '-';
+
+            document.getElementById(
+                'labelurl3'
+            ).innerText =
+                '-';
+
+            console.log(
+                "Tidak ditemukan baris users_config yang memiliki urlweb3."
+            );
+
+            return;
+        }
+
+        document.getElementById(
+            'labelurl1'
+        ).innerText =
+            row.urlweb1 || '-';
+
+        document.getElementById(
+            'labelurl2'
+        ).innerText =
+            row.urlweb2 || '-';
+
+        document.getElementById(
+            'labelurl3'
+        ).innerText =
+            row.urlweb3 || '-';
+
+
+        /*
+         * =====================================================
+         * INI BAGIAN PENTING
+         * =====================================================
+         *
+         * Contoh:
+         *
+         * row.urlweb3 =
+         * "https://suntotopunya.com/wap"
+         *
+         * menjadi:
+         *
+         * pokokyebi3 =
+         * "https://suntotopunya.com"
+         */
+
+        let teksUrl =
+            String(
+                row.urlweb3 || ""
+            ).trim();
+
+        teksUrl =
+            teksUrl.replace(
+                /^https?:\/\//i,
+                ''
+            );
+
+        teksUrl =
+            teksUrl.replace(
+                /^www\./i,
+                ''
+            );
+
+        /*
+         * Ambil hanya domain sebelum /
+         */
+        teksUrl =
+            teksUrl.split('/')[0];
+
+        /*
+         * Hasil final
+         */
+        pokokyebi3 =
+            teksUrl
+                ? "https://" + teksUrl
+                : "";
+
+        console.log(
+            "urlweb3 Supabase =",
+            row.urlweb3
+        );
+
+        console.log(
+            "pokokyebi3 =",
+            pokokyebi3
+        );
+
+
+        /*
+         * pokok1 tetap mengikuti urlweb3,
+         * sesuai logika sebelumnya.
+         */
+        pokok1 =
+            pokokyebi3;
+
+
+        /*
+         * Setelah URL siap,
+         * sinkronkan data.
+         */
+        sinkronkanData();
+
+    } catch (err) {
+
+        console.error(
+            'Terjadi kesalahan script JS:',
+            err
+        );
+
+        document.getElementById(
+            'labelurl1'
+        ).innerText =
+            'Error Script JS';
+    }
+}
+
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+        ambilDataUrl();
+    }
+);
+
+
+/* =========================================================
+   SINKRONKAN DATA
+   ========================================================= */
+
+function sinkronkanData() {
+
+    const index =
+        document.getElementById(
+            "spinnerBos"
+        ).value;
+
+    const wadahID =
+        document.getElementById(
+            "cekiddarisheet"
+        );
+
+    let wadahID2 =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    if (index === "") {
+
+        wadahID.textContent = "";
+        wadahID2.textContent = "";
+
+    } else {
+
+        wadahID.textContent =
+            "ID: " +
+            listPicker1baru[
+                Number(index)
+            ];
+    }
+
+    let indexPilihan =
+        document.getElementById(
+            "spinnerBos"
+        ).selectedIndex;
+
+    let isiList1 =
+        listPicker1baru[
+            indexPilihan
+        ];
+
+    /*
+     * =====================================================
+     * URL GABUNGAN SEKARANG MENGGUNAKAN pokokyebi3
+     * =====================================================
+     */
+
+    let hasilGabungan =
+        pokokyebi3 +
+        pokok2 +
+        listPicker1baru[
+            Number(index)
+        ] +
+        pokok3;
+
+    document.getElementById(
+        "labelHasil"
+    ).innerText =
+        hasilGabungan;
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 2B
+   ========================================================= */
+
+function aksiTombolBaru2B() {
+
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
+
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
+
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
+
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "1&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 2D
+   ========================================================= */
+
+function aksiTombolBaru2D() {
+
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
+
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
+
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
+
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "4&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 2T
+   ========================================================= */
+
+function aksiTombolBaru2T() {
+
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
+
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
+
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
+
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "3&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 3D
+   ========================================================= */
+
+function aksiTombolBaru3D() {
+
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
+
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
+
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
+
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "2&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+/* =========================================================
+   AKSI TOMBOL 3B
+   ========================================================= */
+
+function aksiTombolBaru3B() {
+
+    let isiTextarea =
+        document.getElementById(
+            "input-bidik-web2"
+        ).value;
+
+    let isiAngka =
+        document.getElementById(
+            "nilai-input-web2"
+        ).value;
+
+    let teksDicopy =
+        isiTextarea +
+        "#" +
+        isiAngka;
+
+    navigator.clipboard
+        .writeText(teksDicopy)
+        .then(() => {
+
+            console.log(
+                "Berhasil copy: " +
+                teksDicopy
+            );
+
+        })
+        .catch(err => {
+
+            console.error(
+                "Gagal copy: ",
+                err
+            );
+        });
+
+    let labelElem =
+        document.getElementById(
+            "labelHasil"
+        );
+
+    let isiLabelAsli =
+        labelElem.innerText;
+
+    let urlTujuan =
+        isiLabelAsli +
+        "1&category=2";
+
+    window.open(
+        urlTujuan,
+        'tab_andalan'
+    );
+}
+
+
+// tambahan untuk button yebi long klik
+let timerLongClick = null;
+let sedangLongClick = false;
+/*
+function mulaiLongClick(button) {
+    sedangLongClick = false;
+
+    timerLongClick = setTimeout(() => {
+        sedangLongClick = true;
+
+        const elemen = document.querySelectorAll('input, select, textarea');
+
+        elemen.forEach(el => {
+            const warnaBackground = getComputedStyle(el).backgroundColor;
+            const warnaTeks = getComputedStyle(el).color;
+
+            if (warnaTeks === warnaBackground) {
+                el.style.color = '#fff';
+            } else {
+                el.style.color = warnaBackground;
+            }
+        });
+    }, 700);
+}
+
+akan diganti sehingga text area readly atau Tidak
+*/
+
+
+/*
+function mulaiLongClick(button) {
+    sedangLongClick = false;
+
+    timerLongClick = setTimeout(() => {
+        sedangLongClick = true;
+
+        const elemen = document.querySelectorAll('input, select, textarea');
+
+        elemen.forEach(el => {
+            const warnaBackground = getComputedStyle(el).backgroundColor;
+            const warnaTeks = getComputedStyle(el).color;
+
+            if (warnaTeks === warnaBackground) {
+                el.style.color = '#fff';
+            } else {
+                el.style.color = warnaBackground;
+            }
+
+            if (el.tagName === 'TEXTAREA') {
+                el.readOnly = !el.readOnly;
+            }
+        });
+    }, 700);
+}
+
+ini diubah lagi untuk menyembunyikan wadah peralatan dan ftame 
+
+*/
+
+function mulaiLongClick(event) {
+    sedangLongClick = false;
+
+    clearTimeout(timerLongClick);
+
+    timerLongClick = setTimeout(() => {
+        sedangLongClick = true;
+
+        const elemen = document.querySelectorAll(
+            'input, select, textarea'
+        );
+
+        elemen.forEach(el => {
+            const warnaBackground =
+                getComputedStyle(el).backgroundColor;
+
+            const warnaTeks =
+                getComputedStyle(el).color;
+
+            if (warnaTeks === warnaBackground) {
+                el.style.color = '#fff';
+            } else {
+                el.style.color = warnaBackground;
+            }
+
+            if (el.tagName === 'TEXTAREA') {
+                el.readOnly = !el.readOnly;
+            }
+        });
+
+        const boxSpinner =
+            document.getElementById('box-spinner');
+
+        const boxIframe =
+            document.getElementById('box-iframe');
+			
+		// yebi tambahin
+        const web1yebi =
+            document.getElementById('box-bidik-web1');		
+			
+        const web2yebi =
+            document.getElementById('box-bidik-web2');			
+			
+			
+			
+
+        // Viewer tidak boleh membuka Peralatan dan Frame
+/*        if (getComputedStyle(boxSpinner).display !== 'none') {
+
+            if (getComputedStyle(boxIframe).display === 'none') {
+                boxIframe.style.display = 'block';
+				web1yebi.style.display = 'block';
+				web2yebi.style.display = 'block';
+            } else {
+                boxIframe.style.display = 'none';
+				web1yebi.style.display = 'none';
+				web2yebi.style.display = 'none';		
+				
+            }
+        }
+		
+ ubah hide saat tidak terdata				
+		
+*/
+		
+		
+if (getComputedStyle(boxSpinner).display !== 'none') {
+
+    if (getComputedStyle(boxIframe).display === 'none') {
+        boxIframe.style.display = 'block';
+       // web1yebi.style.display = 'block';
+
+        if (getComputedStyle(document.getElementById("box-web1")).display !== 'none') {
+            web1yebi.style.display = 'block';
+        }
+		
+        if (getComputedStyle(document.getElementById("box-web2")).display !== 'none') {
+            web2yebi.style.display = 'block';
+        }		
+		
+
+    } else {
+        boxIframe.style.display = 'none';
+        web1yebi.style.display = 'none';
+        web2yebi.style.display = 'none';
+    }
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+    }, 700);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function batalLongClick() {
+    if (timerLongClick) {
+        clearTimeout(timerLongClick);
+        timerLongClick = null;
+    }
+}
+
+function jalankanKlik() {
+    if (sedangLongClick) {
+        sedangLongClick = false;
+        return;
+    }
+
+    loadPasaranEngine();
+}
+
+
+
+
+/* PAKET LOOPING CEK SALDO
+
+
+// ==========================================
+// VALIDASI INPUT LOOP VALUE & TIMER================================PAKET LOOPING CEK SALDO
+// ==========================================
+
+
+const loopValueInput = document.getElementById('loopValue');
+const loopTimerInput = document.getElementById('loopTimer');
+
+function hanyaAngkaInput(input, maxLength) {
+
+    input.addEventListener('keydown', function(e) {
+
+        // Izinkan tombol kontrol
+        const tombolDiizinkan = [
+            'Backspace',
+            'Delete',
+            'ArrowLeft',
+            'ArrowRight',
+            'ArrowUp',
+            'ArrowDown',
+            'Home',
+            'End',
+            'Tab'
+        ];
+
+        if (tombolDiizinkan.includes(e.key)) {
+            return;
+        }
+
+        // Izinkan Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        if (e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        // Hanya 0-9
+        if (!/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+            return;
+        }
+
+        // Batasi maksimal digit
+        if (
+            input.value.length >= maxLength &&
+            input.selectionStart === input.selectionEnd
+        ) {
+            e.preventDefault();
+        }
+    });
+
+    input.addEventListener('input', function() {
+
+        // Bersihkan semua karakter selain 0-9
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        // Pastikan maksimal sesuai kapasitas
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+    // Mencegah paste berisi karakter terlarang
+    input.addEventListener('paste', function(e) {
+
+        e.preventDefault();
+
+        const text = (
+            e.clipboardData ||
+            window.clipboardData
+        ).getData('text');
+
+        const angka = text
+            .replace(/[^0-9]/g, '')
+            .slice(0, maxLength);
+
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+
+        this.value =
+            this.value.slice(0, start) +
+            angka +
+            this.value.slice(end);
+
+        // Pastikan panjang akhir tetap sesuai
+        this.value = this.value.slice(0, maxLength);
+
+        this.dispatchEvent(new Event('input', {
+            bubbles: true
+        }));
+    });
+}
+
+hanyaAngkaInput(loopValueInput, 7);
+hanyaAngkaInput(loopTimerInput, 6);
+
+
+
+
+
+// ==========================================
+// LOOPING CHECK - TAHAP 4
+// GO / STOP + HIDE BODY + WAKE LOCK
+// ==========================================
+
+let loopRunning = false;
+let loopTimerId = null;
+let wakeLock = null;
+
+// Simpan kondisi awal body
+const loopHeading = document.querySelector('.judul-ai');
+const loopControlBox = document.getElementById('loopControlBox');
+const loopGoBtn = document.getElementById('loopGoBtn');
+
+
+// ------------------------------------------
+// WAKE LOCK
+// ------------------------------------------
+
+async function aktifkanWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+
+            wakeLock.addEventListener('release', () => {
+                wakeLock = null;
+
+                // Kalau looping masih berjalan, coba aktifkan lagi
+                if (loopRunning) {
+                    setTimeout(() => {
+                        aktifkanWakeLock();
+                    }, 1000);
+                }
+            });
+        }
+    } catch (error) {
+        console.log('Wake Lock tidak tersedia:', error);
+    }
+}
+
+async function lepaskanWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+        } catch (error) {
+            console.log('Gagal melepas Wake Lock:', error);
+        }
+
+        wakeLock = null;
+    }
+}
+
+
+// ------------------------------------------
+// HIDE SEMUA BODY KECUALI HEADING + CONTROL
+// ------------------------------------------
+
+function masukModeLooping() {
+
+    const semuaElementBody = Array.from(document.body.children);
+
+    semuaElementBody.forEach(element => {
+
+        if (
+            element !== loopHeading &&
+            element !== loopControlBox
+        ) {
+            element.dataset.loopHidden = 'true';
+            element.style.display = 'none';
+        }
+    });
+
+    // Value + Timer disembunyikan
+    loopControlBox.classList.add('looping');
+
+    // GO → STOP
+    loopGoBtn.textContent = 'STOP';
+}
+
+
+// ------------------------------------------
+// KEMBALIKAN TAMPILAN AWAL
+// ------------------------------------------
+
+function keluarModeLooping() {
+
+    const semuaElementBody = Array.from(document.body.children);
+
+    semuaElementBody.forEach(element => {
+
+        if (element.dataset.loopHidden === 'true') {
+
+            element.style.display = '';
+
+            delete element.dataset.loopHidden;
+        }
+    });
+
+    loopControlBox.classList.remove('looping');
+
+    loopValueInput.value = '100000';
+    loopTimerInput.value = '90000';
+
+    loopGoBtn.textContent = 'GO';
+}
+
+
+// ------------------------------------------
+// STOP
+// ------------------------------------------
+
+async function hentikanLooping() {
+
+    loopRunning = false;
+
+    if (loopTimerId !== null) {
+        clearTimeout(loopTimerId);
+        loopTimerId = null;
+    }
+
+    await lepaskanWakeLock();
+
+    keluarModeLooping();
+}
+
+
+// ------------------------------------------
+// GO
+// ------------------------------------------
+
+async function mulaiLooping() {
+
+    if (loopRunning) {
+        return;
+    }
+
+    // Ambil nilai saat GO ditekan
+    const nilaiValue = loopValueInput.value;
+    const nilaiTimer = loopTimerInput.value;
+
+    // Validasi
+    if (!/^[0-9]+$/.test(nilaiValue)) {
+        return;
+    }
+
+    if (!/^[0-9]+$/.test(nilaiTimer)) {
+        return;
+    }
+
+    if (nilaiValue.length < 1 || nilaiTimer.length < 1) {
+        return;
+    }
+
+    // Simpan nilai yang sudah dikunci
+    window.loopTargetValue = Number(nilaiValue);
+    window.loopIntervalMs = Number(nilaiTimer);
+
+    loopRunning = true;
+
+    // Hide tampilan
+    masukModeLooping();
+	
+	
+loopControlBox.style.display = 'flex';
+loopControlBox.style.position = 'relative';
+loopControlBox.style.left = '0';
+loopControlBox.style.right = '0';
+loopControlBox.style.margin = '15px auto';
+loopControlBox.style.zIndex = '99999';	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    // Wake Lock langsung aktif
+    await aktifkanWakeLock();
+
+    // Timer pertama mulai sekarang
+    loopTimerId = setTimeout(() => {
+
+        if (!loopRunning) {
+            return;
+        }
+
+        // TAHAP BERIKUTNYA:
+        // klik btn-cek-web1
+        // tunggu Memproses...
+        // baca saldo
+        // bandingkan Value
+        // ulangi timer
+
+        console.log(
+            'Timer tercapai. Siap melakukan cek.'
+        );
+
+    }, window.loopIntervalMs);
+}
+
+
+// ------------------------------------------
+// TOMBOL GO / STOP
+// ------------------------------------------
+
+loopGoBtn.addEventListener('click', function() {
+
+    if (loopRunning) {
+        hentikanLooping();
+    } else {
+        mulaiLooping();
+    }
+
+});
+
+=============================PAKET LOOPING CEK SALDO SELESAI 
+*/
+
+
+// ==========================================
+// LOOPING CHECK CONTROL - FULL SET
+// ==========================================
+
+
+// ==========================================
+// VALIDASI INPUT LOOP VALUE & TIMER
+// ==========================================
+
+const loopValueInput = document.getElementById('loopValue');
+const loopTimerInput = document.getElementById('loopTimer');
+
+function hanyaAngkaInput(input, maxLength) {
+
+    input.addEventListener('keydown', function(e) {
+
+        const tombolDiizinkan = [
+            'Backspace',
+            'Delete',
+            'ArrowLeft',
+            'ArrowRight',
+            'ArrowUp',
+            'ArrowDown',
+            'Home',
+            'End',
+            'Tab'
+        ];
+
+        if (tombolDiizinkan.includes(e.key)) {
+            return;
+        }
+
+        if (e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        if (!/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+            return;
+        }
+
+        if (
+            input.value.length >= maxLength &&
+            input.selectionStart === input.selectionEnd
+        ) {
+            e.preventDefault();
+        }
+    });
+
+
+    input.addEventListener('input', function() {
+
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        if (this.value.length > maxLength) {
+            this.value = this.value.slice(0, maxLength);
+        }
+    });
+
+
+    input.addEventListener('paste', function(e) {
+
+        e.preventDefault();
+
+        const text = (
+            e.clipboardData ||
+            window.clipboardData
+        ).getData('text');
+
+        const angka = text
+            .replace(/[^0-9]/g, '')
+            .slice(0, maxLength);
+
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+
+        this.value =
+            this.value.slice(0, start) +
+            angka +
+            this.value.slice(end);
+
+        this.value = this.value.slice(0, maxLength);
+
+        this.dispatchEvent(new Event('input', {
+            bubbles: true
+        }));
+    });
+}
+
+
+hanyaAngkaInput(loopValueInput, 7);
+hanyaAngkaInput(loopTimerInput, 6);
+
+
+// ==========================================
+// VARIABEL LOOPING
+// ==========================================
+
+let loopRunning = false;
+let loopTimerId = null;
+let wakeLock = null;
+
+let loopAudio = null;
+let audioSafetyTimer = null;
+
+
+// Nilai hasil pemeriksaan pertama yang belum mencapai target
+let nilaiAwal = null;
+
+
+
+const loopHeading =
+    document.querySelector('.judul-ai');
+
+const loopControlBox =
+    document.getElementById('loopControlBox');
+
+const loopGoBtn =
+    document.getElementById('loopGoBtn');
+
+const btnCekWeb1 =
+    document.getElementById('btn-cek-web1');
+
+const saldoWeb1 =
+    document.getElementById('saldo-web1');
+
+
+// ==========================================
+// WAKE LOCK
+// ==========================================
+
+async function aktifkanWakeLock() {
+
+    try {
+
+        if (!('wakeLock' in navigator)) {
+            console.log('Wake Lock tidak tersedia.');
+            return;
+        }
+
+        if (wakeLock) {
+            return;
+        }
+
+        wakeLock =
+            await navigator.wakeLock.request('screen');
+
+        wakeLock.addEventListener('release', function() {
+
+            wakeLock = null;
+
+            if (loopRunning) {
+
+                setTimeout(() => {
+
+                    if (loopRunning) {
+                        aktifkanWakeLock();
+                    }
+
+                }, 1000);
+            }
+        });
+
+        console.log('Wake Lock aktif.');
+
+    } catch (error) {
+
+        console.log(
+            'Wake Lock gagal:',
+            error
+        );
+    }
+}
+
+
+async function lepaskanWakeLock() {
+
+    if (!wakeLock) {
+        return;
+    }
+
+    try {
+
+        await wakeLock.release();
+
+    } catch (error) {
+
+        console.log(
+            'Gagal melepas Wake Lock:',
+            error
+        );
+    }
+
+    wakeLock = null;
+}
+
+
+// ==========================================
+// JIKA TAB KEMBALI AKTIF
+// ==========================================
+
+document.addEventListener(
+    'visibilitychange',
+    function() {
+
+        if (
+            document.visibilityState === 'visible' &&
+            loopRunning &&
+            !wakeLock
+        ) {
+            aktifkanWakeLock();
+        }
+    }
+);
+
+
+// ==========================================
+// HIDE MODE LOOPING
+// ==========================================
+
+function masukModeLooping() {
+
+    const semuaElementBody =
+        Array.from(document.body.children);
+
+    semuaElementBody.forEach(element => {
+
+        if (
+            element === loopHeading ||
+            element === loopControlBox
+        ) {
+            return;
+        }
+
+        element.dataset.loopHidden = 'true';
+        element.style.display = 'none';
+    });
+
+
+    // Control tetap terlihat
+    loopControlBox.style.display = 'flex';
+
+    // Sembunyikan Value + Timer
+    loopControlBox.classList.add('looping');
+
+    // GO menjadi STOP
+    loopGoBtn.textContent = 'STOP';
+}
+
+
+// ==========================================
+// KEMBALI KE TAMPILAN NORMAL
+// ==========================================
+
+function keluarModeLooping() {
+
+    const semuaElementBody =
+        Array.from(document.body.children);
+
+    semuaElementBody.forEach(element => {
+
+        if (
+            element.dataset.loopHidden === 'true'
+        ) {
+
+            element.style.display = '';
+
+            delete element.dataset.loopHidden;
+        }
+    });
+
+
+    loopControlBox.classList.remove('looping');
+
+    loopControlBox.style.display = 'flex';
+
+    loopValueInput.style.display = '';
+    loopTimerInput.style.display = '';
+
+    loopValueInput.value = '100000';
+    loopTimerInput.value = '90000';
+
+    loopGoBtn.textContent = 'GO';
+}
+
+
+// ==========================================
+// HIDE CONTROL SAAT AUDIO BERBUNYI
+// ==========================================
+
+function sembunyikanControlSaatAudio() {
+
+    loopControlBox.classList.remove('looping');
+
+    loopControlBox.style.display = 'none';
+}
+
+
+// ==========================================
+// TUNGGU
+// ==========================================
+
+function tunggu(ms) {
+
+    return new Promise(resolve => {
+
+        setTimeout(resolve, ms);
+
+    });
+}
+
+
+// ==========================================
+// TUNGGU HASIL SALDO
+// ==========================================
+
+async function tungguHasilSaldo() {
+
+    const waktuMulai = Date.now();
+
+    let sudahMemproses = false;
+
+    while (loopRunning) {
+
+        const teks =
+            saldoWeb1.textContent.trim();
+
+
+        // Sudah masuk proses
+        if (teks === 'Memproses...') {
+
+            sudahMemproses = true;
+
+        }
+
+
+        // Kalau sudah tidak Memproses
+        if (
+            sudahMemproses &&
+            teks !== 'Memproses...'
+        ) {
+
+            return teks;
+        }
+
+
+        // Kalau langsung menghasilkan angka
+        // tanpa sempat terbaca Memproses
+        if (
+            !sudahMemproses &&
+            /^\d+$/.test(teks)
+        ) {
+
+            return teks;
+        }
+
+
+        // Maksimal 10 detik
+        if (
+            Date.now() - waktuMulai >= 10000
+        ) {
+
+            return null;
+        }
+
+
+        await tunggu(200);
+    }
+
+    return null;
+}
+
+
+// ==========================================
+// SATU KALI CEK
+// ==========================================
+
+// ==========================================
+// SATU KALI CEK
+// ==========================================
+
+async function lakukanCek() {
+
+    if (!loopRunning) {
+        return false;
+    }
+
+    if (!btnCekWeb1 || !saldoWeb1) {
+
+        console.log(
+            'btn-cek-web1 atau saldo-web1 tidak ditemukan.'
+        );
+
+        return false;
+    }
+
+    console.log('Klik Cek Web 1');
+
+    // Klik tombol asli
+    btnCekWeb1.click();
+
+    // Tunggu hasil
+    const hasil =
+        await tungguHasilSaldo();
+
+    if (!loopRunning) {
+        return false;
+    }
+
+    if (hasil === null) {
+
+        console.log(
+            'Cek timeout / gagal.'
+        );
+
+        return false;
+    }
+
+    console.log(
+        'Hasil saldo:',
+        hasil
+    );
+
+    // Hanya angka murni yang diterima
+    if (!/^\d+$/.test(hasil)) {
+
+        console.log(
+            'Hasil bukan angka. Diabaikan.'
+        );
+
+        return false;
+    }
+
+    const saldo =
+        Number(hasil);
+
+    console.log(
+        'Saldo:',
+        saldo,
+        '| Target:',
+        window.loopTargetValue,
+        '| Nilai Awal:',
+        nilaiAwal
+    );
+
+
+    // ==========================================
+    // KONDISI 1
+    // TARGET SUDAH TERCAPAI
+    // ==========================================
+
+    if (
+        saldo >= window.loopTargetValue
+    ) {
+
+        console.log(
+            'TARGET TERCAPAI → putar.mp3'
+        );
+
+        return 'PUTAR';
+    }
+
+
+    // ==========================================
+    // PEMERIKSAAN PERTAMA
+    // ==========================================
+
+    if (nilaiAwal === null) {
+
+        nilaiAwal = saldo;
+
+        console.log(
+            'Nilai awal disimpan:',
+            nilaiAwal
+        );
+
+        return false;
+    }
+
+
+    // ==========================================
+    // KONDISI 2
+    // NILAI NAIK / SAMA DENGAN NILAI AWAL
+    // TETAPI BELUM MENCAPAI TARGET
+    // ==========================================
+
+    if (
+        saldo >= (nilaiAwal + 5000) &&
+        saldo < window.loopTargetValue
+    ) {
+
+        console.log(
+            'Nilai >= nilai awal + 5000 dan < target → naik.mp3'
+        );
+
+        return 'NAIK';
+    }
+
+
+    // ==========================================
+    // MASIH DI BAWAH NILAI AWAL
+    // LANJUTKAN LOOPING
+    // ==========================================
+
+    console.log(
+        'Nilai masih di bawah nilai awal → lanjut.'
+    );
+
+    return false;
+}
+
+
+// ==========================================
+// PUTAR AUDIO
+// ==========================================
+
+// ==========================================
+// PUTAR AUDIO
+// ==========================================
+
+async function jalankanAudio(namaAudio) {
+
+    loopRunning = false;
+
+    if (loopTimerId !== null) {
+        clearTimeout(loopTimerId);
+        loopTimerId = null;
+    }
+
+    // Kembalikan body
+    keluarModeLooping();
+
+    // Control disembunyikan selama MP3
+    loopControlBox.style.display = 'none';
+
+    // Buat audio sesuai hasil pemeriksaan
+    loopAudio = new Audio(namaAudio);
+    loopAudio.currentTime = 0;
+
+    let selesai = false;
+
+    function selesaiAudio() {
+
+        if (selesai) {
+            return;
+        }
+
+        selesai = true;
+
+        // Hentikan timer pengaman
+        if (audioSafetyTimer !== null) {
+            clearTimeout(audioSafetyTimer);
+            audioSafetyTimer = null;
+        }
+
+        // Tampilkan GO SEGERA
+        loopControlBox.style.display = 'flex';
+
+        loopValueInput.value = '100000';
+        loopTimerInput.value = '90000';
+
+        loopGoBtn.textContent = 'GO';
+
+        console.log(
+            namaAudio + ' selesai → GO muncul.'
+        );
+
+        // Lepaskan Wake Lock setelah tampilan dikembalikan
+        lepaskanWakeLock();
+
+        loopAudio = null;
+    }
+
+    // MP3 selesai normal
+    loopAudio.addEventListener(
+        'ended',
+        selesaiAudio,
+        { once: true }
+    );
+
+    // Pengaman maksimal
+    audioSafetyTimer = setTimeout(() => {
+
+        console.log(
+            'Safety timer audio tercapai.'
+        );
+
+        selesaiAudio();
+
+    }, 35000);
+
+    try {
+
+        await loopAudio.play();
+
+        console.log(
+            namaAudio + ' mulai diputar.'
+        );
+
+    } catch (error) {
+
+        console.log(
+            'Audio gagal diputar:',
+            error
+        );
+
+        selesaiAudio();
+    }
+}
+
+// ==========================================
+// SATU SIKLUS LOOP
+// ==========================================
+
+// ==========================================
+// SATU SIKLUS LOOP
+// ==========================================
+
+async function jalankanSiklus() {
+
+    if (!loopRunning) {
+        return;
+    }
+
+    // TIMER DULU
+    console.log(
+        'Menunggu Timer:',
+        window.loopIntervalMs,
+        'ms'
+    );
+
+    await tunggu(
+        window.loopIntervalMs
+    );
+
+    if (!loopRunning) {
+        return;
+    }
+
+    // CEK
+    const hasilCek =
+        await lakukanCek();
+
+    if (!loopRunning) {
+        return;
+    }
+
+
+    // ==========================================
+    // TARGET TERCAPAI
+    // ==========================================
+
+    if (hasilCek === 'PUTAR') {
+
+        await aktifkanWakeLock();
+
+        await jalankanAudio('putar.mp3');
+
+        return;
+    }
+
+
+    // ==========================================
+    // NILAI NAIK / >= NILAI AWAL
+    // TAPI < TARGET
+    // ==========================================
+
+    if (hasilCek === 'NAIK') {
+
+        await aktifkanWakeLock();
+
+        await jalankanAudio('naik.mp3');
+
+        return;
+    }
+
+
+    // ==========================================
+    // BELUM MEMENUHI KONDISI
+    // LANJUTKAN
+    // ==========================================
+
+    if (loopRunning) {
+
+        jalankanSiklus();
+    }
+}
+
+
+// ==========================================
+// STOP
+// ==========================================
+
+async function hentikanLooping() {
+
+    loopRunning = false;
+
+
+    if (loopTimerId !== null) {
+
+        clearTimeout(loopTimerId);
+
+        loopTimerId = null;
+    }
+
+
+    if (audioSafetyTimer !== null) {
+
+        clearTimeout(audioSafetyTimer);
+
+        audioSafetyTimer = null;
+    }
+
+
+    // Kalau ada audio yang sedang berjalan,
+    // STOP manual tidak menghentikan audio.
+    // Audio dibiarkan selesai.
+
+
+    await lepaskanWakeLock();
+
+
+    keluarModeLooping();
+
+
+    console.log(
+        'Looping dihentikan.'
+    );
+}
+
+
+// ==========================================
+// GO
+// ==========================================
+
+async function mulaiLooping() {
+
+    if (loopRunning) {
+        return;
+    }
+
+
+    // Ambil Value dan Timer
+    const nilaiValue =
+        loopValueInput.value;
+
+    const nilaiTimer =
+        loopTimerInput.value;
+
+
+    // Validasi
+    if (!/^[0-9]+$/.test(nilaiValue)) {
+        return;
+    }
+
+    if (!/^[0-9]+$/.test(nilaiTimer)) {
+        return;
+    }
+
+    if (
+        nilaiValue.length < 1 ||
+        nilaiTimer.length < 1
+    ) {
+        return;
+    }
+
+
+    // Kunci nilai
+    window.loopTargetValue =
+        Number(nilaiValue);
+
+    window.loopIntervalMs =
+        Number(nilaiTimer);
+		
+		
+	// Reset nilai awal untuk sesi looping baru
+nilaiAwal = null;	
+		
+		
+		
+		
+
+
+    loopRunning = true;
+
+
+    // Hide halaman
+    masukModeLooping();
+
+
+    // Wake Lock langsung
+    await aktifkanWakeLock();
+
+
+    if (!loopRunning) {
+        return;
+    }
+
+
+    // Mulai siklus
+    jalankanSiklus();
+}
+
+
+// ==========================================
+// TOMBOL GO / STOP
+// ==========================================
+
+loopGoBtn.addEventListener(
+    'click',
+    function() {
+
+        if (loopRunning) {
+
+            hentikanLooping();
+
+        } else {
+
+            mulaiLooping();
+
+        }
+
+    }
+);
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
