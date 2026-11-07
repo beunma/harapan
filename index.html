@@ -779,6 +779,35 @@ onclick="loadPasaranEngine()" ubah jadi onclick="jalankanKlik()"
             </iframe>
         </div>
 
+        <div class="spinner-box" id="box-iframe-3" style="display: none;">
+            <div style="font-weight: bold; color: #ff9f1a; margin-bottom: 10px;">
+                Peralatan dan Frame 3
+            </div>
+
+            <div class="row-buttons">
+                <button class="btn-frame" onclick="loadIframe('gpt001.html', 'content-iframe-3')">GPT</button>
+                <button class="btn-frame" onclick="loadIframe('claude001.html', 'content-iframe-3')">CLD</button>
+                <button class="btn-frame" onclick="loadIframe('deret2d3d.html', 'content-iframe-3')">D23</button>
+                <button class="btn-frame" onclick="loadIframe('rk2.html', 'content-iframe-3')">RK2</button>
+                <button class="btn-frame" onclick="loadIframe('rk3.html', 'content-iframe-3')">RK3</button>
+            </div>
+
+            <div class="row-buttons">
+                <button class="btn-frame" onclick="loadIframe('gpt002.html', 'content-iframe-3')">GP2</button>
+                <button class="btn-frame" onclick="loadIframe('claude002.html', 'content-iframe-3')">CL2</button>
+                <button class="btn-frame" onclick="loadIframe('deret23total.html', 'content-iframe-3')">DTL</button>
+                <button class="btn-frame" onclick="loadIframe('smgASLI.html', 'content-iframe-3')">SMG</button>
+                <button class="btn-frame" onclick="loadIframe('supabase.html', 'content-iframe-3')">SUP</button>
+            </div>
+
+            <iframe
+                id="content-iframe-3"
+                src="about:blank"
+                title="Peralatan dan Frame 3"
+                style="width: 100%; height: 350px; border: none; border-radius: 6px; margin-top: 10px; background: #ffffff;">
+            </iframe>
+        </div>
+
         <div class="bidik-box" id="box-bidik-web1">
 
             <div class="bidik-title">
@@ -1554,6 +1583,9 @@ async function tampilkanDashboard() {
 
     const boxIframe2 =
         document.getElementById('box-iframe-2');
+
+    const boxIframe3 =
+        document.getElementById('box-iframe-3');
 		
 		// yebi tambahin
         const web1yebi =
@@ -1591,12 +1623,14 @@ async function tampilkanDashboard() {
         boxSpinner.style.display = 'none';
         boxIframe.style.display = 'none';
         boxIframe2.style.display = 'none';
+        boxIframe3.style.display = 'none';
 
     } else {
 // yebi perbaiki ini dari block dan block jadi block dan none
         boxSpinner.style.display = 'block';
         boxIframe.style.display = 'none';
         boxIframe2.style.display = 'none';
+        boxIframe3.style.display = 'none';
 
         if (userRole === 'admin') {
 
@@ -2656,6 +2690,7 @@ async function eksekusiGantiSpinner() {
         // halaman lama dari pilihan spinner sebelumnya.
         loadIframe('about:blank', 'content-iframe');
         loadIframe('about:blank', 'content-iframe-2');
+        loadIframe('about:blank', 'content-iframe-3');
 
         const copyStatus = document.getElementById('frame2-copy-status');
         if (copyStatus) {
@@ -3573,6 +3608,9 @@ function mulaiLongClick(event) {
 
         const boxIframe2 =
             document.getElementById('box-iframe-2');
+ 
+        const boxIframe3 =
+            document.getElementById('box-iframe-3');
 			
 		// yebi tambahin
         const web1yebi =
@@ -3590,6 +3628,7 @@ function mulaiLongClick(event) {
             if (getComputedStyle(boxIframe).display === 'none') {
                 boxIframe.style.display = 'block';
         boxIframe2.style.display = 'block';
+        boxIframe3.style.display = 'block';
 				web1yebi.style.display = 'block';
 				web2yebi.style.display = 'block';
             } else {
@@ -3611,6 +3650,7 @@ if (getComputedStyle(boxSpinner).display !== 'none') {
     if (getComputedStyle(boxIframe).display === 'none') {
         boxIframe.style.display = 'block';
         boxIframe2.style.display = 'block';
+        boxIframe3.style.display = 'block';
        // web1yebi.style.display = 'block';
 
         if (getComputedStyle(document.getElementById("box-web1")).display !== 'none') {
@@ -3625,6 +3665,7 @@ if (getComputedStyle(boxSpinner).display !== 'none') {
     } else {
         boxIframe.style.display = 'none';
         boxIframe2.style.display = 'none';
+        boxIframe3.style.display = 'none';
         web1yebi.style.display = 'none';
         web2yebi.style.display = 'none';
     }
